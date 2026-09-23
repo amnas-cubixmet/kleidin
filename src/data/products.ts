@@ -16,6 +16,8 @@ export const products: Product[] = [
     stock: 24,
     featured: true,
     status: "active",
+    image:
+      "https://images.unsplash.com/photo-1583743814966-8936f37f0b?auto=format&fit=crop&w=1200&q=85",
   },
   {
     id: "kl-002",
@@ -32,6 +34,8 @@ export const products: Product[] = [
     stock: 18,
     featured: true,
     status: "active",
+    image:
+      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=85",
   },
   {
     id: "kl-003",
@@ -47,6 +51,8 @@ export const products: Product[] = [
     stock: 12,
     featured: true,
     status: "active",
+    image:
+      "https://images.unsplash.com/photo-1503341504253-dff4815485f1?auto=format&fit=crop&w=1200&q=85",
   },
   {
     id: "kl-004",
@@ -62,6 +68,8 @@ export const products: Product[] = [
     stock: 0,
     featured: false,
     status: "sold-out",
+    image:
+      "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=1200&q=85",
   },
 ];
 

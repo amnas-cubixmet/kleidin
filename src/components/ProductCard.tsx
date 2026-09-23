@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/types/product";
 import { formatPrice } from "@/lib/format";
@@ -7,9 +8,21 @@ export function ProductCard({ product }: { product: Product }) {
     <article className="product-card">
       <Link href={`/products/${product.slug}`} className="product-visual">
         <span className="product-kicker">{product.category}</span>
-        <div className="product-art" aria-hidden="true">
-          <span>K</span>
-        </div>
+
+        {product.image ? (
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            sizes="(max-width: 600px) 50vw, (max-width: 980px) 50vw, 33vw"
+            className="product-image"
+          />
+        ) : (
+          <div className="product-art" aria-hidden="true">
+            <span>K</span>
+          </div>
+        )}
+
         <span className="product-arrow">↗</span>
       </Link>
 

@@ -1,11 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
 import { getFeaturedProducts } from "@/data/products";
 
 const categories = [
-  { title: "Everyday tees", label: "01", className: "category-lilac" },
-  { title: "Relaxed fits", label: "02", className: "category-peach" },
-  { title: "Core colours", label: "03", className: "category-mint" },
+  { title: "Everyday tees", label: "01", className: "category-blue" },
+  { title: "Relaxed fits", label: "02", className: "category-sky" },
+  { title: "Core colours", label: "03", className: "category-white" },
 ];
 
 export default function Home() {
@@ -32,25 +33,17 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="hero-visual" aria-label="KLEID.IN collection preview">
-            <div className="hero-orbit hero-orbit-one" />
-            <div className="hero-orbit hero-orbit-two" />
-            <div className="look-card look-card-left">
-              <span>01</span>
-              <strong>BLACK</strong>
-              <small>Essential tee</small>
-            </div>
-            <div className="look-card look-card-main">
-              <span>KLEID.IN</span>
-              <strong>K</strong>
-              <small>CORE / 26</small>
-            </div>
-            <div className="look-card look-card-right">
-              <span>02</span>
-              <strong>STONE</strong>
-              <small>Relaxed tee</small>
-            </div>
-            <div className="hero-chip">4 fits · 3 colours</div>
+          <div className="hero-visual">
+            <Image
+              src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1600&q=90"
+              alt="KLEID.IN clothing collection"
+              fill
+              priority
+              sizes="(max-width: 980px) 100vw, 55vw"
+              className="hero-image"
+            />
+            <div className="hero-image-shade" />
+            <div className="hero-chip">KLEID.IN / Core collection</div>
           </div>
         </div>
 

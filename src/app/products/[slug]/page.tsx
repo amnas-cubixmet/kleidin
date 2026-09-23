@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductBySlug, products } from "@/data/products";
@@ -19,9 +20,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = getProductBySlug(slug);
 
-  if (!product) {
-    return { title: "Product not found" };
-  }
+  if (!product) return { title: "Product not found" };
 
   return {
     title: product.name,
@@ -33,9 +32,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
   const product = getProductBySlug(slug);
 
-  if (!product || product.status === "draft") {
-    notFound();
-  }
+  if (!product || product.status === "draft") notFound();
 
   const canOrder = product.status === "active" && product.stock > 0;
   const whatsappConfigured = Boolean(store.whatsappNumber);
@@ -43,8 +40,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <section className="product-page">
       <div className="product-detail-visual">
-        <p>{product.category}</p>
-        <h1>{product.name}</h1>
+        {product.image ? (
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            priority
+            sizes="(max-width: 980px) 100vw, 56vw"
+            className="product-detail-image"
+          />
+        ) : null}
+        <div className="product-detail-overlay">
+          <p>{product.category}</p>
+          <h1>{product.name}</h1>
+        </div>
       </div>
 
       <div className="product-info">
