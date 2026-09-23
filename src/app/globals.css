@@ -315,17 +315,25 @@ main {
 
 .product-card {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-visual {
+  width: 100%;
   aspect-ratio: 4 / 5;
   position: relative;
+  display: block;
   overflow: hidden;
   background: #f1f1f1;
+  isolation: isolate;
 }
 
 .product-image {
+  width: 100% !important;
+  height: 100% !important;
   object-fit: cover;
+  object-position: center;
   transition: transform 260ms ease;
 }
 
@@ -347,7 +355,10 @@ main {
 }
 
 .product-card-info {
-  padding-top: 12px;
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .product-card-topline,
@@ -374,8 +385,8 @@ main {
 
 .quick-add {
   width: 100%;
-  min-height: 38px;
-  margin-top: 12px;
+  min-height: 40px;
+  margin-top: 14px;
   border: 1px solid #d9d9d9;
   background: #fff;
   font-size: 11px;
@@ -1444,5 +1455,33 @@ main {
 
   .cart-summary {
     padding: 22px;
+  }
+}
+
+
+/* Product card layout fix */
+.product-grid-four .product-card {
+  min-height: 0;
+}
+
+.product-grid-four .product-visual {
+  min-height: 0;
+}
+
+.product-grid-four .product-card-info {
+  min-height: 112px;
+}
+
+.product-grid-four .quick-add {
+  margin-top: auto;
+}
+
+@media (max-width: 640px) {
+  .product-visual {
+    aspect-ratio: 3 / 4;
+  }
+
+  .product-grid-four .product-card-info {
+    min-height: 132px;
   }
 }
