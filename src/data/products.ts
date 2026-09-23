@@ -17,7 +17,7 @@ export const products: Product[] = [
     featured: true,
     status: "active",
     image:
-      "https://images.unsplash.com/photo-1583743814966-8936f37f0b?auto=format&fit=crop&w=1200&q=85",
+      "https://images.unsplash.com/photo-1583743814966-8936f37f0b?auto=format&fit=crop&w=1200&q=88",
   },
   {
     id: "kl-002",
@@ -35,7 +35,7 @@ export const products: Product[] = [
     featured: true,
     status: "active",
     image:
-      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=85",
+      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=88",
   },
   {
     id: "kl-003",
@@ -52,10 +52,61 @@ export const products: Product[] = [
     featured: true,
     status: "active",
     image:
-      "https://images.unsplash.com/photo-1503341504253-dff4815485f1?auto=format&fit=crop&w=1200&q=85",
+      "https://images.unsplash.com/photo-1503341504253-dff4815485f1?auto=format&fit=crop&w=1200&q=88",
   },
   {
     id: "kl-004",
+    sku: "KLD-SH-001",
+    name: "Everyday Shirt — Sky",
+    slug: "everyday-shirt-sky",
+    category: "Shirts",
+    price: 2199,
+    description:
+      "An easy long-sleeve shirt with a clean collar and relaxed everyday proportion.",
+    sizes: ["S", "M", "L", "XL"],
+    colors: ["Sky Blue"],
+    stock: 14,
+    featured: true,
+    status: "active",
+    image:
+      "https://images.unsplash.com/photo-1603252110481-7ba873bf42ab?auto=format&fit=crop&w=1200&q=88",
+  },
+  {
+    id: "kl-005",
+    sku: "KLD-OS-001",
+    name: "Utility Overshirt — Navy",
+    slug: "utility-overshirt-navy",
+    category: "Overshirts",
+    price: 2799,
+    description:
+      "A lightweight overshirt built for layering over tees and shirts.",
+    sizes: ["S", "M", "L", "XL"],
+    colors: ["Navy"],
+    stock: 9,
+    featured: true,
+    status: "active",
+    image:
+      "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=1200&q=88",
+  },
+  {
+    id: "kl-006",
+    sku: "KLD-SH-002",
+    name: "Relaxed Shirt — White",
+    slug: "relaxed-shirt-white",
+    category: "Shirts",
+    price: 1999,
+    description:
+      "A versatile white shirt with a relaxed body and clean minimal finish.",
+    sizes: ["S", "M", "L", "XL"],
+    colors: ["White"],
+    stock: 20,
+    featured: true,
+    status: "active",
+    image:
+      "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=1200&q=88",
+  },
+  {
+    id: "kl-007",
     sku: "KLD-TS-004",
     name: "Relaxed Tee — Stone",
     slug: "relaxed-tee-stone",
@@ -65,11 +116,28 @@ export const products: Product[] = [
       "An easy relaxed-fit T-shirt in a versatile stone tone.",
     sizes: ["S", "M", "L", "XL"],
     colors: ["Stone"],
-    stock: 0,
-    featured: false,
-    status: "sold-out",
+    stock: 16,
+    featured: true,
+    status: "active",
     image:
-      "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=1200&q=85",
+      "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=1200&q=88",
+  },
+  {
+    id: "kl-008",
+    sku: "KLD-OS-002",
+    name: "Core Overshirt — Black",
+    slug: "core-overshirt-black",
+    category: "Overshirts",
+    price: 2899,
+    description:
+      "A black overshirt with clean pockets and an easy straight fit.",
+    sizes: ["M", "L", "XL"],
+    colors: ["Black"],
+    stock: 7,
+    featured: true,
+    status: "active",
+    image:
+      "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=1200&q=88",
   },
 ];
 

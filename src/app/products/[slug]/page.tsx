@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ProductActions } from "@/components/ProductActions";
 import { getProductBySlug, products } from "@/data/products";
 import { formatPrice, getWhatsappUrl } from "@/lib/format";
 import { store } from "@/config/store";
@@ -34,8 +35,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!product || product.status === "draft") notFound();
 
-  const canOrder = product.status === "active" && product.stock > 0;
-  const whatsappConfigured = Boolean(store.whatsappNumber);
+  const whatsappUrl = store.whatsappNumber
+    ? getWhatsappUrl(product.name)
+    : undefined;
 
   return (
     <section className="product-page">
@@ -50,10 +52,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
             className="product-detail-image"
           />
         ) : null}
-        <div className="product-detail-overlay">
-          <p>{product.category}</p>
-          <h1>{product.name}</h1>
-        </div>
       </div>
 
       <div className="product-info">
@@ -61,8 +59,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
           ← Back to shop
         </Link>
 
-        <p className="eyebrow">{product.sku}</p>
-        <h2>{product.name}</h2>
+        <p className="eyebrow">{product.category} / {product.sku}</p>
+        <h1>{product.name}</h1>
 
         <div className="product-detail-price">
           <strong>{formatPrice(product.price)}</strong>
@@ -73,43 +71,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
         <p className="product-description">{product.description}</p>
 
-        <div className="option-block">
-          <span>Sizes</span>
-          <div className="option-list">
-            {product.sizes.map((size) => (
-              <span key={size}>{size}</span>
-            ))}
-          </div>
-        </div>
-
-        <div className="option-block">
+        <div className="highlight-meta">
           <span>Colour</span>
-          <div className="option-list">
-            {product.colors.map((color) => (
-              <span key={color}>{color}</span>
-            ))}
-          </div>
+          <strong>{product.colors.join(" / ")}</strong>
         </div>
 
-        <div className="stock-line">
-          {canOrder ? `In stock · ${product.stock} available` : "Sold out"}
-        </div>
+        <ProductActions product={product} whatsappUrl={whatsappUrl} />
 
-        <a
-          href={canOrder && whatsappConfigured ? getWhatsappUrl(product.name) : "#"}
-          className={`button button-dark order-button ${
-            !canOrder || !whatsappConfigured ? "button-disabled" : ""
-          }`}
-          aria-disabled={!canOrder || !whatsappConfigured}
-          target={canOrder && whatsappConfigured ? "_blank" : undefined}
-          rel={canOrder && whatsappConfigured ? "noreferrer" : undefined}
-        >
-          {!canOrder
-            ? "Sold out"
-            : whatsappConfigured
-              ? "Order on WhatsApp"
-              : "WhatsApp setup required"}
-        </a>
+        <div className="product-notes">
+          <span>Easy everyday fit</span>
+          <span>Direct WhatsApp support</span>
+          <span>Simple size selection</span>
+        </div>
       </div>
     </section>
   );

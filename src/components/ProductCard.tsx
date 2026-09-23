@@ -2,47 +2,42 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/types/product";
 import { formatPrice } from "@/lib/format";
+import { AddToCartButton } from "@/components/AddToCartButton";
 
 export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="product-card">
       <Link href={`/products/${product.slug}`} className="product-visual">
-        <span className="product-kicker">{product.category}</span>
-
         {product.image ? (
           <Image
             src={product.image}
             alt={product.name}
             fill
-            sizes="(max-width: 600px) 50vw, (max-width: 980px) 50vw, 33vw"
+            sizes="(max-width: 600px) 50vw, (max-width: 980px) 50vw, 25vw"
             className="product-image"
           />
-        ) : (
-          <div className="product-art" aria-hidden="true">
-            <span>K</span>
-          </div>
-        )}
+        ) : null}
 
-        <span className="product-arrow">↗</span>
+        <span className="product-tag">
+          {product.featured ? "New" : product.category}
+        </span>
       </Link>
 
-      <div className="product-meta">
-        <div>
-          <p>{product.name}</p>
-          <small>{product.colors.join(" / ")}</small>
-        </div>
-
-        <div className="price-row">
+      <div className="product-card-info">
+        <div className="product-card-topline">
+          <Link href={`/products/${product.slug}`} className="product-name">
+            {product.name}
+          </Link>
           <span>{formatPrice(product.price)}</span>
-          {product.compareAtPrice ? (
-            <del>{formatPrice(product.compareAtPrice)}</del>
-          ) : null}
         </div>
-      </div>
 
-      {product.status === "sold-out" ? (
-        <span className="status-pill">Sold out</span>
-      ) : null}
+        <div className="product-card-bottomline">
+          <span>{product.colors.join(" / ")}</span>
+          <span>{product.sizes.join(" · ")}</span>
+        </div>
+
+        <AddToCartButton product={product} />
+      </div>
     </article>
   );
 }
