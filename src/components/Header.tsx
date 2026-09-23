@@ -1,16 +1,24 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { products } from "@/data/products";
 
-const nav = [
-  { href: "/", label: "Home" },
-  { href: "/products", label: "Shop" },
-  { href: "/#new", label: "New" },
-  { href: "/archive", label: "Archive" },
-  { href: "/contact", label: "Contact" },
+const shopLinks = [
+  { href: "/products", label: "Shop All", note: "All KLEID.IN pieces" },
+  { href: "/products?new=1", label: "New Arrivals", note: "Latest drop" },
+  { href: "/products?category=T-Shirts", label: "T-Shirts", note: "Everyday essentials" },
+  { href: "/products?category=Shirts", label: "Shirts", note: "Clean layers" },
+  { href: "/products?category=Overshirts", label: "Overshirts", note: "Easy outer layers" },
+  { href: "/archive", label: "Archive", note: "Past collections" },
+];
+
+const motionImages = [
+  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1100&q=86",
+  "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1100&q=86",
+  "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1100&q=86",
 ];
 
 function SearchIcon() {
@@ -41,9 +49,15 @@ function MenuIcon({ open }: { open: boolean }) {
   );
 }
 
+function Chevron({ open }: { open: boolean }) {
+  return <span className={`nav-chevron ${open ? "open" : ""}`}>⌄</span>;
+}
+
 export function Header() {
   const { itemCount } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [shopOpen, setShopOpen] = useState(false);
+  const [mobileShopOpen, setMobileShopOpen] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [announcementVisible, setAnnouncementVisible] = useState(true);
@@ -72,11 +86,9 @@ export function Header() {
   useEffect(() => {
     try {
       const dismissed = window.localStorage.getItem("kleidin-announcement-dismissed");
-      if (dismissed === "true") {
-        setAnnouncementVisible(false);
-      }
+      if (dismissed === "true") setAnnouncementVisible(false);
     } catch {
-      // Keep the announcement visible when storage is unavailable.
+      // Keep announcement visible when storage is unavailable.
     }
   }, []);
 
@@ -91,6 +103,7 @@ export function Header() {
       if (event.key === "Escape") {
         setSearchOpen(false);
         setMenuOpen(false);
+        setShopOpen(false);
       }
     }
 
@@ -99,11 +112,13 @@ export function Header() {
   }, []);
 
   function openSearch() {
+    setShopOpen(false);
     setMenuOpen(false);
     setSearchOpen(true);
   }
 
   function closeMenus() {
+    setShopOpen(false);
     setMenuOpen(false);
     setSearchOpen(false);
   }
@@ -114,7 +129,7 @@ export function Header() {
     try {
       window.localStorage.setItem("kleidin-announcement-dismissed", "true");
     } catch {
-      // The bar still closes for the current page if storage is unavailable.
+      // Still close for the current page.
     }
   }
 
@@ -127,7 +142,6 @@ export function Header() {
             <span className="announcement-dot">•</span>
             <Link href="/contact">Order on WhatsApp</Link>
           </div>
-
           <button
             type="button"
             className="announcement-close"
@@ -144,12 +158,27 @@ export function Header() {
           KLEID.IN
         </Link>
 
-        <nav className="nav" aria-label="Primary navigation">
-          {nav.map((item) => (
-            <Link key={item.label} href={item.href}>
-              {item.label}
-            </Link>
-          ))}
+        <nav className="nav desktop-nav" aria-label="Primary navigation">
+          <Link href="/" onClick={closeMenus}>Home</Link>
+
+          <button
+            type="button"
+            className="shop-nav-trigger"
+            aria-expanded={shopOpen}
+            onClick={() => {
+              setSearchOpen(false);
+              setShopOpen((current) => !current);
+            }}
+            onMouseEnter={() => {
+              setSearchOpen(false);
+              setShopOpen(true);
+            }}
+          >
+            Shop
+            <Chevron open={shopOpen} />
+          </button>
+
+          <Link href="/contact" onClick={closeMenus}>Contact</Link>
         </nav>
 
         <div className="header-actions">
@@ -159,6 +188,7 @@ export function Header() {
             aria-label="Search products"
             aria-expanded={searchOpen}
             onClick={() => {
+              setShopOpen(false);
               setMenuOpen(false);
               setSearchOpen((current) => !current);
             }}
@@ -184,6 +214,7 @@ export function Header() {
             aria-expanded={menuOpen}
             onClick={() => {
               setSearchOpen(false);
+              setShopOpen(false);
               setMenuOpen((current) => !current);
             }}
           >
@@ -192,16 +223,100 @@ export function Header() {
         </div>
       </header>
 
+      {shopOpen ? (
+        <div
+          className={`shop-mega-menu ${announcementVisible ? "" : "announcement-hidden"}`}
+          onMouseLeave={() => setShopOpen(false)}
+        >
+          <div className="shop-mega-inner">
+            <Link href="/products?new=1" className="shop-motion-card" onClick={closeMenus}>
+              <div className="shop-motion-frames" aria-hidden="true">
+                {motionImages.map((src, index) => (
+                  <Image
+                    key={src}
+                    src={src}
+                    alt=""
+                    fill
+                    sizes="420px"
+                    className={`shop-motion-image shop-motion-image-${index + 1}`}
+                  />
+                ))}
+              </div>
+              <div className="shop-motion-overlay" />
+              <div className="shop-motion-copy">
+                <span>Fashion motion / 2026</span>
+                <strong>THE NEW DROP</strong>
+                <small>View collection ↗</small>
+              </div>
+            </Link>
+
+            <div className="shop-mega-links">
+              <div className="shop-mega-title">
+                <span>Shop KLEID.IN</span>
+                <Link href="/products" onClick={closeMenus}>View all ↗</Link>
+              </div>
+
+              <div className="shop-mega-grid">
+                {shopLinks.map((item, index) => (
+                  <Link href={item.href} key={item.label} onClick={closeMenus}>
+                    <span className="shop-link-index">0{index + 1}</span>
+                    <span className="shop-link-copy">
+                      <strong>{item.label}</strong>
+                      <small>{item.note}</small>
+                    </span>
+                    <span>↗</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {menuOpen ? (
         <div className={`mobile-menu ${announcementVisible ? "" : "announcement-hidden"}`}>
           <nav aria-label="Mobile navigation">
-            {nav.map((item) => (
-              <Link key={item.label} href={item.href} onClick={closeMenus}>
-                <span>{item.label}</span>
-                <span>↗</span>
-              </Link>
-            ))}
+            <Link href="/" onClick={closeMenus}>
+              <span>Home</span><span>↗</span>
+            </Link>
+
+            <button
+              type="button"
+              className="mobile-shop-toggle"
+              onClick={() => setMobileShopOpen((current) => !current)}
+            >
+              <span>Shop</span>
+              <Chevron open={mobileShopOpen} />
+            </button>
+
+            {mobileShopOpen ? (
+              <div className="mobile-shop-links">
+                {shopLinks.map((item) => (
+                  <Link href={item.href} key={item.label} onClick={closeMenus}>
+                    <span>{item.label}</span>
+                    <small>{item.note}</small>
+                  </Link>
+                ))}
+              </div>
+            ) : null}
+
+            <Link href="/contact" onClick={closeMenus}>
+              <span>Contact</span><span>↗</span>
+            </Link>
           </nav>
+
+          <div className="mobile-motion-card">
+            <div className="mobile-motion-image-wrap">
+              <Image
+                src={motionImages[0]}
+                alt="KLEID.IN fashion preview"
+                fill
+                sizes="100vw"
+                className="mobile-motion-image"
+              />
+            </div>
+            <span>Fashion preview / New drop</span>
+          </div>
 
           <button type="button" className="mobile-search-trigger" onClick={openSearch}>
             <SearchIcon />
@@ -225,11 +340,7 @@ export function Header() {
                 placeholder="Search products, categories, colours..."
                 aria-label="Search products"
               />
-              <button
-                type="button"
-                className="search-close"
-                onClick={() => setSearchOpen(false)}
-              >
+              <button type="button" className="search-close" onClick={() => setSearchOpen(false)}>
                 Close
               </button>
             </div>
@@ -254,9 +365,7 @@ export function Header() {
                   ))}
                 </div>
               ) : (
-                <div className="search-empty">
-                  No products found for “{query}”.
-                </div>
+                <div className="search-empty">No products found for “{query}”.</div>
               )}
             </div>
           </div>
