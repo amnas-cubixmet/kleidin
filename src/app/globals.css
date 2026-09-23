@@ -1845,3 +1845,71 @@ main {
     gap: 36px;
   }
 }
+
+
+/* Dismissible announcement */
+.announcement {
+  position: relative;
+  padding-left: 48px;
+  padding-right: 48px;
+}
+
+.announcement-copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.announcement-close {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  position: absolute;
+  top: 0;
+  right: 10px;
+  background: transparent;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1;
+  cursor: pointer;
+  opacity: .8;
+  transition: opacity 160ms ease;
+}
+
+.announcement-close:hover {
+  opacity: 1;
+}
+
+.search-panel.announcement-hidden,
+.mobile-menu.announcement-hidden {
+  top: 76px;
+}
+
+@media (max-width: 640px) {
+  .announcement {
+    padding-left: 38px;
+    padding-right: 38px;
+  }
+
+  .announcement-copy {
+    gap: 6px;
+  }
+
+  .announcement-close {
+    width: 32px;
+    height: 32px;
+    right: 4px;
+    font-size: 18px;
+  }
+
+  .search-panel.announcement-hidden,
+  .mobile-menu.announcement-hidden {
+    top: 66px;
+  }
+}

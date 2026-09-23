@@ -46,6 +46,7 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [announcementVisible, setAnnouncementVisible] = useState(true);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const results = useMemo(() => {
@@ -67,6 +68,17 @@ export function Header() {
       )
       .slice(0, 6);
   }, [query]);
+
+  useEffect(() => {
+    try {
+      const dismissed = window.localStorage.getItem("kleidin-announcement-dismissed");
+      if (dismissed === "true") {
+        setAnnouncementVisible(false);
+      }
+    } catch {
+      // Keep the announcement visible when storage is unavailable.
+    }
+  }, []);
 
   useEffect(() => {
     if (searchOpen) {
@@ -96,13 +108,36 @@ export function Header() {
     setSearchOpen(false);
   }
 
+  function dismissAnnouncement() {
+    setAnnouncementVisible(false);
+
+    try {
+      window.localStorage.setItem("kleidin-announcement-dismissed", "true");
+    } catch {
+      // The bar still closes for the current page if storage is unavailable.
+    }
+  }
+
   return (
     <>
-      <div className="announcement">
-        <span>New Drop Available</span>
-        <span className="announcement-dot">•</span>
-        <Link href="/contact">Order on WhatsApp</Link>
-      </div>
+      {announcementVisible ? (
+        <div className="announcement">
+          <div className="announcement-copy">
+            <span>New Drop Available</span>
+            <span className="announcement-dot">•</span>
+            <Link href="/contact">Order on WhatsApp</Link>
+          </div>
+
+          <button
+            type="button"
+            className="announcement-close"
+            aria-label="Close announcement"
+            onClick={dismissAnnouncement}
+          >
+            ×
+          </button>
+        </div>
+      ) : null}
 
       <header className="site-header">
         <Link href="/" className="brand" aria-label="KLEID.IN home" onClick={closeMenus}>
@@ -158,7 +193,7 @@ export function Header() {
       </header>
 
       {menuOpen ? (
-        <div className="mobile-menu">
+        <div className={`mobile-menu ${announcementVisible ? "" : "announcement-hidden"}`}>
           <nav aria-label="Mobile navigation">
             {nav.map((item) => (
               <Link key={item.label} href={item.href} onClick={closeMenus}>
@@ -176,7 +211,10 @@ export function Header() {
       ) : null}
 
       {searchOpen ? (
-        <div className="search-panel" role="search">
+        <div
+          className={`search-panel ${announcementVisible ? "" : "announcement-hidden"}`}
+          role="search"
+        >
           <div className="search-panel-inner">
             <div className="search-input-row">
               <SearchIcon />
