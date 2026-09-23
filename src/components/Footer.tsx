@@ -12,6 +12,7 @@ export function Footer() {
         <span>Shop</span>
         <Link href="/products">All Products</Link>
         <Link href="/products#new">New Arrivals</Link>
+        <Link href="/archive">Archive</Link>
         <Link href="/products">T-Shirts</Link>
         <Link href="/products">Shirts</Link>
       </div>
