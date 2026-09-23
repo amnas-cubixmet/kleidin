@@ -6,8 +6,11 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="product-card">
       <Link href={`/products/${product.slug}`} className="product-visual">
-        <span>{product.category}</span>
-        <strong>{product.name}</strong>
+        <span className="product-kicker">{product.category}</span>
+        <div className="product-art" aria-hidden="true">
+          <span>K</span>
+        </div>
+        <span className="product-arrow">↗</span>
       </Link>
 
       <div className="product-meta">
