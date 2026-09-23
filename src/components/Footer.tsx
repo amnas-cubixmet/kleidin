@@ -9,25 +9,22 @@ export function Footer() {
       </div>
 
       <div className="footer-column">
-        <span>Shop</span>
-        <Link href="/products">All Products</Link>
-        <Link href="/products#new">New Arrivals</Link>
-        <Link href="/archive">Archive</Link>
-        <Link href="/products">T-Shirts</Link>
-        <Link href="/products">Shirts</Link>
+        <span>Explore</span>
+        <Link href="/">Home</Link>
+        <Link href="/products">Shop</Link>
+        <Link href="/about">About</Link>
+        <Link href="/contact">Contact</Link>
       </div>
 
       <div className="footer-column">
         <span>Help</span>
-        <Link href="/contact">Contact</Link>
         <Link href="/contact">Shipping</Link>
         <Link href="/contact">Returns</Link>
         <Link href="/contact">Size Guide</Link>
       </div>
 
       <div className="footer-column">
-        <span>Brand</span>
-        <Link href="/about">About</Link>
+        <span>Social</span>
         <Link href="/contact">Instagram</Link>
         <Link href="/contact">WhatsApp</Link>
       </div>

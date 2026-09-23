@@ -2,23 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { products } from "@/data/products";
 
-const shopLinks = [
-  { href: "/products", label: "Shop All", note: "All KLEID.IN pieces" },
-  { href: "/products?new=1", label: "New Arrivals", note: "Latest drop" },
-  { href: "/products?category=T-Shirts", label: "T-Shirts", note: "Everyday essentials" },
-  { href: "/products?category=Shirts", label: "Shirts", note: "Clean layers" },
-  { href: "/products?category=Overshirts", label: "Overshirts", note: "Easy outer layers" },
-  { href: "/archive", label: "Archive", note: "Past collections" },
-];
-
-const motionImages = [
-  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1100&q=86",
-  "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1100&q=86",
-  "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1100&q=86",
+const nav = [
+  { href: "/", label: "Home" },
+  { href: "/products", label: "Shop" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
 ];
 
 function SearchIcon() {
@@ -49,16 +42,28 @@ function MenuIcon({ open }: { open: boolean }) {
   );
 }
 
-function Chevron({ open }: { open: boolean }) {
-  return <span className={`nav-chevron ${open ? "open" : ""}`}>⌄</span>;
+function formatPrice(value: number) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(value);
 }
 
 export function Header() {
-  const { itemCount } = useCart();
+  const pathname = usePathname();
+  const {
+    items,
+    itemCount,
+    subtotal,
+    removeItem,
+    updateQuantity,
+    clearCart,
+  } = useCart();
+
   const [menuOpen, setMenuOpen] = useState(false);
-  const [shopOpen, setShopOpen] = useState(false);
-  const [mobileShopOpen, setMobileShopOpen] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [announcementVisible, setAnnouncementVisible] = useState(true);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -103,7 +108,7 @@ export function Header() {
       if (event.key === "Escape") {
         setSearchOpen(false);
         setMenuOpen(false);
-        setShopOpen(false);
+        setCartOpen(false);
       }
     }
 
@@ -111,16 +116,16 @@ export function Header() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  function openSearch() {
-    setShopOpen(false);
-    setMenuOpen(false);
-    setSearchOpen(true);
-  }
-
-  function closeMenus() {
-    setShopOpen(false);
+  function closePanels() {
     setMenuOpen(false);
     setSearchOpen(false);
+    setCartOpen(false);
+  }
+
+  function isActive(href: string) {
+    if (href === "/") return pathname === "/";
+    if (href === "/products") return pathname.startsWith("/products");
+    return pathname === href;
   }
 
   function dismissAnnouncement() {
@@ -154,31 +159,21 @@ export function Header() {
       ) : null}
 
       <header className="site-header">
-        <Link href="/" className="brand" aria-label="KLEID.IN home" onClick={closeMenus}>
+        <Link href="/" className="brand" aria-label="KLEID.IN home" onClick={closePanels}>
           KLEID.IN
         </Link>
 
         <nav className="nav desktop-nav" aria-label="Primary navigation">
-          <Link href="/" onClick={closeMenus}>Home</Link>
-
-          <button
-            type="button"
-            className="shop-nav-trigger"
-            aria-expanded={shopOpen}
-            onClick={() => {
-              setSearchOpen(false);
-              setShopOpen((current) => !current);
-            }}
-            onMouseEnter={() => {
-              setSearchOpen(false);
-              setShopOpen(true);
-            }}
-          >
-            Shop
-            <Chevron open={shopOpen} />
-          </button>
-
-          <Link href="/contact" onClick={closeMenus}>Contact</Link>
+          {nav.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={isActive(item.href) ? "active" : ""}
+              onClick={closePanels}
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
         <div className="header-actions">
@@ -188,24 +183,29 @@ export function Header() {
             aria-label="Search products"
             aria-expanded={searchOpen}
             onClick={() => {
-              setShopOpen(false);
               setMenuOpen(false);
+              setCartOpen(false);
               setSearchOpen((current) => !current);
             }}
           >
             <SearchIcon />
           </button>
 
-          <Link
-            className="cart-link"
-            href="/cart"
-            aria-label={`Cart with ${itemCount} items`}
-            onClick={closeMenus}
+          <button
+            className="cart-link cart-button"
+            type="button"
+            aria-label={`Open cart with ${itemCount} items`}
+            aria-expanded={cartOpen}
+            onClick={() => {
+              setMenuOpen(false);
+              setSearchOpen(false);
+              setCartOpen(true);
+            }}
           >
             <CartIcon />
             <span>Cart</span>
             <b>{itemCount}</b>
-          </Link>
+          </button>
 
           <button
             className="menu-button"
@@ -214,7 +214,7 @@ export function Header() {
             aria-expanded={menuOpen}
             onClick={() => {
               setSearchOpen(false);
-              setShopOpen(false);
+              setCartOpen(false);
               setMenuOpen((current) => !current);
             }}
           >
@@ -223,102 +223,30 @@ export function Header() {
         </div>
       </header>
 
-      {shopOpen ? (
-        <div
-          className={`shop-mega-menu ${announcementVisible ? "" : "announcement-hidden"}`}
-          onMouseLeave={() => setShopOpen(false)}
-        >
-          <div className="shop-mega-inner">
-            <Link href="/products?new=1" className="shop-motion-card" onClick={closeMenus}>
-              <div className="shop-motion-frames" aria-hidden="true">
-                {motionImages.map((src, index) => (
-                  <Image
-                    key={src}
-                    src={src}
-                    alt=""
-                    fill
-                    sizes="420px"
-                    className={`shop-motion-image shop-motion-image-${index + 1}`}
-                  />
-                ))}
-              </div>
-              <div className="shop-motion-overlay" />
-              <div className="shop-motion-copy">
-                <span>Fashion motion / 2026</span>
-                <strong>THE NEW DROP</strong>
-                <small>View collection ↗</small>
-              </div>
-            </Link>
-
-            <div className="shop-mega-links">
-              <div className="shop-mega-title">
-                <span>Shop KLEID.IN</span>
-                <Link href="/products" onClick={closeMenus}>View all ↗</Link>
-              </div>
-
-              <div className="shop-mega-grid">
-                {shopLinks.map((item, index) => (
-                  <Link href={item.href} key={item.label} onClick={closeMenus}>
-                    <span className="shop-link-index">0{index + 1}</span>
-                    <span className="shop-link-copy">
-                      <strong>{item.label}</strong>
-                      <small>{item.note}</small>
-                    </span>
-                    <span>↗</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
       {menuOpen ? (
         <div className={`mobile-menu ${announcementVisible ? "" : "announcement-hidden"}`}>
           <nav aria-label="Mobile navigation">
-            <Link href="/" onClick={closeMenus}>
-              <span>Home</span><span>↗</span>
-            </Link>
-
-            <button
-              type="button"
-              className="mobile-shop-toggle"
-              onClick={() => setMobileShopOpen((current) => !current)}
-            >
-              <span>Shop</span>
-              <Chevron open={mobileShopOpen} />
-            </button>
-
-            {mobileShopOpen ? (
-              <div className="mobile-shop-links">
-                {shopLinks.map((item) => (
-                  <Link href={item.href} key={item.label} onClick={closeMenus}>
-                    <span>{item.label}</span>
-                    <small>{item.note}</small>
-                  </Link>
-                ))}
-              </div>
-            ) : null}
-
-            <Link href="/contact" onClick={closeMenus}>
-              <span>Contact</span><span>↗</span>
-            </Link>
+            {nav.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={isActive(item.href) ? "active" : ""}
+                onClick={closePanels}
+              >
+                <span>{item.label}</span>
+                <span>↗</span>
+              </Link>
+            ))}
           </nav>
 
-          <div className="mobile-motion-card">
-            <div className="mobile-motion-image-wrap">
-              <Image
-                src={motionImages[0]}
-                alt="KLEID.IN fashion preview"
-                fill
-                sizes="100vw"
-                className="mobile-motion-image"
-              />
-            </div>
-            <span>Fashion preview / New drop</span>
-          </div>
-
-          <button type="button" className="mobile-search-trigger" onClick={openSearch}>
+          <button
+            type="button"
+            className="mobile-search-trigger"
+            onClick={() => {
+              setMenuOpen(false);
+              setSearchOpen(true);
+            }}
+          >
             <SearchIcon />
             <span>Search products</span>
           </button>
@@ -340,7 +268,11 @@ export function Header() {
                 placeholder="Search products, categories, colours..."
                 aria-label="Search products"
               />
-              <button type="button" className="search-close" onClick={() => setSearchOpen(false)}>
+              <button
+                type="button"
+                className="search-close"
+                onClick={() => setSearchOpen(false)}
+              >
                 Close
               </button>
             </div>
@@ -354,7 +286,7 @@ export function Header() {
                     <Link
                       key={product.id}
                       href={`/products/${product.slug}`}
-                      onClick={closeMenus}
+                      onClick={closePanels}
                     >
                       <span>
                         <strong>{product.name}</strong>
@@ -369,6 +301,115 @@ export function Header() {
               )}
             </div>
           </div>
+        </div>
+      ) : null}
+
+      {cartOpen ? (
+        <div className="cart-drawer-layer" role="dialog" aria-modal="true" aria-label="Shopping cart">
+          <button
+            type="button"
+            className="cart-drawer-backdrop"
+            aria-label="Close cart"
+            onClick={() => setCartOpen(false)}
+          />
+
+          <aside className="cart-drawer">
+            <div className="cart-drawer-head">
+              <div>
+                <span>Your cart</span>
+                <strong>{itemCount} items</strong>
+              </div>
+              <button type="button" onClick={() => setCartOpen(false)} aria-label="Close cart">
+                ×
+              </button>
+            </div>
+
+            <div className="cart-drawer-body">
+              {items.length === 0 ? (
+                <div className="cart-drawer-empty">
+                  <h2>Your cart is empty.</h2>
+                  <p>Add something from the shop and it will appear here.</p>
+                  <Link href="/products" className="button button-primary" onClick={closePanels}>
+                    Shop products
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  <div className="cart-drawer-items">
+                    {items.map((item) => (
+                      <article className="cart-drawer-item" key={item.key}>
+                        <Link
+                          href={`/products/${item.slug}`}
+                          className="cart-drawer-image"
+                          onClick={closePanels}
+                        >
+                          {item.image ? (
+                            <Image
+                              src={item.image}
+                              alt={item.name}
+                              fill
+                              sizes="92px"
+                            />
+                          ) : null}
+                        </Link>
+
+                        <div className="cart-drawer-item-copy">
+                          <div className="cart-drawer-item-top">
+                            <div>
+                              <Link href={`/products/${item.slug}`} onClick={closePanels}>
+                                {item.name}
+                              </Link>
+                              <small>{item.color} / {item.size}</small>
+                            </div>
+                            <strong>{formatPrice(item.price * item.quantity)}</strong>
+                          </div>
+
+                          <div className="cart-drawer-controls">
+                            <div className="quantity-control">
+                              <button
+                                type="button"
+                                onClick={() => updateQuantity(item.key, item.quantity - 1)}
+                              >
+                                −
+                              </button>
+                              <span>{item.quantity}</span>
+                              <button
+                                type="button"
+                                onClick={() => updateQuantity(item.key, item.quantity + 1)}
+                              >
+                                +
+                              </button>
+                            </div>
+
+                            <button
+                              type="button"
+                              className="remove-button"
+                              onClick={() => removeItem(item.key)}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+
+                  <div className="cart-drawer-footer">
+                    <div className="cart-drawer-subtotal">
+                      <span>Subtotal</span>
+                      <strong>{formatPrice(subtotal)}</strong>
+                    </div>
+                    <Link href="/contact" className="button button-primary" onClick={closePanels}>
+                      Continue on WhatsApp
+                    </Link>
+                    <button type="button" className="clear-cart" onClick={clearCart}>
+                      Clear cart
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </aside>
         </div>
       ) : null}
     </>

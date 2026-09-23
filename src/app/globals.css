@@ -2197,3 +2197,262 @@ main {
     opacity: 1;
   }
 }
+
+
+/* Simplified navigation + active link */
+.desktop-nav a {
+  position: relative;
+  padding: 28px 0 27px;
+}
+
+.desktop-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 20px;
+  height: 1.5px;
+  background: var(--blue);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 180ms ease;
+}
+
+.desktop-nav a.active {
+  color: var(--blue);
+}
+
+.desktop-nav a.active::after {
+  transform: scaleX(1);
+}
+
+.mobile-menu nav a.active {
+  color: var(--blue);
+}
+
+.cart-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Cart drawer section */
+.cart-drawer-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cart-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, .32);
+  cursor: default;
+}
+
+.cart-drawer {
+  width: min(480px, 100%);
+  height: 100%;
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  animation: cartDrawerIn 220ms ease-out;
+}
+
+@keyframes cartDrawerIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.cart-drawer-head {
+  min-height: 78px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.cart-drawer-head > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cart-drawer-head span {
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.cart-drawer-head strong {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.cart-drawer-head > button {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  font-size: 24px;
+  font-weight: 300;
+  cursor: pointer;
+}
+
+.cart-drawer-body {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-drawer-empty {
+  flex: 1;
+  padding: 36px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.cart-drawer-empty h2 {
+  margin: 0;
+  font-size: 30px;
+  letter-spacing: -.03em;
+}
+
+.cart-drawer-empty p {
+  max-width: 320px;
+  margin: 12px 0 24px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.cart-drawer-items {
+  min-height: 0;
+  flex: 1;
+  padding: 0 24px;
+  overflow-y: auto;
+}
+
+.cart-drawer-item {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 16px;
+}
+
+.cart-drawer-image {
+  aspect-ratio: 4 / 5;
+  position: relative;
+  overflow: hidden;
+  background: #eee;
+}
+
+.cart-drawer-image img {
+  object-fit: cover;
+}
+
+.cart-drawer-item-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cart-drawer-item-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.cart-drawer-item-top > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cart-drawer-item-top a {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cart-drawer-item-top small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.cart-drawer-item-top strong {
+  white-space: nowrap;
+  font-size: 11px;
+}
+
+.cart-drawer-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cart-drawer-footer {
+  padding: 22px 24px 24px;
+  border-top: 1px solid var(--line);
+}
+
+.cart-drawer-subtotal {
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 13px;
+}
+
+.cart-drawer-footer .button {
+  width: 100%;
+}
+
+.cart-drawer-footer .clear-cart {
+  display: block;
+  margin: 14px auto 0;
+}
+
+@media (max-width: 640px) {
+  .cart-drawer {
+    width: 100%;
+  }
+
+  .cart-drawer-head {
+    min-height: 68px;
+    padding: 0 16px;
+  }
+
+  .cart-drawer-items {
+    padding: 0 16px;
+  }
+
+  .cart-drawer-footer {
+    padding: 18px 16px 20px;
+  }
+
+  .cart-drawer-item {
+    grid-template-columns: 82px 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-drawer {
+    animation: none;
+  }
+}
