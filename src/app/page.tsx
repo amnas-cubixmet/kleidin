@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
+import { OfferHero } from "@/components/OfferHero";
 import { getActiveProducts } from "@/data/products";
 
 const categories = [
@@ -41,68 +42,7 @@ export default function Home() {
 
   return (
     <div className="reference-home">
-      <section className="ref-shell ref-hero">
-        <div className="ref-hero-copy">
-          <p className="ref-kicker">KLEID.IN / ESSENTIALS</p>
-          <h1>
-            Wear less.
-            <br />
-            Wear better.
-          </h1>
-          <p className="ref-hero-text">
-            Clean unisex essentials built for everyday rotation, easy styling
-            and repeat wear.
-          </p>
-
-          <div className="ref-hero-actions">
-            <Link href="/products" className="ref-pill ref-pill-light">
-              Shop now <span>→</span>
-            </Link>
-            <Link href="/about" className="ref-watch-link">
-              <span className="ref-play">▶</span>
-              Our story
-            </Link>
-          </div>
-
-          <div className="ref-stats">
-            <div>
-              <strong>08+</strong>
-              <span>Core pieces</span>
-            </div>
-            <div>
-              <strong>04</strong>
-              <span>Essential colours</span>
-            </div>
-            <div>
-              <strong>01</strong>
-              <span>Simple wardrobe</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="ref-hero-media">
-          <Image
-            src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1400&q=92"
-            alt="KLEID.IN fashion"
-            fill
-            priority
-            sizes="(max-width: 900px) 100vw, 50vw"
-            className="ref-hero-image"
-          />
-          <div className="ref-hero-glow" />
-          <div className="ref-hand-note">
-            <span>Ideas</span>
-            <span>People</span>
-            <span>A better</span>
-            <span>everyday</span>
-          </div>
-        </div>
-
-        <div className="ref-scroll-note">
-          <span>↓</span>
-          <small>Scroll down</small>
-        </div>
-      </section>
+      <OfferHero />
 
       <section className="ref-shell ref-ideas">
         <div className="ref-section-heading">
