@@ -202,9 +202,11 @@ export function Header() {
               setCartOpen(true);
             }}
           >
-            <CartIcon />
-            <span>Cart</span>
-            <b>{itemCount}</b>
+            <span className="cart-icon-wrap">
+              <CartIcon />
+              <b className="cart-count-badge">{itemCount}</b>
+            </span>
+            <span className="cart-label">Cart</span>
           </button>
 
           <button
