@@ -265,6 +265,28 @@ export function AdminPanel() {
     setBusy(false);
   }
 
+  async function uploadOfferImage(file: File) {
+    if (!supabase) return;
+
+    setBusy(true);
+    const extension = file.name.split(".").pop() || "jpg";
+    const path = `offers/${Date.now()}-${Math.random().toString(36).slice(2)}.${extension}`;
+
+    const { error } = await supabase.storage
+      .from("products")
+      .upload(path, file, { upsert: false });
+
+    if (error) {
+      setBusy(false);
+      setMessage(error.message);
+      return;
+    }
+
+    const { data } = supabase.storage.from("products").getPublicUrl(path);
+    setOfferDraft((current) => ({ ...current, image_url: data.publicUrl }));
+    setBusy(false);
+  }
+
   async function saveOffer(event: FormEvent) {
     event.preventDefault();
     if (!supabase) return;
@@ -720,6 +742,23 @@ export function AdminPanel() {
               <label>
                 Image URL
                 <input value={offerDraft.image_url} onChange={(e) => setOfferDraft((o) => ({ ...o, image_url: e.target.value }))} />
+              </label>
+
+              <label className="admin-upload admin-offer-upload">
+                Offer image
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) uploadOfferImage(file);
+                  }}
+                />
+                {offerDraft.image_url ? (
+                  <Image src={offerDraft.image_url} alt="" width={260} height={150} />
+                ) : (
+                  <span>Choose offer image</span>
+                )}
               </label>
 
               <button className="admin-primary-button" disabled={busy} type="submit">
