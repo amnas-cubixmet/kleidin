@@ -47,3 +47,10 @@ The public storefront uses Supabase data only. If Supabase is not configured or 
 - WhatsApp checkout builds an order message from the cart.
 - Product, offer, image, stock and store-setting data comes from Supabase only.
 - Images are stored in the public Supabase Storage bucket `products`.
+
+
+## Realistic demo content
+
+For staging or UI testing, run `supabase/demo-data.sql` after the main schema. This inserts realistic sample products and offers into Supabase. The application still reads Supabase only; there is no hardcoded storefront fallback.
+
+When real catalog data is ready, delete or replace these rows from the admin panel or Supabase.
