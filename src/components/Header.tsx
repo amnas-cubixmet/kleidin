@@ -318,6 +318,48 @@ export function Header({
         </div>
       ) : null}
 
+
+      <nav className="mobile-bottom-nav" aria-label="Quick navigation">
+        <Link href="/" className={isActive("/") ? "active" : ""} onClick={closePanels}>
+          <span className="mobile-nav-icon">⌂</span>
+          <small>Home</small>
+        </Link>
+
+        <Link href="/products" className={isActive("/products") ? "active" : ""} onClick={closePanels}>
+          <span className="mobile-nav-icon">▦</span>
+          <small>Shop</small>
+        </Link>
+
+        <button
+          type="button"
+          className={searchOpen ? "active" : ""}
+          onClick={() => {
+            setMenuOpen(false);
+            setCartOpen(false);
+            setSearchOpen(true);
+          }}
+        >
+          <span className="mobile-nav-icon"><SearchIcon /></span>
+          <small>Search</small>
+        </button>
+
+        <button
+          type="button"
+          className={cartOpen ? "active" : ""}
+          onClick={() => {
+            setMenuOpen(false);
+            setSearchOpen(false);
+            setCartOpen(true);
+          }}
+        >
+          <span className="mobile-nav-icon mobile-nav-cart">
+            <CartIcon />
+            {itemCount ? <b>{itemCount}</b> : null}
+          </span>
+          <small>Cart</small>
+        </button>
+      </nav>
+
       {cartOpen ? (
         <div className="cart-drawer-layer" role="dialog" aria-modal="true" aria-label="Shopping cart">
           <button

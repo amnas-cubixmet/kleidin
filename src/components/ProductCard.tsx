@@ -5,6 +5,8 @@ import { formatPrice } from "@/lib/format";
 import { AddToCartButton } from "@/components/AddToCartButton";
 
 export function ProductCard({ product }: { product: Product }) {
+  const soldOut = product.status === "sold-out" || product.stock <= 0;
+
   return (
     <article className="product-card">
       <Link href={`/products/${product.slug}`} className="product-visual">
@@ -16,10 +18,12 @@ export function ProductCard({ product }: { product: Product }) {
             sizes="(max-width: 600px) 50vw, (max-width: 980px) 50vw, 25vw"
             className="product-image"
           />
-        ) : null}
+        ) : (
+          <span className="product-image-empty">No image</span>
+        )}
 
         <span className="product-tag">
-          {product.featured ? "New" : product.category}
+          {soldOut ? "Sold out" : product.featured ? "New" : product.category}
         </span>
       </Link>
 
@@ -28,12 +32,18 @@ export function ProductCard({ product }: { product: Product }) {
           <Link href={`/products/${product.slug}`} className="product-name">
             {product.name}
           </Link>
-          <span>{formatPrice(product.price)}</span>
+
+          <div className="product-card-price">
+            <strong>{formatPrice(product.price)}</strong>
+            {product.compareAtPrice ? (
+              <del>{formatPrice(product.compareAtPrice)}</del>
+            ) : null}
+          </div>
         </div>
 
         <div className="product-card-bottomline">
-          <span>{product.colors.join(" / ")}</span>
-          <span>{product.sizes.join(" · ")}</span>
+          <span>{product.colors.join(" / ") || "Colour not set"}</span>
+          <span>{product.sizes.join(" · ") || "Size not set"}</span>
         </div>
 
         <AddToCartButton product={product} />
