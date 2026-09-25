@@ -5,7 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/context/CartContext";
-import { products } from "@/data/products";
+import { getCartWhatsappUrl } from "@/lib/format";
+import type { Product } from "@/types/product";
+import type { StoreSettings } from "@/types/commerce";
 
 const nav = [
   { href: "/", label: "Home" },
@@ -50,7 +52,13 @@ function formatPrice(value: number) {
   }).format(value);
 }
 
-export function Header() {
+export function Header({
+  products,
+  settings,
+}: {
+  products: Product[];
+  settings: StoreSettings;
+}) {
   const pathname = usePathname();
   const {
     items,
@@ -71,7 +79,7 @@ export function Header() {
   const results = useMemo(() => {
     const value = query.trim().toLowerCase();
 
-    if (!value) return products.slice(0, 5);
+    if (!value) return products.slice(0, 6);
 
     return products
       .filter((product) =>
@@ -85,22 +93,18 @@ export function Header() {
           .toLowerCase()
           .includes(value),
       )
-      .slice(0, 6);
-  }, [query]);
+      .slice(0, 8);
+  }, [query, products]);
 
   useEffect(() => {
     try {
       const dismissed = window.localStorage.getItem("kleidin-announcement-dismissed");
       if (dismissed === "true") setAnnouncementVisible(false);
-    } catch {
-      // Keep announcement visible when storage is unavailable.
-    }
+    } catch {}
   }, []);
 
   useEffect(() => {
-    if (searchOpen) {
-      window.setTimeout(() => searchRef.current?.focus(), 50);
-    }
+    if (searchOpen) window.setTimeout(() => searchRef.current?.focus(), 50);
   }, [searchOpen]);
 
   useEffect(() => {
@@ -130,22 +134,35 @@ export function Header() {
 
   function dismissAnnouncement() {
     setAnnouncementVisible(false);
-
     try {
       window.localStorage.setItem("kleidin-announcement-dismissed", "true");
-    } catch {
-      // Still close for the current page.
-    }
+    } catch {}
   }
+
+  const announcementHref = settings.whatsappNumber
+    ? `https://wa.me/${settings.whatsappNumber}`
+    : "/contact";
+
+  const checkoutUrl = getCartWhatsappUrl(
+    items,
+    subtotal,
+    settings.whatsappNumber,
+  );
 
   return (
     <>
       {announcementVisible ? (
         <div className="announcement">
           <div className="announcement-copy">
-            <span>New Drop Available</span>
+            <span>{settings.announcementText}</span>
             <span className="announcement-dot">•</span>
-            <Link href="/contact">Order on WhatsApp</Link>
+            <a
+              href={announcementHref}
+              target={settings.whatsappNumber ? "_blank" : undefined}
+              rel={settings.whatsappNumber ? "noreferrer" : undefined}
+            >
+              {settings.announcementLinkLabel}
+            </a>
           </div>
           <button
             type="button"
@@ -270,26 +287,17 @@ export function Header() {
                 placeholder="Search products, categories, colours..."
                 aria-label="Search products"
               />
-              <button
-                type="button"
-                className="search-close"
-                onClick={() => setSearchOpen(false)}
-              >
+              <button type="button" className="search-close" onClick={() => setSearchOpen(false)}>
                 Close
               </button>
             </div>
 
             <div className="search-results">
               <p>{query ? "Search results" : "Popular products"}</p>
-
               {results.length ? (
                 <div className="search-result-list">
                   {results.map((product) => (
-                    <Link
-                      key={product.id}
-                      href={`/products/${product.slug}`}
-                      onClick={closePanels}
-                    >
+                    <Link key={product.id} href={`/products/${product.slug}`} onClick={closePanels}>
                       <span>
                         <strong>{product.name}</strong>
                         <small>{product.category} · {product.colors.join(" / ")}</small>
@@ -321,9 +329,7 @@ export function Header() {
                 <span>Your cart</span>
                 <strong>{itemCount} items</strong>
               </div>
-              <button type="button" onClick={() => setCartOpen(false)} aria-label="Close cart">
-                ×
-              </button>
+              <button type="button" onClick={() => setCartOpen(false)} aria-label="Close cart">×</button>
             </div>
 
             <div className="cart-drawer-body">
@@ -340,19 +346,8 @@ export function Header() {
                   <div className="cart-drawer-items">
                     {items.map((item) => (
                       <article className="cart-drawer-item" key={item.key}>
-                        <Link
-                          href={`/products/${item.slug}`}
-                          className="cart-drawer-image"
-                          onClick={closePanels}
-                        >
-                          {item.image ? (
-                            <Image
-                              src={item.image}
-                              alt={item.name}
-                              fill
-                              sizes="92px"
-                            />
-                          ) : null}
+                        <Link href={`/products/${item.slug}`} className="cart-drawer-image" onClick={closePanels}>
+                          {item.image ? <Image src={item.image} alt={item.name} fill sizes="92px" /> : null}
                         </Link>
 
                         <div className="cart-drawer-item-copy">
@@ -368,26 +363,11 @@ export function Header() {
 
                           <div className="cart-drawer-controls">
                             <div className="quantity-control">
-                              <button
-                                type="button"
-                                onClick={() => updateQuantity(item.key, item.quantity - 1)}
-                              >
-                                −
-                              </button>
+                              <button type="button" onClick={() => updateQuantity(item.key, item.quantity - 1)}>−</button>
                               <span>{item.quantity}</span>
-                              <button
-                                type="button"
-                                onClick={() => updateQuantity(item.key, item.quantity + 1)}
-                              >
-                                +
-                              </button>
+                              <button type="button" onClick={() => updateQuantity(item.key, item.quantity + 1)}>+</button>
                             </div>
-
-                            <button
-                              type="button"
-                              className="remove-button"
-                              onClick={() => removeItem(item.key)}
-                            >
+                            <button type="button" className="remove-button" onClick={() => removeItem(item.key)}>
                               Remove
                             </button>
                           </div>
@@ -401,9 +381,23 @@ export function Header() {
                       <span>Subtotal</span>
                       <strong>{formatPrice(subtotal)}</strong>
                     </div>
-                    <Link href="/contact" className="button button-primary" onClick={closePanels}>
-                      Continue on WhatsApp
-                    </Link>
+
+                    {checkoutUrl !== "#" ? (
+                      <a
+                        href={checkoutUrl}
+                        className="button button-primary"
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={closePanels}
+                      >
+                        Order on WhatsApp
+                      </a>
+                    ) : (
+                      <Link href="/contact" className="button button-primary" onClick={closePanels}>
+                        Add WhatsApp number
+                      </Link>
+                    )}
+
                     <button type="button" className="clear-cart" onClick={clearCart}>
                       Clear cart
                     </button>

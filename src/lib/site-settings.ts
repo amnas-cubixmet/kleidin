@@ -32,9 +32,9 @@ export async function getStoreSettings(): Promise<StoreSettings> {
   };
 }
 
-export async function getActiveOffer(): Promise<Offer | null> {
+export async function getActiveOffers(): Promise<Offer[]> {
   const supabase = getServerSupabase();
-  if (!supabase) return null;
+  if (!supabase) return [];
 
   const now = new Date().toISOString();
 
@@ -45,23 +45,22 @@ export async function getActiveOffer(): Promise<Offer | null> {
     .or(`starts_at.is.null,starts_at.lte.${now}`)
     .or(`ends_at.is.null,ends_at.gte.${now}`)
     .order("priority", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .limit(5);
 
-  if (error || !data) return null;
+  if (error || !data?.length) return [];
 
-  return {
-    id: data.id,
-    title: data.title,
-    badge: data.badge,
-    discountText: data.discount_text,
-    description: data.description,
-    ctaLabel: data.cta_label,
-    ctaHref: data.cta_href,
-    imageUrl: data.image_url,
-    startsAt: data.starts_at,
-    endsAt: data.ends_at,
-    enabled: data.enabled,
-    priority: data.priority,
-  };
+  return data.map((row) => ({
+    id: row.id,
+    title: row.title,
+    badge: row.badge,
+    discountText: row.discount_text,
+    description: row.description,
+    ctaLabel: row.cta_label,
+    ctaHref: row.cta_href,
+    imageUrl: row.image_url,
+    startsAt: row.starts_at,
+    endsAt: row.ends_at,
+    enabled: row.enabled,
+    priority: row.priority,
+  }));
 }

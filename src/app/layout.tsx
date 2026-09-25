@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
+import { SiteChrome } from "@/components/SiteChrome";
+import { getCatalogProducts } from "@/lib/catalog";
+import { getStoreSettings } from "@/lib/site-settings";
 import { store } from "@/config/store";
 
 const inter = Inter({
@@ -20,18 +21,23 @@ export const metadata: Metadata = {
   description: store.description,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [products, settings] = await Promise.all([
+    getCatalogProducts(),
+    getStoreSettings(),
+  ]);
+
   return (
     <html lang="en">
       <body className={inter.variable}>
         <CartProvider>
-          <Header />
-          <main>{children}</main>
-          <Footer />
+          <SiteChrome products={products} settings={settings}>
+            {children}
+          </SiteChrome>
         </CartProvider>
       </body>
     </html>

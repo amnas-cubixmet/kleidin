@@ -3,79 +3,50 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductActions } from "@/components/ProductActions";
-import { getProductBySlug, products } from "@/data/products";
+import { getCatalogProductBySlug } from "@/lib/catalog";
+import { getStoreSettings } from "@/lib/site-settings";
 import { formatPrice, getWhatsappUrl } from "@/lib/format";
-import { store } from "@/config/store";
 
-type ProductPageProps = {
-  params: Promise<{ slug: string }>;
-};
+type ProductPageProps = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }));
-}
-
-export async function generateMetadata({
-  params,
-}: ProductPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
-
+  const product = await getCatalogProductBySlug(slug);
   if (!product) return { title: "Product not found" };
-
-  return {
-    title: product.name,
-    description: product.description,
-  };
+  return { title: product.name, description: product.description };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const [product, settings] = await Promise.all([
+    getCatalogProductBySlug(slug),
+    getStoreSettings(),
+  ]);
 
   if (!product || product.status === "draft") notFound();
 
-  const whatsappUrl = store.whatsappNumber
-    ? getWhatsappUrl(product.name)
+  const whatsappUrl = settings.whatsappNumber
+    ? getWhatsappUrl(product.name, settings.whatsappNumber)
     : undefined;
 
   return (
     <section className="product-page">
       <div className="product-detail-visual">
-        {product.image ? (
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            priority
-            sizes="(max-width: 980px) 100vw, 56vw"
-            className="product-detail-image"
-          />
-        ) : null}
+        {product.image ? <Image src={product.image} alt={product.name} fill priority sizes="(max-width: 980px) 100vw, 56vw" className="product-detail-image" /> : null}
       </div>
 
       <div className="product-info">
-        <Link href="/products" className="back-link">
-          ← Back to shop
-        </Link>
-
+        <Link href="/products" className="back-link">← Back to shop</Link>
         <p className="eyebrow">{product.category} / {product.sku}</p>
         <h1>{product.name}</h1>
 
         <div className="product-detail-price">
           <strong>{formatPrice(product.price)}</strong>
-          {product.compareAtPrice ? (
-            <del>{formatPrice(product.compareAtPrice)}</del>
-          ) : null}
+          {product.compareAtPrice ? <del>{formatPrice(product.compareAtPrice)}</del> : null}
         </div>
 
         <p className="product-description">{product.description}</p>
-
-        <div className="highlight-meta">
-          <span>Colour</span>
-          <strong>{product.colors.join(" / ")}</strong>
-        </div>
-
+        <div className="highlight-meta"><span>Colour</span><strong>{product.colors.join(" / ")}</strong></div>
         <ProductActions product={product} whatsappUrl={whatsappUrl} />
 
         <div className="product-notes">
