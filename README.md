@@ -1,56 +1,34 @@
 # KLEID.IN
 
-Production-oriented Next.js fashion storefront with a mobile-first UI, persistent cart, WhatsApp ordering, Supabase database integration, Supabase Storage product images, timed offers, and a protected admin panel.
+KLEID.IN is currently running in **local hardcoded data mode**.
 
-## Local development
+## Run locally
 
 ```bash
 npm install
-cp .env.example .env.local
 npm run dev
 ```
 
 Storefront: `http://localhost:3000`
 
-Admin: `http://localhost:3000/admin`
+Admin status page: `http://localhost:3000/admin`
 
-## Supabase setup
+## Current data source
 
-1. Create a Supabase project.
-2. Run `supabase/schema.sql` in the SQL Editor.
-3. Put the project URL and anon key in `.env.local`.
-4. Create the admin user in Supabase Authentication.
-5. Copy that user's UUID and run:
+No database is required right now.
 
-```sql
-insert into public.profiles (user_id, is_admin)
-values ('YOUR_AUTH_USER_UUID', true)
-on conflict (user_id) do update set is_admin = true;
+Products:
+
+```
+src/data/products.ts
 ```
 
-The admin panel can then manage products, product images, transparent try-on garment assets, multiple timed offers, WhatsApp number, announcement text, Instagram URL and support email.
+Offers, announcement and WhatsApp settings:
 
-## Environment
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-NEXT_PUBLIC_WHATSAPP_NUMBER=
+```
+src/data/store.ts
 ```
 
-The public storefront uses Supabase data only. If Supabase is not configured or the catalog is empty, no demo products or fake offers are shown.
+The cart is stored in browser localStorage. WhatsApp checkout will work after a full WhatsApp number with country code is added to `localStoreSettings.whatsappNumber`.
 
-## Commerce flow
-
-- Cart persists in browser localStorage.
-- Cart opens as a drawer, not a separate page.
-- WhatsApp checkout builds an order message from the cart.
-- Product, offer, image, stock and store-setting data comes from Supabase only.
-- Images are stored in the public Supabase Storage bucket `products`.
-
-
-## Realistic demo content
-
-For staging or UI testing, run `supabase/demo-data.sql` after the main schema. This inserts realistic sample products and offers into Supabase. The application still reads Supabase only; there is no hardcoded storefront fallback.
-
-When real catalog data is ready, delete or replace these rows from the admin panel or Supabase.
+Supabase/database integration can be re-enabled later without changing the storefront UI.
