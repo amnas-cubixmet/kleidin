@@ -1,4 +1,3 @@
-import { products as fallbackProducts } from "@/data/products";
 import { getServerSupabase } from "@/lib/supabase/server";
 import type { DbProduct, Product } from "@/types/product";
 
@@ -25,12 +24,7 @@ function mapProduct(row: DbProduct): Product {
 
 export async function getCatalogProducts(): Promise<Product[]> {
   const supabase = getServerSupabase();
-
-  if (!supabase) {
-    return [...fallbackProducts].sort(
-      (a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999),
-    );
-  }
+  if (!supabase) return [];
 
   const { data, error } = await supabase
     .from("products")
@@ -39,21 +33,14 @@ export async function getCatalogProducts(): Promise<Product[]> {
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: false });
 
-  if (error || !data?.length) {
-    return [...fallbackProducts].sort(
-      (a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999),
-    );
-  }
+  if (error || !data) return [];
 
   return (data as DbProduct[]).map(mapProduct);
 }
 
 export async function getCatalogProductBySlug(slug: string) {
   const supabase = getServerSupabase();
-
-  if (!supabase) {
-    return fallbackProducts.find((product) => product.slug === slug);
-  }
+  if (!supabase) return undefined;
 
   const { data, error } = await supabase
     .from("products")
@@ -62,9 +49,7 @@ export async function getCatalogProductBySlug(slug: string) {
     .neq("status", "draft")
     .maybeSingle();
 
-  if (error || !data) {
-    return fallbackProducts.find((product) => product.slug === slug);
-  }
+  if (error || !data) return undefined;
 
   return mapProduct(data as DbProduct);
 }

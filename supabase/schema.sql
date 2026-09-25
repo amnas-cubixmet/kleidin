@@ -64,8 +64,8 @@ create table if not exists public.offers (
 create table if not exists public.site_settings (
   id integer primary key default 1 check (id = 1),
   whatsapp_number text not null default '',
-  announcement_text text not null default 'New Drop Available',
-  announcement_link_label text not null default 'Order on WhatsApp',
+  announcement_text text not null default '',
+  announcement_link_label text not null default '',
   instagram_url text not null default '',
   support_email text not null default '',
   updated_at timestamptz not null default now()

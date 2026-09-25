@@ -4244,3 +4244,43 @@ main {
     flex: 0 0 auto;
   }
 }
+
+
+/* Real-data-only storefront empty state */
+.real-data-empty {
+  min-height: 520px;
+  padding: 80px 54px;
+  border-radius: 26px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.real-data-empty h1 {
+  max-width: 760px;
+  margin: 0;
+  font-size: clamp(48px, 7vw, 94px);
+  line-height: .9;
+  letter-spacing: -.06em;
+}
+
+.real-data-empty > p:last-child {
+  max-width: 480px;
+  margin: 24px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+  .real-data-empty {
+    min-height: 420px;
+    padding: 42px 20px;
+    border-radius: 18px;
+  }
+
+  .real-data-empty h1 {
+    font-size: 48px;
+  }
+}

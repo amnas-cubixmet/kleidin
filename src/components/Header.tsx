@@ -151,18 +151,22 @@ export function Header({
 
   return (
     <>
-      {announcementVisible ? (
+      {announcementVisible && settings.announcementText.trim() ? (
         <div className="announcement">
           <div className="announcement-copy">
             <span>{settings.announcementText}</span>
-            <span className="announcement-dot">•</span>
-            <a
-              href={announcementHref}
-              target={settings.whatsappNumber ? "_blank" : undefined}
-              rel={settings.whatsappNumber ? "noreferrer" : undefined}
-            >
-              {settings.announcementLinkLabel}
-            </a>
+            {settings.announcementLinkLabel.trim() ? (
+              <>
+                <span className="announcement-dot">•</span>
+                <a
+                  href={announcementHref}
+                  target={settings.whatsappNumber ? "_blank" : undefined}
+                  rel={settings.whatsappNumber ? "noreferrer" : undefined}
+                >
+                  {settings.announcementLinkLabel}
+                </a>
+              </>
+            ) : null}
           </div>
           <button
             type="button"

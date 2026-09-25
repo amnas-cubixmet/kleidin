@@ -1,17 +1,17 @@
 import { getServerSupabase } from "@/lib/supabase/server";
 import type { Offer, StoreSettings } from "@/types/commerce";
 
-const fallbackSettings: StoreSettings = {
-  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "",
-  announcementText: "New Drop Available",
-  announcementLinkLabel: "Order on WhatsApp",
+const emptySettings: StoreSettings = {
+  whatsappNumber: "",
+  announcementText: "",
+  announcementLinkLabel: "",
   instagramUrl: "",
   supportEmail: "",
 };
 
 export async function getStoreSettings(): Promise<StoreSettings> {
   const supabase = getServerSupabase();
-  if (!supabase) return fallbackSettings;
+  if (!supabase) return emptySettings;
 
   const { data, error } = await supabase
     .from("site_settings")
@@ -19,14 +19,12 @@ export async function getStoreSettings(): Promise<StoreSettings> {
     .eq("id", 1)
     .maybeSingle();
 
-  if (error || !data) return fallbackSettings;
+  if (error || !data) return emptySettings;
 
   return {
-    whatsappNumber: data.whatsapp_number ?? fallbackSettings.whatsappNumber,
-    announcementText:
-      data.announcement_text ?? fallbackSettings.announcementText,
-    announcementLinkLabel:
-      data.announcement_link_label ?? fallbackSettings.announcementLinkLabel,
+    whatsappNumber: data.whatsapp_number ?? "",
+    announcementText: data.announcement_text ?? "",
+    announcementLinkLabel: data.announcement_link_label ?? "",
     instagramUrl: data.instagram_url ?? "",
     supportEmail: data.support_email ?? "",
   };
@@ -47,7 +45,7 @@ export async function getActiveOffers(): Promise<Offer[]> {
     .order("priority", { ascending: false })
     .limit(5);
 
-  if (error || !data?.length) return [];
+  if (error || !data) return [];
 
   return data.map((row) => ({
     id: row.id,

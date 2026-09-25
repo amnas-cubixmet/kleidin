@@ -38,12 +38,12 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 NEXT_PUBLIC_WHATSAPP_NUMBER=
 ```
 
-If Supabase is not configured, the public storefront falls back to the demo catalog in `src/data/products.ts`.
+The public storefront uses Supabase data only. If Supabase is not configured or the catalog is empty, no demo products or fake offers are shown.
 
 ## Commerce flow
 
 - Cart persists in browser localStorage.
 - Cart opens as a drawer, not a separate page.
 - WhatsApp checkout builds an order message from the cart.
-- Product data comes from Supabase when configured.
+- Product, offer, image, stock and store-setting data comes from Supabase only.
 - Images are stored in the public Supabase Storage bucket `products`.
