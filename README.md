@@ -1,42 +1,49 @@
 # KLEID.IN
 
-Minimal fashion storefront built with Next.js App Router and TypeScript.
+Production-oriented Next.js fashion storefront with a mobile-first UI, persistent cart, WhatsApp ordering, Supabase database integration, Supabase Storage product images, timed offers, and a protected admin panel.
 
-## Run locally
+## Local development
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Storefront: `http://localhost:3000`
 
-## Product management
+Admin: `http://localhost:3000/admin`
 
-All product records currently live in:
+## Supabase setup
 
+1. Create a Supabase project.
+2. Run `supabase/schema.sql` in the SQL Editor.
+3. Put the project URL and anon key in `.env.local`.
+4. Create the admin user in Supabase Authentication.
+5. Copy that user's UUID and run:
+
+```sql
+insert into public.profiles (user_id, is_admin)
+values ('YOUR_AUTH_USER_UUID', true)
+on conflict (user_id) do update set is_admin = true;
 ```
-src/data/products.ts
-```
 
-Each product supports ID, SKU, name, slug, category, price, compare-at price, description, sizes, colours, stock, featured state, and status.
+The admin panel can then manage products, product images, transparent try-on garment assets, multiple timed offers, WhatsApp number, announcement text, Instagram URL and support email.
 
-Product status can be `active`, `draft`, or `sold-out`.
-
-## WhatsApp orders
-
-Copy `.env.example` to `.env.local` and set your number with country code only:
+## Environment
 
 ```env
-NEXT_PUBLIC_WHATSAPP_NUMBER=91XXXXXXXXXX
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_WHATSAPP_NUMBER=
 ```
 
-No payment gateway is configured.
+If Supabase is not configured, the public storefront falls back to the demo catalog in `src/data/products.ts`.
 
-## Routes
+## Commerce flow
 
-- `/` — Home
-- `/products` — Product listing
-- `/products/[slug]` — Product details
-- `/about` — About
-- `/contact` — Contact / WhatsApp
+- Cart persists in browser localStorage.
+- Cart opens as a drawer, not a separate page.
+- WhatsApp checkout builds an order message from the cart.
+- Product data comes from Supabase when configured.
+- Images are stored in the public Supabase Storage bucket `products`.
