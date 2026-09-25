@@ -4293,7 +4293,7 @@ main {
   height: 72px;
   margin: 12px auto;
   padding: 0 22px;
-  border: 1px solid rgba(18, 24, 34, .06);
+  border: none;
   border-radius: 18px;
   position: relative;
   z-index: 70;
