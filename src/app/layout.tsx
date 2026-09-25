@@ -35,7 +35,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={inter.variable}>
+      <body className={`${inter.variable} min-h-screen bg-white text-kleid-ink antialiased`}>
         <CartProvider>
           <SiteChrome products={products} settings={settings}>
             {children}

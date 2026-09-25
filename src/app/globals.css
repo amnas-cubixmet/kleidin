@@ -1,3 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), Arial, Helvetica, sans-serif;
+
+  --color-kleid-blue: #001cac;
+  --color-kleid-blue-dark: #00147d;
+  --color-kleid-blue-soft: #eef2ff;
+  --color-kleid-ink: #111111;
+  --color-kleid-muted: #707070;
+  --color-kleid-line: #e7e7e7;
+  --color-kleid-cream: #f4f1e9;
+  --color-kleid-surface: #f7f7f7;
+  --color-kleid-navy: #061224;
+
+  --radius-kleid-sm: 12px;
+  --radius-kleid-md: 18px;
+  --radius-kleid-lg: 24px;
+
+  --shadow-kleid-soft: 0 10px 34px rgba(16, 22, 32, 0.05);
+  --shadow-kleid-card: 0 18px 52px rgba(13, 22, 36, 0.10);
+
+  --breakpoint-xs: 30rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-kleid-ink font-sans antialiased;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+}
+
 :root {
   --blue: #001cac;
   --blue-dark: #00147d;
