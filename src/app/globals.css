@@ -5217,6 +5217,9 @@ main {
 @media (max-width: 980px) {
   .site-header {
     isolation: isolate;
+    border: 0 !important;
+    outline: 0;
+    box-shadow: none;
     transition:
       background-color 220ms ease,
       box-shadow 220ms ease,
