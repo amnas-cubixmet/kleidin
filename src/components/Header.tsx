@@ -74,7 +74,11 @@ export function Header({
   const [cartOpen, setCartOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [announcementVisible, setAnnouncementVisible] = useState(true);
+<<<<<<< HEAD
   const [scrolled, setScrolled] = useState(false);
+=======
+  const [mobileCollapsed, setMobileCollapsed] = useState(false);
+>>>>>>> 1f2ea2562d3a18692523715f5c42f7700e260d77
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -133,6 +137,38 @@ export function Header({
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia("(max-width: 980px)");
+    let frame = 0;
+
+    const syncHeaderState = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        setMobileCollapsed(mobileQuery.matches && window.scrollY > 8);
+      });
+    };
+
+    syncHeaderState();
+    window.addEventListener("scroll", syncHeaderState, { passive: true });
+
+    if ("addEventListener" in mobileQuery) {
+      mobileQuery.addEventListener("change", syncHeaderState);
+    } else {
+      mobileQuery.addListener(syncHeaderState);
+    }
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", syncHeaderState);
+
+      if ("removeEventListener" in mobileQuery) {
+        mobileQuery.removeEventListener("change", syncHeaderState);
+      } else {
+        mobileQuery.removeListener(syncHeaderState);
+      }
+    };
   }, []);
 
   function closePanels() {
@@ -194,7 +230,11 @@ export function Header({
         </div>
       ) : null}
 
+<<<<<<< HEAD
       <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
+=======
+      <header className={`site-header ${mobileCollapsed ? "mobile-collapsed" : ""}`}>
+>>>>>>> 1f2ea2562d3a18692523715f5c42f7700e260d77
         <Link href="/" className="brand" aria-label="KLEID.IN home" onClick={closePanels}>
           KLEID.IN
         </Link>
@@ -262,7 +302,9 @@ export function Header({
       </header>
 
       {menuOpen ? (
-        <div className={`mobile-menu ${announcementVisible ? "" : "announcement-hidden"}`}>
+        <div
+          className={`mobile-menu ${announcementVisible ? "" : "announcement-hidden"} ${mobileCollapsed ? "mobile-menu-floating" : ""}`}
+        >
           <nav aria-label="Mobile navigation">
             {nav.map((item) => (
               <Link
