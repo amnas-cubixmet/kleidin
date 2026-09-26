@@ -134,12 +134,22 @@ export function Header({
 
     syncHeaderState();
     window.addEventListener("scroll", syncHeaderState, { passive: true });
-    mobileQuery.addEventListener("change", syncHeaderState);
+
+    if ("addEventListener" in mobileQuery) {
+      mobileQuery.addEventListener("change", syncHeaderState);
+    } else {
+      mobileQuery.addListener(syncHeaderState);
+    }
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener("scroll", syncHeaderState);
-      mobileQuery.removeEventListener("change", syncHeaderState);
+
+      if ("removeEventListener" in mobileQuery) {
+        mobileQuery.removeEventListener("change", syncHeaderState);
+      } else {
+        mobileQuery.removeListener(syncHeaderState);
+      }
     };
   }, []);
 
