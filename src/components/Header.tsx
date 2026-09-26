@@ -74,11 +74,8 @@ export function Header({
   const [cartOpen, setCartOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [announcementVisible, setAnnouncementVisible] = useState(true);
-<<<<<<< HEAD
   const [scrolled, setScrolled] = useState(false);
-=======
   const [mobileCollapsed, setMobileCollapsed] = useState(false);
->>>>>>> 1f2ea2562d3a18692523715f5c42f7700e260d77
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -153,20 +150,20 @@ export function Header({
     syncHeaderState();
     window.addEventListener("scroll", syncHeaderState, { passive: true });
 
-    if ("addEventListener" in mobileQuery) {
+    if (mobileQuery.addEventListener) {
       mobileQuery.addEventListener("change", syncHeaderState);
     } else {
-      mobileQuery.addListener(syncHeaderState);
+      (mobileQuery as MediaQueryList).addListener(syncHeaderState);
     }
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener("scroll", syncHeaderState);
 
-      if ("removeEventListener" in mobileQuery) {
+      if (mobileQuery.removeEventListener) {
         mobileQuery.removeEventListener("change", syncHeaderState);
       } else {
-        mobileQuery.removeListener(syncHeaderState);
+        (mobileQuery as MediaQueryList).removeListener(syncHeaderState);
       }
     };
   }, []);
@@ -230,11 +227,7 @@ export function Header({
         </div>
       ) : null}
 
-<<<<<<< HEAD
       <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
-=======
-      <header className={`site-header ${mobileCollapsed ? "mobile-collapsed" : ""}`}>
->>>>>>> 1f2ea2562d3a18692523715f5c42f7700e260d77
         <Link href="/" className="brand" aria-label="KLEID.IN home" onClick={closePanels}>
           KLEID.IN
         </Link>
