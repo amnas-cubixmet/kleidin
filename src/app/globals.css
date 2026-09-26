@@ -5296,6 +5296,7 @@ main {
     left: 10px;
     right: 10px;
     z-index: 121;
+    max-height: calc(100vh - 82px - env(safe-area-inset-top));
     max-height: calc(100dvh - 82px - env(safe-area-inset-top));
     overflow-y: auto;
     border: 0;
@@ -5340,6 +5341,16 @@ main {
   .site-header .menu-icon i {
     width: 22px;
     height: 1.5px;
+  }
+
+  .site-header .menu-icon.open i:first-child {
+    top: 3px;
+    transform: none;
+  }
+
+  .site-header .menu-icon.open i:last-child {
+    top: 10px;
+    transform: none;
   }
 
   .site-header.mobile-collapsed .menu-button {
