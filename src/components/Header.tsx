@@ -74,7 +74,22 @@ export function Header({
   const [cartOpen, setCartOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [announcementVisible, setAnnouncementVisible] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    function handleScroll() {
+      if (window.scrollY > 15) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const results = useMemo(() => {
     const value = query.trim().toLowerCase();
@@ -179,7 +194,7 @@ export function Header({
         </div>
       ) : null}
 
-      <header className="site-header">
+      <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
         <Link href="/" className="brand" aria-label="KLEID.IN home" onClick={closePanels}>
           KLEID.IN
         </Link>
@@ -225,7 +240,7 @@ export function Header({
           >
             <span className="cart-icon-wrap">
               <CartIcon />
-              <b className="cart-count-badge">{itemCount}</b>
+              {itemCount > 0 ? <b className="cart-count-badge">{itemCount}</b> : null}
             </span>
             <span className="cart-label">Cart</span>
           </button>
@@ -318,47 +333,6 @@ export function Header({
         </div>
       ) : null}
 
-
-      <nav className="mobile-bottom-nav" aria-label="Quick navigation">
-        <Link href="/" className={isActive("/") ? "active" : ""} onClick={closePanels}>
-          <span className="mobile-nav-icon">⌂</span>
-          <small>Home</small>
-        </Link>
-
-        <Link href="/products" className={isActive("/products") ? "active" : ""} onClick={closePanels}>
-          <span className="mobile-nav-icon">▦</span>
-          <small>Shop</small>
-        </Link>
-
-        <button
-          type="button"
-          className={searchOpen ? "active" : ""}
-          onClick={() => {
-            setMenuOpen(false);
-            setCartOpen(false);
-            setSearchOpen(true);
-          }}
-        >
-          <span className="mobile-nav-icon"><SearchIcon /></span>
-          <small>Search</small>
-        </button>
-
-        <button
-          type="button"
-          className={cartOpen ? "active" : ""}
-          onClick={() => {
-            setMenuOpen(false);
-            setSearchOpen(false);
-            setCartOpen(true);
-          }}
-        >
-          <span className="mobile-nav-icon mobile-nav-cart">
-            <CartIcon />
-            {itemCount ? <b>{itemCount}</b> : null}
-          </span>
-          <small>Cart</small>
-        </button>
-      </nav>
 
       {cartOpen ? (
         <div className="cart-drawer-layer" role="dialog" aria-modal="true" aria-label="Shopping cart">
