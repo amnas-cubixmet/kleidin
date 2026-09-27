@@ -1,7 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
-import { ScrollShowcase } from "@/components/ScrollShowcase";
+import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { getCatalogProducts } from "@/lib/catalog";
 export default async function Home() {
   const products = await getCatalogProducts();
@@ -14,7 +13,7 @@ export default async function Home() {
       {products.length ? (
         <>
           {showcaseProducts.length ? (
-            <ScrollShowcase products={showcaseProducts} />
+            <AutoOutfitHero products={showcaseProducts} />
           ) : null}
 
           <section className="ref-shell ref-arrivals">
