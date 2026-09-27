@@ -9959,3 +9959,9 @@ main {
 .home-spotlight-topline p {
   display: none;
 }
+
+
+/* Match homepage outer canvas to header background */
+.reference-home {
+  background: #ffffff !important;
+}
