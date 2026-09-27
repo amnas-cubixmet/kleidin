@@ -6192,3 +6192,32 @@ body {
   }
 }
 
+
+
+/* Home shell — remove header/showcase gap and cream background */
+.reference-home {
+  margin: 0 !important;
+  padding-top: 0 !important;
+  background: #ffffff !important;
+}
+
+main {
+  background: #ffffff;
+}
+
+.scroll-showcase-container {
+  margin-top: 0 !important;
+  border-top: 0 !important;
+}
+
+@media (max-width: 980px) {
+  main {
+    padding-top: 56px !important;
+  }
+
+  .reference-home,
+  .scroll-showcase-container {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+}
