@@ -83,7 +83,6 @@ export function Header({
   const [cartClosing, setCartClosing] = useState(false);
   const [query, setQuery] = useState("");
   const [announcementVisible, setAnnouncementVisible] = useState(true);
-  const [scrolled, setScrolled] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -117,20 +116,6 @@ export function Header({
       document.removeEventListener("touchstart", handleClickOutside);
     };
   }, [menuOpen]);
-
-  useEffect(() => {
-    function handleScroll() {
-      if (window.scrollY > 15) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    }
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const results = useMemo(() => {
     const value = query.trim().toLowerCase();
@@ -246,11 +231,7 @@ export function Header({
         </div>
       ) : null}
 
-      <header
-        className={`site-header ${
-          scrolled && !menuOpen && !searchOpen && !cartOpen ? "scrolled" : ""
-        }`}
-      >
+      <header className="site-header">
         <Link href="/" className="brand" aria-label="KLEID.IN home" onClick={closePanels}>
           KLEID.IN
         </Link>
