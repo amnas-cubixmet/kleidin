@@ -10035,3 +10035,10 @@ main,
     background: #ffffff !important;
   }
 }
+
+
+/* Spotlight content creamy white */
+.home-spotlight-info,
+.home-spotlight-info-inner {
+  background: #F4F0E9 !important;
+}
