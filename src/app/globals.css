@@ -6221,3 +6221,39 @@ main {
     padding-top: 0 !important;
   }
 }
+
+
+/* Hero / ScrollShowcase light background */
+.scroll-showcase-container,
+.scroll-showcase-sticky {
+  background: #fafafa !important;
+  color: #111111;
+}
+
+.showcase-main-heading,
+.showcase-title,
+.showcase-price {
+  color: #111111 !important;
+}
+
+.showcase-desc {
+  color: rgba(17, 17, 17, 0.68) !important;
+}
+
+.showcase-counter,
+.showcase-colors {
+  color: rgba(17, 17, 17, 0.52) !important;
+}
+
+.showcase-progress-dot {
+  background: rgba(17, 17, 17, 0.14);
+}
+
+.showcase-progress-dot.active {
+  background: var(--blue, #001cac);
+}
+
+.showcase-cta {
+  background: #111111;
+  color: #ffffff;
+}
