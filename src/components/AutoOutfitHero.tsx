@@ -138,36 +138,38 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
         <div className="auto-outfit-visual">
           <div className="auto-model-stage">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={modelSrc}
-              alt="Model wearing the KLEID.IN edit"
-              className="auto-model-base"
-              draggable={false}
-              onError={() => {
-                if (modelSrc !== MODEL_FALLBACK) setModelSrc(MODEL_FALLBACK);
-              }}
-            />
+            <div className="auto-model-composite">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={modelSrc}
+                alt="Model wearing the KLEID.IN edit"
+                className="auto-model-base"
+                draggable={false}
+                onError={() => {
+                  if (modelSrc !== MODEL_FALLBACK) setModelSrc(MODEL_FALLBACK);
+                }}
+              />
 
-            {items.map((product, index) => {
-              const previousIndex =
-                (activeIndex - 1 + items.length) % items.length;
-              const state =
-                index === activeIndex
-                  ? "active"
-                  : index === previousIndex
-                    ? "previous"
-                    : "next";
+              {items.map((product, index) => {
+                const previousIndex =
+                  (activeIndex - 1 + items.length) % items.length;
+                const state =
+                  index === activeIndex
+                    ? "active"
+                    : index === previousIndex
+                      ? "previous"
+                      : "next";
 
-              return (
-                <GarmentLayer
-                  key={product.id}
-                  src={GARMENT_ASSETS[index] ?? GARMENT_ASSETS[0]}
-                  state={state}
-                  index={index}
-                />
-              );
-            })}
+                return (
+                  <GarmentLayer
+                    key={product.id}
+                    src={GARMENT_ASSETS[index] ?? GARMENT_ASSETS[0]}
+                    state={state}
+                    index={index}
+                  />
+                );
+              })}
+            </div>
 
             <div className="auto-model-caption" aria-hidden="true">
               <span>{String(activeIndex + 1).padStart(2, "0")}</span>
