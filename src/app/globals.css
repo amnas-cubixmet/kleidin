@@ -9064,3 +9064,258 @@ main {
     font-size: clamp(46px, 13.2vw, 62px);
   }
 }
+
+
+/* Mobile animation stability pass — iOS Safari + Android Chrome */
+@media (max-width: 980px) {
+  .mobile-compact-card {
+    animation: none !important;
+    opacity: 0;
+    transform: translate3d(0, -8px, 0) scale(.985);
+    transform-origin: top right;
+    transition:
+      opacity 170ms ease,
+      transform 220ms cubic-bezier(.22, 1, .36, 1);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .mobile-compact-card.is-open {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  .mobile-compact-card.is-closing {
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(.985);
+    pointer-events: none;
+  }
+
+  .mobile-card-link {
+    animation: none !important;
+    opacity: 0;
+    transform: translate3d(0, 7px, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .mobile-compact-card.is-open .mobile-card-link {
+    animation: mobileItemRevealFast 220ms cubic-bezier(.22, 1, .36, 1) both !important;
+  }
+
+  .mobile-compact-card.is-closing .mobile-card-link {
+    opacity: 0;
+    transform: translate3d(0, -3px, 0);
+    transition:
+      opacity 110ms linear,
+      transform 150ms ease;
+  }
+
+  .search-panel {
+    animation: mobilePanelIn 190ms cubic-bezier(.22, 1, .36, 1) both;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .cart-drawer-backdrop {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .cart-drawer {
+    animation: cartSheetMobileIn 260ms cubic-bezier(.22, 1, .36, 1) both !important;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .cart-drawer-layer.cart-closing .cart-drawer {
+    animation: cartSheetMobileOut 220ms cubic-bezier(.4, 0, 1, 1) both !important;
+  }
+
+  .cart-drawer-layer.cart-closing .cart-drawer-backdrop {
+    animation: cartBackdropMobileOut 200ms linear both !important;
+  }
+
+  .top-fashion-slide {
+    will-change: opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .offer-hero-image {
+    animation: offerImageMobileIn 360ms cubic-bezier(.22, 1, .36, 1) both;
+    will-change: opacity, transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .scroll-showcase-container {
+    overflow: visible;
+  }
+
+  .scroll-showcase-sticky {
+    height: calc(100dvh - 56px);
+    min-height: calc(100svh - 56px);
+  }
+
+  .showcase-stage {
+    overflow: hidden;
+  }
+
+  .showcase-slide {
+    transition:
+      transform 360ms cubic-bezier(.22, 1, .36, 1),
+      opacity 280ms ease,
+      visibility 280ms ease !important;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .showcase-slide.slide-next {
+    transform: translate3d(0, 28px, 0) scale(.985);
+  }
+
+  .showcase-slide.slide-active {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  .showcase-slide.slide-prev {
+    transform: translate3d(0, -24px, 0) scale(.985);
+  }
+
+  .auto-outfit-copy-item {
+    transition:
+      opacity 280ms ease,
+      transform 320ms cubic-bezier(.22, 1, .36, 1),
+      visibility 280ms ease !important;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .auto-garment-layer,
+  .auto-garment-layer.garment-0,
+  .auto-garment-layer.garment-1,
+  .auto-garment-layer.garment-2 {
+    transition:
+      opacity 280ms ease,
+      transform 340ms cubic-bezier(.22, 1, .36, 1) !important;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .auto-garment-layer.active,
+  .auto-garment-layer.garment-0.active,
+  .auto-garment-layer.garment-1.active,
+  .auto-garment-layer.garment-2.active {
+    transform: translate3d(-50%, -50%, 0) scale(1) !important;
+  }
+
+  .auto-garment-layer.previous,
+  .auto-garment-layer.garment-0.previous,
+  .auto-garment-layer.garment-1.previous,
+  .auto-garment-layer.garment-2.previous {
+    transform: translate3d(-42%, -50%, 0) scale(.99) !important;
+  }
+
+  .auto-garment-layer.next,
+  .auto-garment-layer.garment-0.next,
+  .auto-garment-layer.garment-1.next,
+  .auto-garment-layer.garment-2.next {
+    transform: translate3d(-58%, -50%, 0) scale(.99) !important;
+  }
+}
+
+@keyframes mobileItemRevealFast {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 7px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes mobilePanelIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -6px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes cartSheetMobileIn {
+  from {
+    opacity: .98;
+    transform: translate3d(0, 100%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes cartSheetMobileOut {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: .98;
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+@keyframes cartBackdropMobileOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes offerImageMobileIn {
+  from {
+    opacity: .72;
+    transform: scale(1.015);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-compact-card,
+  .mobile-card-link,
+  .search-panel,
+  .cart-drawer,
+  .cart-drawer-backdrop,
+  .top-fashion-slide,
+  .offer-hero-image,
+  .showcase-slide,
+  .auto-outfit-copy-item,
+  .auto-garment-layer {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .mobile-compact-card,
+  .mobile-card-link,
+  .search-panel,
+  .cart-drawer,
+  .offer-hero-image,
+  .showcase-slide.slide-active,
+  .auto-outfit-copy-item.active,
+  .auto-garment-layer.active {
+    opacity: 1 !important;
+  }
+}
