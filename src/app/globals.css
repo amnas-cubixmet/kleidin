@@ -8639,3 +8639,15 @@ main {
     padding-top: 0;
   }
 }
+
+
+/* Remove gap between spotlight image and product info */
+.home-spotlight-grid {
+  gap: 0 !important;
+}
+
+@media (max-width: 900px) {
+  .home-spotlight-grid {
+    gap: 0 !important;
+  }
+}
