@@ -5816,20 +5816,27 @@ body {
 }
 
 
-/* Mobile viewport scrollbar cleanup */
+/* Mobile viewport overflow lock — block horizontal page movement, keep vertical scroll */
 @media (max-width: 980px) {
   html,
   body {
+    width: 100%;
     max-width: 100%;
     overflow-x: hidden !important;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    overflow-x: clip !important;
+    overflow-y: auto;
   }
 
-  html::-webkit-scrollbar,
-  body::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-    display: none;
+  body {
+    position: relative;
+  }
+
+  main,
+  .reference-home,
+  .site-footer {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-x: clip;
   }
 }
