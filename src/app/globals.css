@@ -9688,3 +9688,166 @@ main {
     min-height: 28px;
   }
 }
+
+
+/* FINAL mobile AutoOutfit layout: full image on top, content attached below */
+@media (max-width: 640px) {
+  .auto-outfit-hero {
+    width: 100% !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: #fafafa;
+  }
+
+  .auto-outfit-shell {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
+    overflow: visible !important;
+  }
+
+  .auto-outfit-visual {
+    order: 1 !important;
+    width: 100% !important;
+    height: 56svh !important;
+    min-height: 420px !important;
+    max-height: 620px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: #f5f5f3;
+  }
+
+  .auto-model-stage {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    border-radius: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    background: #f5f5f3 !important;
+  }
+
+  .auto-model-composite {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    position: relative !important;
+    overflow: visible !important;
+  }
+
+  .auto-garment-layer,
+  .auto-garment-layer.garment-0,
+  .auto-garment-layer.garment-1,
+  .auto-garment-layer.garment-2 {
+    left: 50% !important;
+    top: 50% !important;
+    width: 92% !important;
+    max-width: 520px !important;
+    height: auto !important;
+    aspect-ratio: 1463 / 1075 !important;
+  }
+
+  .auto-garment-layer.garment-1 {
+    width: 90% !important;
+  }
+
+  .auto-garment-image {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+    object-fit: contain !important;
+    object-position: center !important;
+  }
+
+  .auto-outfit-copy {
+    order: 2 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    padding: 24px 16px 30px !important;
+    justify-content: flex-start !important;
+    overflow: visible !important;
+    background: #fafafa !important;
+  }
+
+  .auto-outfit-copy-stack {
+    width: 100% !important;
+    min-height: 300px !important;
+  }
+
+  .auto-outfit-category {
+    margin-bottom: 8px !important;
+    font-size: 7px !important;
+    letter-spacing: .08em !important;
+  }
+
+  .auto-outfit-copy-item h1 {
+    max-width: 340px !important;
+    font-size: clamp(34px, 10vw, 44px) !important;
+    line-height: .9 !important;
+    letter-spacing: -.055em !important;
+  }
+
+  .auto-outfit-copy-item > p {
+    max-width: 360px !important;
+    margin-top: 13px !important;
+    font-size: 10px !important;
+    line-height: 1.55 !important;
+  }
+
+  .auto-outfit-meta {
+    margin-top: 14px !important;
+    gap: 8px !important;
+  }
+
+  .auto-outfit-meta strong {
+    font-size: 16px !important;
+  }
+
+  .auto-outfit-meta span {
+    font-size: 8px !important;
+  }
+
+  .auto-outfit-cta {
+    min-height: 38px !important;
+    margin-top: 18px !important;
+    padding: 0 14px !important;
+    gap: 10px !important;
+    font-size: 8px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .auto-outfit-visual {
+    height: 52svh !important;
+    min-height: 380px !important;
+  }
+
+  .auto-garment-layer,
+  .auto-garment-layer.garment-0,
+  .auto-garment-layer.garment-2 {
+    width: 94% !important;
+  }
+
+  .auto-garment-layer.garment-1 {
+    width: 92% !important;
+  }
+
+  .auto-outfit-copy {
+    padding: 22px 14px 28px !important;
+  }
+
+  .auto-outfit-copy-stack {
+    min-height: 292px !important;
+  }
+
+  .auto-outfit-copy-item h1 {
+    font-size: clamp(32px, 9.5vw, 40px) !important;
+  }
+}
