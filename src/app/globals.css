@@ -5673,3 +5673,22 @@ main {
     transition: none !important;
   }
 }
+
+
+/* Mobile category slider — one full card per view */
+@media (max-width: 767px) {
+  .category-mobile-slider {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-inline: contain;
+  }
+
+  .category-mobile-slider::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-mobile-slider > a {
+    scroll-snap-stop: always;
+  }
+}
