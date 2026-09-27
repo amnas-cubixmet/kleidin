@@ -2,40 +2,42 @@ import type { Offer, StoreSettings } from "@/types/commerce";
 
 export const localStoreSettings: StoreSettings = {
   whatsappNumber: "",
-  announcementText: "Free shipping on orders above ₹1,999",
-  announcementLinkLabel: "Shop now",
+  announcementText: "Free shipping on prepaid orders above ₹1,999",
+  announcementLinkLabel: "Shop the collection",
   instagramUrl: "",
-  supportEmail: "",
+  supportEmail: "hello@kleid.in",
 };
 
 export const localOffers: Offer[] = [
   {
-    id: "weekend-edit",
-    title: "Weekend Edit",
-    badge: "WEEKEND OFFER",
+    id: "weekend-essentials",
+    title: "Weekend Essentials",
+    badge: "WEEKEND EDIT",
     discountText: "20%",
-    description: "Selected everyday essentials at a limited-time price.",
+    description:
+      "A limited selection of everyday tees, shirts and layers at special weekend pricing.",
     ctaLabel: "Shop the Edit",
     ctaHref: "/products?new=1",
     imageUrl:
-      "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1800&q=92",
-    startsAt: null,
-    endsAt: "2026-12-31T23:59:59+05:30",
+      "https://images.unsplash.com/photo-1618200471414-0b01c7ad31f1?auto=format&fit=crop&w=1800&q=90",
+    startsAt: "2026-09-27T00:00:00+05:30",
+    endsAt: "2026-10-12T23:59:59+05:30",
     enabled: true,
     priority: 100,
   },
   {
-    id: "new-season",
-    title: "New Season",
+    id: "new-season-core",
+    title: "New Season Core",
     badge: "NEW SEASON",
     discountText: "15%",
-    description: "Fresh layers and clean essentials for the new rotation.",
+    description:
+      "Fresh core pieces for the next rotation, with clean silhouettes and easy everyday colour.",
     ctaLabel: "Explore New Arrivals",
     ctaHref: "/products?new=1",
     imageUrl:
-      "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1800&q=92",
-    startsAt: null,
-    endsAt: "2026-11-30T23:59:59+05:30",
+      "https://images.unsplash.com/photo-1553787165-444e4356dff2?auto=format&fit=crop&w=1800&q=90",
+    startsAt: "2026-09-27T00:00:00+05:30",
+    endsAt: "2026-11-03T23:59:59+05:30",
     enabled: true,
     priority: 80,
   },

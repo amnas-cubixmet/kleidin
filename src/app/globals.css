@@ -7824,3 +7824,57 @@ main {
     opacity: 1;
   }
 }
+
+
+/* Realistic contact data presentation */
+.contact-actions {
+  margin-top: 26px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.contact-info-grid {
+  margin-top: 52px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.contact-info-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.contact-info-grid span {
+  color: var(--muted);
+  font-size: 8px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.contact-info-grid strong {
+  max-width: 230px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .contact-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .contact-actions .button {
+    width: 100%;
+  }
+
+  .contact-info-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
