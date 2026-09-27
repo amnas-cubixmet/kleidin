@@ -115,7 +115,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                 aria-hidden={index !== activeIndex}
               >
                 <span className="auto-outfit-category">{product.category}</span>
-                <h1>{product.name}</h1>
+                <h1>{product.name.replace(/\s*—\s*/g, " ")}</h1>
 
                 <p>
                   {product.description ||
@@ -134,20 +134,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
             ))}
           </div>
 
-          <div className="auto-outfit-nav" aria-label="Choose featured T-shirt">
-            {items.map((product, index) => (
-              <button
-                key={product.id}
-                type="button"
-                className={index === activeIndex ? "active" : ""}
-                onClick={() => setActiveIndex(index)}
-                aria-label={`Show ${product.name}`}
-                aria-pressed={index === activeIndex}
-              >
-                <span />
-              </button>
-            ))}
-          </div>
         </div>
 
         <div className="auto-outfit-visual">
