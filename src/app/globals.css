@@ -9877,3 +9877,53 @@ main {
     padding-top: 16px !important;
   }
 }
+
+
+/* Mobile outfit image: reduce empty vertical gap */
+@media (max-width: 640px) {
+  .auto-outfit-visual {
+    height: 44svh !important;
+    min-height: 320px !important;
+    max-height: 460px !important;
+  }
+
+  .auto-model-stage {
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .auto-model-composite {
+    height: 100% !important;
+  }
+
+  .auto-garment-layer,
+  .auto-garment-layer.garment-0,
+  .auto-garment-layer.garment-2 {
+    width: 108% !important;
+    max-width: 560px !important;
+    top: 49% !important;
+  }
+
+  .auto-garment-layer.garment-1 {
+    width: 104% !important;
+    max-width: 540px !important;
+    top: 49% !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .auto-outfit-visual {
+    height: 41svh !important;
+    min-height: 290px !important;
+  }
+
+  .auto-garment-layer,
+  .auto-garment-layer.garment-0,
+  .auto-garment-layer.garment-2 {
+    width: 112% !important;
+  }
+
+  .auto-garment-layer.garment-1 {
+    width: 108% !important;
+  }
+}
