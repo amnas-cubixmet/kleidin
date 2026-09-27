@@ -33,8 +33,8 @@ export function TopFashionHero({ products }: { products: Product[] }) {
   const current = slides[index];
 
   return (
-    <section className="mx-auto mb-3 w-[min(calc(100%-16px),1440px)] px-0 sm:w-[min(calc(100%-24px),1440px)]">
-      <div className="relative h-[64svh] min-h-[520px] max-h-[680px] overflow-hidden rounded-[20px] bg-[#071225] text-white md:h-auto md:min-h-[78svh] md:max-h-none md:rounded-[26px]">
+    <section className="mx-auto mb-0 w-full px-0 sm:mb-3 sm:w-[min(calc(100%-24px),1440px)]">
+      <div className="relative h-[64svh] min-h-[520px] max-h-[680px] overflow-hidden rounded-none bg-[#071225] text-white sm:rounded-[20px] md:h-auto md:min-h-[78svh] md:max-h-none md:rounded-[26px]">
         <div className="absolute inset-0">
           {slides.map((product, slideIndex) => (
             <div

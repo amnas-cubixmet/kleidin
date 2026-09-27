@@ -7663,3 +7663,45 @@ main {
     transition: none;
   }
 }
+
+
+/* Mobile edge-to-edge homepage sections */
+@media (max-width: 640px) {
+  .reference-home {
+    padding-top: 0;
+  }
+
+  .home-spotlight {
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .home-spotlight-marquee {
+    border-radius: 0;
+  }
+
+  .home-spotlight-grid {
+    padding: 0;
+    gap: 0;
+  }
+
+  .home-spotlight-media {
+    min-height: 56svh;
+    border-radius: 0;
+  }
+
+  .home-spotlight-info {
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .home-spotlight-info-inner {
+    padding: 30px 18px 34px;
+  }
+
+  .home-spotlight-media-badge {
+    left: 14px;
+    bottom: 14px;
+  }
+}
