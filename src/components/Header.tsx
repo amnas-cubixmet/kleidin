@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { getCartWhatsappUrl } from "@/lib/format";
 import type { Product } from "@/types/product";
@@ -78,6 +78,7 @@ export function Header({
   } = useCart();
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuMounted, setMenuMounted] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [cartClosing, setCartClosing] = useState(false);
@@ -86,6 +87,7 @@ export function Header({
   const searchRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuCloseTimerRef = useRef<number | null>(null);
 
   function handleCloseCart() {
     if (cartClosing) return;
@@ -96,6 +98,34 @@ export function Header({
     }, 300);
   }
 
+  const openMenu = useCallback(() => {
+    if (menuCloseTimerRef.current !== null) {
+      window.clearTimeout(menuCloseTimerRef.current);
+      menuCloseTimerRef.current = null;
+    }
+    setMenuMounted(true);
+    window.requestAnimationFrame(() => setMenuOpen(true));
+  }, []);
+
+  const closeMenu = useCallback(() => {
+    setMenuOpen(false);
+    if (menuCloseTimerRef.current !== null) {
+      window.clearTimeout(menuCloseTimerRef.current);
+    }
+    menuCloseTimerRef.current = window.setTimeout(() => {
+      setMenuMounted(false);
+      menuCloseTimerRef.current = null;
+    }, 220);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (menuCloseTimerRef.current !== null) {
+        window.clearTimeout(menuCloseTimerRef.current);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent | TouchEvent) {
       if (
@@ -105,7 +135,7 @@ export function Header({
         menuButtonRef.current &&
         !menuButtonRef.current.contains(event.target as Node)
       ) {
-        setMenuOpen(false);
+        closeMenu();
       }
     }
 
@@ -115,7 +145,7 @@ export function Header({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
     };
-  }, [menuOpen]);
+  }, [menuOpen, closeMenu]);
 
   const results = useMemo(() => {
     const value = query.trim().toLowerCase();
@@ -152,14 +182,14 @@ export function Header({
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setSearchOpen(false);
-        setMenuOpen(false);
+        closeMenu();
         if (cartOpen) handleCloseCart();
       }
     }
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [cartOpen, cartClosing]);
+  }, [cartOpen, cartClosing, closeMenu]);
 
   useEffect(() => {
     if (cartOpen) {
@@ -173,7 +203,7 @@ export function Header({
   }, [cartOpen]);
 
   function closePanels() {
-    setMenuOpen(false);
+    closeMenu();
     setSearchOpen(false);
     if (cartOpen) handleCloseCart();
   }
@@ -256,7 +286,7 @@ export function Header({
             aria-label="Search products"
             aria-expanded={searchOpen}
             onClick={() => {
-              setMenuOpen(false);
+              closeMenu();
               setCartOpen(false);
               setSearchOpen((current) => !current);
             }}
@@ -270,7 +300,7 @@ export function Header({
             aria-label={`Open cart with ${itemCount} items`}
             aria-expanded={cartOpen}
             onClick={() => {
-              setMenuOpen(false);
+              closeMenu();
               setSearchOpen(false);
               setCartOpen(true);
             }}
@@ -291,7 +321,11 @@ export function Header({
             onClick={() => {
               setSearchOpen(false);
               setCartOpen(false);
-              setMenuOpen((current) => !current);
+              if (menuOpen) {
+                closeMenu();
+              } else {
+                openMenu();
+              }
             }}
           >
             <MenuIcon open={menuOpen} />
@@ -299,10 +333,10 @@ export function Header({
         </div>
       </header>
 
-      {menuOpen ? (
+      {menuMounted ? (
         <div
           ref={menuRef}
-          className="mobile-compact-card"
+          className={`mobile-compact-card ${menuOpen ? "is-open" : "is-closing"}`}
           role="dialog"
           aria-label="Mobile navigation"
         >
