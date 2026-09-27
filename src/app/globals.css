@@ -5164,8 +5164,8 @@ main {
 
   .menu-icon {
     position: relative;
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     pointer-events: none;
   }
 
@@ -5173,7 +5173,7 @@ main {
     position: absolute;
     left: 50%;
     top: 50%;
-    width: 22px;
+    width: 20px;
     height: 2px;
     background-color: var(--blue, #001cac);
     border-radius: 2px;
@@ -5182,11 +5182,11 @@ main {
   }
 
   .menu-icon i:first-child {
-    transform: translate(-50%, -5px);
+    transform: translate(-50%, -4px);
   }
 
   .menu-icon i:last-child {
-    transform: translate(-50%, 3px);
+    transform: translate(-50%, 4px);
   }
 
   .menu-icon.open i:first-child {
