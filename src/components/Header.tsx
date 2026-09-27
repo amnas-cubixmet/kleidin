@@ -25,6 +25,14 @@ function SearchIcon() {
   );
 }
 
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  );
+}
+
 function CartIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -72,11 +80,44 @@ export function Header({
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [cartClosing, setCartClosing] = useState(false);
   const [query, setQuery] = useState("");
   const [announcementVisible, setAnnouncementVisible] = useState(true);
   const [scrolled, setScrolled] = useState(false);
   const [mobileCollapsed, setMobileCollapsed] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  function handleCloseCart() {
+    if (cartClosing) return;
+    setCartClosing(true);
+    window.setTimeout(() => {
+      setCartOpen(false);
+      setCartClosing(false);
+    }, 300);
+  }
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
+      if (
+        menuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(event.target as Node)
+      ) {
+        setMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     function handleScroll() {
@@ -128,13 +169,13 @@ export function Header({
       if (event.key === "Escape") {
         setSearchOpen(false);
         setMenuOpen(false);
-        setCartOpen(false);
+        if (cartOpen) handleCloseCart();
       }
     }
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [cartOpen, cartClosing]);
 
   useEffect(() => {
     const mobileQuery = window.matchMedia("(max-width: 980px)");
@@ -168,10 +209,21 @@ export function Header({
     };
   }, []);
 
+  useEffect(() => {
+    if (cartOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [cartOpen]);
+
   function closePanels() {
     setMenuOpen(false);
     setSearchOpen(false);
-    setCartOpen(false);
+    if (cartOpen) handleCloseCart();
   }
 
   function isActive(href: string) {
@@ -279,6 +331,7 @@ export function Header({
           </button>
 
           <button
+            ref={menuButtonRef}
             className="menu-button"
             type="button"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
@@ -296,33 +349,25 @@ export function Header({
 
       {menuOpen ? (
         <div
-          className={`mobile-menu ${announcementVisible ? "" : "announcement-hidden"} ${mobileCollapsed ? "mobile-menu-floating" : ""}`}
+          ref={menuRef}
+          className="mobile-compact-card"
+          role="dialog"
+          aria-label="Mobile navigation"
         >
-          <nav aria-label="Mobile navigation">
-            {nav.map((item) => (
+          <nav className="mobile-card-nav" aria-label="Mobile navigation">
+            {nav.map((item, index) => (
               <Link
                 key={item.label}
                 href={item.href}
-                className={isActive(item.href) ? "active" : ""}
+                className={`mobile-card-link ${isActive(item.href) ? "active" : ""}`}
+                style={{ animationDelay: `${130 + index * 40}ms` }}
                 onClick={closePanels}
               >
                 <span>{item.label}</span>
-                <span>↗</span>
+                <span className="mobile-card-arrow" aria-hidden="true">↗</span>
               </Link>
             ))}
           </nav>
-
-          <button
-            type="button"
-            className="mobile-search-trigger"
-            onClick={() => {
-              setMenuOpen(false);
-              setSearchOpen(true);
-            }}
-          >
-            <SearchIcon />
-            <span>Search products</span>
-          </button>
         </div>
       ) : null}
 
@@ -341,8 +386,13 @@ export function Header({
                 placeholder="Search products, categories, colours..."
                 aria-label="Search products"
               />
-              <button type="button" className="search-close" onClick={() => setSearchOpen(false)}>
-                Close
+              <button
+                type="button"
+                className="search-close"
+                aria-label="Close search"
+                onClick={() => setSearchOpen(false)}
+              >
+                <CloseIcon />
               </button>
             </div>
 
@@ -351,12 +401,36 @@ export function Header({
               {results.length ? (
                 <div className="search-result-list">
                   {results.map((product) => (
-                    <Link key={product.id} href={`/products/${product.slug}`} onClick={closePanels}>
-                      <span>
-                        <strong>{product.name}</strong>
-                        <small>{product.category} · {product.colors.join(" / ")}</small>
-                      </span>
-                      <span>↗</span>
+                    <Link
+                      key={product.id}
+                      href={`/products/${product.slug}`}
+                      className="search-result-item"
+                      onClick={closePanels}
+                    >
+                      <div className="search-result-thumb">
+                        {product.image ? (
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            width={56}
+                            height={56}
+                            className="search-result-img"
+                          />
+                        ) : (
+                          <div className="search-result-placeholder">
+                            <span>{product.name.charAt(0)}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="search-result-info">
+                        <strong className="search-result-title">{product.name}</strong>
+                        <small className="search-result-meta">
+                          {product.category}{product.colors?.length ? ` · ${product.colors.join(" / ")}` : ""}
+                        </small>
+                      </div>
+
+                      <span className="search-result-arrow" aria-hidden="true">↗</span>
                     </Link>
                   ))}
                 </div>
@@ -370,12 +444,17 @@ export function Header({
 
 
       {cartOpen ? (
-        <div className="cart-drawer-layer" role="dialog" aria-modal="true" aria-label="Shopping cart">
+        <div
+          className={`cart-drawer-layer ${cartClosing ? "cart-closing" : ""}`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Shopping cart"
+        >
           <button
             type="button"
             className="cart-drawer-backdrop"
             aria-label="Close cart"
-            onClick={() => setCartOpen(false)}
+            onClick={handleCloseCart}
           />
 
           <aside className="cart-drawer">
@@ -384,7 +463,7 @@ export function Header({
                 <span>Your cart</span>
                 <strong>{itemCount} items</strong>
               </div>
-              <button type="button" onClick={() => setCartOpen(false)} aria-label="Close cart">×</button>
+              <button type="button" onClick={handleCloseCart} aria-label="Close cart">×</button>
             </div>
 
             <div className="cart-drawer-body">
