@@ -4,8 +4,9 @@ import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { getCatalogProducts } from "@/lib/catalog";
 export default async function Home() {
   const products = await getCatalogProducts();
+  const tShirts = products.filter((product) => product.category === "T-Shirts");
   const featured = products.filter((product) => product.featured);
-  const showcaseProducts = (featured.length ? featured : products).slice(0, 5);
+  const showcaseProducts = (tShirts.length ? tShirts : featured.length ? featured : products).slice(0, 3);
   const arrivals = products.slice(0, 4);
 
   return (
