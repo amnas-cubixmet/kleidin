@@ -25,9 +25,11 @@ function formatPrice(value: number) {
 function GarmentLayer({
   src,
   state,
+  index,
 }: {
   src: string;
   state: "active" | "previous" | "next";
+  index: number;
 }) {
   const [failed, setFailed] = useState(false);
 
@@ -35,7 +37,7 @@ function GarmentLayer({
 
   return (
     <div
-      className={`auto-garment-layer ${state}`}
+      className={`auto-garment-layer garment-${index} ${state}`}
       aria-hidden={state !== "active"}
     >
       {/* Generated transparent garment assets are intentionally rendered as a plain img. */}
@@ -176,6 +178,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                   key={product.id}
                   src={GARMENT_ASSETS[index] ?? GARMENT_ASSETS[0]}
                   state={state}
+                  index={index}
                 />
               );
             })}
