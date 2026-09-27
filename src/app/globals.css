@@ -7728,3 +7728,99 @@ main {
     object-position: center;
   }
 }
+
+
+/* Final mobile outfit alignment: shirt follows model torso */
+.auto-model-stage {
+  overflow: hidden;
+}
+
+.auto-model-composite {
+  height: 100%;
+  aspect-ratio: 2 / 3;
+  position: relative;
+}
+
+.auto-model-base {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.auto-garment-layer,
+.auto-garment-layer.garment-0,
+.auto-garment-layer.garment-1,
+.auto-garment-layer.garment-2 {
+  left: 50%;
+  top: 55%;
+  width: 96%;
+  height: auto;
+  aspect-ratio: 1463 / 1075;
+}
+
+.auto-garment-layer.garment-0 {
+  top: 55.5%;
+  width: 96%;
+}
+
+.auto-garment-layer.garment-1 {
+  top: 55.5%;
+  width: 95%;
+}
+
+.auto-garment-layer.garment-2 {
+  top: 55.5%;
+  width: 96%;
+}
+
+@media (max-width: 980px) {
+  .auto-model-composite {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+  }
+
+  .auto-garment-layer,
+  .auto-garment-layer.garment-0,
+  .auto-garment-layer.garment-1,
+  .auto-garment-layer.garment-2 {
+    top: 57.5%;
+    width: 96%;
+  }
+
+  .auto-garment-layer.garment-1 {
+    top: 57.7%;
+    width: 95%;
+  }
+}
+
+@media (max-width: 560px) {
+  .auto-model-stage {
+    min-height: 0;
+    height: min(620px, calc(100svh - 56px));
+  }
+
+  .auto-model-composite {
+    height: 100%;
+    aspect-ratio: 2 / 3;
+  }
+
+  .auto-garment-layer,
+  .auto-garment-layer.garment-0,
+  .auto-garment-layer.garment-1,
+  .auto-garment-layer.garment-2 {
+    top: 58%;
+    width: 97%;
+  }
+
+  .auto-garment-layer.garment-1 {
+    top: 58.2%;
+    width: 96%;
+  }
+
+  .auto-garment-layer.active {
+    opacity: 1;
+  }
+}
