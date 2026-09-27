@@ -84,7 +84,6 @@ export function Header({
   const [query, setQuery] = useState("");
   const [announcementVisible, setAnnouncementVisible] = useState(true);
   const [scrolled, setScrolled] = useState(false);
-  const [mobileCollapsed, setMobileCollapsed] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -178,38 +177,6 @@ export function Header({
   }, [cartOpen, cartClosing]);
 
   useEffect(() => {
-    const mobileQuery = window.matchMedia("(max-width: 980px)");
-    let frame = 0;
-
-    const syncHeaderState = () => {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(() => {
-        setMobileCollapsed(mobileQuery.matches && window.scrollY > 8);
-      });
-    };
-
-    syncHeaderState();
-    window.addEventListener("scroll", syncHeaderState, { passive: true });
-
-    if (mobileQuery.addEventListener) {
-      mobileQuery.addEventListener("change", syncHeaderState);
-    } else {
-      (mobileQuery as MediaQueryList).addListener(syncHeaderState);
-    }
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", syncHeaderState);
-
-      if (mobileQuery.removeEventListener) {
-        mobileQuery.removeEventListener("change", syncHeaderState);
-      } else {
-        (mobileQuery as MediaQueryList).removeListener(syncHeaderState);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     if (cartOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -279,7 +246,11 @@ export function Header({
         </div>
       ) : null}
 
-      <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
+      <header
+        className={`site-header ${
+          scrolled && !menuOpen && !searchOpen && !cartOpen ? "scrolled" : ""
+        }`}
+      >
         <Link href="/" className="brand" aria-label="KLEID.IN home" onClick={closePanels}>
           KLEID.IN
         </Link>

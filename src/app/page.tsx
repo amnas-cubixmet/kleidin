@@ -66,12 +66,12 @@ export default async function Home() {
                 </div>
               </div>
 
-              <div className="mt-12 grid grid-cols-2 gap-2.5 md:mt-16 md:gap-3 lg:grid-cols-4">
+              <div className="category-mobile-slider mt-12 flex w-full snap-x snap-mandatory gap-3 overflow-x-auto md:mt-16 md:grid md:grid-cols-2 md:gap-3 md:overflow-visible lg:grid-cols-4">
                 {categories.map((category, index) => (
                   <Link
                     href={category.href}
                     key={category.title}
-                    className="group relative aspect-[4/5] overflow-hidden rounded-[18px] bg-white"
+                    className="group relative aspect-[4/5] w-full min-w-0 flex-[0_0_100%] snap-start overflow-hidden rounded-[18px] bg-white md:w-auto md:flex-none"
                   >
                     {category.image ? (
                       <Image
