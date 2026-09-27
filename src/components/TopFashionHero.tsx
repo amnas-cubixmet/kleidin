@@ -34,7 +34,7 @@ export function TopFashionHero({ products }: { products: Product[] }) {
 
   return (
     <section className="mx-auto mb-3 w-[min(calc(100%-16px),1440px)] px-0 sm:w-[min(calc(100%-24px),1440px)]">
-      <div className="relative min-h-[68svh] overflow-hidden rounded-[20px] bg-[#071225] text-white md:min-h-[78svh] md:rounded-[26px]">
+      <div className="relative h-[64svh] min-h-[520px] max-h-[680px] overflow-hidden rounded-[20px] bg-[#071225] text-white md:h-auto md:min-h-[78svh] md:max-h-none md:rounded-[26px]">
         <div className="absolute inset-0">
           {slides.map((product, slideIndex) => (
             <div
@@ -51,17 +51,17 @@ export function TopFashionHero({ products }: { products: Product[] }) {
                   fill
                   priority={slideIndex === 0}
                   sizes="100vw"
-                  className="object-cover object-center"
+                  className="object-cover object-[62%_center] md:object-center"
                 />
               ) : null}
             </div>
           ))}
         </div>
 
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,10,24,.94)_0%,rgba(3,10,24,.78)_32%,rgba(3,10,24,.24)_64%,rgba(3,10,24,.06)_100%)] md:bg-[linear-gradient(90deg,rgba(3,10,24,.96)_0%,rgba(3,10,24,.84)_38%,rgba(3,10,24,.22)_69%,rgba(3,10,24,.03)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,24,.02)_45%,rgba(3,10,24,.58)_100%)] md:hidden" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,10,24,.90)_0%,rgba(3,10,24,.72)_43%,rgba(3,10,24,.22)_72%,rgba(3,10,24,.04)_100%)] md:bg-[linear-gradient(90deg,rgba(3,10,24,.96)_0%,rgba(3,10,24,.84)_38%,rgba(3,10,24,.22)_69%,rgba(3,10,24,.03)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,24,.05)_25%,rgba(3,10,24,.10)_52%,rgba(3,10,24,.72)_100%)] md:hidden" />
 
-        <div className="relative z-10 flex min-h-[68svh] flex-col justify-between px-5 py-6 md:min-h-[78svh] md:px-12 md:py-10 lg:px-16 lg:py-12">
+        <div className="relative z-10 flex h-full min-h-[520px] flex-col justify-between px-5 py-5 md:min-h-[78svh] md:px-12 md:py-10 lg:px-16 lg:py-12">
           <div className="flex items-center justify-between">
             <p className="m-0 text-[8px] font-semibold tracking-[0.18em] text-white/65 md:text-[9px]">
               KLEID.IN / NEW SEASON
@@ -72,41 +72,42 @@ export function TopFashionHero({ products }: { products: Product[] }) {
             </span>
           </div>
 
-          <div className="max-w-[760px] pb-2 md:pb-4">
-            <p className="mb-3 text-[9px] font-semibold tracking-[0.16em] text-[#7395ff] md:mb-4 md:text-[10px]">
+          <div className="max-w-[760px] pb-1 md:pb-4">
+            <p className="mb-2.5 text-[8px] font-semibold tracking-[0.16em] text-[#7395ff] md:mb-4 md:text-[10px]">
               EVERYDAY ESSENTIALS
             </p>
 
-            <h1 className="m-0 max-w-[820px] text-[clamp(56px,14vw,88px)] font-semibold leading-[0.82] tracking-[-0.07em] md:text-[clamp(82px,8vw,132px)]">
+            <h1 className="m-0 max-w-[820px] text-[clamp(46px,12.5vw,64px)] font-semibold leading-[0.84] tracking-[-0.065em] md:text-[clamp(82px,8vw,132px)] md:leading-[0.82]">
               WEAR IT
               <br />
               YOUR WAY
             </h1>
 
-            <div className="mt-6 flex max-w-[620px] flex-col gap-5 md:mt-8 md:flex-row md:items-end md:justify-between">
+            <div className="mt-5 flex max-w-[620px] flex-col gap-4 md:mt-8 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="m-0 max-w-[400px] text-[11px] leading-6 text-white/65 md:text-[12px]">
+                <p className="m-0 max-w-[330px] text-[10px] leading-5 text-white/70 md:max-w-[400px] md:text-[12px] md:leading-6">
                   Clean silhouettes, easy layers and pieces designed to work every day.
                 </p>
 
-                <div className="mt-4 flex items-center gap-3 text-[9px] text-white/50">
+                <div className="mt-3 flex max-w-[330px] items-center gap-2 overflow-hidden text-[8px] text-white/55 md:mt-4 md:gap-3 md:text-[9px]">
                   <span>{current.name}</span>
                   <span>•</span>
                   <span>₹{current.price.toLocaleString("en-IN")}</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2.5">
+              <div className="grid w-full grid-cols-2 gap-2.5 md:flex md:w-auto md:items-center">
                 <Link
                   href="/products"
-                  className="inline-flex min-h-11 items-center gap-6 rounded-full bg-white px-5 text-[10px] font-semibold text-black transition hover:bg-[#eef2ff]"
+                  className="inline-flex min-h-11 items-center justify-center gap-4 rounded-full bg-white px-4 text-[9px] font-semibold !text-[#111111] transition hover:bg-[#eef2ff] md:gap-6 md:px-5 md:text-[10px]"
+                  style={{ color: "#111111" }}
                 >
                   Shop collection <span>→</span>
                 </Link>
 
                 <Link
                   href={`/products/${current.slug}`}
-                  className="inline-flex min-h-11 items-center rounded-full border border-white/25 px-4 text-[9px] font-semibold text-white backdrop-blur-sm transition hover:bg-white/10"
+                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/25 bg-black/5 px-4 text-[9px] font-semibold text-white backdrop-blur-sm transition hover:bg-white/10"
                 >
                   View piece
                 </Link>
@@ -114,8 +115,8 @@ export function TopFashionHero({ products }: { products: Product[] }) {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between pt-1">
+            <div className="flex items-center gap-2.5">
               <span className="text-[8px] font-semibold text-white/70">
                 {String(index + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
               </span>
