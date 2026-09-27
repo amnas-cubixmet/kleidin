@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
+import { TopFashionHero } from "@/components/TopFashionHero";
 import { getCatalogProducts } from "@/lib/catalog";
 export default async function Home() {
   const products = await getCatalogProducts();
@@ -13,6 +14,8 @@ export default async function Home() {
     <div className="reference-home">
       {products.length ? (
         <>
+          <TopFashionHero products={featured.length ? featured : products} />
+
           {showcaseProducts.length ? (
             <AutoOutfitHero products={showcaseProducts} />
           ) : null}
