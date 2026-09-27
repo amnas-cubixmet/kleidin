@@ -6652,3 +6652,183 @@ main {
     transition-duration: 1ms !important;
   }
 }
+
+
+/* AutoOutfitHero UI reset v2 */
+.auto-outfit-hero {
+  min-height: calc(100vh - 56px);
+  min-height: calc(100svh - 56px);
+  background: #fafafa;
+}
+
+.auto-outfit-shell {
+  width: 100%;
+  min-height: calc(100vh - 56px);
+  min-height: calc(100svh - 56px);
+  grid-template-columns: minmax(320px, .8fr) minmax(0, 1.2fr);
+  gap: 0;
+}
+
+.auto-outfit-copy {
+  padding: clamp(44px, 6vw, 88px) clamp(28px, 5.5vw, 76px);
+  justify-content: center;
+}
+
+.auto-outfit-kicker {
+  margin-bottom: 22px;
+}
+
+.auto-outfit-copy-stack {
+  min-height: 330px;
+}
+
+.auto-outfit-copy-item h1 {
+  max-width: 560px;
+  font-size: clamp(44px, 5vw, 72px);
+  line-height: .92;
+  letter-spacing: -.055em;
+}
+
+.auto-outfit-copy-item > p {
+  max-width: 430px;
+  margin-top: 18px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.auto-outfit-meta {
+  margin-top: 18px;
+}
+
+.auto-outfit-meta strong {
+  font-size: 20px;
+}
+
+.auto-outfit-visual {
+  min-height: calc(100vh - 56px);
+  min-height: calc(100svh - 56px);
+  padding: 18px 18px 18px 0;
+}
+
+.auto-model-stage {
+  min-height: calc(100vh - 92px);
+  min-height: calc(100svh - 92px);
+  border-radius: 24px;
+  background: #f3f3f1;
+}
+
+.auto-model-base {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 72%;
+  height: 96%;
+  object-fit: contain;
+  object-position: center bottom;
+  transform: translateX(-50%);
+  z-index: 1;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.auto-garment-layer {
+  width: 47%;
+  height: 48%;
+  left: 50%;
+  top: 43%;
+  z-index: 2;
+  transform: translate(-50%, -50%) translateY(22px) scale(.96);
+}
+
+.auto-garment-layer.active {
+  transform: translate(-50%, -50%) translateY(0) scale(1);
+}
+
+.auto-garment-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  filter: drop-shadow(0 16px 24px rgba(0,0,0,.12));
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.auto-model-caption {
+  right: 18px;
+  bottom: 16px;
+}
+
+@media (max-width: 980px) {
+  .auto-outfit-hero,
+  .auto-outfit-shell {
+    min-height: auto;
+  }
+
+  .auto-outfit-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .auto-outfit-visual {
+    order: 1;
+    min-height: auto;
+    padding: 0;
+  }
+
+  .auto-model-stage {
+    min-height: min(680px, calc(100svh - 56px));
+    border-radius: 0;
+  }
+
+  .auto-model-base {
+    width: min(92vw, 540px);
+    height: 96%;
+  }
+
+  .auto-garment-layer {
+    width: min(64vw, 330px);
+    height: 46%;
+    top: 43%;
+  }
+
+  .auto-outfit-copy {
+    order: 2;
+    padding: 28px 18px 38px;
+  }
+
+  .auto-outfit-copy-stack {
+    min-height: 300px;
+  }
+
+  .auto-outfit-copy-item h1 {
+    max-width: 390px;
+    font-size: clamp(38px, 11vw, 58px);
+  }
+
+  .auto-outfit-copy-item > p {
+    max-width: 390px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 560px) {
+  .auto-model-stage {
+    min-height: min(620px, calc(100svh - 56px));
+  }
+
+  .auto-model-base {
+    width: 100vw;
+    height: 95%;
+  }
+
+  .auto-garment-layer {
+    width: min(68vw, 300px);
+    height: 43%;
+    top: 42%;
+  }
+
+  .auto-outfit-copy-stack {
+    min-height: 320px;
+  }
+}
