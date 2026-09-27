@@ -24,10 +24,10 @@ function formatPrice(value: number) {
 
 function GarmentLayer({
   src,
-  active,
+  state,
 }: {
   src: string;
-  active: boolean;
+  state: "active" | "previous" | "next";
 }) {
   const [failed, setFailed] = useState(false);
 
@@ -35,8 +35,8 @@ function GarmentLayer({
 
   return (
     <div
-      className={`auto-garment-layer ${active ? "active" : ""}`}
-      aria-hidden={!active}
+      className={`auto-garment-layer ${state}`}
+      aria-hidden={state !== "active"}
     >
       {/* Generated transparent garment assets are intentionally rendered as a plain img. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -161,13 +161,24 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
               }}
             />
 
-            {items.map((product, index) => (
-              <GarmentLayer
-                key={product.id}
-                src={GARMENT_ASSETS[index] ?? GARMENT_ASSETS[0]}
-                active={index === activeIndex}
-              />
-            ))}
+            {items.map((product, index) => {
+              const previousIndex =
+                (activeIndex - 1 + items.length) % items.length;
+              const state =
+                index === activeIndex
+                  ? "active"
+                  : index === previousIndex
+                    ? "previous"
+                    : "next";
+
+              return (
+                <GarmentLayer
+                  key={product.id}
+                  src={GARMENT_ASSETS[index] ?? GARMENT_ASSETS[0]}
+                  state={state}
+                />
+              );
+            })}
 
             <div className="auto-model-caption" aria-hidden="true">
               <span>{String(activeIndex + 1).padStart(2, "0")}</span>
