@@ -9851,3 +9851,29 @@ main {
     font-size: clamp(32px, 9.5vw, 40px) !important;
   }
 }
+
+
+/* Tighten gap below mobile outfit showcase */
+@media (max-width: 640px) {
+  .auto-outfit-copy {
+    padding-bottom: 18px !important;
+  }
+
+  .auto-outfit-copy-stack {
+    min-height: 220px !important;
+  }
+
+  .ref-arrivals {
+    padding-top: 18px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .auto-outfit-copy-stack {
+    min-height: 210px !important;
+  }
+
+  .ref-arrivals {
+    padding-top: 16px !important;
+  }
+}
