@@ -7705,3 +7705,26 @@ main {
     bottom: 14px;
   }
 }
+
+
+/* Remove spotlight marquee and let product image lead the section */
+.home-spotlight-marquee,
+.home-spotlight-track {
+  display: none !important;
+}
+
+.home-spotlight-image {
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (max-width: 640px) {
+  .home-spotlight-media {
+    min-height: 60svh;
+  }
+
+  .home-spotlight-image {
+    object-fit: cover;
+    object-position: center;
+  }
+}

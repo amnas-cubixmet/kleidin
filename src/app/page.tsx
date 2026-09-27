@@ -62,15 +62,6 @@ export default async function Home() {
 
       {mostLoved ? (
         <section className="home-spotlight">
-          <div className="home-spotlight-marquee" aria-hidden="true">
-            <div className="home-spotlight-track">
-              <span>MOST LOVED</span><i>•</i><span>BEST SELLER</span><i>•</i>
-              <span>MOST LOVED</span><i>•</i><span>BEST SELLER</span><i>•</i>
-              <span>MOST LOVED</span><i>•</i><span>BEST SELLER</span><i>•</i>
-              <span>MOST LOVED</span><i>•</i><span>BEST SELLER</span><i>•</i>
-            </div>
-          </div>
-
           <div className="home-spotlight-grid">
             <Link
               href={`/products/${mostLoved.slug}`}
