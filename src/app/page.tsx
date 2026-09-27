@@ -40,7 +40,7 @@ export default async function Home() {
       {products.length ? (
         <>
           {categories.length ? (
-            <section className="mx-auto w-[min(calc(100%-32px),1376px)] rounded-[26px] bg-kleid-cream px-5 py-14 sm:px-8 md:px-10 md:py-20 lg:px-12 lg:py-24">
+            <section className="category-section mx-auto w-[min(calc(100%-32px),1376px)] overflow-hidden rounded-[26px] bg-kleid-cream px-5 py-14 sm:px-8 md:px-10 md:py-20 lg:px-12 lg:py-24">
               <div className="grid items-end gap-10 lg:grid-cols-[1.15fr_.85fr] lg:gap-20">
                 <div>
                   <p className="mb-5 text-[9px] font-semibold tracking-[0.18em] text-kleid-blue">
