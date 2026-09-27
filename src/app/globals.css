@@ -8651,3 +8651,416 @@ main {
     gap: 0 !important;
   }
 }
+
+
+/* KLEID.IN About page redesign */
+.about-page {
+  background: #f4f0e9;
+  color: #111;
+  overflow-x: clip;
+}
+
+.about-hero {
+  min-height: calc(100svh - 56px);
+  padding: clamp(28px, 4vw, 54px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #fafafa;
+}
+
+.about-hero-top,
+.about-hero-foot,
+.about-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.about-kicker,
+.about-index,
+.about-hero-foot span,
+.about-statement-label p,
+.about-statement-label span,
+.about-section-intro {
+  margin: 0;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.about-kicker {
+  color: var(--blue, #001cac);
+}
+
+.about-index,
+.about-hero-foot span,
+.about-section-intro {
+  color: #8b8b8b;
+}
+
+.about-hero-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(260px, .7fr);
+  gap: clamp(32px, 7vw, 110px);
+  align-items: end;
+}
+
+.about-hero h1,
+.about-section-head h2,
+.about-final h2 {
+  margin: 0;
+  font-weight: 650;
+  letter-spacing: -.07em;
+}
+
+.about-hero h1 {
+  max-width: 1050px;
+  font-size: clamp(74px, 11vw, 168px);
+  line-height: .82;
+}
+
+.about-hero-note {
+  padding-bottom: clamp(10px, 2vw, 26px);
+}
+
+.about-hero-note > p,
+.about-final-side > p {
+  max-width: 360px;
+  margin: 0;
+  color: #666;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.about-pill {
+  min-height: 46px;
+  margin-top: 26px;
+  padding: 0 18px;
+  border: 1px solid #111;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  font-size: 10px;
+  font-weight: 650;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.about-pill:hover,
+.about-pill:focus-visible {
+  background: #111;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.about-hero-foot {
+  padding-top: 22px;
+  border-top: 1px solid rgba(17,17,17,.12);
+}
+
+.about-statement {
+  min-height: 82svh;
+  padding: clamp(44px, 7vw, 100px);
+  display: grid;
+  grid-template-columns: minmax(180px, .45fr) minmax(0, 1.55fr);
+  gap: clamp(34px, 7vw, 110px);
+  align-items: start;
+  background: #001cac;
+  color: #fff;
+}
+
+.about-statement-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.about-statement-label span {
+  opacity: .55;
+}
+
+.about-statement-label p {
+  color: #fff;
+}
+
+.about-statement-copy {
+  max-width: 1000px;
+}
+
+.about-statement-copy p {
+  margin: 0;
+}
+
+.about-statement-copy p:first-child {
+  font-size: clamp(42px, 6.5vw, 92px);
+  line-height: .93;
+  letter-spacing: -.06em;
+  font-weight: 600;
+}
+
+.about-statement-copy p + p {
+  max-width: 700px;
+  margin-top: 46px;
+  color: rgba(255,255,255,.78);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.about-principles {
+  padding: clamp(60px, 8vw, 112px) clamp(22px, 4vw, 54px);
+  background: #f4f0e9;
+}
+
+.about-section-head {
+  align-items: end;
+  margin-bottom: clamp(38px, 6vw, 74px);
+}
+
+.about-section-head h2 {
+  max-width: 900px;
+  margin-top: 18px;
+  font-size: clamp(52px, 7vw, 104px);
+  line-height: .88;
+}
+
+.about-section-intro {
+  max-width: 220px;
+  line-height: 1.6;
+}
+
+.about-principle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(17,17,17,.14);
+  border: 1px solid rgba(17,17,17,.14);
+}
+
+.about-principle-card {
+  min-height: 420px;
+  padding: 26px;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.about-principle-card > span {
+  color: #001cac;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+
+.about-principle-card h3 {
+  margin: 0 0 16px;
+  font-size: clamp(34px, 3vw, 52px);
+  line-height: .92;
+  letter-spacing: -.05em;
+}
+
+.about-principle-card p {
+  max-width: 310px;
+  margin: 0;
+  color: #666;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.about-final {
+  min-height: 70svh;
+  padding: clamp(48px, 7vw, 100px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr);
+  gap: clamp(36px, 8vw, 120px);
+  align-items: end;
+  background: #111;
+  color: #fff;
+}
+
+.about-final h2 {
+  max-width: 930px;
+  margin-top: 22px;
+  font-size: clamp(60px, 8vw, 122px);
+  line-height: .86;
+}
+
+.about-final-side {
+  padding-bottom: 8px;
+}
+
+.about-final-side > p {
+  color: rgba(255,255,255,.66);
+}
+
+.about-pill-light {
+  border-color: rgba(255,255,255,.75);
+  color: #fff;
+}
+
+.about-pill-light:hover,
+.about-pill-light:focus-visible {
+  background: #fff;
+  color: #111;
+}
+
+@media (max-width: 900px) {
+  .about-hero {
+    min-height: calc(100svh - 56px);
+    padding: 28px 18px;
+  }
+
+  .about-hero-main,
+  .about-statement,
+  .about-final {
+    grid-template-columns: 1fr;
+  }
+
+  .about-hero-main {
+    gap: 34px;
+  }
+
+  .about-hero h1 {
+    font-size: clamp(64px, 15vw, 112px);
+  }
+
+  .about-hero-note {
+    max-width: 430px;
+  }
+
+  .about-statement {
+    min-height: auto;
+    padding: 64px 18px 72px;
+    gap: 44px;
+  }
+
+  .about-statement-copy p:first-child {
+    font-size: clamp(42px, 10vw, 68px);
+  }
+
+  .about-principles {
+    padding: 64px 16px;
+  }
+
+  .about-principle-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-principle-card {
+    min-height: 280px;
+  }
+
+  .about-final {
+    min-height: auto;
+    padding: 72px 18px;
+    gap: 56px;
+  }
+
+  .about-final h2 {
+    font-size: clamp(54px, 13vw, 86px);
+  }
+}
+
+@media (max-width: 560px) {
+  .about-hero {
+    min-height: calc(100svh - 56px);
+    padding: 22px 14px 18px;
+  }
+
+  .about-hero-top,
+  .about-hero-foot {
+    gap: 12px;
+  }
+
+  .about-kicker,
+  .about-index,
+  .about-hero-foot span,
+  .about-statement-label p,
+  .about-statement-label span,
+  .about-section-intro {
+    font-size: 7px;
+  }
+
+  .about-hero h1 {
+    font-size: clamp(54px, 16.8vw, 74px);
+    line-height: .84;
+  }
+
+  .about-hero-note > p,
+  .about-final-side > p {
+    font-size: 11px;
+    line-height: 1.65;
+  }
+
+  .about-pill {
+    min-height: 42px;
+    margin-top: 20px;
+    padding: 0 14px;
+    gap: 14px;
+    font-size: 9px;
+  }
+
+  .about-hero-foot {
+    align-items: flex-end;
+  }
+
+  .about-statement {
+    padding: 52px 14px 60px;
+    gap: 36px;
+  }
+
+  .about-statement-copy p:first-child {
+    font-size: clamp(38px, 11.2vw, 52px);
+  }
+
+  .about-statement-copy p + p {
+    margin-top: 32px;
+    font-size: 11px;
+    line-height: 1.7;
+  }
+
+  .about-principles {
+    padding: 54px 10px;
+  }
+
+  .about-section-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 34px;
+  }
+
+  .about-section-head h2 {
+    margin-top: 12px;
+    font-size: clamp(44px, 12vw, 58px);
+  }
+
+  .about-principle-card {
+    min-height: 240px;
+    padding: 20px 16px;
+  }
+
+  .about-principle-card h3 {
+    font-size: 34px;
+  }
+
+  .about-principle-card p {
+    font-size: 11px;
+  }
+
+  .about-final {
+    padding: 60px 14px 64px;
+    gap: 42px;
+  }
+
+  .about-final h2 {
+    font-size: clamp(46px, 13.2vw, 62px);
+  }
+}
