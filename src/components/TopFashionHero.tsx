@@ -21,11 +21,24 @@ export function TopFashionHero({ products }: { products: Product[] }) {
 
     if (reduceMotion) return;
 
-    const timer = window.setInterval(() => {
-      setIndex((current) => (current + 1) % slides.length);
-    }, 5200);
+    let timer = 0;
 
-    return () => window.clearInterval(timer);
+    const start = () => {
+      window.clearInterval(timer);
+      if (document.hidden) return;
+
+      timer = window.setInterval(() => {
+        setIndex((current) => (current + 1) % slides.length);
+      }, 5200);
+    };
+
+    start();
+    document.addEventListener("visibilitychange", start);
+
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", start);
+    };
   }, [slides.length]);
 
   if (!slides.length) return null;
@@ -39,7 +52,7 @@ export function TopFashionHero({ products }: { products: Product[] }) {
           {slides.map((product, slideIndex) => (
             <div
               key={product.id}
-              className={`absolute inset-0 transition-opacity duration-700 ease-out ${
+              className={`top-fashion-slide absolute inset-0 transition-opacity duration-500 ease-out ${
                 slideIndex === index ? "opacity-100" : "opacity-0"
               }`}
               aria-hidden={slideIndex !== index}
