@@ -6529,9 +6529,13 @@ main {
   letter-spacing: .08em;
 }
 
-.auto-outfit-hero.reduced-motion .auto-outfit-copy-item,
-.auto-outfit-hero.reduced-motion .auto-garment-layer {
+.auto-outfit-hero.reduced-motion .auto-outfit-copy-item {
   transform: none;
+  transition: opacity 180ms linear;
+}
+
+.auto-outfit-hero.reduced-motion .auto-garment-layer {
+  transform: translate(-50%, -50%);
   transition: opacity 180ms linear;
 }
 
