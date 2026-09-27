@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { ProductCard } from "@/components/ProductCard";
 import { getCatalogProducts } from "@/lib/catalog";
 
@@ -45,38 +44,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       ? "Latest Drop"
       : "Collection";
 
-  const heroProduct =
-    filteredProducts.find((product) => product.image) ??
-    allProducts.find((product) => product.image);
-
   return (
     <section className="shop-page-premium">
-      <div className="shop-hero-card">
-        <div className="shop-hero-copy">
-          <p className="eyebrow">{eyebrow}</p>
-          <h1>{title}</h1>
-          <p>
-            {filteredProducts.length
-              ? `${filteredProducts.length} products available now.`
-              : "No products available in this selection."}
-          </p>
-        </div>
-
-        <div className="shop-hero-media">
-          {heroProduct?.image ? (
-            <Image
-              src={heroProduct.image}
-              alt={heroProduct.name}
-              fill
-              priority
-              sizes="(max-width: 760px) 100vw, 42vw"
-            />
-          ) : (
-            <span>Collection</span>
-          )}
-        </div>
-      </div>
-
       <div className="shop-content-shell">
         <div className="shop-mobile-catalog-head">
           <div>

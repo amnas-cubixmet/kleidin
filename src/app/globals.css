@@ -8623,3 +8623,19 @@ main {
     width: 184%;
   }
 }
+
+
+/* Products page starts directly with catalog */
+.shop-page-premium {
+  padding-top: 34px;
+}
+
+@media (max-width: 640px) {
+  .shop-page-premium {
+    padding-top: 18px;
+  }
+
+  .shop-content-shell {
+    padding-top: 0;
+  }
+}
