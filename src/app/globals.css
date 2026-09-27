@@ -10013,3 +10013,25 @@ main,
     background: var(--site-canvas) !important;
   }
 }
+
+
+/* Auto outfit section: pure white background */
+.auto-outfit-hero,
+.auto-outfit-shell,
+.auto-outfit-copy,
+.auto-outfit-visual,
+.auto-model-stage,
+.auto-model-composite {
+  background: #ffffff !important;
+}
+
+@media (max-width: 640px) {
+  .auto-outfit-hero,
+  .auto-outfit-shell,
+  .auto-outfit-copy,
+  .auto-outfit-visual,
+  .auto-model-stage,
+  .auto-model-composite {
+    background: #ffffff !important;
+  }
+}
