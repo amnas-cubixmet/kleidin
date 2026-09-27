@@ -155,11 +155,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
               })}
             </div>
 
-            <div className="auto-model-caption" aria-hidden="true">
-              <span>{String(activeIndex + 1).padStart(2, "0")}</span>
-              <span>/</span>
-              <span>{String(items.length).padStart(2, "0")}</span>
-            </div>
           </div>
         </div>
       </div>
