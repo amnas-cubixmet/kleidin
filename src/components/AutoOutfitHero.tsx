@@ -100,8 +100,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
     >
       <div className="auto-outfit-shell">
         <div className="auto-outfit-copy">
-          <p className="auto-outfit-kicker">KLEID.IN / LIVE EDIT</p>
-
           <div className="auto-outfit-copy-stack" aria-live="polite">
             {items.map((product, index) => (
               <div

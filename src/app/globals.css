@@ -9490,3 +9490,108 @@ main {
     white-space: nowrap;
   }
 }
+
+
+/* Compact mobile AutoOutfit showcase */
+@media (max-width: 640px) {
+  .auto-outfit-shell {
+    min-height: 72svh !important;
+    height: 72svh !important;
+    grid-template-columns: minmax(0, 50%) minmax(0, 50%) !important;
+  }
+
+  .auto-outfit-copy {
+    padding: 14px 6px 14px 14px !important;
+    justify-content: center;
+  }
+
+  .auto-outfit-copy-stack {
+    min-height: 245px !important;
+  }
+
+  .auto-outfit-category {
+    margin-bottom: 7px !important;
+    font-size: 6px !important;
+    letter-spacing: .08em !important;
+  }
+
+  .auto-outfit-copy-item h1 {
+    max-width: 100% !important;
+    font-size: clamp(24px, 7.8vw, 32px) !important;
+    line-height: .9 !important;
+    letter-spacing: -.05em !important;
+  }
+
+  .auto-outfit-copy-item > p {
+    max-width: 100% !important;
+    margin-top: 10px !important;
+    font-size: 7.5px !important;
+    line-height: 1.5 !important;
+  }
+
+  .auto-outfit-meta {
+    margin-top: 11px !important;
+    gap: 6px !important;
+  }
+
+  .auto-outfit-meta strong {
+    font-size: 14px !important;
+  }
+
+  .auto-outfit-meta span {
+    font-size: 6.5px !important;
+  }
+
+  .auto-outfit-cta {
+    min-height: 32px !important;
+    margin-top: 14px !important;
+    padding: 0 10px !important;
+    gap: 7px !important;
+    font-size: 7px !important;
+  }
+
+  .auto-outfit-visual {
+    height: 72svh !important;
+  }
+
+  .auto-model-stage {
+    height: 72svh !important;
+  }
+
+  .auto-garment-layer,
+  .auto-garment-layer.garment-0,
+  .auto-garment-layer.garment-1,
+  .auto-garment-layer.garment-2 {
+    width: 145% !important;
+    top: 50% !important;
+  }
+
+  .auto-garment-layer.garment-1 {
+    width: 140% !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .auto-outfit-shell {
+    grid-template-columns: minmax(0, 52%) minmax(0, 48%) !important;
+  }
+
+  .auto-outfit-copy {
+    padding-left: 12px !important;
+    padding-right: 5px !important;
+  }
+
+  .auto-outfit-copy-item h1 {
+    font-size: clamp(23px, 7.5vw, 30px) !important;
+  }
+
+  .auto-garment-layer,
+  .auto-garment-layer.garment-0,
+  .auto-garment-layer.garment-2 {
+    width: 150% !important;
+  }
+
+  .auto-garment-layer.garment-1 {
+    width: 146% !important;
+  }
+}
