@@ -78,6 +78,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       </div>
 
       <div className="shop-content-shell">
+        <div className="shop-mobile-catalog-head">
+          <div>
+            <span>SHOP</span>
+            <strong>{filteredProducts.length} items</strong>
+          </div>
+          <span>{title}</span>
+        </div>
+
         <div className="shop-filter-row">
           <a href="/products" className={!category && !showNew ? "active" : ""}>
             All
