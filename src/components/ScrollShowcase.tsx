@@ -140,31 +140,50 @@ export function ScrollShowcase({ products }: { products: Product[] }) {
     const el = containerRef.current;
     if (!el || products.length <= 1) return;
 
-    function handleScroll() {
-      if (!el) return;
+    let frame = 0;
+
+    const updateFromScroll = () => {
+      frame = 0;
+
       const rect = el.getBoundingClientRect();
-      const totalScrollableHeight = rect.height - window.innerHeight;
+      const viewportHeight =
+        window.visualViewport?.height ?? window.innerHeight;
+      const totalScrollableHeight = rect.height - viewportHeight;
 
       if (totalScrollableHeight <= 0) return;
 
       const currentScroll = -rect.top;
       const progress = Math.min(
         1,
-        Math.max(0, currentScroll / totalScrollableHeight)
+        Math.max(0, currentScroll / totalScrollableHeight),
       );
 
       const targetIndex = Math.min(
         products.length - 1,
-        Math.floor(progress * products.length)
+        Math.floor(progress * products.length),
       );
 
-      setActiveIndex(targetIndex);
-    }
+      setActiveIndex((current) =>
+        current === targetIndex ? current : targetIndex,
+      );
+    };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
+    const scheduleUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(updateFromScroll);
+    };
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate, { passive: true });
+    window.visualViewport?.addEventListener("resize", scheduleUpdate);
+    scheduleUpdate();
+
+    return () => {
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      window.visualViewport?.removeEventListener("resize", scheduleUpdate);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, [products.length]);
 
   if (!products.length) return null;
@@ -203,7 +222,9 @@ export function ScrollShowcase({ products }: { products: Product[] }) {
           onSelect={(i) => {
             if (!containerRef.current) return;
             const rect = containerRef.current.getBoundingClientRect();
-            const totalScrollableHeight = rect.height - window.innerHeight;
+            const viewportHeight =
+              window.visualViewport?.height ?? window.innerHeight;
+            const totalScrollableHeight = rect.height - viewportHeight;
             const targetScrollTop =
               window.scrollY +
               rect.top +
