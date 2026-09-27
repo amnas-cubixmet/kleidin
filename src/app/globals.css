@@ -9455,3 +9455,38 @@ main {
     width: 157%;
   }
 }
+
+
+/* Mobile product metadata — keep everything on one row */
+@media (max-width: 640px) {
+  .premium-product-grid .product-card-bottomline,
+  .ref-arrival-grid .product-card-bottomline {
+    min-height: 22px;
+    margin-top: 6px;
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .premium-product-grid .product-card-bottomline span,
+  .ref-arrival-grid .product-card-bottomline span {
+    min-width: 0;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .premium-product-grid .product-card-bottomline span:last-child,
+  .ref-arrival-grid .product-card-bottomline span:last-child {
+    flex: 0 0 auto;
+    text-align: right;
+  }
+
+  .premium-product-grid .quick-add,
+  .ref-arrival-grid .quick-add {
+    white-space: nowrap;
+  }
+}
