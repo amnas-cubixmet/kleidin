@@ -1,12 +1,18 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/types/product";
 
-const MODEL_IMAGE =
-  "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=1600&q=90";
+const MODEL_PRIMARY = "/images/hero/model-black-tee.png";
+const MODEL_FALLBACK =
+  "https://images.unsplash.com/photo-1583743814966-8936f37f0b?auto=format&fit=crop&w=1400&q=90";
+
+const GARMENT_ASSETS = [
+  "/images/hero/black-shirt.png",
+  "/images/hero/white-shirt.png",
+  "/images/hero/blue-shirt.png",
+];
 
 function formatPrice(value: number) {
   return new Intl.NumberFormat("en-IN", {
@@ -16,27 +22,53 @@ function formatPrice(value: number) {
   }).format(value);
 }
 
-export function AutoOutfitHero({ products }: { products: Product[] }) {
-  const items = useMemo(
-    () => products.filter((product) => product.image || product.tryOnImage).slice(0, 5),
-    [products],
+function GarmentLayer({
+  src,
+  active,
+}: {
+  src: string;
+  active: boolean;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) return null;
+
+  return (
+    <div
+      className={`auto-garment-layer ${active ? "active" : ""}`}
+      aria-hidden={!active}
+    >
+      {/* Generated transparent garment assets are intentionally rendered as a plain img. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt=""
+        className="auto-garment-image"
+        draggable={false}
+        onError={() => setFailed(true)}
+      />
+    </div>
   );
+}
+
+export function AutoOutfitHero({ products }: { products: Product[] }) {
+  const items = useMemo(() => products.slice(0, 3), [products]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [modelSrc, setModelSrc] = useState(MODEL_PRIMARY);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    const syncMotionPreference = () => setReducedMotion(media.matches);
-    syncMotionPreference();
+    const sync = () => setReducedMotion(media.matches);
+    sync();
 
     if (media.addEventListener) {
-      media.addEventListener("change", syncMotionPreference);
-      return () => media.removeEventListener("change", syncMotionPreference);
+      media.addEventListener("change", sync);
+      return () => media.removeEventListener("change", sync);
     }
 
-    media.addListener(syncMotionPreference);
-    return () => media.removeListener(syncMotionPreference);
+    media.addListener(sync);
+    return () => media.removeListener(sync);
   }, []);
 
   useEffect(() => {
@@ -50,45 +82,30 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
       timer = window.setInterval(() => {
         setActiveIndex((current) => (current + 1) % items.length);
-      }, reducedMotion ? 4200 : 3200);
+      }, reducedMotion ? 4200 : 3000);
     };
 
-    const onVisibilityChange = () => start();
-
     start();
-    document.addEventListener("visibilitychange", onVisibilityChange);
+    document.addEventListener("visibilitychange", start);
 
     return () => {
       window.clearInterval(timer);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
+      document.removeEventListener("visibilitychange", start);
     };
   }, [items.length, reducedMotion]);
 
-  useEffect(() => {
-    if (!items.length) return;
-
-    const next = items[(activeIndex + 1) % items.length];
-    const src = next?.tryOnImage || next?.image;
-    if (!src) return;
-
-    const preload = new window.Image();
-    preload.src = src;
-  }, [activeIndex, items]);
-
   if (!items.length) return null;
-
-  const active = items[activeIndex] ?? items[0];
 
   return (
     <section
       className={`auto-outfit-hero ${reducedMotion ? "reduced-motion" : ""}`}
-      aria-label="Automatic outfit showcase"
+      aria-label="Automatic KLEID.IN outfit showcase"
     >
       <div className="auto-outfit-shell">
-        <div className="auto-outfit-copy" aria-live="polite">
+        <div className="auto-outfit-copy">
           <p className="auto-outfit-kicker">KLEID.IN / LIVE EDIT</p>
 
-          <div className="auto-outfit-copy-stack">
+          <div className="auto-outfit-copy-stack" aria-live="polite">
             {items.map((product, index) => (
               <div
                 key={product.id}
@@ -97,6 +114,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
               >
                 <span className="auto-outfit-category">{product.category}</span>
                 <h1>{product.name}</h1>
+
                 <p>
                   {product.description ||
                     "A clean everyday piece selected for the current KLEID.IN edit."}
@@ -108,13 +126,13 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                 </div>
 
                 <Link href={`/products/${product.slug}`} className="auto-outfit-cta">
-                  View product <span>→</span>
+                  Shop this look <span>→</span>
                 </Link>
               </div>
             ))}
           </div>
 
-          <div className="auto-outfit-nav" aria-label="Outfit selector">
+          <div className="auto-outfit-nav" aria-label="Choose featured T-shirt">
             {items.map((product, index) => (
               <button
                 key={product.id}
@@ -132,41 +150,26 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
         <div className="auto-outfit-visual">
           <div className="auto-model-stage">
-            <Image
-              src={MODEL_IMAGE}
-              alt=""
-              fill
-              priority
-              sizes="(max-width: 980px) 100vw, 55vw"
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={modelSrc}
+              alt="Model wearing the KLEID.IN edit"
               className="auto-model-base"
+              draggable={false}
+              onError={() => {
+                if (modelSrc !== MODEL_FALLBACK) setModelSrc(MODEL_FALLBACK);
+              }}
             />
 
-            <div className="auto-model-wash" aria-hidden="true" />
+            {items.map((product, index) => (
+              <GarmentLayer
+                key={product.id}
+                src={GARMENT_ASSETS[index] ?? GARMENT_ASSETS[0]}
+                active={index === activeIndex}
+              />
+            ))}
 
-            {items.map((product, index) => {
-              const garment = product.tryOnImage || product.image;
-              if (!garment) return null;
-
-              return (
-                <div
-                  key={product.id}
-                  className={`auto-garment-layer ${index === activeIndex ? "active" : ""} ${
-                    product.tryOnImage ? "try-on-ready" : "fallback-garment"
-                  }`}
-                  aria-hidden={index !== activeIndex}
-                >
-                  <Image
-                    src={garment}
-                    alt=""
-                    fill
-                    sizes="(max-width: 980px) 68vw, 32vw"
-                    className="auto-garment-image"
-                  />
-                </div>
-              );
-            })}
-
-            <div className="auto-model-caption">
+            <div className="auto-model-caption" aria-hidden="true">
               <span>{String(activeIndex + 1).padStart(2, "0")}</span>
               <span>/</span>
               <span>{String(items.length).padStart(2, "0")}</span>
