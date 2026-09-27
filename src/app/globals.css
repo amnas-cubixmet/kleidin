@@ -8119,3 +8119,11 @@ main {
     margin-top: 24px;
   }
 }
+
+
+/* Mobile gap between brand strip and spotlight */
+@media (max-width: 640px) {
+  .ref-brand-strip + .home-spotlight {
+    margin-top: 12px !important;
+  }
+}
