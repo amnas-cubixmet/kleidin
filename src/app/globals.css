@@ -7107,3 +7107,46 @@ main {
     min-height: 36px;
   }
 }
+
+
+/* Mobile brand strip height refinement */
+@media (max-width: 640px) {
+  .ref-brand-strip {
+    padding: 0 8px 8px;
+  }
+
+  .ref-brand-strip-inner {
+    min-height: 320px;
+    padding: 24px 18px 18px;
+    border-radius: 18px;
+  }
+
+  .ref-brand-strip-inner > p {
+    font-size: 8px;
+    letter-spacing: .11em;
+  }
+
+  .ref-brand-strip-inner h2 {
+    max-width: 290px;
+    font-size: clamp(42px, 13vw, 56px);
+    line-height: .84;
+    letter-spacing: -.055em;
+  }
+
+  .ref-brand-strip-inner .ref-pill {
+    min-height: 40px;
+    padding: 0 14px;
+    gap: 12px;
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 380px) {
+  .ref-brand-strip-inner {
+    min-height: 300px;
+  }
+
+  .ref-brand-strip-inner h2 {
+    font-size: clamp(39px, 12.5vw, 50px);
+  }
+}
