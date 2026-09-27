@@ -17,7 +17,7 @@ export const products: Product[] = [
     featured: true,
     status: "active",
     image:
-      "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=1400&q=88",
+      "https://images.unsplash.com/photo-1499971442178-8c10fdf5f6ac?auto=format&fit=crop&w=1400&q=88",
     sortOrder: 10,
   },
   {
@@ -54,7 +54,7 @@ export const products: Product[] = [
     featured: true,
     status: "active",
     image:
-      "https://images.unsplash.com/photo-1563721572772-fbf713fff374?auto=format&fit=crop&w=1400&q=88",
+      "https://images.unsplash.com/photo-1560885673-c18455b4e57e?auto=format&fit=crop&w=1400&q=88",
     sortOrder: 30,
   },
   {
@@ -73,7 +73,7 @@ export const products: Product[] = [
     featured: true,
     status: "active",
     image:
-      "https://images.unsplash.com/photo-1618200471414-0b01c7ad31f1?auto=format&fit=crop&w=1400&q=88",
+      "https://images.unsplash.com/photo-1545819697-286fcb772031?auto=format&fit=crop&w=1400&q=88",
     sortOrder: 40,
   },
   {
@@ -91,7 +91,7 @@ export const products: Product[] = [
     featured: false,
     status: "active",
     image:
-      "https://images.unsplash.com/photo-1454679371063-8b15f1b98f1b?auto=format&fit=crop&w=1400&q=88",
+      "https://images.unsplash.com/photo-1563558055494-b76d54675e89?auto=format&fit=crop&w=1400&q=88",
     sortOrder: 50,
   },
   {
@@ -145,7 +145,7 @@ export const products: Product[] = [
     featured: false,
     status: "active",
     image:
-      "https://images.unsplash.com/photo-1548863227-3af567fc3b27?auto=format&fit=crop&w=1400&q=88",
+      "https://images.unsplash.com/photo-1772890753143-24991d807710?auto=format&fit=crop&w=1400&q=88",
     sortOrder: 80,
   },
 ];
