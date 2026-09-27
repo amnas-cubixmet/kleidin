@@ -89,7 +89,6 @@ export default async function Home() {
             <div className="home-spotlight-info">
               <div className="home-spotlight-info-inner">
                 <div className="home-spotlight-topline">
-                  <p>EDITOR&apos;S PICK / {mostLoved.category}</p>
                   <span>{mostLoved.stock > 0 ? "In stock" : "Sold out"}</span>
                 </div>
 

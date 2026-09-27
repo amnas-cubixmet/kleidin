@@ -9927,3 +9927,35 @@ main {
     width: 108% !important;
   }
 }
+
+
+/* Spotlight join + site background refinement */
+.reference-home {
+  background: #f4f6f1;
+}
+
+.home-spotlight {
+  background: #ecefe8;
+}
+
+@media (min-width: 901px) {
+  .home-spotlight-grid {
+    gap: 0 !important;
+  }
+
+  .home-spotlight-media {
+    border-radius: 20px 0 0 20px !important;
+  }
+
+  .home-spotlight-info {
+    border-radius: 0 20px 20px 0 !important;
+  }
+}
+
+.home-spotlight-topline {
+  justify-content: flex-end;
+}
+
+.home-spotlight-topline p {
+  display: none;
+}
