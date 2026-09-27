@@ -7315,3 +7315,351 @@ main {
     transition: opacity 180ms linear !important;
   }
 }
+
+
+/* Homepage most-loved product detail spotlight */
+.home-spotlight {
+  width: min(calc(100% - 32px), 1376px);
+  margin: 22px auto 26px;
+  border-radius: 26px;
+  overflow: hidden;
+  background: #f1eee7;
+}
+
+.home-spotlight-marquee {
+  height: 48px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(17,17,17,.08);
+  background: #001cac;
+  color: #fff;
+  display: flex;
+  align-items: center;
+}
+
+.home-spotlight-track {
+  width: max-content;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  white-space: nowrap;
+  animation: homeSpotlightMarquee 22s linear infinite;
+}
+
+.home-spotlight-track span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .18em;
+}
+
+.home-spotlight-track i {
+  opacity: .48;
+  font-style: normal;
+}
+
+@keyframes homeSpotlightMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.home-spotlight-grid {
+  min-height: 700px;
+  display: grid;
+  grid-template-columns: 1.08fr .92fr;
+  gap: 12px;
+  padding: 12px;
+}
+
+.home-spotlight-media {
+  min-height: 676px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #e8e4dc;
+}
+
+.home-spotlight-image {
+  object-fit: cover;
+  object-position: center;
+  transition: transform 700ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.home-spotlight-media:hover .home-spotlight-image {
+  transform: scale(1.025);
+}
+
+.home-spotlight-media-badge {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  z-index: 2;
+  padding: 11px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.92);
+  color: #111;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.home-spotlight-media-badge span {
+  color: #777;
+  font-size: 8px;
+}
+
+.home-spotlight-media-badge strong {
+  font-size: 9px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.home-spotlight-info {
+  min-height: 676px;
+  padding: 18px;
+  border-radius: 20px;
+  background: #fff;
+}
+
+.home-spotlight-info-inner {
+  min-height: 100%;
+  padding: clamp(24px, 4vw, 54px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.home-spotlight-topline {
+  margin-bottom: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.home-spotlight-topline p,
+.home-spotlight-topline span {
+  margin: 0;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.home-spotlight-topline p {
+  color: #001cac;
+}
+
+.home-spotlight-topline span {
+  color: #8a8a8a;
+}
+
+.home-spotlight-info h2 {
+  max-width: 520px;
+  margin: 0;
+  font-size: clamp(48px, 5.2vw, 74px);
+  line-height: .9;
+  letter-spacing: -.06em;
+  font-weight: 650;
+}
+
+.home-spotlight-price {
+  margin-top: 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.home-spotlight-price strong {
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -.03em;
+}
+
+.home-spotlight-price del {
+  color: #999;
+  font-size: 11px;
+}
+
+.home-spotlight-description {
+  max-width: 520px;
+  margin: 28px 0;
+  color: #696969;
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.home-spotlight-meta {
+  margin-bottom: 24px;
+  padding: 16px 0;
+  border-top: 1px solid #ececec;
+  border-bottom: 1px solid #ececec;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.home-spotlight-meta div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.home-spotlight-meta span {
+  color: #909090;
+  font-size: 8px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.home-spotlight-meta strong {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.home-spotlight .product-actions {
+  margin-top: 0;
+}
+
+.home-spotlight .size-picker {
+  margin-top: 0;
+}
+
+.home-spotlight .product-action-buttons {
+  margin-top: 18px;
+}
+
+.home-spotlight .add-cart-button {
+  border-radius: 999px;
+}
+
+.home-spotlight-view {
+  margin-top: 20px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #111;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  font-size: 9px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+@media (max-width: 900px) {
+  .home-spotlight {
+    width: calc(100% - 20px);
+    border-radius: 20px;
+  }
+
+  .home-spotlight-grid {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .home-spotlight-media {
+    min-height: 58svh;
+  }
+
+  .home-spotlight-info {
+    min-height: auto;
+    padding: 10px;
+  }
+
+  .home-spotlight-info-inner {
+    padding: 30px 18px 34px;
+  }
+
+  .home-spotlight-topline {
+    margin-bottom: 34px;
+  }
+
+  .home-spotlight-info h2 {
+    max-width: 420px;
+    font-size: clamp(42px, 11vw, 58px);
+  }
+}
+
+@media (max-width: 560px) {
+  .home-spotlight {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    border-radius: 18px;
+  }
+
+  .home-spotlight-marquee {
+    height: 38px;
+  }
+
+  .home-spotlight-track {
+    gap: 18px;
+  }
+
+  .home-spotlight-track span {
+    font-size: 8px;
+  }
+
+  .home-spotlight-grid {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .home-spotlight-media {
+    min-height: 52svh;
+    border-radius: 14px;
+  }
+
+  .home-spotlight-media-badge {
+    left: 12px;
+    bottom: 12px;
+    padding: 9px 11px;
+  }
+
+  .home-spotlight-info {
+    border-radius: 14px;
+  }
+
+  .home-spotlight-info-inner {
+    padding: 26px 14px 30px;
+  }
+
+  .home-spotlight-topline {
+    margin-bottom: 28px;
+  }
+
+  .home-spotlight-description {
+    margin: 20px 0;
+    font-size: 11px;
+    line-height: 1.65;
+  }
+
+  .home-spotlight-meta {
+    margin-bottom: 20px;
+  }
+
+  .home-spotlight .product-action-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .home-spotlight .add-cart-button {
+    width: 100%;
+  }
+
+  .home-spotlight-view {
+    margin-top: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-spotlight-track {
+    animation: none;
+  }
+
+  .home-spotlight-image {
+    transition: none;
+  }
+}
