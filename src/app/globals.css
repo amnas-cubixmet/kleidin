@@ -9595,3 +9595,96 @@ main {
     width: 146% !important;
   }
 }
+
+
+/* Product card alignment — all cards share the same visual rhythm */
+.ref-arrival-grid,
+.premium-product-grid,
+.product-grid {
+  align-items: stretch;
+}
+
+.ref-arrival-grid .product-card,
+.premium-product-grid .product-card,
+.product-grid .product-card {
+  height: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ref-arrival-grid .product-visual,
+.premium-product-grid .product-visual,
+.product-grid .product-visual {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  flex: 0 0 auto;
+}
+
+.ref-arrival-grid .product-card-info,
+.premium-product-grid .product-card-info,
+.product-grid .product-card-info {
+  flex: 1;
+  min-height: 132px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ref-arrival-grid .product-card-topline,
+.premium-product-grid .product-card-topline,
+.product-grid .product-card-topline {
+  min-height: 48px;
+  align-items: flex-start;
+}
+
+.ref-arrival-grid .product-name,
+.premium-product-grid .product-name,
+.product-grid .product-name {
+  min-height: 30px;
+  max-width: 68%;
+  line-height: 1.35;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.ref-arrival-grid .product-card-price,
+.premium-product-grid .product-card-price,
+.product-grid .product-card-price {
+  min-height: 30px;
+  justify-content: flex-start;
+}
+
+.ref-arrival-grid .product-card-bottomline,
+.premium-product-grid .product-card-bottomline,
+.product-grid .product-card-bottomline {
+  min-height: 30px;
+  margin-top: 4px;
+}
+
+.ref-arrival-grid .quick-add,
+.premium-product-grid .quick-add,
+.product-grid .quick-add {
+  width: 100%;
+  margin-top: auto;
+}
+
+@media (min-width: 641px) {
+  .ref-arrival-grid .product-card-info {
+    min-height: 136px;
+  }
+
+  .ref-arrival-grid .product-card-topline {
+    min-height: 48px;
+  }
+
+  .ref-arrival-grid .product-card-price {
+    min-width: 72px;
+    align-items: flex-end;
+  }
+
+  .ref-arrival-grid .product-card-bottomline {
+    min-height: 28px;
+  }
+}
