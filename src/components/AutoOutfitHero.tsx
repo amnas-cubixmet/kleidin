@@ -4,10 +4,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/types/product";
 
-const MODEL_PRIMARY = "/images/hero/model-black-tee.png";
-const MODEL_FALLBACK =
-  "https://images.unsplash.com/photo-1583743814966-8936f37f0b?auto=format&fit=crop&w=1400&q=90";
-
 const GARMENT_ASSETS = [
   "/images/hero/black-shirt.png",
   "/images/hero/white-shirt.png",
@@ -57,7 +53,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
   const items = useMemo(() => products.slice(0, 3), [products]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [modelSrc, setModelSrc] = useState(MODEL_PRIMARY);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -139,17 +134,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         <div className="auto-outfit-visual">
           <div className="auto-model-stage">
             <div className="auto-model-composite">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={modelSrc}
-                alt="Model wearing the KLEID.IN edit"
-                className="auto-model-base"
-                draggable={false}
-                onError={() => {
-                  if (modelSrc !== MODEL_FALLBACK) setModelSrc(MODEL_FALLBACK);
-                }}
-              />
-
               {items.map((product, index) => {
                 const previousIndex =
                   (activeIndex - 1 + items.length) % items.length;
