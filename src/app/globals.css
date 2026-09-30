@@ -11146,3 +11146,66 @@ main,
 .product-whatsapp-cta {
   justify-content: center !important;
 }
+
+
+/* Timed offer image badge */
+.product-card-offer-timer {
+  margin-left: auto;
+  min-height: 34px;
+  padding: 5px 8px;
+  border: 1px solid rgba(255,255,255,.26);
+  border-radius: 10px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(17,17,17,.88);
+  color: #fff;
+  line-height: 1;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+}
+
+.product-card-offer-timer small {
+  margin-bottom: 3px;
+  color: rgba(255,255,255,.62);
+  font-size: 5.5px;
+  font-weight: 650;
+  letter-spacing: .07em;
+}
+
+.product-card-offer-timer strong {
+  font-size: 7px;
+  font-weight: 750;
+  letter-spacing: .02em;
+}
+
+@media (max-width: 640px) {
+  .product-card-offer-timer {
+    min-height: 29px;
+    padding: 4px 5px;
+    border-radius: 8px;
+  }
+
+  .product-card-offer-timer small {
+    margin-bottom: 2px;
+    font-size: 4.8px;
+  }
+
+  .product-card-offer-timer strong {
+    font-size: 5.8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .product-card-offer-timer {
+    max-width: 82px;
+    overflow: hidden;
+  }
+
+  .product-card-offer-timer strong {
+    max-width: 74px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

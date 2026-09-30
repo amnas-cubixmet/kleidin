@@ -1,8 +1,34 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/types/product";
 import { formatPrice, getProductWhatsappUrl } from "@/lib/format";
 import { localStoreSettings } from "@/data/store";
+
+function getOfferTimer(endAt?: string) {
+  if (!endAt) return null;
+
+  const end = new Date(endAt);
+  const remaining = Math.max(0, end.getTime() - Date.now());
+  if (remaining <= 0) return null;
+
+  const totalMinutes = Math.floor(remaining / 60000);
+  const days = Math.floor(totalMinutes / 1440);
+  const hours = Math.floor((totalMinutes % 1440) / 60);
+  const minutes = totalMinutes % 60;
+
+  return {
+    countdown: `${String(days).padStart(2, "0")}D : ${String(hours).padStart(2, "0")}H : ${String(minutes).padStart(2, "0")}M`,
+    date: end
+      .toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+      })
+      .toUpperCase(),
+  };
+}
 
 export function ProductCard({ product }: { product: Product }) {
   const soldOut = product.status === "sold-out" || product.stock <= 0;
@@ -20,15 +46,41 @@ export function ProductCard({ product }: { product: Product }) {
         )
       : 0;
 
-  const badge = soldOut
-    ? "Sold out"
-    : limitedStock
-      ? `Limited stock · ${product.stock} left`
-      : hasOffer
-        ? "Limited offer"
-        : product.featured
-          ? "New"
-          : product.category;
+  const [offerTimer, setOfferTimer] = useState(() =>
+    getOfferTimer(product.saleEndsAt),
+  );
+
+  useEffect(() => {
+    if (!product.saleEndsAt) return;
+
+    const update = () => setOfferTimer(getOfferTimer(product.saleEndsAt));
+    update();
+
+    const timer = window.setInterval(update, 60000);
+    return () => window.clearInterval(timer);
+  }, [product.saleEndsAt]);
+
+  const badge = useMemo(
+    () =>
+      soldOut
+        ? "Sold out"
+        : limitedStock
+          ? `Limited stock · ${product.stock} left`
+          : hasOffer
+            ? product.saleLabel ?? "Limited offer"
+            : product.featured
+              ? "New"
+              : product.category,
+    [
+      hasOffer,
+      limitedStock,
+      product.category,
+      product.featured,
+      product.saleLabel,
+      product.stock,
+      soldOut,
+    ],
+  );
 
   const whatsappHref = getProductWhatsappUrl(
     product,
@@ -69,7 +121,12 @@ export function ProductCard({ product }: { product: Product }) {
             {badge}
           </span>
 
-          {hasOffer && discount > 0 ? (
+          {offerTimer ? (
+            <span className="product-card-offer-timer">
+              <small>ENDS {offerTimer.date}</small>
+              <strong>{offerTimer.countdown}</strong>
+            </span>
+          ) : hasOffer && discount > 0 ? (
             <span className="product-card-discount">{discount}% OFF</span>
           ) : null}
         </div>
