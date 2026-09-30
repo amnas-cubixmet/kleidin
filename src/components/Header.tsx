@@ -316,7 +316,7 @@ export function Header({
               aria-label="Message KLEID.IN on WhatsApp"
               title="WhatsApp"
             >
-              <WhatsAppIcon />
+              <span>Contact</span>
             </a>
           ) : null}
 
