@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -56,7 +57,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items, ready]);
 
-  function addItem(item: AddItemInput) {
+  const addItem = useCallback((item: AddItemInput) => {
     const key = `${item.id}-${item.size}-${item.color}`;
 
     setItems((current) => {
@@ -72,13 +73,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       return [...current, { ...item, key, quantity: 1 }];
     });
-  }
+  }, []);
 
-  function removeItem(key: string) {
+  const removeItem = useCallback((key: string) => {
     setItems((current) => current.filter((item) => item.key !== key));
-  }
+  }, []);
 
-  function updateQuantity(key: string, quantity: number) {
+  const updateQuantity = useCallback((key: string, quantity: number) => {
     if (quantity <= 0) {
       removeItem(key);
       return;
@@ -89,11 +90,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
         item.key === key ? { ...item, quantity } : item,
       ),
     );
-  }
+  }, [removeItem]);
 
-  function clearCart() {
+  const clearCart = useCallback(() => {
     setItems([]);
-  }
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -108,7 +109,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       updateQuantity,
       clearCart,
     }),
-    [items],
+    [items, addItem, removeItem, updateQuantity, clearCart],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

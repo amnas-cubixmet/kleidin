@@ -288,7 +288,7 @@ export function TopFashionHero({
             </span>
           </div>
 
-          <div key={current.id} className="top-fashion-copy max-w-[860px] pb-1 md:pb-4">
+          <div className="top-fashion-copy max-w-[860px] pb-1 md:pb-4">
             <p className="mb-2.5 text-[8px] font-semibold tracking-[0.16em] text-[#7395ff] md:mb-4 md:text-[10px]">
               {current.label}
             </p>

@@ -93,10 +93,7 @@ export function ProductScrollFeature({ products }: { products: Product[] }) {
             <div className="product-scroll-main">
               <p>{current.category}</p>
 
-              <h2
-                key={current.id}
-                style={{ transform: `scale(${titleScale})` }}
-              >
+              <h2 style={{ transform: `scale(${titleScale})` }}>
                 {current.name}
               </h2>
 

@@ -97,7 +97,6 @@ export function OfferHero({ offers }: { offers: Offer[] }) {
         <div className="offer-hero-media">
           {current.imageUrl ? (
             <Image
-              key={current.id}
               src={current.imageUrl}
               alt={current.title}
               fill
