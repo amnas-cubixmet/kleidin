@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { getCartWhatsappUrl } from "@/lib/format";
 import type { Product } from "@/types/product";
@@ -15,6 +15,15 @@ const nav = [
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
+
+function SearchIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="m16 16 4 4" />
+    </svg>
+  );
+}
 
 function WhatsAppIcon() {
   return (
@@ -39,6 +48,14 @@ function WhatsAppIcon() {
   );
 }
 
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  );
+}
+
 function MenuIcon({ open }: { open: boolean }) {
   return (
     <span className={`menu-icon ${open ? "open" : ""}`} aria-hidden="true">
@@ -57,6 +74,7 @@ function formatPrice(value: number) {
 }
 
 export function Header({
+  products,
   settings,
 }: {
   products: Product[];
@@ -74,9 +92,12 @@ export function Header({
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuMounted, setMenuMounted] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [cartClosing, setCartClosing] = useState(false);
+  const [query, setQuery] = useState("");
   const [announcementVisible, setAnnouncementVisible] = useState(true);
+  const searchRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuCloseTimerRef = useRef<number | null>(null);
@@ -139,6 +160,26 @@ export function Header({
     };
   }, [menuOpen, closeMenu]);
 
+  const results = useMemo(() => {
+    const value = query.trim().toLowerCase();
+
+    if (!value) return products.slice(0, 6);
+
+    return products
+      .filter((product) =>
+        [
+          product.name,
+          product.category,
+          ...product.colors,
+          ...product.sizes,
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(value),
+      )
+      .slice(0, 8);
+  }, [query, products]);
+
   useEffect(() => {
     try {
       const dismissed = window.localStorage.getItem("kleidin-announcement-dismissed");
@@ -147,8 +188,13 @@ export function Header({
   }, []);
 
   useEffect(() => {
+    if (searchOpen) window.setTimeout(() => searchRef.current?.focus(), 50);
+  }, [searchOpen]);
+
+  useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
+        setSearchOpen(false);
         closeMenu();
         if (cartOpen) handleCloseCart();
       }
@@ -171,6 +217,7 @@ export function Header({
 
   function closePanels() {
     closeMenu();
+    setSearchOpen(false);
     if (cartOpen) handleCloseCart();
   }
 
@@ -246,6 +293,20 @@ export function Header({
         </nav>
 
         <div className="header-actions">
+          <button
+            className="icon-button"
+            type="button"
+            aria-label="Search products"
+            aria-expanded={searchOpen}
+            onClick={() => {
+              closeMenu();
+              setCartOpen(false);
+              setSearchOpen((current) => !current);
+            }}
+          >
+            <SearchIcon />
+          </button>
+
           {settings.whatsappNumber ? (
             <a
               href={`https://wa.me/${settings.whatsappNumber}`}
@@ -266,6 +327,7 @@ export function Header({
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             onClick={() => {
+              setSearchOpen(false);
               setCartOpen(false);
               if (menuOpen) {
                 closeMenu();
@@ -278,21 +340,6 @@ export function Header({
           </button>
         </div>
       </header>
-
-      <form
-        className="header-search-strip"
-        action="/products"
-        method="get"
-        role="search"
-      >
-        <input
-          type="search"
-          name="q"
-          placeholder="Search products, categories, colours..."
-          aria-label="Search products"
-        />
-        <button type="submit">Search</button>
-      </form>
 
       {menuMounted ? (
         <div
@@ -317,6 +364,78 @@ export function Header({
           </nav>
         </div>
       ) : null}
+
+      {searchOpen ? (
+        <div
+          className={`search-panel ${announcementVisible ? "" : "announcement-hidden"}`}
+          role="search"
+        >
+          <div className="search-panel-inner">
+            <div className="search-input-row">
+              <SearchIcon />
+              <input
+                ref={searchRef}
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search products, categories, colours..."
+                aria-label="Search products"
+              />
+              <button
+                type="button"
+                className="search-close"
+                aria-label="Close search"
+                onClick={() => setSearchOpen(false)}
+              >
+                <CloseIcon />
+              </button>
+            </div>
+
+            <div className="search-results">
+              <p>{query ? "Search results" : "Popular products"}</p>
+              {results.length ? (
+                <div className="search-result-list">
+                  {results.map((product) => (
+                    <Link
+                      key={product.id}
+                      href={`/products/${product.slug}`}
+                      className="search-result-item"
+                      onClick={closePanels}
+                    >
+                      <div className="search-result-thumb">
+                        {product.image ? (
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            width={56}
+                            height={56}
+                            className="search-result-img"
+                          />
+                        ) : (
+                          <div className="search-result-placeholder">
+                            <span>{product.name.charAt(0)}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="search-result-info">
+                        <strong className="search-result-title">{product.name}</strong>
+                        <small className="search-result-meta">
+                          {product.category}{product.colors?.length ? ` · ${product.colors.join(" / ")}` : ""}
+                        </small>
+                      </div>
+
+                      <span className="search-result-arrow" aria-hidden="true">↗</span>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="search-empty">No products found for “{query}”.</div>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
 
       {cartOpen ? (
         <div
