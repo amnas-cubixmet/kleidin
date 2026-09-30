@@ -1,5 +1,6 @@
 import { store } from "@/config/store";
 import type { CartItem } from "@/context/CartContext";
+import type { Product } from "@/types/product";
 
 export function formatPrice(value: number) {
   return new Intl.NumberFormat(store.locale, {
@@ -40,6 +41,26 @@ export function getCartWhatsappUrl(
     `Subtotal: ${formatPrice(subtotal)}`,
     "",
     "Please confirm availability and delivery details.",
+  ];
+
+  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(lines.join("\n"))}`;
+}
+
+
+export function getProductWhatsappUrl(
+  product: Product,
+  whatsappNumber = store.whatsappNumber,
+) {
+  if (!whatsappNumber) return "#";
+
+  const lines = [
+    "Hi KLEID.IN, I’m interested in this product:",
+    "",
+    product.name,
+    `Price: ${formatPrice(product.price)}`,
+    `Product: /products/${product.slug}`,
+    "",
+    "Please share availability, size and delivery details.",
   ];
 
   return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(lines.join("\n"))}`;
