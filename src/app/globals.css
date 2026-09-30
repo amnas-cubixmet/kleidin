@@ -11755,3 +11755,158 @@ main,
     font-size: 6px !important;
   }
 }
+
+
+/* FINAL mobile header polish — 320px to 430px */
+@media (max-width: 640px) {
+  .site-header {
+    width: calc(100% - 8px) !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    margin: 4px auto 6px !important;
+    padding: 0 8px 0 14px !important;
+    border: 0 !important;
+    border-radius: 16px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    background: #ffffff !important;
+    box-shadow: 0 5px 18px rgba(10, 18, 35, .035) !important;
+  }
+
+  .site-header .brand {
+    min-width: 0;
+    justify-self: start !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    letter-spacing: -.055em !important;
+    white-space: nowrap;
+  }
+
+  .site-header .desktop-nav {
+    display: none !important;
+  }
+
+  .site-header .header-actions {
+    min-width: 0;
+    justify-self: end !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+
+  .site-header .icon-button {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    background: transparent !important;
+  }
+
+  .site-header .icon-button svg {
+    width: 16px !important;
+    height: 16px !important;
+    stroke-width: 1.7 !important;
+  }
+
+  .site-header .header-whatsapp-button {
+    width: auto !important;
+    min-width: 50px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 0 11px !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #111111 !important;
+    color: #ffffff !important;
+    font-size: 6.8px !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    box-shadow: none !important;
+  }
+
+  .site-header .menu-button {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    background: transparent !important;
+    color: #001cac !important;
+  }
+
+  .site-header .menu-icon {
+    width: 20px !important;
+    height: 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+
+  .site-header .menu-icon i {
+    width: 20px !important;
+    height: 2px !important;
+    margin: 0 !important;
+    border-radius: 999px !important;
+    background: #001cac !important;
+    transform-origin: center !important;
+  }
+
+  .site-header.scrolled .header-whatsapp-button {
+    width: 0 !important;
+    min-width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .site-header {
+    padding-left: 12px !important;
+    padding-right: 6px !important;
+  }
+
+  .site-header .brand {
+    font-size: 17px !important;
+  }
+
+  .site-header .header-actions {
+    gap: 2px !important;
+  }
+
+  .site-header .icon-button {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+  }
+
+  .site-header .header-whatsapp-button {
+    min-width: 46px !important;
+    height: 27px !important;
+    min-height: 27px !important;
+    padding: 0 9px !important;
+    font-size: 6.4px !important;
+  }
+
+  .site-header .menu-button {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+  }
+}
