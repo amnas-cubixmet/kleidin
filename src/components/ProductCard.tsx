@@ -111,7 +111,6 @@ export function ProductCard({ product }: { product: Product }) {
             aria-label={`Ask about ${product.name} on WhatsApp`}
           >
             <span>Order on WhatsApp</span>
-            <span aria-hidden="true">↗</span>
           </a>
         )}
       </div>

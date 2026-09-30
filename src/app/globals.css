@@ -11140,3 +11140,9 @@ main,
     font-size: 6.5px;
   }
 }
+
+
+/* Product WhatsApp CTA — centered text, no arrow */
+.product-whatsapp-cta {
+  justify-content: center !important;
+}
