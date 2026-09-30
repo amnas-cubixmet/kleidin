@@ -47,7 +47,7 @@ export default function AboutPage() {
               colours and repeat wear.
             </p>
             <Link href="/products" className="about-pill">
-              Explore the collection <span>→</span>
+              Explore the collection
             </Link>
           </div>
         </div>
@@ -120,7 +120,7 @@ export default function AboutPage() {
             wardrobe.
           </p>
           <Link href="/products" className="about-pill about-pill-light">
-            Shop KLEID.IN <span>→</span>
+            Shop KLEID.IN
           </Link>
         </div>
       </section>

@@ -90,7 +90,7 @@ export function OfferHero({ offers }: { offers: Offer[] }) {
           ) : null}
 
           <Link href={current.ctaHref} className="offer-cta">
-            {current.ctaLabel}<span>→</span>
+            {current.ctaLabel}
           </Link>
         </div>
 

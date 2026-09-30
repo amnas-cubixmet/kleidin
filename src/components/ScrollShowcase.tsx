@@ -53,7 +53,7 @@ export function ProductInfo({ product }: { product: Product }) {
 
       <div className="showcase-actions">
         <Link href={`/products/${product.slug}`} className="showcase-cta">
-          View Details <span>→</span>
+          View Details
         </Link>
       </div>
     </div>

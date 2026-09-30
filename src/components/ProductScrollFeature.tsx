@@ -108,7 +108,7 @@ export function ProductScrollFeature({ products }: { products: Product[] }) {
                 href={`/products/${current.slug}`}
                 className="product-scroll-link"
               >
-                View product <span>→</span>
+                View product
               </Link>
             </div>
 
@@ -126,9 +126,8 @@ export function ProductScrollFeature({ products }: { products: Product[] }) {
             {items.map((item, index) => (
               <div
                 key={item.id}
-                className={`product-scroll-image-layer ${
-                  index === activeIndex ? "active" : ""
-                }`}
+                className={`product-scroll-image-layer ${index === activeIndex ? "active" : ""
+                  }`}
                 style={
                   index === activeIndex
                     ? { transform: `scale(${imageScale})` }

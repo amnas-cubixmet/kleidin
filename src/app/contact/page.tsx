@@ -91,7 +91,7 @@ export default async function ContactPage() {
                   className="inline-flex min-h-12 items-center justify-between rounded-full bg-[#111] px-5 text-[10px] font-semibold text-white"
                 >
                   <span>Browse products</span>
-                  <span>→</span>
+
                 </Link>
               ) : null}
             </div>
@@ -150,7 +150,7 @@ export default async function ContactPage() {
               href="/products"
               className="mt-8 inline-flex w-fit items-center gap-8 border-b border-black pb-1 text-[9px] font-semibold tracking-[0.08em] text-[#111]"
             >
-              BACK TO SHOP <span>→</span>
+              BACK TO SHOP
             </Link>
           </div>
         </div>

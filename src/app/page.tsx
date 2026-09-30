@@ -46,7 +46,7 @@ export default async function Home() {
                 <h2>Available now.</h2>
               </div>
               <Link href="/products" className="ref-outline-pill">
-                View all <span>→</span>
+                View all
               </Link>
             </div>
 
@@ -57,89 +57,89 @@ export default async function Home() {
             </div>
           </section>
 
-      <section className="ref-brand-strip">
-        <div className="ref-brand-strip-inner">
-          <p>KLEID.IN</p>
-          <h2>ONE WARDROBE.<br />NO LABELS.</h2>
-          <Link href="/about" className="ref-pill ref-pill-light">
-            About us <span>→</span>
-          </Link>
-        </div>
-      </section>
+          <section className="ref-brand-strip">
+            <div className="ref-brand-strip-inner">
+              <p>KLEID.IN</p>
+              <h2>ONE WARDROBE.<br />NO LABELS.</h2>
+              <Link href="/about" className="ref-pill ref-pill-light">
+                About us
+              </Link>
+            </div>
+          </section>
 
-      {mostLoved ? (
-        <section className="home-spotlight">
-          <div className="home-spotlight-grid">
-            <Link
-              href={`/products/${mostLoved.slug}`}
-              className="home-spotlight-media"
-              aria-label={`View ${mostLoved.name}`}
-            >
-              {mostLoved.image ? (
-                <Image
-                  src={mostLoved.image}
-                  alt={mostLoved.name}
-                  fill
-                  sizes="(max-width: 900px) 100vw, 58vw"
-                  className="home-spotlight-image"
-                />
-              ) : (
-                <span>No image</span>
-              )}
-
-              <div className="home-spotlight-media-badge">
-                <span>01</span>
-                <strong>Most loved</strong>
-              </div>
-            </Link>
-
-            <div className="home-spotlight-info">
-              <div className="home-spotlight-info-inner">
-                <div className="home-spotlight-topline">
-                  <span>{mostLoved.stock > 0 ? "In stock" : "Sold out"}</span>
-                </div>
-
-                <div>
-                  <h2>{mostLoved.name}</h2>
-
-                  <div className="home-spotlight-price">
-                    <strong>{formatPrice(mostLoved.price)}</strong>
-                    {mostLoved.compareAtPrice ? (
-                      <del>{formatPrice(mostLoved.compareAtPrice)}</del>
-                    ) : null}
-                  </div>
-                </div>
-
-                <p className="home-spotlight-description">
-                  {mostLoved.description}
-                </p>
-
-                <div className="home-spotlight-meta">
-                  <div>
-                    <span>Colour</span>
-                    <strong>{mostLoved.colors.join(" / ")}</strong>
-                  </div>
-                  <div>
-                    <span>Sizes</span>
-                    <strong>{mostLoved.sizes.join(" · ")}</strong>
-                  </div>
-                </div>
-
-                <ProductActions product={mostLoved} compact />
-
+          {mostLoved ? (
+            <section className="home-spotlight">
+              <div className="home-spotlight-grid">
                 <Link
                   href={`/products/${mostLoved.slug}`}
-                  className="home-spotlight-view"
+                  className="home-spotlight-media"
+                  aria-label={`View ${mostLoved.name}`}
                 >
-                  View full product <span>↗</span>
+                  {mostLoved.image ? (
+                    <Image
+                      src={mostLoved.image}
+                      alt={mostLoved.name}
+                      fill
+                      sizes="(max-width: 900px) 100vw, 58vw"
+                      className="home-spotlight-image"
+                    />
+                  ) : (
+                    <span>No image</span>
+                  )}
+
+                  <div className="home-spotlight-media-badge">
+                    <span>01</span>
+                    <strong>Most loved</strong>
+                  </div>
                 </Link>
+
+                <div className="home-spotlight-info">
+                  <div className="home-spotlight-info-inner">
+                    <div className="home-spotlight-topline">
+                      <span>{mostLoved.stock > 0 ? "In stock" : "Sold out"}</span>
+                    </div>
+
+                    <div>
+                      <h2>{mostLoved.name}</h2>
+
+                      <div className="home-spotlight-price">
+                        <strong>{formatPrice(mostLoved.price)}</strong>
+                        {mostLoved.compareAtPrice ? (
+                          <del>{formatPrice(mostLoved.compareAtPrice)}</del>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    <p className="home-spotlight-description">
+                      {mostLoved.description}
+                    </p>
+
+                    <div className="home-spotlight-meta">
+                      <div>
+                        <span>Colour</span>
+                        <strong>{mostLoved.colors.join(" / ")}</strong>
+                      </div>
+                      <div>
+                        <span>Sizes</span>
+                        <strong>{mostLoved.sizes.join(" · ")}</strong>
+                      </div>
+                    </div>
+
+                    <ProductActions product={mostLoved} compact />
+
+                    <Link
+                      href={`/products/${mostLoved.slug}`}
+                      className="home-spotlight-view"
+                    >
+                      View full product <span>↗</span>
+                    </Link>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </section>
+            </section>
+          ) : null}
+        </>
       ) : null}
-    </>
-  ) : null}
 
     </div>
   );

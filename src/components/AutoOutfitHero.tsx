@@ -121,7 +121,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                 </div>
 
                 <Link href={`/products/${product.slug}`} className="auto-outfit-cta">
-                  Shop this look <span>→</span>
+                  Shop this look
                 </Link>
               </div>
             ))}
