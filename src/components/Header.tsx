@@ -33,16 +33,6 @@ function CloseIcon() {
   );
 }
 
-function CartIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M4 5h2l1.8 9.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L21 8H7" />
-      <circle cx="10" cy="20" r="1" />
-      <circle cx="18" cy="20" r="1" />
-    </svg>
-  );
-}
-
 function MenuIcon({ open }: { open: boolean }) {
   return (
     <span className={`menu-icon ${open ? "open" : ""}`} aria-hidden="true">
@@ -292,24 +282,6 @@ export function Header({
             }}
           >
             <SearchIcon />
-          </button>
-
-          <button
-            className="cart-link cart-button"
-            type="button"
-            aria-label={`Open cart with ${itemCount} items`}
-            aria-expanded={cartOpen}
-            onClick={() => {
-              closeMenu();
-              setSearchOpen(false);
-              setCartOpen(true);
-            }}
-          >
-            <span className="cart-icon-wrap">
-              <CartIcon />
-              {itemCount > 0 ? <b className="cart-count-badge">{itemCount}</b> : null}
-            </span>
-            <span className="cart-label">Cart</span>
           </button>
 
           <button
