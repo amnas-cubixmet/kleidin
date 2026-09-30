@@ -100,10 +100,6 @@ export function TopFashionHero({
 
             <div className="mt-5 flex max-w-[620px] flex-col gap-4 md:mt-8 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="m-0 max-w-[330px] text-[10px] leading-5 text-white/70 md:max-w-[400px] md:text-[12px] md:leading-6">
-                  Clean silhouettes, easy layers and pieces designed to work every day.
-                </p>
-
                 <div className="mt-3 flex max-w-[330px] items-center gap-2 overflow-hidden text-[8px] text-white/55 md:mt-4 md:gap-3 md:text-[9px]">
                   <span>{current.name}</span>
                   <span>•</span>
@@ -118,13 +114,6 @@ export function TopFashionHero({
                   style={{ color: "#111111" }}
                 >
                   Shop collection <span>→</span>
-                </Link>
-
-                <Link
-                  href={`/products/${current.slug}`}
-                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/25 bg-black/5 px-4 text-[9px] font-semibold text-white backdrop-blur-sm transition hover:bg-white/10"
-                >
-                  View product
                 </Link>
 
                 <a
