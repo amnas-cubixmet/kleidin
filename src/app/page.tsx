@@ -3,8 +3,7 @@ import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { TopFashionHero } from "@/components/TopFashionHero";
-import { ProductScrollFeature } from "@/components/ProductScrollFeature";
-import { OfferHero } from "@/components/OfferHero";
+import { FeatureStorySection } from "@/components/FeatureStorySection";
 import { ProductActions } from "@/components/ProductActions";
 import { formatPrice, getWhatsappUrl } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
@@ -67,13 +66,10 @@ export default async function Home() {
       )}
 
       {products.length ? (
-        <ProductScrollFeature products={products.slice(0, 3)} />
-      ) : null}
-
-      {offers.length ? (
-        <section className="homepage-offer-section">
-          <OfferHero offers={offers} />
-        </section>
+        <FeatureStorySection
+          product={featured[0] ?? products[0]}
+          offer={offers[0] ?? null}
+        />
       ) : null}
 
       <section className="ref-brand-strip">
