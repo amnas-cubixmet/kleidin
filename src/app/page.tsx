@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { TopFashionHero } from "@/components/TopFashionHero";
+import { ProductScrollFeature } from "@/components/ProductScrollFeature";
 import { ProductActions } from "@/components/ProductActions";
 import { formatPrice, getWhatsappUrl } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
@@ -62,6 +63,10 @@ export default async function Home() {
           <p>Products will appear here after they are added from the admin panel.</p>
         </section>
       )}
+
+      {products.length ? (
+        <ProductScrollFeature products={products.slice(0, 3)} />
+      ) : null}
 
       <section className="ref-brand-strip">
         <div className="ref-brand-strip-inner">

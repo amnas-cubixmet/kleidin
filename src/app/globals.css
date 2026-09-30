@@ -10042,3 +10042,209 @@ main,
 .home-spotlight-info-inner {
   background: #F4F0E9 !important;
 }
+
+
+/* Homepage 8th section — scroll product feature */
+.product-scroll-feature {
+  width: 100%;
+  position: relative;
+  background: #fff;
+}
+
+.product-scroll-sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  background: #fff;
+}
+
+.product-scroll-panel {
+  width: min(100%, 1376px);
+  height: min(82svh, 820px);
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 26px;
+  display: grid;
+  grid-template-columns: .82fr 1.18fr;
+  background: #f4f0e9;
+}
+
+.product-scroll-copy {
+  min-width: 0;
+  padding: 42px 42px 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #f4f0e9;
+}
+
+.product-scroll-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  color: #6f6f6f;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: .13em;
+}
+
+.product-scroll-main {
+  max-width: 580px;
+}
+
+.product-scroll-main > p {
+  margin: 0 0 16px;
+  color: #001cac;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.product-scroll-main h2 {
+  margin: 0;
+  max-width: 650px;
+  transform-origin: left center;
+  font-size: clamp(64px, 7vw, 108px);
+  font-weight: 650;
+  line-height: .84;
+  letter-spacing: -.065em;
+  transition: transform 120ms linear;
+}
+
+.product-scroll-price {
+  margin-top: 24px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.product-scroll-price strong {
+  font-size: 23px;
+  font-weight: 650;
+}
+
+.product-scroll-price del {
+  color: #929292;
+  font-size: 11px;
+}
+
+.product-scroll-link {
+  min-height: 42px;
+  margin-top: 28px;
+  padding: 0 17px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  background: #111;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.product-scroll-progress {
+  display: flex;
+  gap: 5px;
+}
+
+.product-scroll-progress span {
+  width: 24px;
+  height: 2px;
+  background: #c7c3bb;
+  transition: width 220ms ease, background 220ms ease;
+}
+
+.product-scroll-progress span.active {
+  width: 44px;
+  background: #001cac;
+}
+
+.product-scroll-media {
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  background: #e9e7e2;
+}
+
+.product-scroll-image-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(.98);
+  transition: opacity 360ms ease, transform 180ms linear;
+}
+
+.product-scroll-image-layer.active {
+  opacity: 1;
+}
+
+.product-scroll-image {
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (max-width: 760px) {
+  .product-scroll-feature {
+    height: auto !important;
+  }
+
+  .product-scroll-sticky {
+    position: relative;
+    top: auto;
+    height: auto;
+    padding: 12px 0;
+  }
+
+  .product-scroll-panel {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    border-radius: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .product-scroll-media {
+    order: 1;
+    min-height: 54svh;
+  }
+
+  .product-scroll-copy {
+    order: 2;
+    min-height: 340px;
+    padding: 24px 16px 28px;
+  }
+
+  .product-scroll-main h2 {
+    font-size: clamp(42px, 13vw, 58px);
+    transform: none !important;
+  }
+
+  .product-scroll-price {
+    margin-top: 18px;
+  }
+
+  .product-scroll-price strong {
+    font-size: 18px;
+  }
+
+  .product-scroll-link {
+    margin-top: 20px;
+  }
+
+  .product-scroll-progress {
+    margin-top: 26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-scroll-main h2,
+  .product-scroll-image-layer {
+    transition: none;
+    transform: none !important;
+  }
+}
