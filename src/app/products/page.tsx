@@ -47,12 +47,16 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   return (
     <section className="shop-page-premium">
       <div className="shop-content-shell">
-        <div className="shop-mobile-catalog-head">
-          <div>
-            <span>SHOP</span>
-            <strong>{filteredProducts.length} items</strong>
+        <div className="shop-catalog-head">
+          <div className="shop-catalog-title">
+            <span>{eyebrow}</span>
+            <h1>{title}</h1>
           </div>
-          <span>{title}</span>
+
+          <div className="shop-catalog-count">
+            <span>PRODUCTS</span>
+            <strong>{String(filteredProducts.length).padStart(2, "0")}</strong>
+          </div>
         </div>
 
         <div className="shop-filter-row">
