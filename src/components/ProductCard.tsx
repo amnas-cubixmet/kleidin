@@ -22,17 +22,24 @@ function getOfferTimer(endAt?: string) {
   return {
     countdown: `${String(days).padStart(2, "0")}D : ${String(hours).padStart(2, "0")}H : ${String(minutes).padStart(2, "0")}M`,
     date: end
-      .toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-      })
+      .toLocaleDateString("en-GB", { day: "2-digit", month: "short" })
       .toUpperCase(),
   };
 }
 
 export function ProductCard({ product }: { product: Product }) {
-  const soldOut = product.status === "sold-out" || product.stock <= 0;
-  const limitedStock = !soldOut && product.stock <= 7;
+  const variants = product.colorVariants ?? [];
+  const [selectedColor, setSelectedColor] = useState(
+    variants[0]?.name ?? product.colors[0] ?? "Default",
+  );
+
+  const selectedVariant =
+    variants.find((variant) => variant.name === selectedColor) ?? variants[0];
+
+  const currentImage = selectedVariant?.image ?? product.image;
+  const currentStock = selectedVariant?.stock ?? product.stock;
+  const soldOut = product.status === "sold-out" || currentStock <= 0;
+  const limitedStock = !soldOut && currentStock <= 7;
   const hasOffer =
     Boolean(product.compareAtPrice) &&
     Number(product.compareAtPrice) > product.price;
@@ -52,10 +59,8 @@ export function ProductCard({ product }: { product: Product }) {
 
   useEffect(() => {
     if (!product.saleEndsAt) return;
-
     const update = () => setOfferTimer(getOfferTimer(product.saleEndsAt));
     update();
-
     const timer = window.setInterval(update, 60000);
     return () => window.clearInterval(timer);
   }, [product.saleEndsAt]);
@@ -65,19 +70,19 @@ export function ProductCard({ product }: { product: Product }) {
       soldOut
         ? "Sold out"
         : limitedStock
-          ? `Limited stock · ${product.stock} left`
+          ? `Limited stock · ${currentStock} left`
           : hasOffer
             ? product.saleLabel ?? "Limited offer"
             : product.featured
               ? "New"
               : product.category,
     [
+      currentStock,
       hasOffer,
       limitedStock,
       product.category,
       product.featured,
       product.saleLabel,
-      product.stock,
       soldOut,
     ],
   );
@@ -85,25 +90,30 @@ export function ProductCard({ product }: { product: Product }) {
   const whatsappHref = getProductWhatsappUrl(
     product,
     localStoreSettings.whatsappNumber,
+    selectedColor,
   );
 
   return (
     <article className="product-card product-card-refined">
-      <Link
-        href={`/products/${product.slug}`}
-        className="product-visual product-card-visual-refined"
-      >
-        {product.image ? (
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            sizes="(max-width: 600px) 50vw, (max-width: 980px) 50vw, 25vw"
-            className="product-image product-card-image-refined"
-          />
-        ) : (
-          <span className="product-image-empty">No image</span>
-        )}
+      <div className="product-visual product-card-visual-refined">
+        <Link
+          href={`/products/${product.slug}`}
+          className="product-card-image-link"
+          aria-label={product.name}
+        >
+          {currentImage ? (
+            <Image
+              key={currentImage}
+              src={currentImage}
+              alt={`${product.name} — ${selectedColor}`}
+              fill
+              sizes="(max-width: 600px) 50vw, (max-width: 980px) 50vw, 25vw"
+              className="product-image product-card-image-refined"
+            />
+          ) : (
+            <span className="product-image-empty">No image</span>
+          )}
+        </Link>
 
         <div className="product-card-badges">
           <span
@@ -130,7 +140,7 @@ export function ProductCard({ product }: { product: Product }) {
             <span className="product-card-discount">{discount}% OFF</span>
           ) : null}
         </div>
-      </Link>
+      </div>
 
       <div className="product-card-info product-card-info-refined">
         <div className="product-card-topline product-card-main-row">
@@ -146,9 +156,32 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         </div>
 
+        {variants.length > 1 ? (
+          <div className="product-card-colour-row">
+            <div className="product-colour-swatches" aria-label="Choose colour">
+              {variants.map((variant) => (
+                <button
+                  key={variant.name}
+                  type="button"
+                  className={
+                    "product-colour-swatch " +
+                    (selectedColor === variant.name ? "active" : "")
+                  }
+                  onClick={() => setSelectedColor(variant.name)}
+                  aria-label={`Show ${variant.name}`}
+                  title={variant.name}
+                >
+                  <span style={{ background: variant.value }} />
+                </button>
+              ))}
+            </div>
+            <span>{selectedColor}</span>
+          </div>
+        ) : null}
+
         <div className="product-card-bottomline product-card-meta-refined">
-          <span>{product.colors.join(" / ") || "Colour not set"}</span>
-          <span>{soldOut ? "Out of stock" : `Stock ${product.stock}`}</span>
+          <span>{selectedColor}</span>
+          <span>{soldOut ? "Out of stock" : `Stock ${currentStock}`}</span>
         </div>
 
         {soldOut || whatsappHref === "#" ? (
@@ -165,7 +198,7 @@ export function ProductCard({ product }: { product: Product }) {
             target="_blank"
             rel="noreferrer"
             className="product-whatsapp-cta"
-            aria-label={`Ask about ${product.name} on WhatsApp`}
+            aria-label={`Ask about ${product.name} in ${selectedColor} on WhatsApp`}
           >
             <span>Order on WhatsApp</span>
           </a>

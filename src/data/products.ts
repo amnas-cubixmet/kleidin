@@ -14,7 +14,27 @@ export const products: Product[] = [
     description:
       "240 GSM combed cotton T-shirt with a relaxed shoulder, clean rib neckline and a structured everyday drape. Designed as a dependable base layer for repeat wear.",
     sizes: ["S", "M", "L", "XL"],
-    colors: ["Black"],
+    colors: ["Black", "White", "Blue"],
+    colorVariants: [
+      {
+        name: "Black",
+        value: "#111111",
+        image: "/images/hero/black-shirt.png",
+        stock: 18,
+      },
+      {
+        name: "White",
+        value: "#f4f4f0",
+        image: "/images/hero/white-shirt.png",
+        stock: 14,
+      },
+      {
+        name: "Blue",
+        value: "#3156a4",
+        image: "/images/hero/blue-shirt.png",
+        stock: 9,
+      },
+    ],
     stock: 18,
     featured: true,
     status: "active",

@@ -50,6 +50,8 @@ export function getCartWhatsappUrl(
 export function getProductWhatsappUrl(
   product: Product,
   whatsappNumber = store.whatsappNumber,
+  selectedColor?: string,
+  selectedSize?: string,
 ) {
   if (!whatsappNumber) return "#";
 
@@ -59,8 +61,10 @@ export function getProductWhatsappUrl(
     product.name,
     `Price: ${formatPrice(product.price)}`,
     `Product: /products/${product.slug}`,
+    selectedColor ? `Colour: ${selectedColor}` : "",
+    selectedSize ? `Size: ${selectedSize}` : "",
     "",
-    "Please share availability, size and delivery details.",
+    "Please confirm availability and delivery details.",
   ];
 
   return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(lines.join("\n"))}`;

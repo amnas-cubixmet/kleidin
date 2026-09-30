@@ -1,5 +1,12 @@
 export type ProductStatus = "active" | "draft" | "sold-out";
 
+export type ProductColorVariant = {
+  name: string;
+  value: string;
+  image: string;
+  stock?: number;
+};
+
 export type Product = {
   id: string;
   sku: string;
@@ -13,6 +20,7 @@ export type Product = {
   description: string;
   sizes: string[];
   colors: string[];
+  colorVariants?: ProductColorVariant[];
   stock: number;
   featured: boolean;
   status: ProductStatus;
@@ -34,6 +42,7 @@ export type DbProduct = {
   description: string;
   sizes: string[];
   colors: string[];
+  color_variants?: ProductColorVariant[] | null;
   stock: number;
   featured: boolean;
   status: ProductStatus;
