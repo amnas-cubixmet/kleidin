@@ -246,7 +246,7 @@ export function TopFashionHero({
 
   return (
     <section className="mx-auto mb-0 w-full px-0 sm:mb-3 sm:w-[min(calc(100%-24px),1440px)]">
-      <div className="relative h-[64svh] min-h-[520px] max-h-[680px] overflow-hidden rounded-none bg-[#071225] text-white sm:rounded-[20px] md:h-auto md:min-h-[78svh] md:max-h-none md:rounded-[26px]">
+      <div className="relative h-[60svh] min-h-[500px] max-h-[620px] overflow-hidden rounded-none bg-[#071225] text-white sm:rounded-[20px] md:h-[68svh] md:min-h-[560px] md:max-h-[720px] md:rounded-[26px]">
         <div className="absolute inset-0">
           {slides.map((slide, slideIndex) => (
             <div
@@ -281,7 +281,7 @@ export function TopFashionHero({
         />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,24,.04)_22%,rgba(3,10,24,.10)_50%,rgba(3,10,24,.76)_100%)] md:hidden" />
 
-        <div className="relative z-10 flex h-full min-h-[520px] flex-col justify-between px-5 py-5 md:min-h-[78svh] md:px-12 md:py-10 lg:px-16 lg:py-12">
+        <div className="relative z-10 flex h-full flex-col justify-between px-5 py-5 md:px-12 md:py-9 lg:px-16 lg:py-10">
           <div className="flex items-center justify-end">
             <span className="max-w-[62vw] truncate rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-[8px] font-medium text-white/75 backdrop-blur-sm">
               {current.badge ?? current.label}
@@ -373,13 +373,13 @@ export function TopFashionHero({
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-4 pt-1">
+          <div className="flex items-center pt-1">
             <div className="flex min-w-0 items-center gap-2.5">
               <span className="shrink-0 text-[8px] font-semibold text-white/70">
                 {String(index + 1).padStart(2, "0")} / {String(slideCount).padStart(2, "0")}
               </span>
 
-              <div className="flex max-w-[190px] items-center gap-1 overflow-hidden md:max-w-none">
+              <div className="flex max-w-[220px] items-center gap-1 overflow-hidden md:max-w-none">
                 {slides.map((slide, slideIndex) => (
                   <button
                     key={slide.id}
@@ -394,31 +394,6 @@ export function TopFashionHero({
                   />
                 ))}
               </div>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() =>
-                  setIndex((currentIndex) =>
-                    (currentIndex - 1 + slideCount) % slideCount,
-                  )
-                }
-                className="grid size-9 place-items-center rounded-full border border-white/20 bg-white/5 text-[12px] text-white transition hover:bg-white/12"
-                aria-label="Previous hero slide"
-              >
-                ←
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  setIndex((currentIndex) => (currentIndex + 1) % slideCount)
-                }
-                className="grid size-9 place-items-center rounded-full border border-white/20 bg-white/5 text-[12px] text-white transition hover:bg-white/12"
-                aria-label="Next hero slide"
-              >
-                →
-              </button>
             </div>
           </div>
         </div>
