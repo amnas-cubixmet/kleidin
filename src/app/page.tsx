@@ -30,7 +30,7 @@ export default async function Home() {
       {products.length ? (
         <>
           <TopFashionHero
-            products={featured.length ? featured : products}
+            products={products}
             contactHref={contactHref}
             offer={offers[0] ?? null}
           />

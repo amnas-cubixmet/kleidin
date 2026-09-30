@@ -13,6 +13,20 @@ type TimeLeft = {
   seconds: number;
 };
 
+type HeroSlide = {
+  id: string;
+  label: string;
+  title: string;
+  subtitle: string;
+  button: string;
+  href: string;
+  image?: string;
+  badge?: string;
+  meta?: string;
+  showCountdown?: boolean;
+  brandOnly?: boolean;
+};
+
 function getTimeLeft(endAt?: string | null): TimeLeft {
   if (!endAt) {
     return { days: 0, hours: 0, minutes: 0, seconds: 0 };
@@ -33,6 +47,10 @@ function pad(value: number) {
   return String(value).padStart(2, "0");
 }
 
+function money(value: number) {
+  return `₹${value.toLocaleString("en-IN")}`;
+}
+
 export function TopFashionHero({
   products,
   contactHref,
@@ -42,16 +60,197 @@ export function TopFashionHero({
   contactHref: string;
   offer?: Offer | null;
 }) {
-  const product = useMemo(
-    () => products.find((item) => item.image) ?? products[0],
-    [products],
-  );
-
-  const slideCount = offer ? 2 : 1;
   const [index, setIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(() =>
     getTimeLeft(offer?.endsAt),
   );
+
+  const slides = useMemo<HeroSlide[]>(() => {
+    if (!products.length) return [];
+
+    const withImage = products.filter((item) => item.image);
+    const pick = (position: number) =>
+      withImage[position % Math.max(1, withImage.length)] ?? products[0];
+
+    const bestSeller =
+      products.find((item) => item.featured && item.stock > 0) ?? products[0];
+
+    const tee =
+      products.find((item) => item.category === "T-Shirts") ?? products[0];
+
+    const lowStock =
+      [...products]
+        .filter((item) => item.stock > 0)
+        .sort((a, b) => a.stock - b.stock)[0] ?? products[0];
+
+    const styleProduct = pick(2);
+    const colorProduct = pick(1);
+    const backProduct = pick(3);
+    const tryOnProduct = pick(0);
+
+    return [
+      {
+        id: "new-drop",
+        label: "NEW DROP",
+        title: "THE NEW DROP",
+        subtitle: "Four new essentials. Built for everyday rotation.",
+        button: "Shop New Drop",
+        href: "/products?new=1",
+        image: pick(0).image,
+        badge: "04 PIECES",
+      },
+      {
+        id: "best-seller",
+        label: "BEST SELLER",
+        title: "MOST WORN",
+        subtitle: "The piece everyone keeps coming back to.",
+        button: "Shop Best Seller",
+        href: `/products/${bestSeller.slug}`,
+        image: bestSeller.image,
+        badge: "MOST LOVED",
+        meta: `${bestSeller.name} · ${money(bestSeller.price)}`,
+      },
+      {
+        id: "category-focus",
+        label: "CATEGORY FOCUS",
+        title: "THE TEE EDIT",
+        subtitle: "Clean fits. Everyday colours. Nothing extra.",
+        button: "Explore T-Shirts",
+        href: "/products?category=T-Shirts",
+        image: tee.image,
+        badge: "T-SHIRTS",
+      },
+      {
+        id: "limited-stock",
+        label: "LIMITED STOCK",
+        title: "ALMOST GONE",
+        subtitle: "Only a few pieces remain in selected sizes.",
+        button: "Shop Before It’s Gone",
+        href: `/products/${lowStock.slug}`,
+        image: lowStock.image,
+        badge: `ONLY ${lowStock.stock} LEFT`,
+        meta: `${lowStock.name} · ${money(lowStock.price)}`,
+      },
+      {
+        id: "free-shipping",
+        label: "KLEID.IN DELIVERY",
+        title: "SHIPPING’S ON US",
+        subtitle: "Free shipping on prepaid orders above ₹1,999.",
+        button: "Start Shopping",
+        href: "/products",
+        image: pick(4).image,
+        badge: "PREPAID ORDERS",
+      },
+      {
+        id: "bundle",
+        label: "BUNDLE",
+        title: "TWO WORK BETTER",
+        subtitle: "Pick two everyday tees and build your rotation.",
+        button: "Shop the Bundle",
+        href: "/products?category=T-Shirts",
+        image: pick(1).image,
+        badge: "2 TEES",
+      },
+      {
+        id: "style-edit",
+        label: "STYLE EDIT",
+        title: "THE EVERYDAY EDIT",
+        subtitle: "One complete look. Easy pieces that work together.",
+        button: "Shop the Look",
+        href: `/products/${styleProduct.slug}`,
+        image: styleProduct.image,
+        badge: "SHOP THE LOOK",
+      },
+      {
+        id: "color-drop",
+        label: "COLOR DROP",
+        title: "NEW COLOURS",
+        subtitle: "Black. White. Stone. Your everyday palette.",
+        button: "Explore Colours",
+        href: "/products",
+        image: colorProduct.image,
+        badge: "BLACK / WHITE / STONE",
+      },
+      {
+        id: "back-in-stock",
+        label: "BACK IN STOCK",
+        title: "BACK AGAIN",
+        subtitle: "Your most requested essential is available again.",
+        button: "Shop Now",
+        href: `/products/${backProduct.slug}`,
+        image: backProduct.image,
+        badge: "AVAILABLE NOW",
+      },
+      {
+        id: "seasonal",
+        label: offer?.badge ?? "SEASONAL EDIT",
+        title: "WEEKEND EDIT",
+        subtitle: "Relaxed pieces made for slower days.",
+        button: "Explore the Edit",
+        href: offer?.ctaHref ?? "/products",
+        image: offer?.imageUrl ?? pick(2).image,
+        badge: offer?.discountText ? `${offer.discountText} OFF` : "SEASONAL",
+      },
+      {
+        id: "brand-message",
+        label: "KLEID.IN",
+        title: "ONE WARDROBE. NO LABELS.",
+        subtitle: "Everyday clothing designed without unnecessary noise.",
+        button: "Discover KLEID.IN",
+        href: "/about",
+        image: pick(5).image,
+        badge: "OUR POINT OF VIEW",
+        brandOnly: true,
+      },
+      {
+        id: "journal",
+        label: "JOURNAL",
+        title: "THE WHITE TEE, THREE WAYS",
+        subtitle: "Three simple ways to style one everyday essential.",
+        button: "Read the Story",
+        href: "/about",
+        image: tee.image,
+        badge: "STYLE NOTES",
+      },
+      {
+        id: "countdown-launch",
+        label: "NEXT DROP",
+        title: "DROPPING SOON",
+        subtitle: "The next KLEID.IN collection arrives in:",
+        button: "Preview the Drop",
+        href: "/products?new=1",
+        image: offer?.imageUrl ?? pick(0).image,
+        badge: "COUNTDOWN",
+        showCountdown: true,
+      },
+      {
+        id: "whatsapp-order",
+        label: "PERSONAL SUPPORT",
+        title: "NEED A HAND?",
+        subtitle:
+          "Size help, product questions or ordering — message us directly.",
+        button: contactHref.startsWith("https://wa.me/")
+          ? "Chat on WhatsApp"
+          : "Contact KLEID.IN",
+        href: contactHref,
+        image: pick(4).image,
+        badge: "SIZE / ORDER HELP",
+      },
+      {
+        id: "try-on-anywhere",
+        label: "COMING NEXT",
+        title: "TRY IT. ANYWHERE.",
+        subtitle: "See how a KLEID.IN piece looks before you choose.",
+        button: "Try It On",
+        href: `/products/${tryOnProduct.slug}`,
+        image: tryOnProduct.image,
+        badge: "VIRTUAL TRY-ON",
+      },
+    ];
+  }, [contactHref, offer, products]);
+
+  const slideCount = slides.length;
+  const current = slides[index] ?? slides[0];
 
   useEffect(() => {
     if (slideCount <= 1) return;
@@ -69,8 +268,8 @@ export function TopFashionHero({
       if (document.hidden) return;
 
       timer = window.setInterval(() => {
-        setIndex((current) => (current + 1) % slideCount);
-      }, 5200);
+        setIndex((currentIndex) => (currentIndex + 1) % slideCount);
+      }, 5600);
     };
 
     start();
@@ -92,167 +291,197 @@ export function TopFashionHero({
     return () => window.clearInterval(timer);
   }, [offer?.endsAt]);
 
-  if (!product) return null;
+  useEffect(() => {
+    if (index >= slideCount) setIndex(0);
+  }, [index, slideCount]);
 
-  const timerItems = [
-    ["Days", pad(timeLeft.days)],
-    ["Hours", pad(timeLeft.hours)],
-    ["Minutes", pad(timeLeft.minutes)],
-    ["Seconds", pad(timeLeft.seconds)],
-  ];
+  if (!current) return null;
 
-  const isOffer = index === 1 && Boolean(offer);
+  const isExternal =
+    current.href.startsWith("http://") ||
+    current.href.startsWith("https://") ||
+    current.href.startsWith("mailto:");
+
+  const titleIsLong = current.title.length > 20;
+
+  const ctaClass =
+    "inline-flex min-h-11 items-center justify-center rounded-full bg-white px-5 text-[9px] font-semibold !text-[#111111] transition hover:bg-[#eef2ff] md:text-[10px]";
 
   return (
     <section className="mx-auto mb-0 w-full px-0 sm:mb-3 sm:w-[min(calc(100%-24px),1440px)]">
       <div className="relative h-[64svh] min-h-[520px] max-h-[680px] overflow-hidden rounded-none bg-[#071225] text-white sm:rounded-[20px] md:h-auto md:min-h-[78svh] md:max-h-none md:rounded-[26px]">
         <div className="absolute inset-0">
-          <div
-            className={`top-fashion-slide absolute inset-0 transition-opacity duration-500 ease-out ${
-              !isOffer ? "opacity-100" : "opacity-0"
-            }`}
-            aria-hidden={isOffer}
-          >
-            {product.image ? (
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                priority
-                sizes="100vw"
-                className="object-cover object-[62%_center] md:object-center"
-              />
-            ) : null}
-          </div>
-
-          {offer?.imageUrl ? (
+          {slides.map((slide, slideIndex) => (
             <div
-              className={`top-fashion-slide absolute inset-0 transition-opacity duration-500 ease-out ${
-                isOffer ? "opacity-100" : "opacity-0"
+              key={slide.id}
+              className={`top-fashion-slide absolute inset-0 transition-[opacity,transform] duration-700 ease-out ${
+                slideIndex === index
+                  ? "scale-100 opacity-100"
+                  : "pointer-events-none scale-[1.02] opacity-0"
               }`}
-              aria-hidden={!isOffer}
+              aria-hidden={slideIndex !== index}
             >
-              <Image
-                src={offer.imageUrl}
-                alt={offer.title}
-                fill
-                sizes="100vw"
-                className="object-cover object-center"
-              />
+              {slide.image ? (
+                <Image
+                  src={slide.image}
+                  alt={slide.title}
+                  fill
+                  priority={slideIndex === 0}
+                  sizes="100vw"
+                  className="object-cover object-[62%_center] md:object-center"
+                />
+              ) : null}
             </div>
-          ) : null}
+          ))}
         </div>
 
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,10,24,.90)_0%,rgba(3,10,24,.72)_43%,rgba(3,10,24,.22)_72%,rgba(3,10,24,.04)_100%)] md:bg-[linear-gradient(90deg,rgba(3,10,24,.96)_0%,rgba(3,10,24,.84)_38%,rgba(3,10,24,.22)_69%,rgba(3,10,24,.03)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,24,.05)_25%,rgba(3,10,24,.10)_52%,rgba(3,10,24,.72)_100%)] md:hidden" />
+        <div
+          className={`absolute inset-0 transition-colors duration-500 ${
+            current.brandOnly
+              ? "bg-[linear-gradient(90deg,rgba(0,28,172,.94)_0%,rgba(0,28,172,.82)_45%,rgba(0,28,172,.22)_100%)]"
+              : "bg-[linear-gradient(90deg,rgba(3,10,24,.91)_0%,rgba(3,10,24,.72)_43%,rgba(3,10,24,.22)_72%,rgba(3,10,24,.04)_100%)] md:bg-[linear-gradient(90deg,rgba(3,10,24,.96)_0%,rgba(3,10,24,.84)_38%,rgba(3,10,24,.22)_69%,rgba(3,10,24,.03)_100%)]"
+          }`}
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,24,.04)_22%,rgba(3,10,24,.10)_50%,rgba(3,10,24,.76)_100%)] md:hidden" />
 
         <div className="relative z-10 flex h-full min-h-[520px] flex-col justify-between px-5 py-5 md:min-h-[78svh] md:px-12 md:py-10 lg:px-16 lg:py-12">
           <div className="flex items-center justify-end">
-            <span className="rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-[8px] font-medium text-white/75 backdrop-blur-sm">
-              {isOffer ? offer?.badge : product.category}
+            <span className="max-w-[62vw] truncate rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-[8px] font-medium text-white/75 backdrop-blur-sm">
+              {current.badge ?? current.label}
             </span>
           </div>
 
-          {!isOffer ? (
-            <div className="max-w-[760px] pb-1 md:pb-4">
-              <p className="mb-2.5 text-[8px] font-semibold tracking-[0.16em] text-[#7395ff] md:mb-4 md:text-[10px]">
-                EVERYDAY ESSENTIALS
+          <div key={current.id} className="top-fashion-copy max-w-[860px] pb-1 md:pb-4">
+            <p className="mb-2.5 text-[8px] font-semibold tracking-[0.16em] text-[#7395ff] md:mb-4 md:text-[10px]">
+              {current.label}
+            </p>
+
+            <h1
+              className={`m-0 max-w-[900px] font-semibold leading-[0.84] tracking-[-0.065em] ${
+                titleIsLong
+                  ? "text-[clamp(40px,10.5vw,56px)] md:text-[clamp(68px,6.4vw,106px)]"
+                  : "text-[clamp(48px,12.5vw,66px)] md:text-[clamp(82px,8vw,132px)]"
+              }`}
+            >
+              {current.title}
+            </h1>
+
+            <p className="mt-4 max-w-[430px] text-[10px] leading-5 text-white/70 md:mt-5 md:max-w-[500px] md:text-[12px] md:leading-6">
+              {current.subtitle}
+            </p>
+
+            {current.meta ? (
+              <p className="mt-3 text-[8px] font-medium tracking-[0.03em] text-white/52 md:text-[9px]">
+                {current.meta}
               </p>
+            ) : null}
 
-              <h1 className="m-0 max-w-[820px] text-[clamp(46px,12.5vw,64px)] font-semibold leading-[0.84] tracking-[-0.065em] md:text-[clamp(82px,8vw,132px)] md:leading-[0.82]">
-                WEAR IT
-                <br />
-                YOUR WAY
-              </h1>
-
-              <div className="mt-5 max-w-[620px] md:mt-7">
-                <div className="flex max-w-[330px] items-center gap-2 overflow-hidden text-[8px] text-white/55 md:max-w-[420px] md:gap-3 md:text-[9px]">
-                  <span>{product.name}</span>
-                  <span>•</span>
-                  <span>₹{product.price.toLocaleString("en-IN")}</span>
-                </div>
-
-                <div className="mt-4 flex w-full flex-wrap items-center justify-start gap-2.5 md:mt-5 md:w-auto">
-                  <Link
-                    href="/products"
-                    className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-5 text-[9px] font-semibold !text-[#111111] transition hover:bg-[#eef2ff] md:text-[10px]"
-                    style={{ color: "#111111" }}
-                  >
-                    Shop collection
-                  </Link>
-
-                  <a
-                    href={contactHref}
-                    target={contactHref.startsWith("https://wa.me/") ? "_blank" : undefined}
-                    rel={contactHref.startsWith("https://wa.me/") ? "noreferrer" : undefined}
-                    className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/25 bg-white/10 px-5 text-[9px] font-semibold text-white backdrop-blur-sm transition hover:bg-white/15"
-                  >
-                    Contact
-                  </a>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="max-w-[760px] pb-1 md:pb-4">
-              <p className="mb-2.5 text-[8px] font-semibold tracking-[0.16em] text-[#7395ff] md:mb-4 md:text-[10px]">
-                LIMITED TIME OFFER
-              </p>
-
-              <h2 className="m-0 max-w-[820px] text-[clamp(52px,14vw,74px)] font-semibold leading-[0.82] tracking-[-0.065em] md:text-[clamp(88px,8.5vw,138px)]">
-                FLAT {offer?.discountText}
-                <br />
-                OFF
-              </h2>
-
-              {offer?.endsAt ? (
-                <div className="mt-5 grid max-w-[420px] grid-cols-4 gap-2 md:mt-7">
-                  {timerItems.map(([label, value]) => (
-                    <div
-                      key={label}
-                      className="rounded-[10px] border border-white/15 bg-white/5 px-2 py-3 backdrop-blur-sm"
-                    >
-                      <strong className="block text-[17px] font-semibold md:text-[22px]">
-                        {value}
+            {current.showCountdown ? (
+              <div className="mt-5 flex flex-wrap items-center gap-2 text-white md:mt-6">
+                {offer?.endsAt ? (
+                  <>
+                    <div className="min-w-[68px] rounded-[10px] border border-white/15 bg-white/5 px-3 py-2.5 backdrop-blur-sm">
+                      <strong className="block text-[18px] font-semibold md:text-[22px]">
+                        {pad(timeLeft.days)}
                       </strong>
-                      <span className="mt-1 block text-[6px] uppercase tracking-[0.08em] text-white/45">
-                        {label}
+                      <span className="text-[6px] uppercase tracking-[0.1em] text-white/45">
+                        Days
                       </span>
                     </div>
-                  ))}
-                </div>
-              ) : null}
+                    <div className="min-w-[68px] rounded-[10px] border border-white/15 bg-white/5 px-3 py-2.5 backdrop-blur-sm">
+                      <strong className="block text-[18px] font-semibold md:text-[22px]">
+                        {pad(timeLeft.hours)}
+                      </strong>
+                      <span className="text-[6px] uppercase tracking-[0.1em] text-white/45">
+                        Hrs
+                      </span>
+                    </div>
+                    <div className="min-w-[68px] rounded-[10px] border border-white/15 bg-white/5 px-3 py-2.5 backdrop-blur-sm">
+                      <strong className="block text-[18px] font-semibold md:text-[22px]">
+                        {pad(timeLeft.minutes)}
+                      </strong>
+                      <span className="text-[6px] uppercase tracking-[0.1em] text-white/45">
+                        Min
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <span className="text-[9px] font-semibold tracking-[0.12em] text-white/65">
+                    COMING SOON
+                  </span>
+                )}
+              </div>
+            ) : null}
 
-              <Link
-                href={offer?.ctaHref ?? "/products"}
-                className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-5 text-[9px] font-semibold !text-[#111111] transition hover:bg-[#eef2ff] md:mt-7 md:text-[10px]"
-                style={{ color: "#111111" }}
-              >
-                {offer?.ctaLabel ?? "Shop offer"}
-              </Link>
+            <div className="mt-5 flex flex-wrap items-center gap-2.5 md:mt-6">
+              {isExternal ? (
+                <a
+                  href={current.href}
+                  target={current.href.startsWith("https://") ? "_blank" : undefined}
+                  rel={current.href.startsWith("https://") ? "noreferrer" : undefined}
+                  className={ctaClass}
+                  style={{ color: "#111111" }}
+                >
+                  {current.button}
+                </a>
+              ) : (
+                <Link
+                  href={current.href}
+                  className={ctaClass}
+                  style={{ color: "#111111" }}
+                >
+                  {current.button}
+                </Link>
+              )}
             </div>
-          )}
+          </div>
 
-          <div className="flex items-center justify-between pt-1">
-            <div className="flex items-center gap-2.5">
-              <span className="text-[8px] font-semibold text-white/70">
+          <div className="flex items-center justify-between gap-4 pt-1">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <span className="shrink-0 text-[8px] font-semibold text-white/70">
                 {String(index + 1).padStart(2, "0")} / {String(slideCount).padStart(2, "0")}
               </span>
 
-              <div className="flex gap-1">
-                {Array.from({ length: slideCount }).map((_, slideIndex) => (
+              <div className="flex max-w-[190px] items-center gap-1 overflow-hidden md:max-w-none">
+                {slides.map((slide, slideIndex) => (
                   <button
-                    key={slideIndex}
+                    key={slide.id}
                     type="button"
-                    aria-label={`Show slide ${slideIndex + 1}`}
+                    aria-label={`Show ${slide.label} slide`}
                     onClick={() => setIndex(slideIndex)}
-                    className={`h-[2px] rounded-full transition-all duration-300 ${
+                    className={`h-[2px] shrink-0 rounded-full transition-all duration-300 ${
                       slideIndex === index
-                        ? "w-8 bg-white"
-                        : "w-4 bg-white/25 hover:bg-white/50"
+                        ? "w-6 bg-white md:w-8"
+                        : "w-2 bg-white/25 hover:bg-white/50 md:w-3"
                     }`}
                   />
                 ))}
               </div>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() =>
+                  setIndex((currentIndex) =>
+                    (currentIndex - 1 + slideCount) % slideCount,
+                  )
+                }
+                className="grid size-9 place-items-center rounded-full border border-white/20 bg-white/5 text-[12px] text-white transition hover:bg-white/12"
+                aria-label="Previous hero slide"
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setIndex((currentIndex) => (currentIndex + 1) % slideCount)
+                }
+                className="grid size-9 place-items-center rounded-full border border-white/20 bg-white/5 text-[12px] text-white transition hover:bg-white/12"
+                aria-label="Next hero slide"
+              >
+                →
+              </button>
             </div>
           </div>
         </div>
