@@ -9,8 +9,6 @@ export const products: Product[] = [
     category: "T-Shirts",
     price: 1490,
     compareAtPrice: 1790,
-    saleEndsAt: "2026-10-12T23:59:59+05:30",
-    saleLabel: "Weekend offer",
     description:
       "240 GSM combed cotton T-shirt with a relaxed shoulder, clean rib neckline and a structured everyday drape. Designed as a dependable base layer for repeat wear.",
     sizes: ["S", "M", "L", "XL"],

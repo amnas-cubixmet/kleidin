@@ -8,8 +8,6 @@ export type Product = {
   category: string;
   price: number;
   compareAtPrice?: number;
-  saleEndsAt?: string;
-  saleLabel?: string;
   description: string;
   sizes: string[];
   colors: string[];
@@ -29,8 +27,6 @@ export type DbProduct = {
   category: string;
   price: number;
   compare_at_price: number | null;
-  sale_ends_at?: string | null;
-  sale_label?: string | null;
   description: string;
   sizes: string[];
   colors: string[];
