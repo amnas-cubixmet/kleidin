@@ -25,6 +25,21 @@ function SearchIcon() {
   );
 }
 
+function PhoneIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M7.4 3.8 10 7.4 8.5 9.6c1.25 2.4 3.3 4.45 5.7 5.7l2.2-1.5 3.6 2.6c.45.32.62.9.42 1.42-.55 1.4-1.9 2.38-3.43 2.38C10.28 20.2 3.8 13.72 3.8 6.01c0-1.53.98-2.88 2.38-3.43.52-.2 1.1-.03 1.42.42Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.55"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function CloseIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -283,6 +298,18 @@ export function Header({
           >
             <SearchIcon />
           </button>
+
+          {settings.whatsappNumber ? (
+            <a
+              href={`tel:+${settings.whatsappNumber}`}
+              className="header-phone-button"
+              aria-label="Call KLEID.IN"
+            >
+              <PhoneIcon />
+              <span className="header-phone-number">+966 57 973 0338</span>
+              <span className="header-phone-mobile">Call</span>
+            </a>
+          ) : null}
 
           <button
             ref={menuButtonRef}

@@ -10692,3 +10692,76 @@ main,
     height: 36px !important;
   }
 }
+
+
+/* Header phone CTA */
+.header-phone-button {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(0, 28, 172, .14);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #001cac;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.header-phone-button:hover {
+  background: #00158f;
+  border-color: #00158f;
+  transform: translateY(-1px);
+}
+
+.header-phone-button svg {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+}
+
+.header-phone-mobile {
+  display: none;
+}
+
+@media (max-width: 980px) {
+  .header-phone-button {
+    min-height: 36px;
+    padding: 0 12px;
+    gap: 7px;
+  }
+
+  .header-phone-number {
+    display: none;
+  }
+
+  .header-phone-mobile {
+    display: inline;
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 420px) {
+  .header-phone-button {
+    width: 36px;
+    min-height: 36px;
+    padding: 0;
+  }
+
+  .header-phone-mobile {
+    display: none;
+  }
+
+  .header-phone-button svg {
+    width: 15px;
+    height: 15px;
+  }
+}
