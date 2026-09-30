@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { TopFashionHero } from "@/components/TopFashionHero";
-import { FeatureStorySection } from "@/components/FeatureStorySection";
 import { ProductActions } from "@/components/ProductActions";
 import { formatPrice, getWhatsappUrl } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
@@ -33,6 +32,7 @@ export default async function Home() {
           <TopFashionHero
             products={featured.length ? featured : products}
             contactHref={contactHref}
+            offer={offers[0] ?? null}
           />
 
           {showcaseProducts.length ? (
@@ -64,13 +64,6 @@ export default async function Home() {
           <p>Products will appear here after they are added from the admin panel.</p>
         </section>
       )}
-
-      {products.length ? (
-        <FeatureStorySection
-          product={featured[0] ?? products[0]}
-          offer={offers[0] ?? null}
-        />
-      ) : null}
 
       <section className="ref-brand-strip">
         <div className="ref-brand-strip-inner">
