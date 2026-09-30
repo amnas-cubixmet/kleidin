@@ -150,7 +150,27 @@ export function ProductCard({ product }: { product: Product }) {
 
           <div className="product-card-price">
             <strong>{formatPrice(product.price)}</strong>
+            {hasOffer && product.compareAtPrice ? (
+              <del>{formatPrice(product.compareAtPrice)}</del>
+            ) : null}
           </div>
+        </div>
+
+        <div className="product-card-stock-row">
+          <span
+            className={
+              "product-card-stock-dot " +
+              (soldOut ? "sold-out" : limitedStock ? "low-stock" : "in-stock")
+            }
+            aria-hidden="true"
+          />
+          <span>
+            {soldOut
+              ? "Sold out"
+              : limitedStock
+                ? `Low stock · ${currentStock}`
+                : `In stock · ${currentStock}`}
+          </span>
         </div>
 
         {soldOut || whatsappHref === "#" ? (

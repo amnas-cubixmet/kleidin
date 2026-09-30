@@ -12941,3 +12941,118 @@ main,
     font-size: 5.8px !important;
   }
 }
+
+
+/* FINAL product card info block — price + stock + compact CTA */
+.catalog-store-grid .product-card-refined {
+  height: auto !important;
+}
+
+.catalog-store-grid .product-card-info-refined {
+  min-height: 0 !important;
+  height: auto !important;
+  padding-bottom: 0 !important;
+}
+
+.catalog-store-grid .product-card-main-row {
+  min-height: 0 !important;
+}
+
+.catalog-store-grid .product-card-price {
+  margin-top: 6px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: baseline !important;
+  justify-content: flex-start !important;
+  gap: 6px !important;
+}
+
+.catalog-store-grid .product-card-price strong {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+}
+
+.catalog-store-grid .product-card-price del {
+  color: #9b9b9b !important;
+  font-size: 7px !important;
+  text-decoration-thickness: 1px;
+}
+
+.product-card-stock-row {
+  min-height: 22px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #777;
+  font-size: 7px;
+  line-height: 1;
+}
+
+.product-card-stock-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 999px;
+  background: #2f8b57;
+}
+
+.product-card-stock-dot.low-stock {
+  background: #b87718;
+}
+
+.product-card-stock-dot.sold-out {
+  background: #b52d2d;
+}
+
+.catalog-store-grid .product-whatsapp-cta {
+  margin-top: 9px !important;
+}
+
+@media (max-width: 640px) {
+  .catalog-store-grid .product-card-info-refined {
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 7px 1px 0 !important;
+  }
+
+  .catalog-store-grid .product-card-main-row {
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
+  .catalog-store-grid .product-card-main-row .product-name {
+    min-height: 0 !important;
+  }
+
+  .catalog-store-grid .product-card-price {
+    min-height: 0 !important;
+    margin-top: 5px !important;
+    gap: 4px !important;
+  }
+
+  .catalog-store-grid .product-card-price strong {
+    font-size: 8px !important;
+  }
+
+  .catalog-store-grid .product-card-price del {
+    font-size: 5.8px !important;
+  }
+
+  .product-card-stock-row {
+    min-height: 18px;
+    margin-top: 6px;
+    gap: 5px;
+    font-size: 5.8px;
+  }
+
+  .product-card-stock-dot {
+    width: 5px;
+    height: 5px;
+    flex-basis: 5px;
+  }
+
+  .catalog-store-grid .product-whatsapp-cta {
+    margin-top: 7px !important;
+  }
+}
