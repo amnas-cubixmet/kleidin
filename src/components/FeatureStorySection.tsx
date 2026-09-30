@@ -50,9 +50,12 @@ export function FeatureStorySection({
 }) {
   const sectionRef = useRef<HTMLElement>(null);
   const [activeSlide, setActiveSlide] = useState(0);
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() =>
-    getTimeLeft(offer?.endsAt),
-  );
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   useEffect(() => {
     if (!offer?.endsAt) return;
