@@ -10248,3 +10248,31 @@ main,
     transform: none !important;
   }
 }
+
+
+/* Homepage second feature — offer poster */
+.homepage-offer-section {
+  width: 100%;
+  padding: 22px 0 28px;
+  background: #ffffff;
+}
+
+.homepage-offer-section .offer-hero-shell {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .homepage-offer-section {
+    padding: 10px 0 14px;
+  }
+
+  .homepage-offer-section .offer-hero-shell {
+    width: 100%;
+    margin: 0;
+  }
+
+  .homepage-offer-section .offer-hero {
+    border-radius: 0;
+  }
+}

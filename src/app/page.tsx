@@ -4,14 +4,16 @@ import { ProductCard } from "@/components/ProductCard";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { TopFashionHero } from "@/components/TopFashionHero";
 import { ProductScrollFeature } from "@/components/ProductScrollFeature";
+import { OfferHero } from "@/components/OfferHero";
 import { ProductActions } from "@/components/ProductActions";
 import { formatPrice, getWhatsappUrl } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
-import { getStoreSettings } from "@/lib/site-settings";
+import { getActiveOffers, getStoreSettings } from "@/lib/site-settings";
 export default async function Home() {
-  const [products, settings] = await Promise.all([
+  const [products, settings, offers] = await Promise.all([
     getCatalogProducts(),
     getStoreSettings(),
+    getActiveOffers(),
   ]);
 
   const contactHref = settings.whatsappNumber
@@ -66,6 +68,12 @@ export default async function Home() {
 
       {products.length ? (
         <ProductScrollFeature products={products.slice(0, 3)} />
+      ) : null}
+
+      {offers.length ? (
+        <section className="homepage-offer-section">
+          <OfferHero offers={offers} />
+        </section>
       ) : null}
 
       <section className="ref-brand-strip">
