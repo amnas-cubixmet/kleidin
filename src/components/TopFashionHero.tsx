@@ -5,7 +5,13 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/types/product";
 
-export function TopFashionHero({ products }: { products: Product[] }) {
+export function TopFashionHero({
+  products,
+  contactHref,
+}: {
+  products: Product[];
+  contactHref: string;
+}) {
   const slides = useMemo(
     () => products.filter((product) => product.image).slice(0, 3),
     [products],
@@ -109,7 +115,7 @@ export function TopFashionHero({ products }: { products: Product[] }) {
                 </div>
               </div>
 
-              <div className="grid w-full grid-cols-2 gap-2.5 md:flex md:w-auto md:items-center">
+              <div className="grid w-full grid-cols-2 gap-2.5 md:flex md:w-auto md:flex-wrap md:items-center">
                 <Link
                   href="/products"
                   className="inline-flex min-h-11 items-center justify-center gap-4 rounded-full bg-white px-4 text-[9px] font-semibold !text-[#111111] transition hover:bg-[#eef2ff] md:gap-6 md:px-5 md:text-[10px]"
@@ -122,8 +128,17 @@ export function TopFashionHero({ products }: { products: Product[] }) {
                   href={`/products/${current.slug}`}
                   className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/25 bg-black/5 px-4 text-[9px] font-semibold text-white backdrop-blur-sm transition hover:bg-white/10"
                 >
-                  View piece
+                  View product
                 </Link>
+
+                <a
+                  href={contactHref}
+                  target={contactHref.startsWith("https://wa.me/") ? "_blank" : undefined}
+                  rel={contactHref.startsWith("https://wa.me/") ? "noreferrer" : undefined}
+                  className="col-span-2 inline-flex min-h-11 items-center justify-center rounded-full border border-white/25 bg-white/10 px-4 text-[9px] font-semibold text-white backdrop-blur-sm transition hover:bg-white/15 md:col-span-1"
+                >
+                  Contact
+                </a>
               </div>
             </div>
           </div>

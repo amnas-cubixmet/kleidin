@@ -4,10 +4,20 @@ import { ProductCard } from "@/components/ProductCard";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { TopFashionHero } from "@/components/TopFashionHero";
 import { ProductActions } from "@/components/ProductActions";
-import { formatPrice } from "@/lib/format";
+import { formatPrice, getWhatsappUrl } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
+import { getStoreSettings } from "@/lib/site-settings";
 export default async function Home() {
-  const products = await getCatalogProducts();
+  const [products, settings] = await Promise.all([
+    getCatalogProducts(),
+    getStoreSettings(),
+  ]);
+
+  const contactHref = settings.whatsappNumber
+    ? getWhatsappUrl(undefined, settings.whatsappNumber)
+    : settings.supportEmail
+      ? `mailto:${settings.supportEmail}`
+      : "/contact";
   const tShirts = products.filter((product) => product.category === "T-Shirts");
   const featured = products.filter((product) => product.featured);
   const showcaseProducts = (tShirts.length ? tShirts : featured.length ? featured : products).slice(0, 3);
@@ -18,7 +28,10 @@ export default async function Home() {
     <div className="reference-home">
       {products.length ? (
         <>
-          <TopFashionHero products={featured.length ? featured : products} />
+          <TopFashionHero
+            products={featured.length ? featured : products}
+            contactHref={contactHref}
+          />
 
           {showcaseProducts.length ? (
             <AutoOutfitHero products={showcaseProducts} />
