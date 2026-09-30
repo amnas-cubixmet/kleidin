@@ -81,11 +81,7 @@ export function TopFashionHero({
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,24,.05)_25%,rgba(3,10,24,.10)_52%,rgba(3,10,24,.72)_100%)] md:hidden" />
 
         <div className="relative z-10 flex h-full min-h-[520px] flex-col justify-between px-5 py-5 md:min-h-[78svh] md:px-12 md:py-10 lg:px-16 lg:py-12">
-          <div className="flex items-center justify-between">
-            <p className="m-0 text-[8px] font-semibold tracking-[0.18em] text-white/65 md:text-[9px]">
-              KLEID.IN / NEW SEASON
-            </p>
-
+          <div className="flex items-center justify-end">
             <span className="rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-[8px] font-medium text-white/75 backdrop-blur-sm">
               {current.category}
             </span>
@@ -166,9 +162,7 @@ export function TopFashionHero({
               </div>
             </div>
 
-            <span className="hidden text-[8px] font-medium tracking-[0.12em] text-white/45 sm:block">
-              SCROLL TO DISCOVER ↓
-            </span>
+
           </div>
         </div>
       </div>
