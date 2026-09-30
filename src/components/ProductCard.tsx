@@ -153,13 +153,16 @@ export function ProductCard({ product }: { product: Product }) {
             {hasOffer && product.compareAtPrice ? (
               <del>{formatPrice(product.compareAtPrice)}</del>
             ) : null}
+            {hasOffer && discount > 0 ? (
+              <span className="product-card-inline-discount">{discount}% OFF</span>
+            ) : null}
           </div>
         </div>
 
-        {variants.length > 1 ? (
-          <div className="product-card-colour-row">
-            <div className="product-colour-swatches" aria-label="Choose colour">
-              {variants.map((variant) => (
+        <div className="product-card-variant-line">
+          <div className="product-colour-swatches" aria-label="Choose colour">
+            {variants.length > 1 ? (
+              variants.map((variant) => (
                 <button
                   key={variant.name}
                   type="button"
@@ -173,15 +176,27 @@ export function ProductCard({ product }: { product: Product }) {
                 >
                   <span style={{ background: variant.value }} />
                 </button>
-              ))}
-            </div>
-            <span>{selectedColor}</span>
+              ))
+            ) : (
+              <span
+                className="product-single-swatch"
+                aria-hidden="true"
+                style={{
+                  background:
+                    selectedColor.toLowerCase() === "black"
+                      ? "#111111"
+                      : selectedColor.toLowerCase() === "white"
+                        ? "#f4f4f0"
+                        : "#d9d9d9",
+                }}
+              />
+            )}
           </div>
-        ) : null}
 
-        <div className="product-card-bottomline product-card-meta-refined">
-          <span>{selectedColor}</span>
-          <span>{soldOut ? "Out of stock" : `Stock ${currentStock}`}</span>
+          <div className="product-card-selected-meta">
+            <span>{selectedColor}</span>
+            <small>{soldOut ? "Out of stock" : `Stock ${currentStock}`}</small>
+          </div>
         </div>
 
         {soldOut || whatsappHref === "#" ? (
