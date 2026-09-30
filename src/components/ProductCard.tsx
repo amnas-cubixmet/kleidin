@@ -150,52 +150,6 @@ export function ProductCard({ product }: { product: Product }) {
 
           <div className="product-card-price">
             <strong>{formatPrice(product.price)}</strong>
-            {hasOffer && product.compareAtPrice ? (
-              <del>{formatPrice(product.compareAtPrice)}</del>
-            ) : null}
-            {hasOffer && discount > 0 ? (
-              <span className="product-card-inline-discount">{discount}% OFF</span>
-            ) : null}
-          </div>
-        </div>
-
-        <div className="product-card-variant-line">
-          <div className="product-colour-swatches" aria-label="Choose colour">
-            {variants.length > 1 ? (
-              variants.map((variant) => (
-                <button
-                  key={variant.name}
-                  type="button"
-                  className={
-                    "product-colour-swatch " +
-                    (selectedColor === variant.name ? "active" : "")
-                  }
-                  onClick={() => setSelectedColor(variant.name)}
-                  aria-label={`Show ${variant.name}`}
-                  title={variant.name}
-                >
-                  <span style={{ background: variant.value }} />
-                </button>
-              ))
-            ) : (
-              <span
-                className="product-single-swatch"
-                aria-hidden="true"
-                style={{
-                  background:
-                    selectedColor.toLowerCase() === "black"
-                      ? "#111111"
-                      : selectedColor.toLowerCase() === "white"
-                        ? "#f4f4f0"
-                        : "#d9d9d9",
-                }}
-              />
-            )}
-          </div>
-
-          <div className="product-card-selected-meta">
-            <span>{selectedColor}</span>
-            <small>{soldOut ? "Out of stock" : `Stock ${currentStock}`}</small>
           </div>
         </div>
 
