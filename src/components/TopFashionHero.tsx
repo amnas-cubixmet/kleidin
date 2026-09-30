@@ -98,29 +98,27 @@ export function TopFashionHero({
               YOUR WAY
             </h1>
 
-            <div className="mt-5 flex max-w-[620px] flex-col gap-4 md:mt-8 md:flex-row md:items-end md:justify-between">
-              <div>
-                <div className="mt-3 flex max-w-[330px] items-center gap-2 overflow-hidden text-[8px] text-white/55 md:mt-4 md:gap-3 md:text-[9px]">
-                  <span>{current.name}</span>
-                  <span>•</span>
-                  <span>₹{current.price.toLocaleString("en-IN")}</span>
-                </div>
+            <div className="mt-5 max-w-[620px] md:mt-7">
+              <div className="flex max-w-[330px] items-center gap-2 overflow-hidden text-[8px] text-white/55 md:max-w-[420px] md:gap-3 md:text-[9px]">
+                <span>{current.name}</span>
+                <span>•</span>
+                <span>₹{current.price.toLocaleString("en-IN")}</span>
               </div>
 
-              <div className="grid w-full grid-cols-2 gap-2.5 md:flex md:w-auto md:flex-wrap md:items-center">
+              <div className="mt-4 flex w-full flex-wrap items-center justify-start gap-2.5 md:mt-5 md:w-auto">
                 <Link
                   href="/products"
                   className="inline-flex min-h-11 items-center justify-center gap-4 rounded-full bg-white px-4 text-[9px] font-semibold !text-[#111111] transition hover:bg-[#eef2ff] md:gap-6 md:px-5 md:text-[10px]"
                   style={{ color: "#111111" }}
                 >
-                  Shop collection <span>→</span>
+                  Shop collection
                 </Link>
 
                 <a
                   href={contactHref}
                   target={contactHref.startsWith("https://wa.me/") ? "_blank" : undefined}
                   rel={contactHref.startsWith("https://wa.me/") ? "noreferrer" : undefined}
-                  className="col-span-2 inline-flex min-h-11 items-center justify-center rounded-full border border-white/25 bg-white/10 px-4 text-[9px] font-semibold text-white backdrop-blur-sm transition hover:bg-white/15 md:col-span-1"
+                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/25 bg-white/10 px-5 text-[9px] font-semibold text-white backdrop-blur-sm transition hover:bg-white/15"
                 >
                   Contact
                 </a>
