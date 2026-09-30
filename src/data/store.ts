@@ -1,7 +1,7 @@
 import type { Offer, StoreSettings } from "@/types/commerce";
 
 export const localStoreSettings: StoreSettings = {
-  whatsappNumber: "966579730338",
+  whatsappNumber: "123456789",
   announcementText: "Free shipping on prepaid orders above ₹1,999",
   announcementLinkLabel: "Shop the collection",
   instagramUrl: "",
