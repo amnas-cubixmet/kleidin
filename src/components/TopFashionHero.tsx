@@ -5,6 +5,11 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { Offer } from "@/types/commerce";
 import type { Product } from "@/types/product";
+import {
+  defaultHeroSlides,
+  HERO_SLIDE_STORAGE_KEY,
+  type HeroSlideConfig,
+} from "@/data/hero-slides";
 
 type TimeLeft = {
   days: number;
@@ -61,9 +66,30 @@ export function TopFashionHero({
   offer?: Offer | null;
 }) {
   const [index, setIndex] = useState(0);
+  const [heroConfig, setHeroConfig] = useState<HeroSlideConfig[]>(defaultHeroSlides);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(() =>
     getTimeLeft(offer?.endsAt),
   );
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(HERO_SLIDE_STORAGE_KEY);
+      if (!saved) return;
+
+      const parsed = JSON.parse(saved) as HeroSlideConfig[];
+      if (!Array.isArray(parsed)) return;
+
+      const savedById = new Map(parsed.map((item) => [item.id, item]));
+      setHeroConfig(
+        defaultHeroSlides.map((item) => ({
+          ...item,
+          ...(savedById.get(item.id) ?? {}),
+        })),
+      );
+    } catch {
+      setHeroConfig(defaultHeroSlides);
+    }
+  }, []);
 
   const slides = useMemo<HeroSlide[]>(() => {
     if (!products.length) return [];
@@ -88,166 +114,77 @@ export function TopFashionHero({
     const backProduct = pick(3);
     const tryOnProduct = pick(0);
 
-    return [
-      {
-        id: "new-drop",
-        label: "NEW DROP",
-        title: "THE NEW DROP",
-        subtitle: "Four new essentials. Built for everyday rotation.",
-        button: "Shop New Drop",
-        href: "/products?new=1",
-        image: pick(0).image,
-        badge: "04 PIECES",
-      },
-      {
-        id: "best-seller",
-        label: "BEST SELLER",
-        title: "MOST WORN",
-        subtitle: "The piece everyone keeps coming back to.",
-        button: "Shop Best Seller",
-        href: `/products/${bestSeller.slug}`,
+    const dynamic = new Map<string, Partial<HeroSlide>>([
+      ["new-drop", { image: pick(0).image }],
+      ["best-seller", {
         image: bestSeller.image,
-        badge: "MOST LOVED",
+        href: `/products/${bestSeller.slug}`,
         meta: `${bestSeller.name} · ${money(bestSeller.price)}`,
-      },
-      {
-        id: "category-focus",
-        label: "CATEGORY FOCUS",
-        title: "THE TEE EDIT",
-        subtitle: "Clean fits. Everyday colours. Nothing extra.",
-        button: "Explore T-Shirts",
-        href: "/products?category=T-Shirts",
-        image: tee.image,
-        badge: "T-SHIRTS",
-      },
-      {
-        id: "limited-stock",
-        label: "LIMITED STOCK",
-        title: "ALMOST GONE",
-        subtitle: "Only a few pieces remain in selected sizes.",
-        button: "Shop Before It’s Gone",
-        href: `/products/${lowStock.slug}`,
+      }],
+      ["category-focus", { image: tee.image }],
+      ["limited-stock", {
         image: lowStock.image,
+        href: `/products/${lowStock.slug}`,
         badge: `ONLY ${lowStock.stock} LEFT`,
         meta: `${lowStock.name} · ${money(lowStock.price)}`,
-      },
-      {
-        id: "free-shipping",
-        label: "KLEID.IN DELIVERY",
-        title: "SHIPPING’S ON US",
-        subtitle: "Free shipping on prepaid orders above ₹1,999.",
-        button: "Start Shopping",
-        href: "/products",
-        image: pick(4).image,
-        badge: "PREPAID ORDERS",
-      },
-      {
-        id: "bundle",
-        label: "BUNDLE",
-        title: "TWO WORK BETTER",
-        subtitle: "Pick two everyday tees and build your rotation.",
-        button: "Shop the Bundle",
-        href: "/products?category=T-Shirts",
-        image: pick(1).image,
-        badge: "2 TEES",
-      },
-      {
-        id: "style-edit",
-        label: "STYLE EDIT",
-        title: "THE EVERYDAY EDIT",
-        subtitle: "One complete look. Easy pieces that work together.",
-        button: "Shop the Look",
-        href: `/products/${styleProduct.slug}`,
+      }],
+      ["free-shipping", { image: pick(4).image }],
+      ["bundle", { image: pick(1).image }],
+      ["style-edit", {
         image: styleProduct.image,
-        badge: "SHOP THE LOOK",
-      },
-      {
-        id: "color-drop",
-        label: "COLOR DROP",
-        title: "NEW COLOURS",
-        subtitle: "Black. White. Stone. Your everyday palette.",
-        button: "Explore Colours",
-        href: "/products",
-        image: colorProduct.image,
-        badge: "BLACK / WHITE / STONE",
-      },
-      {
-        id: "back-in-stock",
-        label: "BACK IN STOCK",
-        title: "BACK AGAIN",
-        subtitle: "Your most requested essential is available again.",
-        button: "Shop Now",
-        href: `/products/${backProduct.slug}`,
+        href: `/products/${styleProduct.slug}`,
+      }],
+      ["color-drop", { image: colorProduct.image }],
+      ["back-in-stock", {
         image: backProduct.image,
-        badge: "AVAILABLE NOW",
-      },
-      {
-        id: "seasonal",
+        href: `/products/${backProduct.slug}`,
+      }],
+      ["seasonal", {
         label: offer?.badge ?? "SEASONAL EDIT",
-        title: "WEEKEND EDIT",
-        subtitle: "Relaxed pieces made for slower days.",
-        button: "Explore the Edit",
-        href: offer?.ctaHref ?? "/products",
         image: offer?.imageUrl ?? pick(2).image,
+        href: offer?.ctaHref ?? "/products",
         badge: offer?.discountText ? `${offer.discountText} OFF` : "SEASONAL",
-      },
-      {
-        id: "brand-message",
-        label: "KLEID.IN",
-        title: "ONE WARDROBE. NO LABELS.",
-        subtitle: "Everyday clothing designed without unnecessary noise.",
-        button: "Discover KLEID.IN",
-        href: "/about",
-        image: pick(5).image,
-        badge: "OUR POINT OF VIEW",
-        brandOnly: true,
-      },
-      {
-        id: "journal",
-        label: "JOURNAL",
-        title: "THE WHITE TEE, THREE WAYS",
-        subtitle: "Three simple ways to style one everyday essential.",
-        button: "Read the Story",
-        href: "/about",
-        image: tee.image,
-        badge: "STYLE NOTES",
-      },
-      {
-        id: "countdown-launch",
-        label: "NEXT DROP",
-        title: "DROPPING SOON",
-        subtitle: "The next KLEID.IN collection arrives in:",
-        button: "Preview the Drop",
-        href: "/products?new=1",
+      }],
+      ["brand-message", { image: pick(5).image, brandOnly: true }],
+      ["journal", { image: tee.image }],
+      ["countdown-launch", {
         image: offer?.imageUrl ?? pick(0).image,
-        badge: "COUNTDOWN",
         showCountdown: true,
-      },
-      {
-        id: "whatsapp-order",
-        label: "PERSONAL SUPPORT",
-        title: "NEED A HAND?",
-        subtitle:
-          "Size help, product questions or ordering — message us directly.",
+      }],
+      ["whatsapp-order", {
+        image: pick(4).image,
+        href: contactHref,
         button: contactHref.startsWith("https://wa.me/")
           ? "Chat on WhatsApp"
           : "Contact KLEID.IN",
-        href: contactHref,
-        image: pick(4).image,
-        badge: "SIZE / ORDER HELP",
-      },
-      {
-        id: "try-on-anywhere",
-        label: "COMING NEXT",
-        title: "TRY IT. ANYWHERE.",
-        subtitle: "See how a KLEID.IN piece looks before you choose.",
-        button: "Try It On",
-        href: `/products/${tryOnProduct.slug}`,
+      }],
+      ["try-on-anywhere", {
         image: tryOnProduct.image,
-        badge: "VIRTUAL TRY-ON",
-      },
-    ];
-  }, [contactHref, offer, products]);
+        href: `/products/${tryOnProduct.slug}`,
+      }],
+    ]);
+
+    return [...heroConfig]
+      .filter((config) => config.enabled)
+      .sort((a, b) => a.order - b.order)
+      .map((config) => {
+        const auto = dynamic.get(config.id) ?? {};
+
+        return {
+          id: config.id,
+          label: config.label || auto.label || "",
+          title: config.title,
+          subtitle: config.subtitle,
+          button: config.button || auto.button || "Explore",
+          href: config.href || auto.href || "/products",
+          image: config.imageUrl || auto.image,
+          badge: config.badge || auto.badge,
+          meta: auto.meta,
+          showCountdown: auto.showCountdown,
+          brandOnly: auto.brandOnly,
+        };
+      });
+  }, [contactHref, heroConfig, offer, products]);
 
   const slideCount = slides.length;
   const current = slides[index] ?? slides[0];

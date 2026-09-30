@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AdminHeroManager } from "@/components/AdminHeroManager";
 import { products } from "@/data/products";
 import { localOffers, localStoreSettings } from "@/data/store";
+import { defaultHeroSlides } from "@/data/hero-slides";
 
 export const metadata: Metadata = {
   title: "Admin",
@@ -10,41 +12,63 @@ export const metadata: Metadata = {
 
 export default function AdminPage() {
   return (
-    <main className="admin-auth-page">
-      <section className="admin-login-card local-admin-card">
-        <p className="admin-kicker">KLEID.IN ADMIN</p>
-        <h1>Local data mode</h1>
-        <p>
-          Database is disabled for now. The storefront is running entirely from
-          hardcoded local data.
-        </p>
-
-        <div className="local-admin-stats">
+    <main className="min-h-screen bg-[#f5f5f2] px-3 py-4 text-[#111] sm:px-5 md:px-7 md:py-7">
+      <div className="mx-auto w-full max-w-[1460px]">
+        <header className="mb-5 flex flex-wrap items-end justify-between gap-4 rounded-[22px] bg-[#001cac] px-5 py-5 text-white md:px-7 md:py-6">
           <div>
-            <strong>{products.length}</strong>
-            <span>Products</span>
+            <p className="m-0 text-[9px] font-semibold tracking-[.16em] text-white/60">
+              KLEID.IN ADMIN
+            </p>
+            <h1 className="mt-2 text-[clamp(32px,5vw,58px)] font-semibold leading-[.92] tracking-[-.055em]">
+              Store control.
+            </h1>
+            <p className="mt-3 max-w-[620px] text-[10px] leading-5 text-white/60 md:text-[11px]">
+              Manage hero slides in local mode. Changes are saved in this browser
+              and applied to the storefront on the same device.
+            </p>
           </div>
-          <div>
-            <strong>{localOffers.length}</strong>
-            <span>Offers</span>
-          </div>
+
+          <Link
+            href="/"
+            className="inline-flex min-h-11 items-center rounded-full bg-white px-5 text-[10px] font-semibold !text-[#111]"
+            style={{ color: "#111111" }}
+          >
+            View store
+          </Link>
+        </header>
+
+        <section className="mb-5 grid grid-cols-2 gap-2.5 md:grid-cols-4">
+          {[
+            ["Products", products.length],
+            ["Offers", localOffers.length],
+            ["Hero slides", defaultHeroSlides.length],
+            [
+              "WhatsApp",
+              localStoreSettings.whatsappNumber ? "Connected" : "Not set",
+            ],
+          ].map(([label, value]) => (
+            <div
+              key={String(label)}
+              className="rounded-[18px] border border-black/8 bg-white px-4 py-4"
+            >
+              <span className="text-[8px] font-semibold uppercase tracking-[.1em] text-black/40">
+                {label}
+              </span>
+              <strong className="mt-2 block text-[22px] font-semibold tracking-[-.04em]">
+                {value}
+              </strong>
+            </div>
+          ))}
+        </section>
+
+        <AdminHeroManager />
+
+        <div className="mt-5 rounded-[18px] border border-black/8 bg-white px-4 py-4 text-[10px] leading-5 text-black/50">
+          Local mode: Hero edits are stored in browser localStorage. Product and
+          offer source data still comes from <code>src/data/products.ts</code> and{" "}
+          <code>src/data/store.ts</code>.
         </div>
-
-        <div className="local-admin-links">
-          <code>src/data/products.ts</code>
-          <code>src/data/store.ts</code>
-        </div>
-
-        <Link href="/" className="admin-primary-button local-admin-button">
-          View store
-        </Link>
-
-        {localStoreSettings.whatsappNumber ? null : (
-          <p className="local-admin-note">
-            Add the final WhatsApp number in src/data/store.ts when ready.
-          </p>
-        )}
-      </section>
+      </div>
     </main>
   );
 }
