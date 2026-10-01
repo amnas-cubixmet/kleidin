@@ -81,8 +81,6 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
-  const [alternatePhone, setAlternatePhone] = useState("");
-  const [source, setSource] = useState("WhatsApp");
   const [addressLine1, setAddressLine1] = useState("");
   const [addressLine2, setAddressLine2] = useState("");
   const [landmark, setLandmark] = useState("");
@@ -174,8 +172,6 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
   function resetForm() {
     setCustomerName("");
     setPhone("");
-    setAlternatePhone("");
-    setSource("WhatsApp");
     setAddressLine1("");
     setAddressLine2("");
     setLandmark("");
@@ -241,8 +237,6 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
       updatedAt: now,
       customerName: customerName.trim(),
       phone: phone.trim(),
-      alternatePhone: alternatePhone.trim() || undefined,
-      source,
       addressLine1: addressLine1.trim(),
       addressLine2: addressLine2.trim() || undefined,
       landmark: landmark.trim() || undefined,
@@ -277,18 +271,16 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
     persist(orders.filter((order) => order.id !== orderId));
   }
 
-  const inputClass =
-    "min-h-10 w-full rounded-[10px] border border-[#dfe3ea] bg-white px-3 text-[10px] font-medium text-[#20242a] outline-none transition focus:border-[#001cac] focus:ring-2 focus:ring-[#001cac]/10";
-  const labelClass =
-    "text-[8px] font-bold uppercase tracking-[.11em] text-[#747c88]";
+  const inputClass =\n    "h-10 w-full min-w-0 rounded-[10px] border border-[#d9dee7] bg-white px-3 text-[11px] font-medium text-[#20242a] outline-none transition placeholder:text-[#9aa1ac] focus:border-[#001cac] focus:ring-2 focus:ring-[#001cac]/10 sm:h-11";
+  const labelClass =\n    "text-[8px] font-bold uppercase tracking-[.1em] text-[#6f7783]";
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[.9fr_1.1fr]">
+    <div className="grid min-w-0 gap-3 sm:gap-4 xl:grid-cols-[minmax(0,.92fr)_minmax(0,1.08fr)]">
       <form
         onSubmit={saveOrder}
-        className="rounded-[20px] border border-[#dfe3ea] bg-white p-4 md:p-5"
+        className="min-w-0 rounded-[18px] border border-[#dfe3ea] bg-white p-3.5 sm:rounded-[20px] sm:p-4 md:p-5"
       >
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-[8px] font-bold uppercase tracking-[.13em] text-[#001cac]">
               Manual entry
@@ -300,12 +292,12 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
               Enter the customer, delivery address and product details yourself.
             </p>
           </div>
-          <span className="rounded-full bg-[#eef2ff] px-3 py-2 text-[8px] font-bold text-[#001cac]">
+          <span className="rounded-full bg-[#eef2ff] px-2.5 py-1.5 text-[8px] font-bold text-[#001cac]">
             Admin order
           </span>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="mt-4 grid gap-3 sm:mt-5 sm:grid-cols-2">
           <label className="grid gap-1.5">
             <span className={labelClass}>Customer name</span>
             <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} className={inputClass} placeholder="Full name" />
@@ -314,24 +306,9 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
             <span className={labelClass}>Phone number</span>
             <input value={phone} onChange={(e) => setPhone(e.target.value)} className={inputClass} inputMode="tel" placeholder="+91 / mobile number" />
           </label>
-          <label className="grid gap-1.5">
-            <span className={labelClass}>Alternate phone</span>
-            <input value={alternatePhone} onChange={(e) => setAlternatePhone(e.target.value)} className={inputClass} inputMode="tel" placeholder="Optional" />
-          </label>
-          <label className="grid gap-1.5">
-            <span className={labelClass}>Order source</span>
-            <select value={source} onChange={(e) => setSource(e.target.value)} className={inputClass}>
-              <option>WhatsApp</option>
-              <option>Phone</option>
-              <option>Instagram</option>
-              <option>Walk-in</option>
-              <option>Partner</option>
-              <option>Other</option>
-            </select>
-          </label>
         </div>
 
-        <div className="mt-5 rounded-[16px] bg-[#f7f8fb] p-3.5">
+        <div className="mt-4 rounded-[14px] bg-[#f7f8fb] p-3 sm:mt-5 sm:rounded-[16px] sm:p-3.5">
           <div className="mb-3">
             <p className="text-[8px] font-bold uppercase tracking-[.12em] text-[#59616d]">
               Delivery address
@@ -367,7 +344,7 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
           </div>
         </div>
 
-        <div className="mt-5">
+        <div className="mt-4 sm:mt-5">
           <div className="flex items-center justify-between gap-3">
             <p className="text-[8px] font-bold uppercase tracking-[.12em] text-[#59616d]">
               Products
@@ -381,7 +358,7 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
             {items.map((item, index) => {
               const product = productMap.get(item.productId);
               return (
-                <div key={item.id} className="rounded-[16px] border border-[#dfe3ea] p-3.5">
+                <div key={item.id} className="rounded-[14px] border border-[#dfe3ea] p-3 sm:rounded-[16px] sm:p-3.5">
                   <div className="mb-3 flex items-center justify-between gap-2">
                     <strong className="text-[9px] font-bold">Item {index + 1}</strong>
                     {items.length > 1 ? (
@@ -432,7 +409,7 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
           </div>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        <div className="mt-4 grid gap-3 sm:mt-5 sm:grid-cols-3">
           <label className="grid gap-1.5">
             <span className={labelClass}>Delivery charge</span>
             <input type="number" min="0" value={deliveryCharge} onChange={(e) => setDeliveryCharge(Number(e.target.value))} className={inputClass} />
@@ -447,7 +424,7 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
           </label>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="mt-4 grid gap-3 sm:mt-5 sm:grid-cols-2">
           <label className="grid gap-1.5">
             <span className={labelClass}>Payment</span>
             <select value={paymentStatus} onChange={(e) => setPaymentStatus(e.target.value as AdminPaymentStatus)} className={inputClass}>
@@ -464,21 +441,21 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
 
         <label className="mt-5 grid gap-1.5">
           <span className={labelClass}>Extra details / notes</span>
-          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className={inputClass + " min-h-[88px] resize-y py-3"} placeholder="Delivery instruction, customer request, reference, etc." />
+          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className={inputClass + " min-h-[84px] resize-y py-3 sm:min-h-[92px]"} placeholder="Delivery instruction, customer request, reference, etc." />
         </label>
 
-        <div className="mt-5 grid grid-cols-3 gap-2 rounded-[16px] bg-[#f7f8fb] p-3">
+        <div className="mt-4 grid grid-cols-3 gap-1.5 rounded-[14px] bg-[#f7f8fb] p-2.5 sm:mt-5 sm:gap-2 sm:rounded-[16px] sm:p-3">
           <div>
             <span className="text-[7px] font-bold uppercase tracking-[.1em] text-[#7b8490]">Subtotal</span>
-            <strong className="mt-1 block text-[14px]">{money(subtotal)}</strong>
+            <strong className="mt-1 block text-[13px] sm:text-[14px]">{money(subtotal)}</strong>
           </div>
           <div>
             <span className="text-[7px] font-bold uppercase tracking-[.1em] text-[#7b8490]">Order total</span>
-            <strong className="mt-1 block text-[14px]">{money(total)}</strong>
+            <strong className="mt-1 block text-[13px] sm:text-[14px]">{money(total)}</strong>
           </div>
           <div>
             <span className="text-[7px] font-bold uppercase tracking-[.1em] text-[#7b8490]">Est. profit</span>
-            <strong className={"mt-1 block text-[14px] " + (estimatedProfit < 0 ? "text-[#b42318]" : "text-[#18794e]")}>
+            <strong className={"mt-1 block text-[13px] sm:text-[14px] " + (estimatedProfit < 0 ? "text-[#b42318]" : "text-[#18794e]")}>
               {money(estimatedProfit)}
             </strong>
           </div>
@@ -490,13 +467,13 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
           </div>
         ) : null}
 
-        <button type="submit" className="mt-5 min-h-10 rounded-full bg-[#001cac] px-5 text-[9px] font-bold text-white transition hover:bg-[#00158a]">
+        <button type="submit" className="mt-4 min-h-9 rounded-full bg-[#001cac] px-5 text-[9px] font-bold text-white transition hover:bg-[#00158a] sm:mt-5 sm:min-h-10">
           Save order
         </button>
       </form>
 
-      <section className="rounded-[20px] border border-[#dfe3ea] bg-white p-4 md:p-5">
-        <div className="flex flex-wrap items-end justify-between gap-3">
+      <section className="min-w-0 rounded-[18px] border border-[#dfe3ea] bg-white p-3.5 sm:rounded-[20px] sm:p-4 md:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-[8px] font-bold uppercase tracking-[.13em] text-[#001cac]">
               Orders
@@ -511,15 +488,15 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="min-h-9 w-full rounded-full border border-[#dfe3ea] bg-[#f8f9fb] px-3 text-[9px] outline-none focus:border-[#001cac] sm:w-[220px]"
-            placeholder="Search order / name / phone"
+            className="h-10 w-full rounded-[11px] border border-[#d9dee7] bg-[#f8f9fb] px-3 text-[10px] font-medium outline-none placeholder:text-[#969da8] focus:border-[#001cac] focus:ring-2 focus:ring-[#001cac]/10 sm:w-[280px]"
+            placeholder="Search orders"
           />
         </div>
 
         {filteredOrders.length ? (
           <div className="mt-4 grid gap-3">
             {filteredOrders.map((order) => (
-              <article key={order.id} className="rounded-[17px] border border-[#dfe3ea] p-3.5 md:p-4">
+              <article key={order.id} className="rounded-[15px] border border-[#dfe3ea] p-3 sm:rounded-[17px] sm:p-3.5 md:p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -546,7 +523,7 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
                   </div>
                 </div>
 
-                <div className="mt-3 grid gap-2 rounded-[13px] bg-[#f7f8fb] p-3 md:grid-cols-2">
+                <div className="mt-3 grid gap-3 rounded-[13px] bg-[#f7f8fb] p-3 sm:grid-cols-2">
                   <div>
                     <span className="text-[7px] font-bold uppercase tracking-[.1em] text-[#7d8490]">Delivery</span>
                     <p className="mt-1 text-[8px] leading-4 text-[#4e5662]">
@@ -577,7 +554,7 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
                   </p>
                 ) : null}
 
-                <div className="mt-3 flex flex-wrap items-center gap-2">
+                <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[#edf0f4] pt-3">
                   <select
                     value={order.status}
                     onChange={(e) => updateOrderStatus(order.id, e.target.value as AdminOrderStatus)}
@@ -585,13 +562,10 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
                   >
                     {statusOptions.map((option) => <option key={option}>{option}</option>)}
                   </select>
-                  <span className="text-[8px] font-semibold text-[#7a828e]">
-                    Source: {order.source}
-                  </span>
                   <button
                     type="button"
                     onClick={() => deleteOrder(order.id)}
-                    className="ml-auto min-h-8 rounded-full border border-[#efd0d0] px-3 text-[8px] font-bold text-[#a33d3d]"
+                    className="ml-auto min-h-8 rounded-full border border-[#efd0d0] bg-white px-3 text-[8px] font-bold text-[#a33d3d]"
                   >
                     Delete
                   </button>
@@ -600,7 +574,7 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
             ))}
           </div>
         ) : (
-          <div className="mt-4 grid min-h-[300px] place-items-center rounded-[16px] bg-[#f7f8fb] px-5 text-center">
+          <div className="mt-4 grid min-h-[220px] place-items-center rounded-[14px] bg-[#f7f8fb] px-5 text-center sm:min-h-[300px] sm:rounded-[16px]">
             <div>
               <strong className="text-[11px] font-semibold">No orders yet</strong>
               <p className="mt-1.5 text-[8px] leading-4 text-[#737b87]">
