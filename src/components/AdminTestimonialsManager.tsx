@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { StarRatingInput } from "@/components/StarRatingInput";
 import {
   type ChangeEvent,
   type FormEvent,
@@ -301,27 +302,19 @@ export function AdminTestimonialsManager({
               </select>
             </label>
 
-            <label className="grid gap-1.5">
+            <div className="grid gap-1.5">
               <span className="text-[8px] font-semibold uppercase tracking-[.08em] text-black/45">
                 Rating
               </span>
-              <select
+              <StarRatingInput
                 value={draft.rating}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    rating: Number(event.target.value),
-                  }))
+                onChange={(rating) =>
+                  setDraft((current) => ({ ...current, rating }))
                 }
-                className="min-h-11 rounded-xl border border-black/10 bg-white px-3 text-[10px] outline-none"
-              >
-                {[5, 4, 3, 2, 1].map((rating) => (
-                  <option key={rating} value={rating}>
-                    {rating} star{rating === 1 ? "" : "s"}
-                  </option>
-                ))}
-              </select>
-            </label>
+                theme="light"
+                label="Testimonial rating"
+              />
+            </div>
           </div>
 
           <div className="mt-3 rounded-xl border border-black/10 bg-white p-3">

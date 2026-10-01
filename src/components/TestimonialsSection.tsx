@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { StarRatingInput } from "@/components/StarRatingInput";
 import {
   type ChangeEvent,
   type FormEvent,
@@ -276,24 +277,17 @@ export function TestimonialsSection({
           </label>
 
           <div className="customer-story-form-grid customer-story-form-grid-bottom">
-            <label>
+            <div className="customer-story-rating-field">
               <span>Rating</span>
-              <select
+              <StarRatingInput
                 value={draft.rating}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    rating: Number(event.target.value),
-                  }))
+                onChange={(rating) =>
+                  setDraft((current) => ({ ...current, rating }))
                 }
-              >
-                {[5, 4, 3, 2, 1].map((rating) => (
-                  <option key={rating} value={rating}>
-                    {rating} star{rating === 1 ? "" : "s"}
-                  </option>
-                ))}
-              </select>
-            </label>
+                theme="dark"
+                label="Your rating"
+              />
+            </div>
 
             <label className="customer-story-photo-field">
               <span>Product photo</span>
