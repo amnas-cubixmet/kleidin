@@ -8,8 +8,21 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function AdminLoginPage() {
+type LoginPageProps = {
+  searchParams: Promise<{
+    setup?: string;
+    error?: string;
+  }>;
+};
+
+export default async function AdminLoginPage({
+  searchParams,
+}: LoginPageProps) {
   if (await isAdminAuthenticated()) redirect("/admin");
+
+  const params = await searchParams;
+  const setupMissing = params.setup === "1";
+  const invalidCredentials = params.error === "1";
 
   return (
     <main className="grid min-h-screen w-full place-items-center bg-white px-4 py-8 text-[#111]">
@@ -28,6 +41,20 @@ export default async function AdminLoginPage() {
             </h1>
           </div>
 
+          {setupMissing ? (
+            <div className="mb-5 border border-[#e0b35a] bg-[#fff9eb] px-4 py-3 text-[9px] leading-4 text-[#6c4a0b]">
+              Admin login is not configured yet. Add ADMIN_EMAIL,
+              ADMIN_SESSION_SECRET and your generated password hash values to
+              <code className="mx-1">.env.local</code>, then restart the dev server.
+            </div>
+          ) : null}
+
+          {invalidCredentials ? (
+            <div className="mb-5 border border-[#d9a4a4] bg-[#fff3f3] px-4 py-3 text-[9px] leading-4 text-[#7b1f1f]">
+              Email or password is incorrect.
+            </div>
+          ) : null}
+
           <form action={loginAdmin} className="grid gap-5">
             <label className="grid gap-2">
               <span className="text-[8px] font-semibold uppercase tracking-[.12em] text-black/45">
@@ -38,7 +65,7 @@ export default async function AdminLoginPage() {
                 name="email"
                 autoComplete="username"
                 required
-                className="h-[52px] w-full border border-black/15 bg-white px-4 text-[14px] outline-none transition focus:border-[#001cac] focus:ring-2 focus:ring-[#001cac]/10"
+                className="h-[52px] w-full border border-black/20 bg-white px-4 text-[14px] text-[#111] outline-none transition focus:border-[#111] focus:ring-2 focus:ring-black/5"
                 placeholder="admin@kleid.in"
               />
             </label>
@@ -52,18 +79,22 @@ export default async function AdminLoginPage() {
                 name="password"
                 autoComplete="current-password"
                 required
-                className="h-[52px] w-full border border-black/15 bg-white px-4 text-[14px] outline-none transition focus:border-[#001cac] focus:ring-2 focus:ring-[#001cac]/10"
+                className="h-[52px] w-full border border-black/20 bg-white px-4 text-[14px] text-[#111] outline-none transition focus:border-[#111] focus:ring-2 focus:ring-black/5"
                 placeholder="Enter password"
               />
             </label>
 
             <button
               type="submit"
-              className="mt-1 min-h-[50px] w-full rounded-full bg-[#111] px-5 text-[9px] font-semibold text-white transition hover:bg-[#001cac]"
+              className="mt-1 min-h-[50px] w-full rounded-full border border-[#111] bg-[#111] px-5 text-[10px] font-semibold !text-white transition hover:bg-white hover:!text-[#111]"
             >
-              Sign in
+              Login
             </button>
           </form>
+
+          <p className="mt-4 text-center text-[8px] leading-4 text-black/40">
+            Secure admin session is stored in an HTTP-only cookie for 12 hours.
+          </p>
         </div>
       </section>
     </main>

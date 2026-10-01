@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, scryptSync, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -7,16 +7,24 @@ export const ADMIN_SESSION_MAX_AGE = 60 * 60 * 12;
 
 type AdminAuthConfig = {
   email: string;
-  password: string;
   sessionSecret: string;
+  password?: string;
+  passwordSalt?: string;
+  passwordHash?: string;
 };
 
 function readAdminConfig(): AdminAuthConfig | null {
   const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  const password = process.env.ADMIN_PASSWORD?.trim();
   const sessionSecret = process.env.ADMIN_SESSION_SECRET?.trim();
 
-  if (!email || !password || !sessionSecret) {
+  const password = process.env.ADMIN_PASSWORD?.trim();
+  const passwordSalt = process.env.ADMIN_PASSWORD_SALT?.trim();
+  const passwordHash = process.env.ADMIN_PASSWORD_HASH?.trim();
+
+  const hasPlainPassword = Boolean(password);
+  const hasHashedPassword = Boolean(passwordSalt && passwordHash);
+
+  if (!email || !sessionSecret || (!hasPlainPassword && !hasHashedPassword)) {
     return null;
   }
 
@@ -26,8 +34,10 @@ function readAdminConfig(): AdminAuthConfig | null {
 
   return {
     email,
-    password,
     sessionSecret,
+    password,
+    passwordSalt,
+    passwordHash,
   };
 }
 
@@ -37,6 +47,19 @@ function safeEqual(leftValue: string, rightValue: string) {
 
   if (left.length !== right.length) return false;
   return timingSafeEqual(left, right);
+}
+
+function verifyPassword(password: string, config: AdminAuthConfig) {
+  if (config.passwordSalt && config.passwordHash) {
+    const candidateHash = scryptSync(password, config.passwordSalt, 64).toString("hex");
+    return safeEqual(candidateHash, config.passwordHash);
+  }
+
+  if (config.password) {
+    return safeEqual(password, config.password);
+  }
+
+  return false;
 }
 
 function signSession(email: string, expiresAt: number, secret: string) {
@@ -56,10 +79,7 @@ export function verifyAdminCredentials(email: string, password: string) {
   const normalizedEmail = email.trim().toLowerCase();
   if (!normalizedEmail || !password) return false;
 
-  return (
-    safeEqual(normalizedEmail, config.email) &&
-    safeEqual(password, config.password)
-  );
+  return safeEqual(normalizedEmail, config.email) && verifyPassword(password, config);
 }
 
 export function getAdminSessionValue() {
@@ -67,7 +87,7 @@ export function getAdminSessionValue() {
 
   if (!config) {
     throw new Error(
-      "Admin authentication is not configured. Set ADMIN_EMAIL, ADMIN_PASSWORD and ADMIN_SESSION_SECRET in .env.local.",
+      "Admin authentication is not configured. Set ADMIN_EMAIL, ADMIN_SESSION_SECRET and either ADMIN_PASSWORD or ADMIN_PASSWORD_SALT + ADMIN_PASSWORD_HASH.",
     );
   }
 
