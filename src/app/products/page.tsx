@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ProductCard } from "@/components/ProductCard";
 import { getCatalogProducts } from "@/lib/catalog";
 
@@ -85,6 +86,18 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     sort: sort === "featured" ? undefined : sort,
   };
 
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Shop", href: category || showNew || query ? "/products" : undefined },
+    ...(category
+      ? [{ label: category }]
+      : showNew
+        ? [{ label: "New Arrivals" }]
+        : query
+          ? [{ label: `Search: ${params.q}` }]
+          : []),
+  ];
+
   const sortLabel =
     sort === "price-low"
       ? "Price: Low"
@@ -97,6 +110,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   return (
     <main className="catalog-store-page">
       <div className="catalog-store-shell">
+        <Breadcrumbs items={breadcrumbItems} />
+
         <form action="/products" method="get" className="catalog-store-search">
           {category ? <input type="hidden" name="category" value={category} /> : null}
           {showNew ? <input type="hidden" name="new" value="1" /> : null}

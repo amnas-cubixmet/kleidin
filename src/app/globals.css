@@ -13393,3 +13393,175 @@ main,
     font-size: 5.3px !important;
   }
 }
+
+
+/* Breadcrumbs + mobile navigation touch targets */
+.site-breadcrumbs {
+  width: 100%;
+  min-width: 0;
+}
+
+.site-breadcrumbs ol {
+  min-width: 0;
+  min-height: 34px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  list-style: none;
+  overflow: hidden;
+}
+
+.site-breadcrumbs li {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.site-breadcrumbs a,
+.site-breadcrumbs .breadcrumb-current {
+  min-height: 34px;
+  padding: 0 7px;
+  display: inline-flex;
+  align-items: center;
+  color: #767676;
+  font-size: 8px;
+  font-weight: 550;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.site-breadcrumbs li:first-child a,
+.site-breadcrumbs li:first-child .breadcrumb-current {
+  padding-left: 0;
+}
+
+.site-breadcrumbs a:hover {
+  color: #111;
+}
+
+.site-breadcrumbs .breadcrumb-current {
+  min-width: 0;
+  max-width: 340px;
+  color: #111;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.breadcrumb-separator {
+  color: #b6b6b6;
+  font-size: 8px;
+  flex: 0 0 auto;
+}
+
+.product-breadcrumb-shell {
+  width: min(calc(100% - 28px), 1376px);
+  margin: 0 auto;
+  padding-top: 10px;
+}
+
+@media (max-width: 980px) {
+  .mobile-card-link {
+    min-height: 48px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .site-header .menu-button,
+  .site-header .icon-button {
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
+  .site-header .header-whatsapp-button {
+    min-height: 36px !important;
+    padding-left: 13px !important;
+    padding-right: 13px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-breadcrumbs ol {
+    min-height: 44px;
+  }
+
+  .site-breadcrumbs a,
+  .site-breadcrumbs .breadcrumb-current {
+    min-height: 44px;
+    padding: 0 6px;
+    font-size: clamp(7px, 2.2vw, 9px);
+  }
+
+  .site-breadcrumbs a {
+    flex: 0 0 auto;
+  }
+
+  .site-breadcrumbs li:last-child {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .site-breadcrumbs li:last-child .breadcrumb-current {
+    width: 100%;
+    max-width: none;
+    display: flex;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .breadcrumb-separator {
+    font-size: 7px;
+  }
+
+  .catalog-store-shell > .site-breadcrumbs {
+    padding: 0 1px;
+  }
+
+  .product-breadcrumb-shell {
+    width: 100%;
+    padding: 0 8px;
+  }
+
+  .mobile-card-link {
+    min-height: 52px !important;
+    font-size: 14px !important;
+  }
+
+  .site-header .menu-button,
+  .site-header .icon-button {
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+  }
+
+  .site-header .menu-icon {
+    width: 20px !important;
+  }
+
+  .site-header .header-whatsapp-button {
+    min-height: 34px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .site-breadcrumbs a,
+  .site-breadcrumbs .breadcrumb-current {
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 7px;
+  }
+
+  .product-breadcrumb-shell {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .mobile-card-link {
+    min-height: 50px !important;
+  }
+}

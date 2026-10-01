@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ProductDetailClient } from "@/components/ProductDetailClient";
 import { getCatalogProductBySlug } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
@@ -30,11 +31,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!product || product.status === "draft") notFound();
 
   return (
-    <section className="product-page product-page-premium">
-      <ProductDetailClient
-        product={product}
-        whatsappNumber={settings.whatsappNumber}
-      />
-    </section>
+    <>
+      <div className="product-breadcrumb-shell">
+        <Breadcrumbs
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Shop", href: "/products" },
+            { label: product.name },
+          ]}
+        />
+      </div>
+
+      <section className="product-page product-page-premium">
+        <ProductDetailClient
+          product={product}
+          whatsappNumber={settings.whatsappNumber}
+        />
+      </section>
+    </>
   );
 }
