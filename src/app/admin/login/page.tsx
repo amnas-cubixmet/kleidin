@@ -129,7 +129,7 @@ export default async function AdminLoginPage({
 
               <button
                 type="submit"
-                className="mt-1 min-h-[48px] w-full rounded-full bg-[#001cac] px-5 text-[9px] font-semibold text-white transition hover:bg-[#00147d] disabled:cursor-not-allowed disabled:bg-black/25"
+                className="mt-1 min-h-[48px] w-full rounded-full bg-black px-5 text-[9px] font-semibold text-white transition hover:bg-black/90 disabled:cursor-not-allowed disabled:bg-black disabled:text-white disabled:opacity-100"
                 disabled={!configured}
               >
                 {configured ? "Sign in to admin" : "Admin setup required"}
