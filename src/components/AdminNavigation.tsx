@@ -1,167 +1,174 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+
+type IconName =
+  | "dashboard"
+  | "orders"
+  | "products"
+  | "inventory"
+  | "customers"
+  | "partners"
+  | "messages"
+  | "testimonials"
+  | "hero"
+  | "settings"
+  | "more";
 
 type NavItem = {
-  id: string;
+  href: string;
   label: string;
-  shortLabel: string;
-  icon: "overview" | "products" | "hero" | "reviews";
+  icon: IconName;
 };
 
-const navItems: NavItem[] = [
-  { id: "overview", label: "Overview", shortLabel: "Home", icon: "overview" },
-  { id: "products", label: "Products", shortLabel: "Products", icon: "products" },
-  { id: "hero", label: "Hero", shortLabel: "Hero", icon: "hero" },
-  { id: "reviews", label: "Reviews", shortLabel: "Reviews", icon: "reviews" },
+const primaryItems: NavItem[] = [
+  { href: "/admin/dashboard", label: "Dashboard", icon: "dashboard" },
+  { href: "/admin/orders", label: "Orders", icon: "orders" },
+  { href: "/admin/products", label: "Products", icon: "products" },
+  { href: "/admin/inventory", label: "Inventory", icon: "inventory" },
 ];
 
-function NavIcon({ type }: { type: NavItem["icon"] }) {
-  if (type === "overview") {
-    return (
-      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7">
-        <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" />
-      </svg>
-    );
-  }
+const relationshipItems: NavItem[] = [
+  { href: "/admin/customers", label: "Customers", icon: "customers" },
+  { href: "/admin/partners", label: "Partners", icon: "partners" },
+  { href: "/admin/messages", label: "Messages", icon: "messages" },
+  { href: "/admin/testimonials", label: "Testimonials", icon: "testimonials" },
+];
 
-  if (type === "products") {
-    return (
-      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-        <path d="m4 8 8-4 8 4-8 4-8-4Z" />
-        <path d="m4 8 8 4 8-4v8l-8 4-8-4V8Z" />
-        <path d="M12 12v8" />
-      </svg>
-    );
-  }
+const storefrontItems: NavItem[] = [
+  { href: "/admin/hero", label: "Hero", icon: "hero" },
+  { href: "/admin/settings", label: "Settings", icon: "settings" },
+];
 
-  if (type === "hero") {
-    return (
-      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="4" width="18" height="16" rx="2" />
-        <circle cx="9" cy="9" r="1.5" />
-        <path d="m5 17 5-5 3 3 2-2 4 4" />
-      </svg>
-    );
-  }
+const mobileItems: NavItem[] = [
+  { href: "/admin/dashboard", label: "Home", icon: "dashboard" },
+  { href: "/admin/orders", label: "Orders", icon: "orders" },
+  { href: "/admin/products", label: "Products", icon: "products" },
+  { href: "/admin/inventory", label: "Stock", icon: "inventory" },
+  { href: "/admin/more", label: "More", icon: "more" },
+];
 
+function Icon({ name, className = "h-[19px] w-[19px]" }: { name: IconName; className?: string }) {
+  const common = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.8,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    className,
+    "aria-hidden": true,
+  };
+
+  switch (name) {
+    case "dashboard":
+      return <svg {...common}><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></svg>;
+    case "orders":
+      return <svg {...common}><path d="M6 3h12l1 18H5L6 3Z" /><path d="M9 7a3 3 0 0 0 6 0" /></svg>;
+    case "products":
+      return <svg {...common}><path d="m12 3 8 4.5-8 4.5-8-4.5L12 3Z" /><path d="m4 7.5 8 4.5 8-4.5V16l-8 5-8-5V7.5Z" /><path d="M12 12v9" /></svg>;
+    case "inventory":
+      return <svg {...common}><path d="M4 7h16v14H4z" /><path d="M3 3h18v4H3z" /><path d="M9 11h6" /></svg>;
+    case "customers":
+      return <svg {...common}><circle cx="9" cy="8" r="3" /><path d="M3.5 20c.5-4 2.4-6 5.5-6s5 2 5.5 6" /><path d="M16 11a3 3 0 1 0 0-6" /><path d="M17 14c2.3.6 3.4 2.6 3.5 6" /></svg>;
+    case "partners":
+      return <svg {...common}><path d="m8 12 2 2c1 1 2 1 3 0l4-4" /><path d="m7 17-3-3a3 3 0 0 1 0-4l3-3a3 3 0 0 1 4 0l1 1" /><path d="m17 7 3 3a3 3 0 0 1 0 4l-3 3a3 3 0 0 1-4 0l-1-1" /></svg>;
+    case "messages":
+      return <svg {...common}><path d="M4 5h16v12H8l-4 4V5Z" /><path d="M8 9h8M8 13h5" /></svg>;
+    case "testimonials":
+      return <svg {...common}><path d="M6 17.5 3 20l.8-4A8.5 8.5 0 1 1 6 17.5Z" /><path d="m9 10 1 1 2-2" /><path d="M14 10h3M9 14h8" /></svg>;
+    case "hero":
+      return <svg {...common}><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8.5" cy="9" r="1.5" /><path d="m5 17 5-5 3 3 2-2 4 4" /></svg>;
+    case "settings":
+      return <svg {...common}><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z" /></svg>;
+    default:
+      return <svg {...common}><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" /><circle cx="19" cy="12" r="1" fill="currentColor" stroke="none" /></svg>;
+  }
+}
+
+function isActive(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(href + "/");
+}
+
+function DesktopGroup({ title, items, pathname }: { title: string; items: NavItem[]; pathname: string }) {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M7 18.5 4 20l.8-3.4A8 8 0 1 1 7 18.5Z" />
-      <path d="M8.5 11.5h7M8.5 8.5h4" />
-    </svg>
+    <div className="mt-5">
+      <p className="mb-2 px-3 text-[8px] font-semibold uppercase tracking-[.14em] text-black/30">{title}</p>
+      <div className="grid gap-1">
+        {items.map((item) => {
+          const active = isActive(pathname, item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={active ? "page" : undefined}
+              className={
+                "relative flex min-h-[44px] items-center gap-3 rounded-[12px] px-3 text-[10px] font-semibold transition-colors " +
+                (active
+                  ? "bg-[#eef2ff] text-[#001cac]"
+                  : "text-black/52 hover:bg-black/[.035] hover:text-black")
+              }
+            >
+              {active ? <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[#001cac]" /> : null}
+              <Icon name={item.icon} />
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
 export function AdminNavigation() {
-  const [activeId, setActiveId] = useState("overview");
-
-  useEffect(() => {
-    const sections = navItems
-      .map((item) => document.getElementById(item.id))
-      .filter((section): section is HTMLElement => Boolean(section));
-
-    if (!sections.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-        if (visible?.target.id) setActiveId(visible.target.id);
-      },
-      {
-        rootMargin: "-15% 0px -68% 0px",
-        threshold: [0.05, 0.15, 0.3],
-      },
-    );
-
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
-
-  const goToSection = (id: string) => {
-    setActiveId(id);
-    const section = document.getElementById(id);
-    if (!section) return;
-
-    section.scrollIntoView({ behavior: "smooth", block: "start" });
-    window.history.replaceState(null, "", "#" + id);
-  };
+  const pathname = usePathname();
 
   return (
     <>
-      <aside className="sticky top-5 hidden h-[calc(100vh-40px)] w-[220px] shrink-0 flex-col rounded-[24px] border border-black/8 bg-white p-3 lg:flex">
-        <div className="px-3 pb-5 pt-3">
-          <strong className="block text-[18px] font-extrabold tracking-[-.055em]">
-            KLEID.IN
-          </strong>
-          <span className="mt-1 block text-[7px] font-semibold uppercase tracking-[.16em] text-black/35">
-            Admin panel
-          </span>
-        </div>
+      <aside className="sticky top-4 hidden h-[calc(100vh-32px)] w-[244px] shrink-0 flex-col overflow-y-auto rounded-[22px] border border-black/[.07] bg-white p-3 shadow-[0_10px_35px_rgba(0,0,0,.035)] lg:flex">
+        <Link href="/admin/dashboard" className="px-3 pb-2 pt-3">
+          <strong className="block text-[19px] font-extrabold tracking-[-.055em] text-[#111]">KLEID.IN</strong>
+          <span className="mt-1 block text-[7px] font-semibold uppercase tracking-[.17em] text-black/30">Commerce admin</span>
+        </Link>
 
-        <nav className="grid gap-1.5" aria-label="Admin navigation">
-          {navItems.map((item) => {
-            const active = activeId === item.id;
+        <DesktopGroup title="Business" items={primaryItems} pathname={pathname} />
+        <DesktopGroup title="Relationships" items={relationshipItems} pathname={pathname} />
+        <DesktopGroup title="Storefront" items={storefrontItems} pathname={pathname} />
 
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => goToSection(item.id)}
-                aria-current={active ? "page" : undefined}
-                className={
-                  "flex min-h-12 w-full items-center gap-3 rounded-[14px] px-3 text-left text-[10px] font-semibold transition " +
-                  (active
-                    ? "bg-[#001cac] text-white"
-                    : "text-black/55 hover:bg-black/[.035] hover:text-black")
-                }
-              >
-                <NavIcon type={item.icon} />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </nav>
-
-        <div className="mt-auto border-t border-black/8 pt-3">
-          <Link
-            href="/"
-            target="_blank"
-            className="flex min-h-11 items-center justify-between rounded-[14px] px-3 text-[9px] font-semibold text-black/50 transition hover:bg-black/[.035] hover:text-black"
-          >
+        <div className="mt-auto pt-5">
+          <Link href="/" target="_blank" className="flex min-h-[42px] items-center justify-between rounded-[12px] border border-black/[.07] px-3 text-[9px] font-semibold text-black/48 transition hover:bg-black/[.025] hover:text-black">
             <span>View storefront</span>
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M7 17 17 7M8 7h9v9" />
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M7 17 17 7M9 7h8v8" />
             </svg>
           </Link>
         </div>
       </aside>
 
       <nav
-        className="fixed inset-x-3 bottom-3 z-[70] grid grid-cols-4 rounded-[20px] border border-black/10 bg-white/95 p-1.5 shadow-[0_12px_35px_rgba(0,0,0,.12)] backdrop-blur-xl lg:hidden"
+        className="fixed inset-x-2 bottom-2 z-[80] grid grid-cols-5 rounded-[19px] border border-black/10 bg-white/95 p-1.5 shadow-[0_14px_40px_rgba(0,0,0,.16)] backdrop-blur-xl supports-[padding:max(0px)]:bottom-[max(.5rem,env(safe-area-inset-bottom))] lg:hidden"
         aria-label="Admin mobile navigation"
       >
-        {navItems.map((item) => {
-          const active = activeId === item.id;
+        {mobileItems.map((item) => {
+          const active =
+            item.icon === "more"
+              ? ["/admin/customers", "/admin/partners", "/admin/messages", "/admin/testimonials", "/admin/hero", "/admin/settings", "/admin/more"].some((href) => isActive(pathname, href))
+              : isActive(pathname, item.href);
 
           return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => goToSection(item.id)}
+            <Link
+              key={item.href}
+              href={item.href}
               aria-current={active ? "page" : undefined}
               className={
-                "flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-[14px] px-1 text-[8px] font-semibold transition " +
-                (active ? "bg-[#001cac] text-white" : "text-black/45")
+                "flex min-h-[56px] flex-col items-center justify-center gap-1 rounded-[13px] px-1 text-[7.5px] font-semibold transition-colors " +
+                (active ? "bg-[#eef2ff] text-[#001cac]" : "text-black/38")
               }
             >
-              <NavIcon type={item.icon} />
-              <span>{item.shortLabel}</span>
-            </button>
+              <Icon name={item.icon} className="h-[18px] w-[18px]" />
+              <span>{item.label}</span>
+            </Link>
           );
         })}
       </nav>
