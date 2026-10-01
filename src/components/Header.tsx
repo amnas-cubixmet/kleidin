@@ -4,8 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useCart } from "@/context/CartContext";
-import { getCartWhatsappUrl } from "@/lib/format";
 import type { Product } from "@/types/product";
 import type { StoreSettings } from "@/types/commerce";
 
@@ -25,33 +23,17 @@ function SearchIcon() {
   );
 }
 
-function WhatsAppIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="M20.5 11.7a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.4-4.3A8.5 8.5 0 1 1 20.5 11.7Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.55"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M8.6 7.6c.2-.4.4-.4.7-.4h.5c.2 0 .4.1.5.4l.8 1.8c.1.3.1.5-.1.8l-.7.9c.7 1.4 1.8 2.5 3.2 3.2l.9-.7c.2-.2.5-.2.8-.1l1.8.8c.3.1.4.3.4.5v.5c0 .3 0 .5-.4.7-.7.4-1.6.6-2.4.4-3.4-.8-6.1-3.5-6.9-6.9-.2-.8 0-1.7.4-2.4Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.45"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 function CloseIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <path
+        d="M18 6L6 18M6 6l12 12"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
     </svg>
   );
 }
@@ -65,14 +47,6 @@ function MenuIcon({ open }: { open: boolean }) {
   );
 }
 
-function formatPrice(value: number) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
 export function Header({
   products,
   settings,
@@ -81,20 +55,9 @@ export function Header({
   settings: StoreSettings;
 }) {
   const pathname = usePathname();
-  const {
-    items,
-    itemCount,
-    subtotal,
-    removeItem,
-    updateQuantity,
-    clearCart,
-  } = useCart();
-
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuMounted, setMenuMounted] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
-  const [cartClosing, setCartClosing] = useState(false);
   const [query, setQuery] = useState("");
   const [announcementVisible, setAnnouncementVisible] = useState(true);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -102,29 +65,23 @@ export function Header({
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuCloseTimerRef = useRef<number | null>(null);
 
-  function handleCloseCart() {
-    if (cartClosing) return;
-    setCartClosing(true);
-    window.setTimeout(() => {
-      setCartOpen(false);
-      setCartClosing(false);
-    }, 300);
-  }
-
   const openMenu = useCallback(() => {
     if (menuCloseTimerRef.current !== null) {
       window.clearTimeout(menuCloseTimerRef.current);
       menuCloseTimerRef.current = null;
     }
+
     setMenuMounted(true);
     window.requestAnimationFrame(() => setMenuOpen(true));
   }, []);
 
   const closeMenu = useCallback(() => {
     setMenuOpen(false);
+
     if (menuCloseTimerRef.current !== null) {
       window.clearTimeout(menuCloseTimerRef.current);
     }
+
     menuCloseTimerRef.current = window.setTimeout(() => {
       setMenuMounted(false);
       menuCloseTimerRef.current = null;
@@ -154,6 +111,7 @@ export function Header({
 
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("touchstart", handleClickOutside);
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
@@ -182,13 +140,17 @@ export function Header({
 
   useEffect(() => {
     try {
-      const dismissed = window.localStorage.getItem("kleidin-announcement-dismissed");
+      const dismissed = window.localStorage.getItem(
+        "kleidin-announcement-dismissed",
+      );
       if (dismissed === "true") setAnnouncementVisible(false);
     } catch {}
   }, []);
 
   useEffect(() => {
-    if (searchOpen) window.setTimeout(() => searchRef.current?.focus(), 50);
+    if (searchOpen) {
+      window.setTimeout(() => searchRef.current?.focus(), 50);
+    }
   }, [searchOpen]);
 
   useEffect(() => {
@@ -196,29 +158,16 @@ export function Header({
       if (event.key === "Escape") {
         setSearchOpen(false);
         closeMenu();
-        if (cartOpen) handleCloseCart();
       }
     }
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [cartOpen, cartClosing, closeMenu]);
-
-  useEffect(() => {
-    if (cartOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [cartOpen]);
+  }, [closeMenu]);
 
   function closePanels() {
     closeMenu();
     setSearchOpen(false);
-    if (cartOpen) handleCloseCart();
   }
 
   function isActive(href: string) {
@@ -229,6 +178,7 @@ export function Header({
 
   function dismissAnnouncement() {
     setAnnouncementVisible(false);
+
     try {
       window.localStorage.setItem("kleidin-announcement-dismissed", "true");
     } catch {}
@@ -237,12 +187,6 @@ export function Header({
   const announcementHref = settings.whatsappNumber
     ? `https://wa.me/${settings.whatsappNumber}`
     : "/contact";
-
-  const checkoutUrl = getCartWhatsappUrl(
-    items,
-    subtotal,
-    settings.whatsappNumber,
-  );
 
   return (
     <>
@@ -263,6 +207,7 @@ export function Header({
               </>
             ) : null}
           </div>
+
           <button
             type="button"
             className="announcement-close"
@@ -275,7 +220,12 @@ export function Header({
       ) : null}
 
       <header className="site-header">
-        <Link href="/" className="brand" aria-label="KLEID.IN home" onClick={closePanels}>
+        <Link
+          href="/"
+          className="brand"
+          aria-label="KLEID.IN home"
+          onClick={closePanels}
+        >
           KLEID.IN
         </Link>
 
@@ -300,7 +250,6 @@ export function Header({
             aria-expanded={searchOpen}
             onClick={() => {
               closeMenu();
-              setCartOpen(false);
               setSearchOpen((current) => !current);
             }}
           >
@@ -328,7 +277,7 @@ export function Header({
             aria-expanded={menuOpen}
             onClick={() => {
               setSearchOpen(false);
-              setCartOpen(false);
+
               if (menuOpen) {
                 closeMenu();
               } else {
@@ -344,7 +293,9 @@ export function Header({
       {menuMounted ? (
         <div
           ref={menuRef}
-          className={`mobile-compact-card ${menuOpen ? "is-open" : "is-closing"}`}
+          className={`mobile-compact-card ${
+            menuOpen ? "is-open" : "is-closing"
+          }`}
           role="dialog"
           aria-label="Mobile navigation"
         >
@@ -353,12 +304,16 @@ export function Header({
               <Link
                 key={item.label}
                 href={item.href}
-                className={`mobile-card-link ${isActive(item.href) ? "active" : ""}`}
+                className={`mobile-card-link ${
+                  isActive(item.href) ? "active" : ""
+                }`}
                 style={{ animationDelay: `${130 + index * 40}ms` }}
                 onClick={closePanels}
               >
                 <span>{item.label}</span>
-                <span className="mobile-card-arrow" aria-hidden="true">↗</span>
+                <span className="mobile-card-arrow" aria-hidden="true">
+                  ↗
+                </span>
               </Link>
             ))}
           </nav>
@@ -367,7 +322,9 @@ export function Header({
 
       {searchOpen ? (
         <div
-          className={`search-panel ${announcementVisible ? "" : "announcement-hidden"}`}
+          className={`search-panel ${
+            announcementVisible ? "" : "announcement-hidden"
+          }`}
           role="search"
         >
           <div className="search-panel-inner">
@@ -392,6 +349,7 @@ export function Header({
 
             <div className="search-results">
               <p>{query ? "Search results" : "Popular products"}</p>
+
               {results.length ? (
                 <div className="search-result-list">
                   {results.map((product) => (
@@ -418,122 +376,30 @@ export function Header({
                       </div>
 
                       <div className="search-result-info">
-                        <strong className="search-result-title">{product.name}</strong>
+                        <strong className="search-result-title">
+                          {product.name}
+                        </strong>
                         <small className="search-result-meta">
-                          {product.category}{product.colors?.length ? ` · ${product.colors.join(" / ")}` : ""}
+                          {product.category}
+                          {product.colors?.length
+                            ? ` · ${product.colors.join(" / ")}`
+                            : ""}
                         </small>
                       </div>
 
-                      <span className="search-result-arrow" aria-hidden="true">↗</span>
+                      <span className="search-result-arrow" aria-hidden="true">
+                        ↗
+                      </span>
                     </Link>
                   ))}
                 </div>
               ) : (
-                <div className="search-empty">No products found for “{query}”.</div>
+                <div className="search-empty">
+                  No products found for “{query}”.
+                </div>
               )}
             </div>
           </div>
-        </div>
-      ) : null}
-
-
-      {cartOpen ? (
-        <div
-          className={`cart-drawer-layer ${cartClosing ? "cart-closing" : ""}`}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Shopping cart"
-        >
-          <button
-            type="button"
-            className="cart-drawer-backdrop"
-            aria-label="Close cart"
-            onClick={handleCloseCart}
-          />
-
-          <aside className="cart-drawer">
-            <div className="cart-drawer-head">
-              <div>
-                <span>Your cart</span>
-                <strong>{itemCount} items</strong>
-              </div>
-              <button type="button" onClick={handleCloseCart} aria-label="Close cart">×</button>
-            </div>
-
-            <div className="cart-drawer-body">
-              {items.length === 0 ? (
-                <div className="cart-drawer-empty">
-                  <h2>Your cart is empty.</h2>
-                  <p>Add something from the shop and it will appear here.</p>
-                  <Link href="/products" className="button button-primary" onClick={closePanels}>
-                    Shop products
-                  </Link>
-                </div>
-              ) : (
-                <>
-                  <div className="cart-drawer-items">
-                    {items.map((item) => (
-                      <article className="cart-drawer-item" key={item.key}>
-                        <Link href={`/products/${item.slug}`} className="cart-drawer-image" onClick={closePanels}>
-                          {item.image ? <Image src={item.image} alt={item.name} fill sizes="92px" /> : null}
-                        </Link>
-
-                        <div className="cart-drawer-item-copy">
-                          <div className="cart-drawer-item-top">
-                            <div>
-                              <Link href={`/products/${item.slug}`} onClick={closePanels}>
-                                {item.name}
-                              </Link>
-                              <small>{item.color} / {item.size}</small>
-                            </div>
-                            <strong>{formatPrice(item.price * item.quantity)}</strong>
-                          </div>
-
-                          <div className="cart-drawer-controls">
-                            <div className="quantity-control">
-                              <button type="button" onClick={() => updateQuantity(item.key, item.quantity - 1)}>−</button>
-                              <span>{item.quantity}</span>
-                              <button type="button" onClick={() => updateQuantity(item.key, item.quantity + 1)}>+</button>
-                            </div>
-                            <button type="button" className="remove-button" onClick={() => removeItem(item.key)}>
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-
-                  <div className="cart-drawer-footer">
-                    <div className="cart-drawer-subtotal">
-                      <span>Subtotal</span>
-                      <strong>{formatPrice(subtotal)}</strong>
-                    </div>
-
-                    {checkoutUrl !== "#" ? (
-                      <a
-                        href={checkoutUrl}
-                        className="button button-primary"
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={closePanels}
-                      >
-                        Order on WhatsApp
-                      </a>
-                    ) : (
-                      <Link href="/contact" className="button button-primary" onClick={closePanels}>
-                        Add WhatsApp number
-                      </Link>
-                    )}
-
-                    <button type="button" className="clear-cart" onClick={clearCart}>
-                      Clear cart
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          </aside>
         </div>
       ) : null}
     </>

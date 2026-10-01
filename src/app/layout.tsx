@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { CartProvider } from "@/context/CartContext";
 import { SiteChrome } from "@/components/SiteChrome";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
@@ -35,12 +34,12 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${inter.variable} min-h-screen bg-white text-kleid-ink antialiased`}>
-        <CartProvider>
-          <SiteChrome products={products} settings={settings}>
-            {children}
-          </SiteChrome>
-        </CartProvider>
+      <body
+        className={`${inter.variable} min-h-screen bg-white text-kleid-ink antialiased`}
+      >
+        <SiteChrome products={products} settings={settings}>
+          {children}
+        </SiteChrome>
       </body>
     </html>
   );
