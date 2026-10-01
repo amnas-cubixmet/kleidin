@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminHeroManager } from "@/components/AdminHeroManager";
 import { AdminTestimonialsManager } from "@/components/AdminTestimonialsManager";
+import { AdminProductManager } from "@/components/AdminProductManager";
+import { logoutAdmin } from "@/app/admin/actions";
+import { requireAdmin } from "@/lib/admin-auth";
 import { products } from "@/data/products";
 import { localOffers, localStoreSettings } from "@/data/store";
 import { defaultHeroSlides } from "@/data/hero-slides";
@@ -11,7 +14,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  await requireAdmin();
   return (
     <main className="min-h-screen bg-[#f5f5f2] px-3 py-4 text-[#111] sm:px-5 md:px-7 md:py-7">
       <div className="mx-auto w-full max-w-[1460px]">
@@ -24,19 +28,29 @@ export default function AdminPage() {
               Store control.
             </h1>
             <p className="mt-3 max-w-[620px] text-[10px] leading-5 text-white/60 md:text-[11px]">
-              Manage hero slides and real customer testimonials in local mode.
+              Mobile-ready control for products, hero slides and customer testimonials.
               Changes are saved in this browser and applied to the storefront on
               the same device.
             </p>
           </div>
 
-          <Link
-            href="/"
-            className="inline-flex min-h-11 items-center rounded-full bg-white px-5 text-[10px] font-semibold !text-[#111]"
-            style={{ color: "#111111" }}
-          >
-            View store
-          </Link>
+          <div className="flex w-full gap-2 sm:w-auto">
+            <Link
+              href="/"
+              className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-white px-5 text-[10px] font-semibold !text-[#111] sm:flex-none"
+              style={{ color: "#111111" }}
+            >
+              View store
+            </Link>
+            <form action={logoutAdmin} className="flex-1 sm:flex-none">
+              <button
+                type="submit"
+                className="min-h-11 w-full rounded-full border border-white/30 px-5 text-[10px] font-semibold text-white"
+              >
+                Logout
+              </button>
+            </form>
+          </div>
         </header>
 
         <section className="mb-5 grid grid-cols-2 gap-2.5 md:grid-cols-4">
@@ -63,6 +77,18 @@ export default function AdminPage() {
             </div>
           ))}
         </section>
+
+        <AdminProductManager
+          products={products.map((product) => ({
+            id: product.id,
+            name: product.name,
+            slug: product.slug,
+            sku: product.sku,
+            category: product.category,
+            price: product.price,
+            stock: product.stock,
+          }))}
+        />
 
         <AdminHeroManager />
 
