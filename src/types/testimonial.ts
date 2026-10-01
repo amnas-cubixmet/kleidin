@@ -8,5 +8,7 @@ export type Testimonial = {
   productSlug?: string;
   showOnHome: boolean;
   enabled: boolean;
+  pending?: boolean;
+  submittedByCustomer?: boolean;
   createdAt: string;
 };

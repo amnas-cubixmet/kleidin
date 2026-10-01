@@ -111,6 +111,7 @@ export function AdminTestimonialsManager({
           item.id === editingId
             ? {
                 ...item,
+                pending: item.pending ?? false,
                 name: draft.name.trim(),
                 quote: draft.quote.trim(),
                 location: draft.location.trim() || undefined,
@@ -140,6 +141,8 @@ export function AdminTestimonialsManager({
           rating: draft.rating,
           image: draft.image || undefined,
           enabled: draft.enabled,
+          pending: false,
+          submittedByCustomer: false,
           createdAt: new Date().toISOString(),
         },
         ...items,
@@ -174,7 +177,9 @@ export function AdminTestimonialsManager({
     persist(
       items.map((current) =>
         current.id === item.id
-          ? { ...current, enabled: !current.enabled }
+          ? current.pending
+            ? { ...current, pending: false, enabled: true }
+            : { ...current, enabled: !current.enabled }
           : current,
       ),
     );
@@ -207,7 +212,8 @@ export function AdminTestimonialsManager({
           </h2>
           <p className="mt-2 max-w-[620px] text-[9px] leading-4 text-black/45">
             Add real customer testimonials, assign them to a product, show them
-            on the home page, and upload an optional customer photo.
+            on the home page, and upload an optional customer photo. Customer
+            submissions from the storefront appear here as pending for approval.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -446,12 +452,14 @@ export function AdminTestimonialsManager({
                       <span
                         className={
                           "rounded-full px-2 py-1 text-[7px] font-semibold " +
-                          (item.enabled
-                            ? "bg-green-50 text-green-700"
-                            : "bg-black/5 text-black/45")
+                          (item.pending
+                            ? "bg-amber-50 text-amber-700"
+                            : item.enabled
+                              ? "bg-green-50 text-green-700"
+                              : "bg-black/5 text-black/45")
                         }
                       >
-                        {item.enabled ? "Published" : "Hidden"}
+                        {item.pending ? "Pending" : item.enabled ? "Published" : "Hidden"}
                       </span>
                     </div>
                     <p className="mt-2 text-[9px] leading-4 text-black/60">
@@ -482,7 +490,7 @@ export function AdminTestimonialsManager({
                     onClick={() => toggle(item)}
                     className="min-h-9 rounded-full border border-black/10 px-3 text-[8px] font-semibold"
                   >
-                    {item.enabled ? "Hide" : "Publish"}
+                    {item.pending ? "Approve & publish" : item.enabled ? "Hide" : "Publish"}
                   </button>
                   <button
                     type="button"
