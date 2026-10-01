@@ -41,17 +41,17 @@ export function AdminDashboardTestimonials() {
   }
 
   return (
-    <section className="rounded-[20px] border border-black/[.07] bg-white p-4 md:p-5">
+    <section className="rounded-[18px] border border-[#dfe3ea] bg-white p-3.5 sm:rounded-[20px] sm:p-4 md:p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-black/35">
+          <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-[#7d8490]">
             Approval queue
           </p>
-          <h2 className="mt-1.5 text-[21px] font-semibold tracking-[-.04em]">
+          <h2 className="mt-1.5 text-[20px] sm:text-[21px] font-semibold tracking-[-.04em]">
             Testimonials
           </h2>
         </div>
-        <div className="grid h-9 min-w-9 place-items-center rounded-full bg-[#eef2ff] px-2 text-[10px] font-bold text-[#001cac]">
+        <div className="grid h-8 min-w-8 sm:h-9 sm:min-w-9 place-items-center rounded-full bg-[#eef2ff] px-2 text-[10px] font-bold text-[#001cac]">
           {pending.length}
         </div>
       </div>
@@ -61,21 +61,21 @@ export function AdminDashboardTestimonials() {
           {pending.slice(0, 3).map((item) => (
             <div
               key={item.id}
-              className="rounded-[15px] border border-black/[.06] bg-[#fafaf8] p-3"
+              className="rounded-[13px] border border-[#e2e5eb] bg-[#f7f8fb] p-3 sm:rounded-[15px]"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <strong className="block truncate text-[10px] font-semibold">
                     {item.name}
                   </strong>
-                  <p className="mt-1 line-clamp-2 text-[8px] leading-4 text-black/45">
+                  <p className="mt-1 line-clamp-2 text-[8px] leading-4 text-[#68717d]">
                     {item.quote}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => approve(item.id)}
-                  className="shrink-0 rounded-full bg-[#001cac] px-3 py-2 text-[8px] font-semibold text-white"
+                  className="shrink-0 rounded-full bg-[#001cac] px-3 py-1.5 text-[8px] font-bold text-white"
                 >
                   Approve
                 </button>
@@ -84,9 +84,9 @@ export function AdminDashboardTestimonials() {
           ))}
         </div>
       ) : (
-        <div className="mt-4 rounded-[15px] bg-[#f7f7f4] px-4 py-5">
+        <div className="mt-3.5 rounded-[14px] bg-[#f7f8fb] px-4 py-4 sm:mt-4 sm:rounded-[15px] sm:py-5">
           <strong className="text-[10px] font-semibold">All caught up</strong>
-          <p className="mt-1 text-[8px] leading-4 text-black/40">
+          <p className="mt-1 text-[8px] leading-4 text-[#68717d]">
             New customer submissions will appear here for approval.
           </p>
         </div>
@@ -94,7 +94,7 @@ export function AdminDashboardTestimonials() {
 
       <Link
         href="/admin/testimonials"
-        className="mt-4 inline-flex min-h-9 items-center text-[8px] font-semibold text-[#001cac]"
+        className="mt-3.5 inline-flex min-h-8 items-center text-[8px] font-bold sm:mt-4 text-[#001cac]"
       >
         Manage testimonials
         <span className="ml-1.5" aria-hidden="true">→</span>
