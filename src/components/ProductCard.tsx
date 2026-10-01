@@ -143,17 +143,15 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
 
       <div className="product-card-info product-card-info-refined">
-        <div className="product-card-topline product-card-main-row">
-          <Link href={`/products/${product.slug}`} className="product-name">
-            {product.name}
-          </Link>
+        <Link href={`/products/${product.slug}`} className="product-name">
+          {product.name}
+        </Link>
 
-          <div className="product-card-price">
-            <strong>{formatPrice(product.price)}</strong>
-            {hasOffer && product.compareAtPrice ? (
-              <del>{formatPrice(product.compareAtPrice)}</del>
-            ) : null}
-          </div>
+        <div className="product-card-price">
+          <strong>{formatPrice(product.price)}</strong>
+          {hasOffer && product.compareAtPrice ? (
+            <del>{formatPrice(product.compareAtPrice)}</del>
+          ) : null}
         </div>
 
         <div className="product-card-stock-row">
