@@ -39,8 +39,8 @@ const emptyDraft: SubmissionDraft = {
 
 export function TestimonialsSection({
   productSlug,
-  title = "Worn. Lived in. Repeated.",
-  eyebrow = "CUSTOMER STORIES",
+  title = "Customer Stories",
+  eyebrow = "",
 }: Props) {
   const [items, setItems] = useState<Testimonial[]>([]);
   const [draft, setDraft] = useState<SubmissionDraft>(emptyDraft);
@@ -192,7 +192,7 @@ export function TestimonialsSection({
     <section className="customer-stories-section">
       <div className="customer-stories-head">
         <div>
-          <p>{eyebrow}</p>
+          {eyebrow ? <p>{eyebrow}</p> : null}
           <h2>{title}</h2>
         </div>
       </div>
