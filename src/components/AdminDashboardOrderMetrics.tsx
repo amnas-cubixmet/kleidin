@@ -31,10 +31,10 @@ function Card({
   return (
     <div
       className={
-        "rounded-[18px] border p-4 md:p-5 " +
+        "min-w-0 rounded-[16px] border p-3.5 sm:rounded-[18px] md:p-5 " +
         (accent
           ? "border-[#001cac]/10 bg-[#eef2ff]"
-          : "border-black/[.07] bg-white")
+          : "border-[#dfe3ea] bg-white")
       }
     >
       <div className="flex items-center justify-between gap-3">
@@ -53,10 +53,10 @@ function Card({
           }
         />
       </div>
-      <strong className="mt-3 block text-[clamp(24px,3vw,34px)] font-semibold tracking-[-.05em]">
+      <strong className="mt-2.5 block overflow-hidden text-ellipsis text-[clamp(20px,6vw,34px)] font-semibold tabular-nums tracking-[-.05em] sm:mt-3">
         {value}
       </strong>
-      <p className="mt-1.5 text-[8px] leading-4 text-[#6f7783]">{note}</p>
+      <p className="mt-1.5 text-[8px] leading-[1.45] text-[#6f7783]">{note}</p>
     </div>
   );
 }
@@ -91,7 +91,7 @@ export function AdminDashboardOrderMetrics() {
   }, [orders]);
 
   return (
-    <section className="grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-6">
+    <section className="grid grid-cols-2 gap-2 sm:gap-2.5 md:grid-cols-3 xl:grid-cols-6">
       <Card
         label="Total sales"
         value={money(data.sales)}
