@@ -13,7 +13,6 @@ const nav = [
   { href: "/wholesale", label: "Dealers" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
-  { href: "/profile", label: "Account" },
 ];
 
 function SearchIcon() {
