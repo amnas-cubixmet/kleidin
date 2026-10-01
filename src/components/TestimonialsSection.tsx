@@ -290,7 +290,7 @@ export function TestimonialsSection({
             </div>
 
             <label className="customer-story-photo-field">
-              <span>Product photo</span>
+              <span>Product photo (optional)</span>
               <input
                 type="file"
                 accept="image/*"

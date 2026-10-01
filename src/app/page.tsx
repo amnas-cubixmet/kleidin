@@ -159,7 +159,7 @@ export default async function Home() {
 
           <TestimonialsSection
             eyebrow="CUSTOMER STORIES"
-            title=""
+            title="Worn. Lived in. Repeated."
           />
         </>
       ) : null}
