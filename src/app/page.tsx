@@ -44,7 +44,7 @@ export default async function Home() {
             <div className="ref-arrivals-head">
               <div>
                 <p className="ref-kicker">CATALOG</p>
-                <h2>Available now.</h2>
+                <h2></h2>
               </div>
               <Link href="/products" className="ref-outline-pill">
                 View all
@@ -184,7 +184,7 @@ export default async function Home() {
 
           <TestimonialsSection
             eyebrow="CUSTOMER STORIES"
-            title="Worn. Lived in. Repeated."
+            title=""
           />
         </>
       ) : null}
