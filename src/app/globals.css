@@ -12844,3 +12844,24 @@ main,
     font-size: 9px !important;
   }
 }
+
+
+/* FINAL desktop catalog price alignment */
+@media (min-width: 641px) {
+  .catalog-store-grid .product-card-info-refined > .product-card-price {
+    width: 100% !important;
+    margin: 6px 0 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    align-self: flex-start !important;
+    justify-self: start !important;
+    align-items: baseline !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+
+  .catalog-store-grid .product-card-info-refined > .product-card-price strong,
+  .catalog-store-grid .product-card-info-refined > .product-card-price del {
+    text-align: left !important;
+  }
+}
