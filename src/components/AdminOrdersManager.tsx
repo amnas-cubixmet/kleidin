@@ -323,21 +323,6 @@ export function AdminOrdersManager({
     router.push("/admin/orders/" + order.id);
   }
 
-  function updateOrderStatus(orderId: string, nextStatus: AdminOrderStatus) {
-    persist(
-      orders.map((order) =>
-        order.id === orderId
-          ? { ...order, status: nextStatus, updatedAt: new Date().toISOString() }
-          : order,
-      ),
-    );
-  }
-
-  function deleteOrder(orderId: string) {
-    if (!window.confirm("Delete this order?")) return;
-    persist(orders.filter((order) => order.id !== orderId));
-  }
-
   const inputClass =
     "h-10 w-full min-w-0 rounded-[10px] border border-[#d9dee7] bg-white px-3 text-[11px] font-medium text-[#20242a] outline-none transition placeholder:text-[#9aa1ac] focus:border-[#001cac] focus:ring-2 focus:ring-[#001cac]/10 sm:h-11";
   const labelClass =
@@ -568,16 +553,24 @@ export function AdminOrdersManager({
         {filteredOrders.length ? (
           <div className="mt-4 grid gap-3">
             {filteredOrders.map((order) => (
-              <article key={order.id} className="rounded-[15px] border border-[#dfe3ea] p-3 sm:rounded-[17px] sm:p-3.5 md:p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
+              <article
+                key={order.id}
+                className="rounded-[15px] border border-[#dfe3ea] bg-white p-3 transition hover:border-[#cbd2dc] hover:shadow-[0_8px_24px_rgba(16,24,40,.04)] sm:rounded-[17px] sm:p-3.5 md:p-4"
+              >
+                <div className="grid gap-3 sm:grid-cols-[minmax(0,1.2fr)_minmax(150px,.7fr)_auto] sm:items-center">
+                  <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <strong className="text-[10px] font-bold">{order.orderNumber}</strong>
+                      <strong className="text-[10px] font-bold text-[#20242a]">
+                        {order.orderNumber}
+                      </strong>
                       <span className="rounded-full bg-[#eef2ff] px-2 py-1 text-[7px] font-bold text-[#001cac]">
+                        {order.status}
+                      </span>
+                      <span className="rounded-full bg-[#f3f5f8] px-2 py-1 text-[7px] font-bold text-[#606975]">
                         {order.paymentStatus}
                       </span>
                     </div>
-                    <p className="mt-1 text-[8px] text-[#6b7380]">
+                    <p className="mt-1.5 truncate text-[9px] font-semibold text-[#4f5864]">
                       {order.customerName} · {order.phone}
                     </p>
                     <p className="mt-1 text-[7px] text-[#8a919b]">
@@ -585,68 +578,40 @@ export function AdminOrdersManager({
                     </p>
                   </div>
 
-                  <div className="text-right">
-                    <strong className="block text-[18px] font-semibold tracking-[-.04em]">
-                      {money(getOrderTotal(order))}
-                    </strong>
-                    <span className={"mt-1 block text-[8px] font-bold " + (getOrderProfit(order) < 0 ? "text-[#b42318]" : "text-[#18794e]")}>
-                      Profit {money(getOrderProfit(order))}
+                  <div className="min-w-0 rounded-[12px] bg-[#f7f8fb] px-3 py-2.5 sm:bg-transparent sm:px-0 sm:py-0">
+                    <span className="block text-[7px] font-bold uppercase tracking-[.1em] text-[#7d8490]">
+                      Delivery
                     </span>
-                  </div>
-                </div>
-
-                <div className="mt-3 grid gap-3 rounded-[13px] bg-[#f7f8fb] p-3 sm:grid-cols-2">
-                  <div>
-                    <span className="text-[7px] font-bold uppercase tracking-[.1em] text-[#7d8490]">Delivery</span>
-                    <p className="mt-1 text-[8px] leading-4 text-[#4e5662]">
-                      {order.addressLine1}
-                      {order.addressLine2 ? ", " + order.addressLine2 : ""}
-                      {order.landmark ? ", " + order.landmark : ""}
-                      <br />
-                      {order.city}, {order.state} — {order.pincode}
+                    <p className="mt-1 truncate text-[8px] text-[#555e69]">
+                      {order.city}, {order.state} · {order.pincode}
+                    </p>
+                    <p className="mt-1 text-[7px] text-[#8a919b]">
+                      {order.items.reduce((sum, item) => sum + item.quantity, 0)} item
+                      {order.items.reduce((sum, item) => sum + item.quantity, 0) === 1 ? "" : "s"}
                     </p>
                   </div>
-                  <div>
-                    <span className="text-[7px] font-bold uppercase tracking-[.1em] text-[#7d8490]">Items</span>
-                    <div className="mt-1 grid gap-1">
-                      {order.items.map((item) => (
-                        <p key={item.id} className="text-[8px] leading-4 text-[#4e5662]">
-                          {item.quantity} × {item.name}
-                          {item.size ? " · " + item.size : ""}
-                          {item.color ? " · " + item.color : ""}
-                        </p>
-                      ))}
+
+                  <div className="flex items-end justify-between gap-3 sm:block sm:text-right">
+                    <div>
+                      <strong className="block text-[17px] font-semibold tracking-[-.04em] text-[#20242a]">
+                        {money(getOrderTotal(order))}
+                      </strong>
+                      <span
+                        className={
+                          "mt-1 block text-[8px] font-bold " +
+                          (getOrderProfit(order) < 0 ? "text-[#b42318]" : "text-[#18794e]")
+                        }
+                      >
+                        Profit {money(getOrderProfit(order))}
+                      </span>
                     </div>
+                    <Link
+                      href={"/admin/orders/" + order.id}
+                      className="inline-flex min-h-8 items-center justify-center rounded-full bg-[#001cac] px-3.5 text-[8px] font-bold text-white sm:mt-2"
+                    >
+                      View
+                    </Link>
                   </div>
-                </div>
-
-                {order.notes ? (
-                  <p className="mt-2 rounded-[12px] border border-[#e4e7ed] px-3 py-2 text-[8px] leading-4 text-[#626a76]">
-                    {order.notes}
-                  </p>
-                ) : null}
-
-                <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[#edf0f4] pt-3">
-                  <select
-                    value={order.status}
-                    onChange={(e) => updateOrderStatus(order.id, e.target.value as AdminOrderStatus)}
-                    className="min-h-8 rounded-full border border-[#d9dee7] bg-white px-3 text-[8px] font-bold text-[#414852] outline-none"
-                  >
-                    {statusOptions.map((option) => <option key={option}>{option}</option>)}
-                  </select>
-                  <Link
-                    href={"/admin/orders/" + order.id}
-                    className="ml-auto inline-flex min-h-8 items-center rounded-full bg-[#001cac] px-3 text-[8px] font-bold text-white"
-                  >
-                    View
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => deleteOrder(order.id)}
-                    className="min-h-8 rounded-full border border-[#efd0d0] bg-white px-3 text-[8px] font-bold text-[#a33d3d]"
-                  >
-                    Delete
-                  </button>
                 </div>
               </article>
             ))}
