@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { loginAdmin } from "@/app/admin/actions";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import {
+  isAdminAuthConfigured,
+  isAdminAuthenticated,
+} from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "Admin Login",
@@ -9,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 type LoginPageProps = {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; setup?: string }>;
 };
 
 export default async function AdminLoginPage({
@@ -18,6 +21,7 @@ export default async function AdminLoginPage({
   if (await isAdminAuthenticated()) redirect("/admin");
 
   const params = await searchParams;
+  const configured = isAdminAuthConfigured();
 
   return (
     <main className="min-h-screen bg-[#f4f0e9] px-3 py-6 text-[#111] sm:px-5">
@@ -35,7 +39,12 @@ export default async function AdminLoginPage({
             Sign in with your admin email and password to manage the store.
           </p>
 
-          {params.error ? (
+          {!configured || params.setup ? (
+            <div className="mt-5 rounded-[14px] border border-amber-200 bg-amber-50 p-3 text-[10px] leading-5 text-amber-800">
+              Admin login is not configured on this server yet. Add the private
+              admin environment variables, then restart or redeploy the app.
+            </div>
+          ) : params.error ? (
             <div className="mt-5 rounded-[14px] border border-red-200 bg-red-50 p-3 text-[10px] text-red-700">
               Email or password is incorrect.
             </div>
@@ -72,9 +81,10 @@ export default async function AdminLoginPage({
 
             <button
               type="submit"
-              className="min-h-12 w-full rounded-full bg-[#111] px-5 text-[10px] font-semibold text-white transition hover:bg-[#001cac]"
+              className="min-h-12 w-full rounded-full bg-[#111] px-5 text-[10px] font-semibold text-white transition hover:bg-[#001cac] disabled:cursor-not-allowed disabled:opacity-45"
+              disabled={!configured}
             >
-              Sign in to admin
+              {configured ? "Sign in to admin" : "Admin setup required"}
             </button>
           </form>
         </section>

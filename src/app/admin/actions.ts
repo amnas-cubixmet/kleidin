@@ -4,13 +4,19 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   ADMIN_SESSION_COOKIE,
+  ADMIN_SESSION_MAX_AGE,
   getAdminSessionValue,
+  isAdminAuthConfigured,
   verifyAdminCredentials,
 } from "@/lib/admin-auth";
 
 export async function loginAdmin(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
+
+  if (!isAdminAuthConfigured()) {
+    redirect("/admin/login?setup=1");
+  }
 
   if (!verifyAdminCredentials(email, password)) {
     redirect("/admin/login?error=1");
@@ -22,7 +28,7 @@ export async function loginAdmin(formData: FormData) {
     sameSite: "strict",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60 * 12,
+    maxAge: ADMIN_SESSION_MAX_AGE,
   });
 
   redirect("/admin");
