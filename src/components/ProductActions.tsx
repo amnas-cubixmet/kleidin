@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Product } from "@/types/product";
-import { useCart } from "@/context/CartContext";
+
 
 type Props = {
   product: Product;
@@ -15,7 +15,6 @@ export function ProductActions({
   whatsappUrl,
   compact = false,
 }: Props) {
-  const { addItem } = useCart();
   const [size, setSize] = useState(product.sizes[0] ?? "One size");
   const [added, setAdded] = useState(false);
   const disabled = product.status !== "active" || product.stock <= 0;
@@ -23,15 +22,6 @@ export function ProductActions({
   function addToCart() {
     if (disabled) return;
 
-    addItem({
-      id: product.id,
-      slug: product.slug,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      size,
-      color: product.colors[0] ?? "Default",
-    });
 
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1200);
