@@ -37,7 +37,7 @@ function MetricCard({
         <span
           className={
             "text-[8px] font-semibold uppercase tracking-[.12em] " +
-            (accent ? "text-[#001cac]/60" : "text-black/35")
+            (accent ? "text-[#001cac]/60" : "text-[#7d8490]")
           }
         >
           {label}
@@ -52,7 +52,7 @@ function MetricCard({
       <strong className="mt-3 block text-[clamp(24px,3vw,34px)] font-semibold tracking-[-.05em]">
         {value}
       </strong>
-      <p className="mt-1.5 text-[8px] leading-4 text-black/38">{note}</p>
+      <p className="mt-1.5 text-[8px] leading-4 text-[#6f7783]">{note}</p>
     </div>
   );
 }
@@ -88,19 +88,19 @@ export default async function AdminDashboardPage() {
         <div className="rounded-[20px] border border-black/[.07] bg-white p-4 md:p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-black/35">
+              <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-[#7d8490]">
                 Business performance
               </p>
               <h2 className="mt-1.5 text-[21px] font-semibold tracking-[-.04em]">
                 Sales activity
               </h2>
             </div>
-            <span className="rounded-full bg-[#f5f5f2] px-3 py-2 text-[8px] font-semibold text-black/45">
+            <span className="rounded-full bg-[#eef1f5] px-3 py-2 text-[8px] font-semibold text-[#5f6874]">
               Last 7 days
             </span>
           </div>
 
-          <div className="mt-5 grid min-h-[230px] place-items-center rounded-[16px] bg-[#fafaf8] px-5 py-8 text-center">
+          <div className="mt-5 grid min-h-[230px] place-items-center rounded-[16px] bg-[#f7f8fb] px-5 py-8 text-center">
             <div className="max-w-[430px]">
               <div className="mx-auto flex h-10 w-10 items-end justify-center gap-1 rounded-full bg-white shadow-sm">
                 <span className="mb-2 h-2 w-1 rounded-full bg-black/15" />
@@ -110,7 +110,7 @@ export default async function AdminDashboardPage() {
               <strong className="mt-4 block text-[11px] font-semibold">
                 No sales history yet
               </strong>
-              <p className="mt-1.5 text-[8px] leading-4 text-black/40">
+              <p className="mt-1.5 text-[8px] leading-4 text-[#68717d]">
                 Revenue, daily sales and growth charts will appear here when the
                 order flow is connected to the admin.
               </p>
@@ -118,19 +118,19 @@ export default async function AdminDashboardPage() {
           </div>
 
           <div className="mt-3 grid grid-cols-3 gap-2">
-            <div className="rounded-[14px] bg-[#fafaf8] p-3">
+            <div className="rounded-[14px] bg-[#f7f8fb] p-3">
               <span className="text-[7px] font-semibold uppercase tracking-[.1em] text-black/30">
                 Avg. order
               </span>
               <strong className="mt-1.5 block text-[16px] font-semibold">₹0</strong>
             </div>
-            <div className="rounded-[14px] bg-[#fafaf8] p-3">
+            <div className="rounded-[14px] bg-[#f7f8fb] p-3">
               <span className="text-[7px] font-semibold uppercase tracking-[.1em] text-black/30">
                 Conversion
               </span>
               <strong className="mt-1.5 block text-[16px] font-semibold">—</strong>
             </div>
-            <div className="rounded-[14px] bg-[#fafaf8] p-3">
+            <div className="rounded-[14px] bg-[#f7f8fb] p-3">
               <span className="text-[7px] font-semibold uppercase tracking-[.1em] text-black/30">
                 Refunds
               </span>
@@ -171,15 +171,15 @@ export default async function AdminDashboardPage() {
           </div>
 
           <div className="rounded-[20px] border border-black/[.07] bg-white p-4 md:p-5">
-            <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-black/35">
+            <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-[#7d8490]">
               Top selling
             </p>
             <h2 className="mt-1.5 text-[21px] font-semibold tracking-[-.04em]">
               Best sellers
             </h2>
-            <div className="mt-4 rounded-[15px] bg-[#fafaf8] px-4 py-5">
+            <div className="mt-4 rounded-[15px] bg-[#f7f8fb] px-4 py-5">
               <strong className="text-[10px] font-semibold">Waiting for orders</strong>
-              <p className="mt-1 text-[8px] leading-4 text-black/40">
+              <p className="mt-1 text-[8px] leading-4 text-[#68717d]">
                 Product ranking will use real sold quantities once order data exists.
               </p>
             </div>
@@ -191,7 +191,7 @@ export default async function AdminDashboardPage() {
         <div className="rounded-[20px] border border-black/[.07] bg-white p-4 md:p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-black/35">
+              <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-[#7d8490]">
                 Inventory alert
               </p>
               <h2 className="mt-1.5 text-[21px] font-semibold tracking-[-.04em]">
@@ -200,7 +200,7 @@ export default async function AdminDashboardPage() {
             </div>
             <Link
               href="/admin/inventory"
-              className="rounded-full bg-[#f5f5f2] px-3 py-2 text-[8px] font-semibold text-black/50"
+              className="rounded-full bg-[#eef1f5] px-3 py-2 text-[8px] font-semibold text-[#545d69]"
             >
               View inventory
             </Link>
@@ -217,7 +217,7 @@ export default async function AdminDashboardPage() {
                     <strong className="block truncate text-[9px] font-semibold">
                       {product.name}
                     </strong>
-                    <span className="mt-1 block text-[7px] text-black/35">
+                    <span className="mt-1 block text-[7px] text-[#7d8490]">
                       {product.sku}
                     </span>
                   </div>
@@ -235,7 +235,7 @@ export default async function AdminDashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="mt-4 rounded-[15px] bg-[#f7f7f4] px-4 py-5 text-[8px] text-black/40">
+            <div className="mt-4 rounded-[15px] bg-[#f7f7f4] px-4 py-5 text-[8px] text-[#68717d]">
               Stock levels look healthy.
             </div>
           )}
@@ -246,7 +246,7 @@ export default async function AdminDashboardPage() {
 
       <section className="mt-4 rounded-[20px] border border-black/[.07] bg-white p-4 md:p-5">
         <div>
-          <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-black/35">
+          <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-[#7d8490]">
             Shortcuts
           </p>
           <h2 className="mt-1.5 text-[21px] font-semibold tracking-[-.04em]">
@@ -267,7 +267,7 @@ export default async function AdminDashboardPage() {
               className="rounded-[15px] border border-black/[.07] p-3.5 transition hover:border-[#001cac]/25 hover:bg-[#eef2ff]/40"
             >
               <strong className="block text-[9px] font-semibold">{label}</strong>
-              <span className="mt-1 block text-[7px] leading-4 text-black/38">{note}</span>
+              <span className="mt-1 block text-[7px] leading-4 text-[#6f7783]">{note}</span>
             </Link>
           ))}
         </div>
