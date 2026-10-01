@@ -4,9 +4,9 @@ import { getStoreSettings } from "@/lib/site-settings";
 import { getWholesaleWhatsappUrl } from "@/lib/format";
 
 export const metadata: Metadata = {
-  title: "Wholesale / Dealers",
+  title: "Dealers",
   description:
-    "Wholesale and dealer enquiries for KLEID.IN products, availability and pricing.",
+    "Dealer enquiries for KLEID.IN products, availability and pricing.",
 };
 
 export default async function WholesalePage() {
@@ -25,7 +25,7 @@ export default async function WholesalePage() {
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
-            { label: "Wholesale / Dealers" },
+            { label: "Dealers" },
           ]}
         />
       </div>
@@ -56,7 +56,7 @@ export default async function WholesalePage() {
               className="mt-6 inline-flex min-h-12 items-center rounded-full bg-white px-6 text-[10px] font-semibold !text-[#111]"
               style={{ color: "#111111" }}
             >
-              Start wholesale enquiry
+              Start dealer enquiry
             </a>
           </div>
         </div>
@@ -85,7 +85,7 @@ export default async function WholesalePage() {
         {[
           ["1", "Choose products", "Send the products, colours and sizes you are interested in."],
           ["2", "Share quantity", "Tell us the approximate quantities and your store or resale requirement."],
-          ["3", "Confirm quote", "We will reply with the applicable wholesale quote and availability."],
+          ["3", "Confirm quote", "We will reply with the applicable dealer quote and availability."],
         ].map(([step, title, body]) => (
           <article
             key={step}
@@ -119,7 +119,7 @@ export default async function WholesalePage() {
           rel={whatsappHref !== "#" ? "noreferrer" : undefined}
           className="inline-flex min-h-12 items-center rounded-full bg-[#111] px-6 text-[10px] font-semibold !text-white"
         >
-          WhatsApp wholesale
+          WhatsApp dealers
         </a>
       </section>
     </main>

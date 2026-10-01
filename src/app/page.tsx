@@ -78,7 +78,7 @@ export default async function Home() {
                   Stock KLEID.IN.
                 </h2>
                 <p className="mt-5 max-w-[560px] text-[11px] leading-5 text-black/55">
-                  Wholesale enquiries for retailers, resellers and independent
+                  Dealer enquiries for retailers, resellers and independent
                   stores. Ask for current availability, dealer pricing and order
                   requirements.
                 </p>
@@ -86,7 +86,7 @@ export default async function Home() {
                   href="/wholesale"
                   className="mt-6 inline-flex min-h-11 items-center rounded-full bg-[#111] px-5 text-[9px] font-semibold !text-white"
                 >
-                  Explore wholesale
+                  Explore dealers
                 </Link>
               </div>
 
