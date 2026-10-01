@@ -34,7 +34,7 @@ export default async function WholesalePage() {
         <div className="flex flex-col justify-between p-6 md:p-9">
           <div>
             <p className="m-0 text-[8px] font-semibold tracking-[.16em] text-white/55">
-              KLEID.IN / WHOLESALE / DEALERS
+              KLEID.IN / DEALERS
             </p>
             <h1 className="mt-6 max-w-[760px] text-[clamp(48px,8vw,112px)] font-semibold leading-[.82] tracking-[-.065em]">
               Built for stores.

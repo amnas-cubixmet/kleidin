@@ -72,7 +72,7 @@ export default async function Home() {
             <div className="grid overflow-hidden rounded-[24px] bg-[#F4F0E9] md:grid-cols-[1.1fr_.9fr]">
               <div className="p-6 md:p-8">
                 <p className="m-0 text-[8px] font-semibold tracking-[.14em] text-[#001cac]">
-                  WHOLESALE / DEALERS
+                  DEALERS
                 </p>
                 <h2 className="mt-5 max-w-[760px] text-[clamp(42px,6vw,88px)] font-semibold leading-[.86] tracking-[-.06em]">
                   Stock KLEID.IN.
