@@ -21,7 +21,7 @@ export default async function AboutPage() {
         </p>
 
         <div className="max-w-[1120px] py-10 md:py-16">
-          <h1 className="m-0 text-[clamp(54px,8.6vw,132px)] font-semibold leading-[.82] tracking-[-.07em]">
+          <h1 className="m-0 text-[clamp(42px,6.2vw,88px)] font-semibold leading-[.9] tracking-[-.055em]">
             Clothes for
             <br />
             real rotation.
