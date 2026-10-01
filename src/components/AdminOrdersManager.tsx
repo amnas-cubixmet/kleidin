@@ -271,8 +271,10 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
     persist(orders.filter((order) => order.id !== orderId));
   }
 
-  const inputClass =\n    "h-10 w-full min-w-0 rounded-[10px] border border-[#d9dee7] bg-white px-3 text-[11px] font-medium text-[#20242a] outline-none transition placeholder:text-[#9aa1ac] focus:border-[#001cac] focus:ring-2 focus:ring-[#001cac]/10 sm:h-11";
-  const labelClass =\n    "text-[8px] font-bold uppercase tracking-[.1em] text-[#6f7783]";
+  const inputClass =
+    "h-10 w-full min-w-0 rounded-[10px] border border-[#d9dee7] bg-white px-3 text-[11px] font-medium text-[#20242a] outline-none transition placeholder:text-[#9aa1ac] focus:border-[#001cac] focus:ring-2 focus:ring-[#001cac]/10 sm:h-11";
+  const labelClass =
+    "text-[8px] font-bold uppercase tracking-[.1em] text-[#6f7783]";
 
   return (
     <div className="grid min-w-0 gap-3 sm:gap-4 xl:grid-cols-[minmax(0,.92fr)_minmax(0,1.08fr)]">
