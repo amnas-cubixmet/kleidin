@@ -142,7 +142,7 @@ export function AdminGlobalSearch() {
           aria-label="Search admin"
         />
         <span className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded border border-[#d9dee7] bg-white px-1.5 py-0.5 text-[7px] font-bold text-[#8a919c] xl:block">
-          ⌘K
+          Ctrl K
         </span>
       </div>
 
