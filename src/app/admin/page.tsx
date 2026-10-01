@@ -44,6 +44,7 @@ export default function AdminPage() {
             ["Products", products.length],
             ["Offers", localOffers.length],
             ["Hero slides", defaultHeroSlides.length],
+            ["Testimonials", "Admin managed"],
             [
               "WhatsApp",
               localStoreSettings.whatsappNumber ? "Connected" : "Not set",

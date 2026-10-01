@@ -12881,3 +12881,24 @@ main,
 .catalog-store-grid .product-card-info-refined > .product-card-price del {
   order: 1;
 }
+
+
+/* FINAL catalog desktop selling price alignment */
+@media (min-width: 641px) {
+  .catalog-store-grid .product-card-info-refined > .product-card-price,
+  .catalog-store-grid .product-card-price {
+    width: 100% !important;
+    margin-top: 6px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: baseline !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    text-align: left !important;
+  }
+
+  .catalog-store-grid .product-card-price strong,
+  .catalog-store-grid .product-card-price del {
+    text-align: left !important;
+  }
+}
