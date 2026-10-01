@@ -36,10 +36,13 @@ export default async function WholesalePage() {
           ]}
         />
 
-        <section className="dealer-intro-clean">
-          <p>DEALERS</p>
-          <h1>Stock KLEID.IN.</h1>
-          <div>
+        <section className="dealer-intro-clean dealer-intro-dark">
+          <div className="dealer-intro-heading">
+            <p>DEALERS</p>
+            <h1>Stock KLEID.IN.</h1>
+          </div>
+
+          <div className="dealer-intro-content">
             <span>
               For retailers, resellers and independent stores looking for current
               availability, minimum quantities and dealer ordering.
