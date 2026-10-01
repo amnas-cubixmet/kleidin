@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { loginAdmin } from "@/app/admin/actions";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import PasswordField from "./PasswordField";
 
 export const dynamic = "force-dynamic";
 
@@ -73,19 +74,7 @@ export default async function AdminLoginPage({
               />
             </label>
 
-            <label className="grid gap-2">
-              <span className="text-[8px] font-semibold uppercase tracking-[.12em] text-black/45">
-                Password
-              </span>
-              <input
-                type="password"
-                name="password"
-                autoComplete="current-password"
-                required
-                className="h-[52px] w-full border border-black/20 bg-white px-4 text-[14px] text-[#111] outline-none transition focus:border-[#111] focus:ring-2 focus:ring-black/5"
-                placeholder="Enter password"
-              />
-            </label>
+            <PasswordField />
 
             <button
               type="submit"
