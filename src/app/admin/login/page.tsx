@@ -44,8 +44,9 @@ export default async function AdminLoginPage({
           {setupMissing ? (
             <div className="mb-5 border border-[#e0b35a] bg-[#fff9eb] px-4 py-3 text-[9px] leading-4 text-[#6c4a0b]">
               Admin login is not configured yet. Add ADMIN_EMAIL,
-              ADMIN_SESSION_SECRET and your generated password hash values to
-              <code className="mx-1">.env.local</code>, then restart the dev server.
+              ADMIN_SESSION_SECRET and ADMIN_PASSWORD (or the generated password
+              hash values) to <code className="mx-1">.env.local</code>, then
+              restart the dev server.
             </div>
           ) : null}
 
