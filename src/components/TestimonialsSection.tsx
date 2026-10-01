@@ -148,33 +148,41 @@ export function TestimonialsSection({
   }) {
     return (
       <article className="customer-story-card" aria-hidden={duplicate || undefined}>
-        {item.productImage ? (
-          <div className="customer-story-product-media">
-            <Image
-              src={item.productImage}
-              alt={duplicate ? "" : "Customer product photo"}
-              fill
-              sizes="(max-width: 640px) 82vw, 360px"
-              unoptimized={item.productImage.startsWith("data:")}
-              className="customer-story-product-image"
-            />
-          </div>
-        ) : null}
-
         <div className="customer-story-body">
-          <div
-            className="customer-story-rating"
-            aria-label={duplicate ? undefined : item.rating + " out of 5 stars"}
-          >
-            {"★".repeat(Math.max(1, Math.min(5, item.rating)))}
+          <div className="customer-story-card-top">
+            {item.productImage ? (
+              <div className="customer-story-product-thumb">
+                <Image
+                  src={item.productImage}
+                  alt={duplicate ? "" : "Customer product photo"}
+                  fill
+                  sizes="56px"
+                  unoptimized={item.productImage.startsWith("data:")}
+                  className="customer-story-product-image"
+                />
+              </div>
+            ) : (
+              <div className="customer-story-product-thumb customer-story-product-thumb-empty">
+                {item.name.charAt(0).toUpperCase()}
+              </div>
+            )}
+
+            <div>
+              <div
+                className="customer-story-rating"
+                aria-label={duplicate ? undefined : item.rating + " out of 5 stars"}
+              >
+                {"★".repeat(Math.max(1, Math.min(5, item.rating)))}
+              </div>
+
+              <div className="customer-story-person">
+                <strong>{item.name}</strong>
+                {item.location ? <span>{item.location}</span> : null}
+              </div>
+            </div>
           </div>
 
           <blockquote>“{item.quote}”</blockquote>
-
-          <div className="customer-story-person">
-            <strong>{item.name}</strong>
-            {item.location ? <span>{item.location}</span> : null}
-          </div>
         </div>
       </article>
     );
