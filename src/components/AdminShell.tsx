@@ -43,16 +43,16 @@ export function AdminShell({
                   ) : null}
                 </div>
 
-                <div className="flex w-full items-center gap-2 sm:w-auto">
+                <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
                   {action}
                   <Link
                     href="/"
                     target="_blank"
-                    className="inline-flex min-h-9 flex-1 items-center justify-center rounded-full border border-[#d8dce4] bg-[#f8f9fb] px-3.5 text-[9px] font-bold text-[#343943] transition hover:border-[#bfc5cf] hover:bg-white sm:flex-none lg:hidden"
+                    className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#d8dce4] bg-[#f8f9fb] px-3.5 text-[9px] font-bold text-[#343943] transition hover:border-[#bfc5cf] hover:bg-white lg:hidden"
                   >
                     Store
                   </Link>
-                  <form action={logoutAdmin} className="flex-1 sm:flex-none">
+                  <form action={logoutAdmin} className="shrink-0">
                     <button
                       type="submit"
                       className="min-h-9 w-full rounded-full border border-[#111827] bg-[#111827] px-3.5 text-[9px] font-bold !text-white transition hover:bg-[#202938]"
