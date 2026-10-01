@@ -5,18 +5,14 @@ import { redirect } from "next/navigation";
 import {
   ADMIN_SESSION_COOKIE,
   getAdminSessionValue,
-  isAdminPasswordConfigured,
-  verifyAdminPassword,
+  verifyAdminCredentials,
 } from "@/lib/admin-auth";
 
 export async function loginAdmin(formData: FormData) {
-  if (!isAdminPasswordConfigured()) {
-    redirect("/admin/login?setup=1");
-  }
-
+  const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
 
-  if (!verifyAdminPassword(password)) {
+  if (!verifyAdminCredentials(email, password)) {
     redirect("/admin/login?error=1");
   }
 
