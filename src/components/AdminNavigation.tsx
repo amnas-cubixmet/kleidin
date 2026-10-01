@@ -93,7 +93,7 @@ function isActive(pathname: string, href: string) {
 
 function DesktopGroup({ title, items, pathname }: { title: string; items: NavItem[]; pathname: string }) {
   return (
-    <div className="mt-5">
+    <div className="mt-4 xl:mt-5">
       <p className="mb-2 px-3 text-[9px] font-bold uppercase tracking-[.13em] text-[#8a919d]">{title}</p>
       <div className="grid gap-1">
         {items.map((item) => {
@@ -104,7 +104,7 @@ function DesktopGroup({ title, items, pathname }: { title: string; items: NavIte
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={
-                "relative flex min-h-[44px] items-center gap-3 rounded-[12px] px-3 text-[10px] font-bold transition-colors " +
+                "relative flex min-h-[42px] items-center gap-3 rounded-[11px] px-3 text-[10px] font-bold transition-colors " +
                 (active
                   ? "bg-[#e9edff] text-[#001cac]"
                   : "text-[#59616d] hover:bg-[#f3f5f8] hover:text-[#15171a]")
@@ -126,7 +126,7 @@ export function AdminNavigation() {
 
   return (
     <>
-      <aside className="sticky top-4 hidden h-[calc(100vh-32px)] w-[244px] shrink-0 flex-col admin-scroll-hidden overflow-y-auto rounded-[22px] border border-[#dfe3ea] bg-white p-3 shadow-[0_10px_35px_rgba(18,26,43,.04)] lg:flex">
+      <aside className="sticky top-4 hidden h-[calc(100vh-32px)] w-[232px] xl:w-[244px] shrink-0 flex-col admin-scroll-hidden overflow-y-auto rounded-[20px] border border-[#dfe3ea] bg-white p-2.5 xl:rounded-[22px] xl:p-3 shadow-[0_10px_35px_rgba(18,26,43,.04)] lg:flex">
         <Link href="/admin/dashboard" className="rounded-[14px] bg-[#f7f8fb] px-3 pb-3 pt-3.5">
           <strong className="block text-[19px] font-extrabold tracking-[-.055em] text-[#15171a]">KLEID.IN</strong>
           <span className="mt-1 block text-[8px] font-bold uppercase tracking-[.16em] text-[#7d8490]">Commerce admin</span>
@@ -147,7 +147,7 @@ export function AdminNavigation() {
       </aside>
 
       <nav
-        className="fixed inset-x-2 bottom-2 z-[80] grid grid-cols-5 rounded-[19px] border border-[#d9dee7] bg-white/95 p-1.5 shadow-[0_14px_40px_rgba(18,26,43,.16)] backdrop-blur-xl supports-[padding:max(0px)]:bottom-[max(.5rem,env(safe-area-inset-bottom))] lg:hidden"
+        className="fixed inset-x-2 bottom-2 z-[80] grid grid-cols-5 rounded-[17px] border border-[#d9dee7] bg-white/95 p-1 shadow-[0_12px_34px_rgba(18,26,43,.16)] backdrop-blur-xl supports-[padding:max(0px)]:bottom-[max(.5rem,env(safe-area-inset-bottom))] lg:hidden"
         aria-label="Admin mobile navigation"
       >
         {mobileItems.map((item) => {
@@ -162,11 +162,11 @@ export function AdminNavigation() {
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={
-                "flex min-h-[56px] flex-col items-center justify-center gap-1 rounded-[13px] px-1 text-[8px] font-bold transition-colors " +
+                "flex min-h-[52px] flex-col items-center justify-center gap-1 rounded-[12px] px-1 text-[8px] font-bold transition-colors " +
                 (active ? "bg-[#e9edff] text-[#001cac]" : "text-[#6b7280]")
               }
             >
-              <Icon name={item.icon} className="h-[18px] w-[18px]" />
+              <Icon name={item.icon} className="h-[17px] w-[17px]" />
               <span>{item.label}</span>
             </Link>
           );
