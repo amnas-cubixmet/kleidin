@@ -53,9 +53,7 @@ export function ProductCard({ product }: { product: Product }) {
         )
       : 0;
 
-  const [offerTimer, setOfferTimer] = useState(() =>
-    getOfferTimer(product.saleEndsAt),
-  );
+  const [offerTimer, setOfferTimer] = useState<ReturnType<typeof getOfferTimer> | null>(null);
 
   useEffect(() => {
     if (!product.saleEndsAt) return;

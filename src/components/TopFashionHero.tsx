@@ -67,9 +67,20 @@ export function TopFashionHero({
 }) {
   const [index, setIndex] = useState(0);
   const [heroConfig, setHeroConfig] = useState<HeroSlideConfig[]>(defaultHeroSlides);
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() =>
-    getTimeLeft(offer?.endsAt),
-  );
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    if (!offer?.endsAt) return;
+    const update = () => setTimeLeft(getTimeLeft(offer.endsAt));
+    update();
+    const timer = window.setInterval(update, 1000);
+    return () => window.clearInterval(timer);
+  }, [offer?.endsAt]);
 
   useEffect(() => {
     try {
