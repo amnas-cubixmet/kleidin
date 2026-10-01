@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { AdminNavigation } from "@/components/AdminNavigation";
 import { logoutAdmin } from "@/app/admin/actions";
+import { AdminViewportStyle } from "@/components/AdminViewportStyle";
 
 export function AdminShell({
   title,
@@ -17,7 +18,9 @@ export function AdminShell({
   action?: ReactNode;
 }) {
   return (
-    <main className="min-h-screen bg-[#f1f3f7] px-3 py-3 pb-24 text-[#15171a] sm:px-4 md:px-5 lg:pb-5">
+    <>
+      <AdminViewportStyle />
+      <main className="min-h-screen bg-[#f1f3f7] px-3 py-3 pb-24 text-[#15171a] sm:px-4 md:px-5 lg:pb-5">
       <div className="mx-auto flex w-full max-w-[1600px] items-start gap-4">
         <AdminNavigation />
 
@@ -45,14 +48,14 @@ export function AdminShell({
                   <Link
                     href="/"
                     target="_blank"
-                    className="inline-flex min-h-10 flex-1 items-center justify-center rounded-full border border-[#d8dce4] bg-[#f8f9fb] px-4 text-[9px] font-semibold text-[#343943] transition hover:border-[#bfc5cf] hover:bg-white sm:flex-none lg:hidden"
+                    className="inline-flex min-h-9 flex-1 items-center justify-center rounded-full border border-[#d8dce4] bg-[#f8f9fb] px-3.5 text-[9px] font-bold text-[#343943] transition hover:border-[#bfc5cf] hover:bg-white sm:flex-none lg:hidden"
                   >
                     Store
                   </Link>
                   <form action={logoutAdmin} className="flex-1 sm:flex-none">
                     <button
                       type="submit"
-                      className="min-h-10 w-full rounded-full border border-[#111827] bg-[#111827] px-4 text-[9px] font-semibold !text-white transition hover:bg-[#202938]"
+                      className="min-h-9 w-full rounded-full border border-[#111827] bg-[#111827] px-3.5 text-[9px] font-bold !text-white transition hover:bg-[#202938]"
                       style={{ color: "#ffffff" }}
                     >
                       Logout
@@ -67,5 +70,6 @@ export function AdminShell({
         </div>
       </div>
     </main>
+    </>
   );
 }
