@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useState } from "react";
 import type { Product } from "@/types/product";
-import { useCart } from "@/context/CartContext";
 import { formatPrice, getProductWhatsappUrl } from "@/lib/format";
 
 export function ProductDetailClient({
@@ -13,13 +12,11 @@ export function ProductDetailClient({
   product: Product;
   whatsappNumber: string;
 }) {
-  const { addItem } = useCart();
   const variants = product.colorVariants ?? [];
   const [selectedColor, setSelectedColor] = useState(
     variants[0]?.name ?? product.colors[0] ?? "Default",
   );
   const [size, setSize] = useState(product.sizes[0] ?? "One size");
-  const [added, setAdded] = useState(false);
 
   const selectedVariant =
     variants.find((variant) => variant.name === selectedColor) ?? variants[0];
@@ -33,23 +30,6 @@ export function ProductDetailClient({
     selectedColor,
     size,
   );
-
-  function addToCart() {
-    if (soldOut) return;
-
-    addItem({
-      id: product.id,
-      slug: product.slug,
-      name: product.name,
-      price: product.price,
-      image,
-      size,
-      color: selectedColor,
-    });
-
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 1200);
-  }
 
   return (
     <>
@@ -151,26 +131,25 @@ export function ProductDetailClient({
             </div>
           </div>
 
-          <div className="product-action-buttons product-detail-actions">
-            <button
-              type="button"
-              className="button button-primary add-cart-button"
-              disabled={soldOut}
-              onClick={addToCart}
-            >
-              {soldOut ? "Sold out" : added ? "Added to cart" : "Add to Cart"}
-            </button>
-
+          <div className="product-action-buttons product-detail-actions product-detail-whatsapp-actions">
             {whatsappUrl !== "#" && !soldOut ? (
               <a
-                className="button button-outline"
+                className="button button-primary product-detail-whatsapp-primary"
                 href={whatsappUrl}
                 target="_blank"
                 rel="noreferrer"
               >
-                WhatsApp
+                Order on WhatsApp
               </a>
-            ) : null}
+            ) : (
+              <button
+                type="button"
+                className="button button-primary product-detail-whatsapp-primary"
+                disabled
+              >
+                {soldOut ? "Sold out" : "WhatsApp unavailable"}
+              </button>
+            )}
           </div>
 
           <div className="product-notes">
