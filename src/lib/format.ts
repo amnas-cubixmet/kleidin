@@ -61,3 +61,26 @@ export function getWholesaleWhatsappUrl(
 
   return "https://wa.me/" + whatsappNumber + "?text=" + encodeURIComponent(message);
 }
+
+
+export function getWholesaleProductWhatsappUrl(
+  product: Product,
+  whatsappNumber = store.whatsappNumber,
+) {
+  if (!whatsappNumber) return "#";
+
+  const minOrder = product.wholesaleMinOrder ?? 12;
+  const lines = [
+    "Hi KLEID.IN, I’m interested in a dealer order for:",
+    "",
+    product.name,
+    `Selling price: ${formatPrice(product.price)}`,
+    `Minimum order: ${minOrder} pcs`,
+    `Colours: ${product.colors.join(" / ")}`,
+    `Product: /products/${product.slug}`,
+    "",
+    "Please share dealer pricing, current availability and delivery details.",
+  ];
+
+  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(lines.join("\n"))}`;
+}

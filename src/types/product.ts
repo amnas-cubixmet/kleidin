@@ -22,6 +22,7 @@ export type Product = {
   colors: string[];
   colorVariants?: ProductColorVariant[];
   stock: number;
+  wholesaleMinOrder?: number;
   featured: boolean;
   status: ProductStatus;
   image?: string;
@@ -44,6 +45,7 @@ export type DbProduct = {
   colors: string[];
   color_variants?: ProductColorVariant[] | null;
   stock: number;
+  wholesale_min_order?: number | null;
   featured: boolean;
   status: ProductStatus;
   image_url: string | null;

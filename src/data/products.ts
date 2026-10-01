@@ -21,6 +21,7 @@ export const products: Product[] = [
         value: "#111111",
         image: "/images/hero/black-shirt.png",
         stock: 18,
+    wholesaleMinOrder: 12,
       },
       {
         name: "White",
@@ -54,6 +55,7 @@ export const products: Product[] = [
     sizes: ["S", "M", "L", "XL"],
     colors: ["White"],
     stock: 24,
+    wholesaleMinOrder: 12,
     featured: true,
     status: "active",
     image:
@@ -73,6 +75,7 @@ export const products: Product[] = [
     sizes: ["S", "M", "L", "XL"],
     colors: ["White"],
     stock: 12,
+    wholesaleMinOrder: 8,
     featured: true,
     status: "active",
     image:
@@ -92,6 +95,7 @@ export const products: Product[] = [
     sizes: ["S", "M", "L", "XL"],
     colors: ["Black"],
     stock: 7,
+    wholesaleMinOrder: 6,
     featured: true,
     status: "active",
     image:
@@ -110,6 +114,7 @@ export const products: Product[] = [
     sizes: ["S", "M", "L", "XL"],
     colors: ["Heather Grey"],
     stock: 9,
+    wholesaleMinOrder: 8,
     featured: false,
     status: "active",
     image:
@@ -128,6 +133,7 @@ export const products: Product[] = [
     sizes: ["28", "30", "32", "34", "36"],
     colors: ["Black"],
     stock: 15,
+    wholesaleMinOrder: 8,
     featured: true,
     status: "active",
     image:
@@ -146,6 +152,7 @@ export const products: Product[] = [
     sizes: ["One Size"],
     colors: ["Black"],
     stock: 21,
+    wholesaleMinOrder: 12,
     featured: false,
     status: "active",
     image:
@@ -164,6 +171,7 @@ export const products: Product[] = [
     sizes: ["One Size"],
     colors: ["Natural"],
     stock: 26,
+    wholesaleMinOrder: 12,
     featured: false,
     status: "active",
     image:
