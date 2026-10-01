@@ -15590,3 +15590,447 @@ main,
     border-radius: 14px;
   }
 }
+
+
+/* FINAL mobile pass — Catalog / Dealers / Customer Stories */
+@media (max-width: 700px) {
+  /* Home catalog */
+  .ref-arrivals {
+    width: 100% !important;
+    padding: 26px 8px 42px !important;
+  }
+
+  .ref-arrivals-head {
+    margin-bottom: 14px !important;
+    padding: 0 !important;
+    align-items: center !important;
+  }
+
+  .ref-arrivals-head .ref-kicker {
+    margin: 0 !important;
+    font-size: 7px !important;
+  }
+
+  .ref-arrivals-head .ref-outline-pill {
+    min-height: 34px !important;
+    padding: 0 11px !important;
+    font-size: 7px !important;
+  }
+
+  .ref-arrival-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    column-gap: 6px !important;
+    row-gap: 18px !important;
+  }
+
+  .ref-arrival-grid .product-card-refined {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .ref-arrival-grid .product-card-visual-refined {
+    aspect-ratio: 4 / 5 !important;
+    border-radius: 11px !important;
+  }
+
+  .ref-arrival-grid .product-card-info-refined {
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 8px 1px 0 !important;
+  }
+
+  .ref-arrival-grid .product-card-info-refined > .product-name {
+    min-height: 0 !important;
+    font-size: 8.2px !important;
+    line-height: 1.28 !important;
+  }
+
+  .ref-arrival-grid .product-card-price {
+    min-height: 0 !important;
+    margin: 6px 0 0 !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+
+  .ref-arrival-grid .product-card-price strong {
+    font-size: 8px !important;
+  }
+
+  .ref-arrival-grid .product-card-price del {
+    font-size: 5.5px !important;
+  }
+
+  .ref-arrival-grid .product-card-stock-row {
+    min-height: 0 !important;
+    margin-top: 6px !important;
+    font-size: 5.6px !important;
+  }
+
+  .ref-arrival-grid .product-whatsapp-cta {
+    min-height: 31px !important;
+    height: 31px !important;
+    margin-top: 8px !important;
+    font-size: 6px !important;
+  }
+
+  /* Home dealers */
+  .home-dealers-clean {
+    width: calc(100% - 16px) !important;
+    margin: 8px auto 18px !important;
+    padding: 34px 4px !important;
+    grid-template-columns: 1fr !important;
+    gap: 26px !important;
+  }
+
+  .home-dealers-clean p {
+    margin-bottom: 10px !important;
+    font-size: 7px !important;
+  }
+
+  .home-dealers-clean h2 {
+    max-width: 100% !important;
+    font-size: clamp(38px, 12.5vw, 54px) !important;
+    line-height: .9 !important;
+  }
+
+  .home-dealers-clean span {
+    margin-top: 14px !important;
+    max-width: 100% !important;
+    font-size: 9.5px !important;
+    line-height: 1.65 !important;
+  }
+
+  .home-dealers-clean a {
+    min-height: 40px !important;
+    margin-top: 18px !important;
+    padding: 0 14px !important;
+    font-size: 7.5px !important;
+  }
+
+  .home-dealers-copy {
+    grid-template-columns: 1fr !important;
+    gap: 5px !important;
+  }
+
+  .home-dealers-copy strong {
+    font-size: clamp(22px, 7vw, 30px) !important;
+    line-height: 1.1 !important;
+  }
+
+  /* Dealer page */
+  .dealer-shell {
+    width: 100% !important;
+    padding: 0 8px !important;
+  }
+
+  .dealer-intro-clean {
+    padding: 24px 0 22px !important;
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  .dealer-intro-clean > p {
+    margin: 0 !important;
+    font-size: 7px !important;
+  }
+
+  .dealer-intro-clean h1 {
+    font-size: clamp(40px, 13vw, 58px) !important;
+    line-height: .9 !important;
+  }
+
+  .dealer-intro-clean > div {
+    gap: 14px !important;
+  }
+
+  .dealer-intro-clean > div > span {
+    font-size: 9.5px !important;
+    line-height: 1.6 !important;
+  }
+
+  .dealer-intro-clean a {
+    min-height: 40px !important;
+    padding: 0 14px !important;
+    font-size: 7px !important;
+  }
+
+  .dealer-catalog-head-clean {
+    min-height: 64px !important;
+    padding: 10px 0 !important;
+  }
+
+  .dealer-catalog-head-clean strong {
+    font-size: 21px !important;
+  }
+
+  .dealer-catalog-head-clean > p {
+    font-size: 6px !important;
+  }
+
+  .dealer-product-grid-unified {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px 6px !important;
+  }
+
+  .dealer-unified-card .product-card-visual-refined {
+    aspect-ratio: 4 / 5 !important;
+    border-radius: 10px !important;
+  }
+
+  .dealer-unified-card .product-card-info-refined {
+    min-height: 0 !important;
+    padding: 7px 1px 0 !important;
+  }
+
+  .dealer-unified-card .product-name {
+    font-size: 7.8px !important;
+    line-height: 1.3 !important;
+  }
+
+  .dealer-unified-meta {
+    margin-top: 5px !important;
+    font-size: 5.5px !important;
+  }
+
+  .dealer-unified-meta strong {
+    font-size: 6.5px !important;
+  }
+
+  .dealer-unified-card .product-whatsapp-cta,
+  .dealer-enquiry-button {
+    min-height: 31px !important;
+    height: 31px !important;
+    margin-top: 8px !important;
+    font-size: 6px !important;
+  }
+
+  /* Customer stories */
+  .customer-stories-section {
+    margin: 12px 0 18px !important;
+    padding: 18px 0 22px !important;
+    border: 0 !important;
+  }
+
+  .customer-stories-head {
+    width: calc(100% - 16px) !important;
+    padding: 0 0 10px !important;
+    border: 0 !important;
+  }
+
+  .customer-stories-head p {
+    margin-bottom: 5px !important;
+    font-size: 6.5px !important;
+  }
+
+  .customer-stories-head h2 {
+    margin: 0 !important;
+    font-size: clamp(28px, 9vw, 38px) !important;
+    line-height: .94 !important;
+  }
+
+  .customer-stories-loop {
+    width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .customer-stories-track {
+    animation: customerStoriesMarquee 22s linear infinite !important;
+    will-change: transform !important;
+  }
+
+  .customer-stories-set {
+    gap: 7px !important;
+    padding-right: 7px !important;
+  }
+
+  .customer-story-card {
+    width: 72vw !important;
+    min-width: 72vw !important;
+    max-width: 270px !important;
+    border-radius: 14px !important;
+  }
+
+  .customer-story-body {
+    min-height: 164px !important;
+    height: 164px !important;
+    padding: 12px !important;
+  }
+
+  .customer-story-card-top {
+    gap: 9px !important;
+  }
+
+  .customer-story-product-thumb {
+    width: 42px !important;
+    height: 42px !important;
+    flex-basis: 42px !important;
+  }
+
+  .customer-story-rating {
+    margin-bottom: 4px !important;
+    font-size: 8px !important;
+  }
+
+  .customer-story-person strong {
+    font-size: 9px !important;
+  }
+
+  .customer-story-person span {
+    margin-top: 2px !important;
+    font-size: 6px !important;
+  }
+
+  .customer-story-card blockquote {
+    margin-top: 11px !important;
+    font-size: 10.5px !important;
+    line-height: 1.45 !important;
+    -webkit-line-clamp: 5 !important;
+  }
+
+  /* Customer submission form */
+  .customer-story-submit-wrap {
+    width: calc(100% - 12px) !important;
+    margin: 12px auto 0 !important;
+    padding: 16px 12px !important;
+    border-radius: 16px !important;
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  .customer-story-submit-copy h3 {
+    margin-top: 7px !important;
+    font-size: clamp(31px, 10vw, 42px) !important;
+    line-height: .95 !important;
+  }
+
+  .customer-story-submit-copy > span {
+    margin-top: 9px !important;
+    font-size: 9px !important;
+    line-height: 1.55 !important;
+  }
+
+  .customer-story-form {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .customer-story-form-grid,
+  .customer-story-form-grid-bottom {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .customer-story-form label,
+  .customer-story-rating-field {
+    min-width: 0 !important;
+  }
+
+  .customer-story-form input:not([type="file"]),
+  .customer-story-form textarea {
+    width: 100% !important;
+    min-width: 0 !important;
+    border-radius: 10px !important;
+    font-size: 10px !important;
+  }
+
+  .customer-story-form input:not([type="file"]) {
+    min-height: 44px !important;
+    padding: 0 11px !important;
+  }
+
+  .customer-story-form textarea {
+    min-height: 108px !important;
+    padding: 11px !important;
+  }
+
+  .customer-story-photo-field {
+    min-width: 0 !important;
+  }
+
+  .customer-story-photo-field input[type="file"] {
+    width: 100% !important;
+    min-height: 44px !important;
+    max-width: 100% !important;
+    font-size: 8px !important;
+  }
+
+  .customer-story-photo-field small {
+    font-size: 6px !important;
+    line-height: 1.45 !important;
+  }
+
+  .star-rating-input {
+    min-height: 48px !important;
+    padding: 3px 5px !important;
+  }
+
+  .star-rating-buttons {
+    min-width: 0 !important;
+    flex: 1 !important;
+    justify-content: space-between !important;
+  }
+
+  .star-rating-buttons button {
+    width: 40px !important;
+    height: 40px !important;
+    flex: 0 0 40px !important;
+  }
+
+  .star-rating-buttons button span {
+    font-size: 21px !important;
+  }
+
+  .customer-story-submit-button {
+    min-height: 44px !important;
+    border-radius: 999px !important;
+    font-size: 8px !important;
+  }
+
+  .customer-story-photo-preview {
+    padding: 8px !important;
+    border-radius: 10px !important;
+  }
+
+  .customer-story-photo-preview img {
+    width: 58px !important;
+    height: 58px !important;
+    border-radius: 9px !important;
+    object-fit: cover !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .ref-arrivals {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+
+  .ref-arrival-grid {
+    column-gap: 5px !important;
+  }
+
+  .ref-arrival-grid .product-card-info-refined > .product-name {
+    font-size: 7.7px !important;
+  }
+
+  .home-dealers-clean {
+    width: calc(100% - 12px) !important;
+  }
+
+  .customer-story-card {
+    width: 78vw !important;
+    min-width: 78vw !important;
+  }
+
+  .customer-story-submit-wrap {
+    width: calc(100% - 8px) !important;
+    padding: 14px 10px !important;
+  }
+
+  .star-rating-buttons button {
+    width: 37px !important;
+    height: 40px !important;
+    flex-basis: 37px !important;
+  }
+}
