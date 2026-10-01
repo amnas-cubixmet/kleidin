@@ -1,4 +1,9 @@
-import { createHmac, scryptSync, timingSafeEqual } from "node:crypto";
+import {
+  createHash,
+  createHmac,
+  scryptSync,
+  timingSafeEqual,
+} from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -13,9 +18,25 @@ type AdminAuthConfig = {
   passwordHash?: string;
 };
 
+function getDevelopmentSessionSecret(
+  email: string,
+  password?: string,
+  passwordHash?: string,
+) {
+  return createHash("sha256")
+    .update(
+      [
+        "kleid-admin-local-session",
+        email,
+        password ?? "",
+        passwordHash ?? "",
+      ].join(":"),
+    )
+    .digest("hex");
+}
+
 function readAdminConfig(): AdminAuthConfig | null {
   const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  const sessionSecret = process.env.ADMIN_SESSION_SECRET?.trim();
 
   const password = process.env.ADMIN_PASSWORD?.trim();
   const passwordSalt = process.env.ADMIN_PASSWORD_SALT?.trim();
@@ -24,13 +45,22 @@ function readAdminConfig(): AdminAuthConfig | null {
   const hasPlainPassword = Boolean(password);
   const hasHashedPassword = Boolean(passwordSalt && passwordHash);
 
-  if (!email || !sessionSecret || (!hasPlainPassword && !hasHashedPassword)) {
+  if (!email || (!hasPlainPassword && !hasHashedPassword)) {
     return null;
   }
 
-  if (sessionSecret.length < 32) {
-    return null;
-  }
+  const configuredSecret = process.env.ADMIN_SESSION_SECRET?.trim();
+
+  // Local development only: allow ADMIN_EMAIL + ADMIN_PASSWORD to be enough.
+  // Production should always use a separate long ADMIN_SESSION_SECRET.
+  const sessionSecret =
+    configuredSecret && configuredSecret.length >= 32
+      ? configuredSecret
+      : process.env.NODE_ENV !== "production"
+        ? getDevelopmentSessionSecret(email, password, passwordHash)
+        : "";
+
+  if (!sessionSecret) return null;
 
   return {
     email,
@@ -51,7 +81,12 @@ function safeEqual(leftValue: string, rightValue: string) {
 
 function verifyPassword(password: string, config: AdminAuthConfig) {
   if (config.passwordSalt && config.passwordHash) {
-    const candidateHash = scryptSync(password, config.passwordSalt, 64).toString("hex");
+    const candidateHash = scryptSync(
+      password,
+      config.passwordSalt,
+      64,
+    ).toString("hex");
+
     return safeEqual(candidateHash, config.passwordHash);
   }
 
@@ -64,7 +99,7 @@ function verifyPassword(password: string, config: AdminAuthConfig) {
 
 function signSession(email: string, expiresAt: number, secret: string) {
   return createHmac("sha256", secret)
-    .update(`${email}:${expiresAt}:kleid-admin-session-v4`)
+    .update(`${email}:${expiresAt}:kleid-admin-session-v5`)
     .digest("hex");
 }
 
@@ -77,9 +112,13 @@ export function verifyAdminCredentials(email: string, password: string) {
   if (!config) return false;
 
   const normalizedEmail = email.trim().toLowerCase();
+
   if (!normalizedEmail || !password) return false;
 
-  return safeEqual(normalizedEmail, config.email) && verifyPassword(password, config);
+  return (
+    safeEqual(normalizedEmail, config.email) &&
+    verifyPassword(password, config)
+  );
 }
 
 export function getAdminSessionValue() {
@@ -87,11 +126,13 @@ export function getAdminSessionValue() {
 
   if (!config) {
     throw new Error(
-      "Admin authentication is not configured. Set ADMIN_EMAIL, ADMIN_SESSION_SECRET and either ADMIN_PASSWORD or ADMIN_PASSWORD_SALT + ADMIN_PASSWORD_HASH.",
+      "Admin authentication is not configured. Set ADMIN_EMAIL and ADMIN_PASSWORD. In production also set ADMIN_SESSION_SECRET.",
     );
   }
 
-  const expiresAt = Math.floor(Date.now() / 1000) + ADMIN_SESSION_MAX_AGE;
+  const expiresAt =
+    Math.floor(Date.now() / 1000) + ADMIN_SESSION_MAX_AGE;
+
   const signature = signSession(
     config.email,
     expiresAt,
@@ -107,6 +148,7 @@ export async function isAdminAuthenticated() {
 
   const cookieStore = await cookies();
   const value = cookieStore.get(ADMIN_SESSION_COOKIE)?.value;
+
   if (!value) return false;
 
   const [expiresText, signature] = value.split(".");

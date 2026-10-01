@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { loginAdmin } from "@/app/admin/actions";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Admin Login",
   robots: { index: false, follow: false },
@@ -43,10 +45,10 @@ export default async function AdminLoginPage({
 
           {setupMissing ? (
             <div className="mb-5 border border-[#e0b35a] bg-[#fff9eb] px-4 py-3 text-[9px] leading-4 text-[#6c4a0b]">
-              Admin login is not configured yet. Add ADMIN_EMAIL,
-              ADMIN_SESSION_SECRET and ADMIN_PASSWORD (or the generated password
-              hash values) to <code className="mx-1">.env.local</code>, then
-              restart the dev server.
+              Admin login is not configured yet. For local development add
+              ADMIN_EMAIL and ADMIN_PASSWORD to{" "}
+              <code className="mx-1">.env.local</code>, then restart the dev
+              server. For production also add a long ADMIN_SESSION_SECRET.
             </div>
           ) : null}
 
@@ -87,9 +89,10 @@ export default async function AdminLoginPage({
 
             <button
               type="submit"
-              className="mt-1 min-h-[50px] w-full rounded-full border border-[#111] bg-[#111] px-5 text-[10px] font-semibold !text-white transition hover:bg-white hover:!text-[#111]"
+              className="admin-login-submit mt-1 min-h-[50px] w-full rounded-full border border-[#111] bg-[#111] px-5 text-[10px] font-semibold transition"
+              style={{ backgroundColor: "#111111", color: "#ffffff" }}
             >
-              Login
+              Sign in
             </button>
           </form>
 

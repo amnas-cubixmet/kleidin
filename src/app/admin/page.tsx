@@ -9,6 +9,8 @@ import { products } from "@/data/products";
 import { localOffers, localStoreSettings } from "@/data/store";
 import { defaultHeroSlides } from "@/data/hero-slides";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Admin",
   robots: { index: false, follow: false },
