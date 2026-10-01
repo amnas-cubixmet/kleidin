@@ -31,7 +31,7 @@ export type AdminOrder = {
   customerName: string;
   phone: string;
   alternatePhone?: string;
-  source: string;
+  source?: string;
   addressLine1: string;
   addressLine2?: string;
   landmark?: string;
