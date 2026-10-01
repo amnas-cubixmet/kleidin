@@ -621,7 +621,7 @@ export function AdminOrdersManager({
             <div>
               <strong className="text-[11px] font-semibold">No orders yet</strong>
               <p className="mt-1.5 text-[8px] leading-4 text-[#737b87]">
-                Add the first manual order using the form.
+                Use Add order to create your first manual order.
               </p>
             </div>
           </div>
