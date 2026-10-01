@@ -1,4 +1,4 @@
-import { createHmac, scryptSync, timingSafeEqual } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -7,22 +7,16 @@ export const ADMIN_SESSION_MAX_AGE = 60 * 60 * 12;
 
 type AdminAuthConfig = {
   email: string;
-  passwordSalt: string;
-  passwordHash: string;
+  password: string;
   sessionSecret: string;
 };
 
 function readAdminConfig(): AdminAuthConfig | null {
   const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  const passwordSalt = process.env.ADMIN_PASSWORD_SALT?.trim();
-  const passwordHash = process.env.ADMIN_PASSWORD_HASH?.trim().toLowerCase();
+  const password = process.env.ADMIN_PASSWORD?.trim();
   const sessionSecret = process.env.ADMIN_SESSION_SECRET?.trim();
 
-  if (!email || !passwordSalt || !passwordHash || !sessionSecret) {
-    return null;
-  }
-
-  if (!/^[a-f0-9]{128}$/i.test(passwordHash)) {
+  if (!email || !password || !sessionSecret) {
     return null;
   }
 
@@ -32,8 +26,7 @@ function readAdminConfig(): AdminAuthConfig | null {
 
   return {
     email,
-    passwordSalt,
-    passwordHash,
+    password,
     sessionSecret,
   };
 }
@@ -46,13 +39,9 @@ function safeEqual(leftValue: string, rightValue: string) {
   return timingSafeEqual(left, right);
 }
 
-function hashPassword(password: string, salt: string) {
-  return scryptSync(password, salt, 64).toString("hex");
-}
-
 function signSession(email: string, expiresAt: number, secret: string) {
   return createHmac("sha256", secret)
-    .update(`${email}:${expiresAt}:kleid-admin-session-v3`)
+    .update(`${email}:${expiresAt}:kleid-admin-session-v4`)
     .digest("hex");
 }
 
@@ -67,13 +56,10 @@ export function verifyAdminCredentials(email: string, password: string) {
   const normalizedEmail = email.trim().toLowerCase();
   if (!normalizedEmail || !password) return false;
 
-  const emailMatches = safeEqual(normalizedEmail, config.email);
-  const passwordMatches = safeEqual(
-    hashPassword(password, config.passwordSalt),
-    config.passwordHash,
+  return (
+    safeEqual(normalizedEmail, config.email) &&
+    safeEqual(password, config.password)
   );
-
-  return emailMatches && passwordMatches;
 }
 
 export function getAdminSessionValue() {
@@ -81,7 +67,7 @@ export function getAdminSessionValue() {
 
   if (!config) {
     throw new Error(
-      "Admin authentication is not configured. Set ADMIN_EMAIL, ADMIN_PASSWORD_SALT, ADMIN_PASSWORD_HASH and ADMIN_SESSION_SECRET.",
+      "Admin authentication is not configured. Set ADMIN_EMAIL, ADMIN_PASSWORD and ADMIN_SESSION_SECRET in .env.local.",
     );
   }
 
