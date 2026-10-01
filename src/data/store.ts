@@ -1,12 +1,16 @@
 import type { Offer, StoreSettings } from "@/types/commerce";
 
 export const localStoreSettings: StoreSettings = {
-  whatsappNumber: "123456789",
-  announcementText: "Free shipping on prepaid orders above ₹1,999",
-  announcementLinkLabel: "Shop the collection",
-  instagramUrl: "",
-  facebookUrl: "",
-  supportEmail: "hello@kleid.in",
+  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "",
+  announcementText:
+    process.env.NEXT_PUBLIC_ANNOUNCEMENT_TEXT ??
+    "Free shipping on prepaid orders above ₹1,999",
+  announcementLinkLabel:
+    process.env.NEXT_PUBLIC_ANNOUNCEMENT_LINK_LABEL ?? "Shop the collection",
+  instagramUrl: process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "",
+  facebookUrl: process.env.NEXT_PUBLIC_FACEBOOK_URL ?? "",
+  supportEmail:
+    process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "hello@kleid.in",
 };
 
 export const localOffers: Offer[] = [

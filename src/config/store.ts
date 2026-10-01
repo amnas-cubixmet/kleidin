@@ -5,4 +5,6 @@ export const store = {
   currency: "INR",
   locale: "en-IN",
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "",
+  supportEmail:
+    process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "hello@kleid.in",
 } as const;
