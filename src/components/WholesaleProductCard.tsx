@@ -10,61 +10,63 @@ export function WholesaleProductCard({
   product: Product;
   whatsappNumber: string;
 }) {
+  const soldOut = product.status === "sold-out" || product.stock <= 0;
   const minOrder = product.wholesaleMinOrder ?? 12;
   const enquiryHref = getWholesaleProductWhatsappUrl(product, whatsappNumber);
-  const soldOut = product.status === "sold-out" || product.stock <= 0;
   const wholesaleSlug = product.wholesaleSlug ?? `${product.slug}-dealer`;
 
   return (
-    <article className="dealer-product-card dealer-product-card-clean">
-      <Link
-        href={`/wholesale/${wholesaleSlug}`}
-        className="dealer-product-media"
-        aria-label={product.name}
-      >
-        {product.image ? (
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 980px) 33vw, 25vw"
-            className="dealer-product-image"
-          />
-        ) : (
-          <span className="dealer-product-empty">No image</span>
-        )}
-
-        <span className="dealer-product-stock-badge">
-          {soldOut ? "Unavailable" : "Dealer order"}
-        </span>
-      </Link>
-
-      <div className="dealer-product-info">
+    <article className="product-card product-card-refined dealer-unified-card">
+      <div className="product-visual product-card-visual-refined">
         <Link
           href={`/wholesale/${wholesaleSlug}`}
-          className="dealer-product-name"
+          className="product-card-image-link"
+          aria-label={product.name}
         >
+          {product.image ? (
+            <Image
+              src={product.image}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 980px) 33vw, 25vw"
+              className="product-image product-card-image-refined"
+            />
+          ) : (
+            <span className="product-image-empty">No image</span>
+          )}
+        </Link>
+
+        <div className="product-card-badges">
+          <span className="product-card-status">
+            {soldOut ? "Unavailable" : "Dealer order"}
+          </span>
+        </div>
+      </div>
+
+      <div className="product-card-info product-card-info-refined">
+        <Link href={`/wholesale/${wholesaleSlug}`} className="product-name">
           {product.name}
         </Link>
 
-        <div className="dealer-product-minimum">
-          <span>Minimum quantity</span>
+        <div className="dealer-unified-meta">
+          <span>Minimum order</span>
           <strong>{minOrder} pcs</strong>
         </div>
 
-        <div className="dealer-product-colour-list">
-          <span>Colours</span>
-          <div className="dealer-product-colours" aria-label="Available colours">
-            {product.colors.map((colour) => (
-              <span key={colour}>{colour}</span>
-            ))}
-          </div>
+        <div className="product-card-stock-row">
+          <span
+            className={
+              "product-card-stock-dot " + (soldOut ? "sold-out" : "in-stock")
+            }
+            aria-hidden="true"
+          />
+          <span>{soldOut ? "Unavailable" : `Stock ${product.stock}`}</span>
         </div>
 
         {soldOut || enquiryHref === "#" ? (
           <button
             type="button"
-            className="dealer-enquiry-button is-disabled"
+            className="product-whatsapp-cta is-disabled"
             disabled
           >
             {soldOut ? "Unavailable" : "WhatsApp unavailable"}
@@ -74,7 +76,7 @@ export function WholesaleProductCard({
             href={enquiryHref}
             target="_blank"
             rel="noreferrer"
-            className="dealer-enquiry-button"
+            className="product-whatsapp-cta"
           >
             Enquire on WhatsApp
           </a>

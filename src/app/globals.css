@@ -15160,3 +15160,433 @@ main,
     font-size: 8px;
   }
 }
+
+
+/* FINAL unified Dealers / About / Contact cleanup */
+.catalog-store-grid .product-card-info-refined > .product-card-price,
+.ref-arrival-grid .product-card-price {
+  justify-self: start !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+}
+
+.dealer-intro-clean {
+  padding: 44px 0 34px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
+  align-items: end;
+  gap: 36px;
+}
+
+.dealer-intro-clean > p {
+  grid-column: 1 / -1;
+  margin: 0 0 -12px;
+  color: #001cac;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .14em;
+}
+
+.dealer-intro-clean h1 {
+  margin: 0;
+  font-size: clamp(48px, 7vw, 96px);
+  font-weight: 650;
+  line-height: .88;
+  letter-spacing: -.06em;
+}
+
+.dealer-intro-clean > div {
+  display: grid;
+  gap: 18px;
+  justify-items: start;
+}
+
+.dealer-intro-clean > div > span {
+  max-width: 520px;
+  color: #666;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.dealer-intro-clean a {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  background: #111;
+  color: #fff !important;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.dealer-catalog-head-clean {
+  border: 0 !important;
+}
+
+.dealer-product-grid-unified {
+  gap: 14px 8px !important;
+}
+
+.dealer-unified-card {
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.dealer-unified-card .product-card-visual-refined {
+  border-radius: 12px !important;
+}
+
+.dealer-unified-meta {
+  margin-top: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #777;
+  font-size: 7px;
+}
+
+.dealer-unified-meta strong {
+  color: #111;
+  font-size: 8px;
+}
+
+.home-dealers-clean {
+  width: min(calc(100% - 24px), 1376px);
+  margin: 18px auto 22px;
+  padding: clamp(30px, 5vw, 72px) 0;
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 44px;
+  align-items: end;
+  background: #fff;
+}
+
+.home-dealers-clean p {
+  margin: 0 0 16px;
+  color: #001cac;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .14em;
+}
+
+.home-dealers-clean h2 {
+  margin: 0;
+  max-width: 760px;
+  font-size: clamp(44px, 6vw, 86px);
+  font-weight: 650;
+  line-height: .88;
+  letter-spacing: -.06em;
+}
+
+.home-dealers-clean span {
+  margin-top: 20px;
+  max-width: 560px;
+  display: block;
+  color: #666;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.home-dealers-clean a {
+  min-height: 42px;
+  margin-top: 24px;
+  padding: 0 16px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  background: #111;
+  color: #fff !important;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.home-dealers-copy {
+  display: grid;
+  gap: 12px;
+}
+
+.home-dealers-copy strong {
+  font-size: clamp(24px, 3vw, 42px);
+  font-weight: 600;
+  letter-spacing: -.045em;
+}
+
+.about-clean-page,
+.contact-clean-page {
+  width: min(calc(100% - 24px), 1376px);
+  margin: 0 auto;
+  padding-bottom: 70px;
+}
+
+.about-clean-hero,
+.contact-clean-hero {
+  min-height: 54vh;
+  padding: clamp(42px, 7vw, 92px) 0 38px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.about-clean-hero > p,
+.about-clean-split p,
+.about-order-copy > p,
+.contact-clean-hero > p,
+.contact-clean-info p:first-child {
+  margin: 0 0 14px;
+  color: #001cac;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .14em;
+}
+
+.about-clean-hero h1,
+.contact-clean-hero h1 {
+  margin: 0;
+  font-size: clamp(54px, 9vw, 118px);
+  font-weight: 650;
+  line-height: .84;
+  letter-spacing: -.065em;
+}
+
+.about-clean-hero > span,
+.contact-clean-hero > span {
+  margin-top: 24px;
+  max-width: 620px;
+  color: #666;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.about-clean-split {
+  padding: 54px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(28px, 6vw, 90px);
+}
+
+.about-clean-split h2,
+.about-order-copy h2,
+.about-clean-final h2,
+.contact-clean-info h2 {
+  margin: 0;
+  font-size: clamp(34px, 5vw, 66px);
+  font-weight: 600;
+  line-height: .92;
+  letter-spacing: -.05em;
+}
+
+.about-clean-split span {
+  margin-top: 18px;
+  max-width: 540px;
+  display: block;
+  color: #666;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.about-order-flow {
+  padding: 58px 0;
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  gap: clamp(32px, 7vw, 100px);
+  align-items: start;
+}
+
+.about-order-copy > span {
+  margin-top: 20px;
+  max-width: 560px;
+  display: block;
+  color: #666;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.about-order-steps {
+  display: grid;
+  gap: 24px;
+}
+
+.about-order-steps > div {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.about-order-steps strong {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.about-order-steps span {
+  color: #666;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.about-clean-final {
+  padding: 64px 0 12px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.about-clean-final > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.about-clean-final a,
+.contact-clean-bottom a {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  background: #111;
+  color: #fff !important;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.contact-clean-links {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.contact-clean-links a {
+  min-height: 118px;
+  padding: 20px;
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-content: space-between;
+  background: #f5f3ee;
+  color: #111;
+}
+
+.contact-clean-links a > span {
+  grid-column: 1 / -1;
+  color: #777;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+
+.contact-clean-links strong {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -.025em;
+}
+
+.contact-clean-links b {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.contact-clean-info {
+  padding: 62px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: end;
+}
+
+.contact-clean-info > p {
+  margin: 0;
+  max-width: 560px;
+  color: #666;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.contact-clean-bottom {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 700px) {
+  .dealer-intro-clean,
+  .home-dealers-clean,
+  .about-clean-split,
+  .about-order-flow,
+  .contact-clean-info {
+    grid-template-columns: 1fr;
+  }
+
+  .dealer-intro-clean {
+    padding: 28px 0 24px;
+    gap: 20px;
+  }
+
+  .dealer-intro-clean > p {
+    margin-bottom: -4px;
+  }
+
+  .dealer-product-grid-unified {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px 5px !important;
+  }
+
+  .dealer-unified-card .product-card-info-refined {
+    min-height: 0 !important;
+    padding-top: 7px !important;
+  }
+
+  .home-dealers-clean {
+    margin-top: 8px;
+    margin-bottom: 10px;
+    padding: 34px 0;
+    gap: 30px;
+  }
+
+  .home-dealers-copy {
+    gap: 8px;
+  }
+
+  .about-clean-page,
+  .contact-clean-page {
+    width: 100%;
+    padding: 0 12px 42px;
+  }
+
+  .about-clean-hero,
+  .contact-clean-hero {
+    min-height: 46vh;
+    padding-top: 36px;
+  }
+
+  .about-clean-split,
+  .about-order-flow,
+  .contact-clean-info {
+    padding: 38px 0;
+    gap: 28px;
+  }
+
+  .about-order-steps > div {
+    grid-template-columns: 88px 1fr;
+    gap: 14px;
+  }
+
+  .about-clean-final {
+    padding-top: 42px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .contact-clean-links {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-clean-links a {
+    min-height: 96px;
+    border-radius: 14px;
+  }
+}

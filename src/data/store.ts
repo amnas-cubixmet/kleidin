@@ -5,6 +5,7 @@ export const localStoreSettings: StoreSettings = {
   announcementText: "Free shipping on prepaid orders above ₹1,999",
   announcementLinkLabel: "Shop the collection",
   instagramUrl: "",
+  facebookUrl: "",
   supportEmail: "hello@kleid.in",
 };
 

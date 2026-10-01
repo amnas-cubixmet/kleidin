@@ -8,7 +8,7 @@ import { getWholesaleWhatsappUrl } from "@/lib/format";
 export const metadata: Metadata = {
   title: "Dealers",
   description:
-    "Dealer enquiries for KLEID.IN products, minimum quantities and available colours.",
+    "Dealer enquiries for KLEID.IN products, minimum quantities and current availability.",
 };
 
 export default async function WholesalePage() {
@@ -36,6 +36,24 @@ export default async function WholesalePage() {
           ]}
         />
 
+        <section className="dealer-intro-clean">
+          <p>DEALERS</p>
+          <h1>Stock KLEID.IN.</h1>
+          <div>
+            <span>
+              For retailers, resellers and independent stores looking for current
+              availability, minimum quantities and dealer ordering.
+            </span>
+            <a
+              href={contactHref}
+              target={whatsappHref !== "#" ? "_blank" : undefined}
+              rel={whatsappHref !== "#" ? "noreferrer" : undefined}
+            >
+              Enquire on WhatsApp
+            </a>
+          </div>
+        </section>
+
         <section className="dealer-catalog-head dealer-catalog-head-clean">
           <div>
             <span>DEALER CATALOG</span>
@@ -44,7 +62,7 @@ export default async function WholesalePage() {
           <p>{activeProducts.length} styles</p>
         </section>
 
-        <section className="dealer-product-grid" aria-label="Dealer products">
+        <section className="dealer-product-grid dealer-product-grid-unified" aria-label="Dealer products">
           {activeProducts.map((product) => (
             <WholesaleProductCard
               key={product.id}
@@ -52,20 +70,6 @@ export default async function WholesalePage() {
               whatsappNumber={settings.whatsappNumber}
             />
           ))}
-        </section>
-
-        <section className="dealer-footer-cta dealer-footer-clean">
-          <div>
-            <p>DEALER ENQUIRY</p>
-            <h2>Need a mixed quantity order?</h2>
-          </div>
-          <a
-            href={contactHref}
-            target={whatsappHref !== "#" ? "_blank" : undefined}
-            rel={whatsappHref !== "#" ? "noreferrer" : undefined}
-          >
-            Enquire on WhatsApp
-          </a>
         </section>
       </div>
     </main>

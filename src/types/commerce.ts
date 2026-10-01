@@ -3,6 +3,7 @@ export type StoreSettings = {
   announcementText: string;
   announcementLinkLabel: string;
   instagramUrl: string;
+  facebookUrl: string;
   supportEmail: string;
 };
 
