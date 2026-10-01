@@ -94,7 +94,7 @@ function isActive(pathname: string, href: string) {
 function DesktopGroup({ title, items, pathname }: { title: string; items: NavItem[]; pathname: string }) {
   return (
     <div className="mt-5">
-      <p className="mb-2 px-3 text-[8px] font-semibold uppercase tracking-[.14em] text-black/30">{title}</p>
+      <p className="mb-2 px-3 text-[9px] font-bold uppercase tracking-[.13em] text-[#8a919d]">{title}</p>
       <div className="grid gap-1">
         {items.map((item) => {
           const active = isActive(pathname, item.href);
@@ -106,8 +106,8 @@ function DesktopGroup({ title, items, pathname }: { title: string; items: NavIte
               className={
                 "relative flex min-h-[44px] items-center gap-3 rounded-[12px] px-3 text-[10px] font-semibold transition-colors " +
                 (active
-                  ? "bg-[#eef2ff] text-[#001cac]"
-                  : "text-black/52 hover:bg-black/[.035] hover:text-black")
+                  ? "bg-[#e9edff] text-[#001cac]"
+                  : "text-[#59616d] hover:bg-[#f3f5f8] hover:text-[#15171a]")
               }
             >
               {active ? <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[#001cac]" /> : null}
@@ -126,10 +126,10 @@ export function AdminNavigation() {
 
   return (
     <>
-      <aside className="sticky top-4 hidden h-[calc(100vh-32px)] w-[244px] shrink-0 flex-col overflow-y-auto rounded-[22px] border border-black/[.07] bg-white p-3 shadow-[0_10px_35px_rgba(0,0,0,.035)] lg:flex">
-        <Link href="/admin/dashboard" className="px-3 pb-2 pt-3">
-          <strong className="block text-[19px] font-extrabold tracking-[-.055em] text-[#111]">KLEID.IN</strong>
-          <span className="mt-1 block text-[7px] font-semibold uppercase tracking-[.17em] text-black/30">Commerce admin</span>
+      <aside className="sticky top-4 hidden h-[calc(100vh-32px)] w-[244px] shrink-0 flex-col overflow-y-auto rounded-[22px] border border-[#dfe3ea] bg-white p-3 shadow-[0_10px_35px_rgba(18,26,43,.04)] lg:flex">
+        <Link href="/admin/dashboard" className="rounded-[14px] bg-[#f7f8fb] px-3 pb-3 pt-3.5">
+          <strong className="block text-[19px] font-extrabold tracking-[-.055em] text-[#15171a]">KLEID.IN</strong>
+          <span className="mt-1 block text-[8px] font-bold uppercase tracking-[.16em] text-[#7d8490]">Commerce admin</span>
         </Link>
 
         <DesktopGroup title="Business" items={primaryItems} pathname={pathname} />
@@ -137,7 +137,7 @@ export function AdminNavigation() {
         <DesktopGroup title="Storefront" items={storefrontItems} pathname={pathname} />
 
         <div className="mt-auto pt-5">
-          <Link href="/" target="_blank" className="flex min-h-[42px] items-center justify-between rounded-[12px] border border-black/[.07] px-3 text-[9px] font-semibold text-black/48 transition hover:bg-black/[.025] hover:text-black">
+          <Link href="/" target="_blank" className="flex min-h-[42px] items-center justify-between rounded-[12px] border border-[#dfe3ea] bg-[#f8f9fb] px-3 text-[9px] font-semibold text-[#4d5561] transition hover:bg-white hover:text-[#15171a]">
             <span>View storefront</span>
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M7 17 17 7M9 7h8v8" />
@@ -147,7 +147,7 @@ export function AdminNavigation() {
       </aside>
 
       <nav
-        className="fixed inset-x-2 bottom-2 z-[80] grid grid-cols-5 rounded-[19px] border border-black/10 bg-white/95 p-1.5 shadow-[0_14px_40px_rgba(0,0,0,.16)] backdrop-blur-xl supports-[padding:max(0px)]:bottom-[max(.5rem,env(safe-area-inset-bottom))] lg:hidden"
+        className="fixed inset-x-2 bottom-2 z-[80] grid grid-cols-5 rounded-[19px] border border-[#d9dee7] bg-white/95 p-1.5 shadow-[0_14px_40px_rgba(18,26,43,.16)] backdrop-blur-xl supports-[padding:max(0px)]:bottom-[max(.5rem,env(safe-area-inset-bottom))] lg:hidden"
         aria-label="Admin mobile navigation"
       >
         {mobileItems.map((item) => {
@@ -162,8 +162,8 @@ export function AdminNavigation() {
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={
-                "flex min-h-[56px] flex-col items-center justify-center gap-1 rounded-[13px] px-1 text-[7.5px] font-semibold transition-colors " +
-                (active ? "bg-[#eef2ff] text-[#001cac]" : "text-black/38")
+                "flex min-h-[56px] flex-col items-center justify-center gap-1 rounded-[13px] px-1 text-[8px] font-semibold transition-colors " +
+                (active ? "bg-[#e9edff] text-[#001cac]" : "text-[#6b7280]")
               }
             >
               <Icon name={item.icon} className="h-[18px] w-[18px]" />
