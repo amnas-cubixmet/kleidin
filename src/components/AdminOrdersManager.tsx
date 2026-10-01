@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   type AdminOrder,
   type AdminOrderItem,
@@ -77,7 +79,17 @@ function makeOrderNumber() {
   return "KLD-" + y + m + d + "-" + suffix;
 }
 
-export function AdminOrdersManager({ products }: { products: ProductOption[] }) {
+export function AdminOrdersManager({
+  products,
+  view = "list",
+  orderId,
+}: {
+  products: ProductOption[];
+  view?: "list" | "create" | "edit";
+  orderId?: string;
+}) {
+  const router = useRouter();
+  const editInitialized = useRef(false);
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
@@ -107,6 +119,39 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
       window.removeEventListener("storage", sync);
     };
   }, []);
+
+  useEffect(() => {
+    if (view !== "edit" || !orderId || editInitialized.current) return;
+    const existing = orders.find((order) => order.id === orderId);
+    if (!existing) return;
+
+    setCustomerName(existing.customerName);
+    setPhone(existing.phone);
+    setAddressLine1(existing.addressLine1);
+    setAddressLine2(existing.addressLine2 ?? "");
+    setLandmark(existing.landmark ?? "");
+    setCity(existing.city);
+    setStateName(existing.state);
+    setPincode(existing.pincode);
+    setItems(
+      existing.items.map((item) => ({
+        id: item.id,
+        productId: item.productId,
+        size: item.size ?? "",
+        color: item.color ?? "",
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        unitCost: item.unitCost,
+      })),
+    );
+    setDeliveryCharge(existing.deliveryCharge);
+    setShippingCost(existing.shippingCost);
+    setDiscount(existing.discount);
+    setPaymentStatus(existing.paymentStatus);
+    setStatus(existing.status);
+    setNotes(existing.notes ?? "");
+    editInitialized.current = true;
+  }, [orders, orderId, view]);
 
   const productMap = useMemo(
     () => new Map(products.map((product) => [product.id, product])),
@@ -252,8 +297,30 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
       notes: notes.trim() || undefined,
     };
 
+    if (view === "edit" && orderId) {
+      const existing = orders.find((item) => item.id === orderId);
+      if (!existing) {
+        setError("Order not found.");
+        return;
+      }
+
+      const updated: AdminOrder = {
+        ...existing,
+        ...order,
+        id: existing.id,
+        orderNumber: existing.orderNumber,
+        createdAt: existing.createdAt,
+        updatedAt: now,
+      };
+
+      persist(orders.map((item) => (item.id === orderId ? updated : item)));
+      router.push("/admin/orders/" + orderId);
+      return;
+    }
+
     persist([order, ...orders]);
     resetForm();
+    router.push("/admin/orders/" + order.id);
   }
 
   function updateOrderStatus(orderId: string, nextStatus: AdminOrderStatus) {
@@ -277,7 +344,8 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
     "text-[8px] font-bold uppercase tracking-[.1em] text-[#6f7783]";
 
   return (
-    <div className="grid min-w-0 gap-3 sm:gap-4 xl:grid-cols-[minmax(0,.92fr)_minmax(0,1.08fr)]">
+    <div className="min-w-0">
+      {view !== "list" ? (
       <form
         onSubmit={saveOrder}
         className="min-w-0 rounded-[18px] border border-[#dfe3ea] bg-white p-3.5 sm:rounded-[20px] sm:p-4 md:p-5"
@@ -288,14 +356,14 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
               Manual entry
             </p>
             <h2 className="mt-1.5 text-[22px] font-semibold tracking-[-.04em]">
-              Add order
+              {view === "edit" ? "Edit order" : "Add order"}
             </h2>
             <p className="mt-1 text-[8px] leading-4 text-[#6a7280]">
               Enter the customer, delivery address and product details yourself.
             </p>
           </div>
           <span className="rounded-full bg-[#eef2ff] px-2.5 py-1.5 text-[8px] font-bold text-[#001cac]">
-            Admin order
+            {view === "edit" ? "Editing" : "Admin order"}
           </span>
         </div>
 
@@ -470,10 +538,12 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
         ) : null}
 
         <button type="submit" className="mt-4 min-h-9 rounded-full bg-[#001cac] px-5 text-[9px] font-bold text-white transition hover:bg-[#00158a] sm:mt-5 sm:min-h-10">
-          Save order
+          {view === "edit" ? "Save changes" : "Save order"}
         </button>
       </form>
+      ) : null}
 
+      {view === "list" ? (
       <section className="min-w-0 rounded-[18px] border border-[#dfe3ea] bg-white p-3.5 sm:rounded-[20px] sm:p-4 md:p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -564,10 +634,16 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
                   >
                     {statusOptions.map((option) => <option key={option}>{option}</option>)}
                   </select>
+                  <Link
+                    href={"/admin/orders/" + order.id}
+                    className="ml-auto inline-flex min-h-8 items-center rounded-full bg-[#001cac] px-3 text-[8px] font-bold text-white"
+                  >
+                    View
+                  </Link>
                   <button
                     type="button"
                     onClick={() => deleteOrder(order.id)}
-                    className="ml-auto min-h-8 rounded-full border border-[#efd0d0] bg-white px-3 text-[8px] font-bold text-[#a33d3d]"
+                    className="min-h-8 rounded-full border border-[#efd0d0] bg-white px-3 text-[8px] font-bold text-[#a33d3d]"
                   >
                     Delete
                   </button>
@@ -586,6 +662,7 @@ export function AdminOrdersManager({ products }: { products: ProductOption[] }) 
           </div>
         )}
       </section>
+      ) : null}
     </div>
   );
 }
