@@ -14299,3 +14299,140 @@ main,
     font-size: 5.7px !important;
   }
 }
+
+
+/* FINAL products search + left/right toolbar alignment */
+.catalog-store-search {
+  position: relative;
+}
+
+.catalog-search-hint {
+  flex: 0 0 auto;
+  color: #a1a1a1;
+  font-size: 7px;
+  font-weight: 650;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+.catalog-search-clear {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #f3f3f1;
+  color: #111;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.catalog-store-right {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.catalog-store-count {
+  flex: 0 0 auto;
+  color: #777;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+
+.catalog-store-divider {
+  width: 1px;
+  height: 28px;
+  flex: 0 0 1px;
+  background: #e6e6e6;
+}
+
+.catalog-store-actions {
+  flex: 0 0 auto;
+}
+
+.catalog-store-title h1 {
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .catalog-store-search {
+    margin-top: 2px;
+  }
+
+  .catalog-store-search input {
+    font-size: 11px !important;
+  }
+
+  .catalog-search-hint {
+    display: none;
+  }
+
+  .catalog-search-clear {
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+  }
+
+  .catalog-store-toolbar {
+    min-height: 58px !important;
+    padding: 8px 0 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .catalog-store-title {
+    min-width: 0;
+  }
+
+  .catalog-store-title h1 {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: clamp(18px, 5.2vw, 22px) !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .catalog-store-right {
+    gap: 7px;
+  }
+
+  .catalog-store-count {
+    font-size: 6.8px;
+  }
+
+  .catalog-store-divider {
+    height: 24px;
+  }
+
+  .catalog-store-actions {
+    gap: 5px !important;
+  }
+
+  .catalog-filter-dropdown summary {
+    min-width: 64px;
+  }
+}
+
+@media (max-width: 360px) {
+  .catalog-store-right {
+    gap: 5px;
+  }
+
+  .catalog-store-count {
+    font-size: 6.2px;
+  }
+
+  .catalog-store-divider {
+    height: 22px;
+  }
+}

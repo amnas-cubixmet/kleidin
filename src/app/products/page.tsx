@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ProductCard } from "@/components/ProductCard";
+import { ProductSearchBar } from "@/components/ProductSearchBar";
 import { getCatalogProducts } from "@/lib/catalog";
 
 export const metadata: Metadata = { title: "Shop" };
@@ -41,7 +42,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   const category = params.category;
   const showNew = params.new === "1";
-  const query = params.q?.trim().toLowerCase();
+  const rawQuery = params.q?.trim() || undefined;
+  const query = rawQuery?.toLowerCase();
   const sort = params.sort ?? "featured";
 
   const categories = Array.from(
@@ -82,7 +84,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const currentParams = {
     category,
     new: showNew ? "1" : undefined,
-    q: params.q,
+    q: rawQuery,
     sort: sort === "featured" ? undefined : sort,
   };
 
@@ -94,7 +96,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       : showNew
         ? [{ label: "New Arrivals" }]
         : query
-          ? [{ label: `Search: ${params.q}` }]
+          ? [{ label: `Search: ${rawQuery}` }]
           : []),
   ];
 
@@ -112,36 +114,23 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       <div className="catalog-store-shell">
         <Breadcrumbs items={breadcrumbItems} />
 
-        <form action="/products" method="get" className="catalog-store-search">
-          {category ? <input type="hidden" name="category" value={category} /> : null}
-          {showNew ? <input type="hidden" name="new" value="1" /> : null}
-          {sort !== "featured" ? (
-            <input type="hidden" name="sort" value={sort} />
-          ) : null}
-
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="11" cy="11" r="6.5" />
-            <path d="m16 16 4 4" />
-          </svg>
-          <input
-            type="search"
-            name="q"
-            defaultValue={params.q ?? ""}
-            placeholder="Search products..."
-            aria-label="Search products"
-          />
-          <button type="submit">Search</button>
-        </form>
+        <ProductSearchBar initialValue={rawQuery ?? ""} />
 
         <div className="catalog-store-toolbar">
           <div className="catalog-store-title">
-            <h1>All Products ({sortedProducts.length})</h1>
+            <h1>{query ? "Search results" : "All Products"}</h1>
             {(category || showNew || query) ? (
               <Link href="/products">Clear filters</Link>
             ) : null}
           </div>
 
-          <div className="catalog-store-actions">
+          <div className="catalog-store-right">
+            <span className="catalog-store-count">
+              {String(sortedProducts.length).padStart(2, "0")} items
+            </span>
+            <span className="catalog-store-divider" aria-hidden="true" />
+
+            <div className="catalog-store-actions">
             <details className="catalog-dropdown catalog-sort-dropdown">
               <summary>
                 <span>Sort by</span>
@@ -204,6 +193,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 ))}
               </div>
             </details>
+            </div>
           </div>
         </div>
 
