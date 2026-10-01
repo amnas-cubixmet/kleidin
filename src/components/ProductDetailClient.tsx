@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import type { Product } from "@/types/product";
 import { useCart } from "@/context/CartContext";
@@ -76,10 +75,6 @@ export function ProductDetailClient({
 
       <div className="product-info">
         <div className="product-info-inner">
-          <Link href="/products" className="back-link">
-            ← Shop
-          </Link>
-
           <div className="product-detail-heading">
             <div>
               <p className="eyebrow">
