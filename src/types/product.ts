@@ -12,6 +12,7 @@ export type Product = {
   sku: string;
   name: string;
   slug: string;
+  wholesaleSlug?: string;
   category: string;
   price: number;
   compareAtPrice?: number;
@@ -35,6 +36,7 @@ export type DbProduct = {
   sku: string;
   name: string;
   slug: string;
+  wholesale_slug?: string | null;
   category: string;
   price: number;
   compare_at_price: number | null;

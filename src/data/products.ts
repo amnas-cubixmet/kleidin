@@ -6,6 +6,7 @@ export const products: Product[] = [
     sku: "KLD-TS-001",
     name: "Core Heavy Tee — Black",
     slug: "core-heavy-tee-black",
+    wholesaleSlug: "core-heavy-tee-dealer",
     category: "T-Shirts",
     price: 1490,
     compareAtPrice: 1790,
@@ -48,6 +49,7 @@ export const products: Product[] = [
     sku: "KLD-TS-002",
     name: "Everyday Tee — White",
     slug: "everyday-tee-white",
+    wholesaleSlug: "everyday-tee-dealer",
     category: "T-Shirts",
     price: 1290,
     description:
@@ -67,6 +69,7 @@ export const products: Product[] = [
     sku: "KLD-SH-001",
     name: "Relaxed Poplin Shirt — White",
     slug: "relaxed-poplin-shirt-white",
+    wholesaleSlug: "relaxed-poplin-shirt-dealer",
     category: "Shirts",
     price: 2390,
     compareAtPrice: 2690,
@@ -87,6 +90,7 @@ export const products: Product[] = [
     sku: "KLD-OW-001",
     name: "Utility Jacket — Black",
     slug: "utility-jacket-black",
+    wholesaleSlug: "utility-jacket-dealer",
     category: "Outerwear",
     price: 3490,
     compareAtPrice: 3890,
@@ -107,6 +111,7 @@ export const products: Product[] = [
     sku: "KLD-KN-001",
     name: "Fine Crew Knit — Heather Grey",
     slug: "fine-crew-knit-heather-grey",
+    wholesaleSlug: "fine-crew-knit-dealer",
     category: "Knitwear",
     price: 2790,
     description:
@@ -126,6 +131,7 @@ export const products: Product[] = [
     sku: "KLD-BT-001",
     name: "Straight Trouser — Black",
     slug: "straight-trouser-black",
+    wholesaleSlug: "straight-trouser-dealer",
     category: "Bottoms",
     price: 2490,
     description:
@@ -145,6 +151,7 @@ export const products: Product[] = [
     sku: "KLD-AC-001",
     name: "Everyday Cap — Black",
     slug: "everyday-cap-black",
+    wholesaleSlug: "everyday-cap-dealer",
     category: "Accessories",
     price: 990,
     description:
@@ -164,6 +171,7 @@ export const products: Product[] = [
     sku: "KLD-AC-002",
     name: "Canvas Carry Tote — Natural",
     slug: "canvas-carry-tote-natural",
+    wholesaleSlug: "canvas-carry-tote-dealer",
     category: "Accessories",
     price: 890,
     description:
@@ -189,5 +197,14 @@ export function getActiveProducts() {
 export function getProductBySlug(slug: string) {
   return products.find(
     (product) => product.slug === slug && product.status !== "draft",
+  );
+}
+
+
+export function getProductByWholesaleSlug(slug: string) {
+  return products.find(
+    (product) =>
+      (product.wholesaleSlug ?? `${product.slug}-dealer`) === slug &&
+      product.status !== "draft",
   );
 }

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/types/product";
-import { formatPrice, getWholesaleProductWhatsappUrl } from "@/lib/format";
+import { getWholesaleProductWhatsappUrl } from "@/lib/format";
 
 export function WholesaleProductCard({
   product,
@@ -11,14 +11,14 @@ export function WholesaleProductCard({
   whatsappNumber: string;
 }) {
   const minOrder = product.wholesaleMinOrder ?? 12;
-  const colourCount = product.colors.length;
   const enquiryHref = getWholesaleProductWhatsappUrl(product, whatsappNumber);
   const soldOut = product.status === "sold-out" || product.stock <= 0;
+  const wholesaleSlug = product.wholesaleSlug ?? `${product.slug}-dealer`;
 
   return (
-    <article className="dealer-product-card">
+    <article className="dealer-product-card dealer-product-card-clean">
       <Link
-        href={`/products/${product.slug}`}
+        href={`/wholesale/${wholesaleSlug}`}
         className="dealer-product-media"
         aria-label={product.name}
       >
@@ -35,40 +35,39 @@ export function WholesaleProductCard({
         )}
 
         <span className="dealer-product-stock-badge">
-          {soldOut ? "Sold out" : "Dealer stock"}
+          {soldOut ? "Unavailable" : "Dealer order"}
         </span>
       </Link>
 
       <div className="dealer-product-info">
-        <Link href={`/products/${product.slug}`} className="dealer-product-name">
+        <Link
+          href={`/wholesale/${wholesaleSlug}`}
+          className="dealer-product-name"
+        >
           {product.name}
         </Link>
 
-        <div className="dealer-product-price-row">
-          <span>Selling price</span>
-          <strong>{formatPrice(product.price)}</strong>
+        <div className="dealer-product-minimum">
+          <span>Minimum quantity</span>
+          <strong>{minOrder} pcs</strong>
         </div>
 
-        <div className="dealer-product-meta">
-          <div>
-            <span>Minimum order</span>
-            <strong>{minOrder} pcs</strong>
+        <div className="dealer-product-colour-list">
+          <span>Colours</span>
+          <div className="dealer-product-colours" aria-label="Available colours">
+            {product.colors.map((colour) => (
+              <span key={colour}>{colour}</span>
+            ))}
           </div>
-          <div>
-            <span>Colours</span>
-            <strong>{colourCount} available</strong>
-          </div>
-        </div>
-
-        <div className="dealer-product-colours" aria-label="Available colours">
-          {product.colors.map((colour) => (
-            <span key={colour}>{colour}</span>
-          ))}
         </div>
 
         {soldOut || enquiryHref === "#" ? (
-          <button type="button" className="dealer-enquiry-button is-disabled" disabled>
-            {soldOut ? "Sold out" : "WhatsApp unavailable"}
+          <button
+            type="button"
+            className="dealer-enquiry-button is-disabled"
+            disabled
+          >
+            {soldOut ? "Unavailable" : "WhatsApp unavailable"}
           </button>
         ) : (
           <a

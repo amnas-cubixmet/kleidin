@@ -8,7 +8,7 @@ import { getWholesaleWhatsappUrl } from "@/lib/format";
 export const metadata: Metadata = {
   title: "Dealers",
   description:
-    "Dealer enquiries for KLEID.IN products, minimum orders, colours and availability.",
+    "Dealer enquiries for KLEID.IN products, minimum quantities and available colours.",
 };
 
 export default async function WholesalePage() {
@@ -27,7 +27,7 @@ export default async function WholesalePage() {
         : "/contact";
 
   return (
-    <main className="dealer-page">
+    <main className="dealer-page dealer-page-clean">
       <div className="dealer-shell">
         <Breadcrumbs
           items={[
@@ -36,33 +36,12 @@ export default async function WholesalePage() {
           ]}
         />
 
-        <section className="dealer-hero">
+        <section className="dealer-catalog-head dealer-catalog-head-clean">
           <div>
-            <p>DEALER CATALOG</p>
-            <h1>Stock KLEID.IN.</h1>
+            <span>DEALER CATALOG</span>
+            <strong>Available products</strong>
           </div>
-
-          <div className="dealer-hero-copy">
-            <p>
-              Browse current products for retail and resale enquiries. Minimum
-              order, available colours and stock are shown on each item.
-            </p>
-            <a
-              href={contactHref}
-              target={whatsappHref !== "#" ? "_blank" : undefined}
-              rel={whatsappHref !== "#" ? "noreferrer" : undefined}
-            >
-              General dealer enquiry
-            </a>
-          </div>
-        </section>
-
-        <section className="dealer-catalog-head">
-          <div>
-            <span>AVAILABLE PRODUCTS</span>
-            <strong>{activeProducts.length} styles</strong>
-          </div>
-          <p>Dealer pricing is confirmed on enquiry.</p>
+          <p>{activeProducts.length} styles</p>
         </section>
 
         <section className="dealer-product-grid" aria-label="Dealer products">
@@ -75,17 +54,17 @@ export default async function WholesalePage() {
           ))}
         </section>
 
-        <section className="dealer-footer-cta">
+        <section className="dealer-footer-cta dealer-footer-clean">
           <div>
-            <p>NEED A MIXED ORDER?</p>
-            <h2>Tell us the styles and quantities.</h2>
+            <p>DEALER ENQUIRY</p>
+            <h2>Need a mixed quantity order?</h2>
           </div>
           <a
             href={contactHref}
             target={whatsappHref !== "#" ? "_blank" : undefined}
             rel={whatsappHref !== "#" ? "noreferrer" : undefined}
           >
-            WhatsApp dealers
+            Enquire on WhatsApp
           </a>
         </section>
       </div>

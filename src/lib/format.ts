@@ -74,10 +74,9 @@ export function getWholesaleProductWhatsappUrl(
     "Hi KLEID.IN, I’m interested in a dealer order for:",
     "",
     product.name,
-    `Selling price: ${formatPrice(product.price)}`,
     `Minimum order: ${minOrder} pcs`,
     `Colours: ${product.colors.join(" / ")}`,
-    `Product: /products/${product.slug}`,
+    `Dealer product: /wholesale/${product.wholesaleSlug ?? `${product.slug}-dealer`}`,
     "",
     "Please share dealer pricing, current availability and delivery details.",
   ];
