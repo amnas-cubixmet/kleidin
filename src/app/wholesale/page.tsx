@@ -21,7 +21,7 @@ export default async function WholesalePage() {
 
   return (
     <main className="bg-white text-[#111]">
-      <div className="mx-auto w-[min(calc(100%-24px),1376px)]">
+      <div className="mx-auto w-[min(calc(100%_-_24px),1376px)]">
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
@@ -30,7 +30,7 @@ export default async function WholesalePage() {
         />
       </div>
 
-      <section className="mx-auto grid min-h-[560px] w-[min(calc(100%-24px),1376px)] overflow-hidden rounded-[24px] bg-[#001cac] text-white md:grid-cols-[1.08fr_.92fr]">
+      <section className="mx-auto grid min-h-[560px] w-[min(calc(100%_-_24px),1376px)] overflow-hidden rounded-[24px] bg-[#001cac] text-white md:grid-cols-[1.08fr_.92fr]">
         <div className="flex flex-col justify-between p-6 md:p-9">
           <div>
             <p className="m-0 text-[8px] font-semibold tracking-[.16em] text-white/55">
@@ -81,7 +81,7 @@ export default async function WholesalePage() {
         </div>
       </section>
 
-      <section className="mx-auto grid w-[min(calc(100%-24px),1376px)] gap-3 py-8 md:grid-cols-3 md:py-12">
+      <section className="mx-auto grid w-[min(calc(100%_-_24px),1376px)] gap-3 py-8 md:grid-cols-3 md:py-12">
         {[
           ["1", "Choose products", "Send the products, colours and sizes you are interested in."],
           ["2", "Share quantity", "Tell us the approximate quantities and your store or resale requirement."],
@@ -104,7 +104,7 @@ export default async function WholesalePage() {
         ))}
       </section>
 
-      <section className="mx-auto mb-10 flex w-[min(calc(100%-24px),1376px)] flex-col items-start justify-between gap-6 border-t border-black/10 py-8 md:flex-row md:items-center">
+      <section className="mx-auto mb-10 flex w-[min(calc(100%_-_24px),1376px)] flex-col items-start justify-between gap-6 border-t border-black/10 py-8 md:flex-row md:items-center">
         <div>
           <p className="m-0 text-[8px] font-semibold tracking-[.14em] text-[#001cac]">
             READY TO TALK?

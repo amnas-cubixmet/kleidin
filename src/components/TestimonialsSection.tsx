@@ -48,7 +48,7 @@ export function TestimonialsSection({
   );
 
   return (
-    <section className="mx-auto w-[min(calc(100%-24px),1376px)] py-8 md:py-12">
+    <section className="mx-auto w-[min(calc(100%_-_24px),1376px)] py-8 md:py-12">
       <div className="mb-5 flex items-end justify-between gap-5 border-b border-black/10 pb-4 md:mb-7">
         <div>
           <p className="m-0 text-[8px] font-semibold tracking-[.14em] text-[#001cac]">

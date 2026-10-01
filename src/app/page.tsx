@@ -68,7 +68,7 @@ export default async function Home() {
             </div>
           </section>
 
-          <section className="mx-auto w-[min(calc(100%-24px),1376px)] py-3 md:py-5">
+          <section className="mx-auto w-[min(calc(100%_-_24px),1376px)] py-3 md:py-5">
             <div className="grid overflow-hidden rounded-[24px] bg-[#F4F0E9] md:grid-cols-[1.1fr_.9fr]">
               <div className="p-6 md:p-8">
                 <p className="m-0 text-[8px] font-semibold tracking-[.14em] text-[#001cac]">
