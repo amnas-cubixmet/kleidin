@@ -16874,3 +16874,25 @@ main,
     font-size: 21px !important;
   }
 }
+
+
+/* Admin login button contrast lock */
+.admin-login-submit,
+.admin-login-submit:visited {
+  background: #111111 !important;
+  border-color: #111111 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.admin-login-submit:hover,
+.admin-login-submit:focus-visible {
+  background: #001cac !important;
+  border-color: #001cac !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.admin-login-submit:active {
+  transform: translateY(1px);
+}
