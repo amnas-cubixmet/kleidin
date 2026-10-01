@@ -20,42 +20,42 @@ export function AdminShell({
   return (
     <>
       <AdminViewportStyle />
-      <main className="min-h-screen bg-[#f1f3f7] px-3 py-3 pb-24 text-[#15171a] sm:px-4 md:px-5 lg:pb-5">
-      <div className="mx-auto flex w-full max-w-[1600px] items-start gap-4">
+      <main className="min-h-screen bg-[#f1f3f7] px-2.5 py-2.5 pb-28 sm:px-4 sm:py-3 text-[#15171a] sm:px-4 md:px-5 lg:pb-5">
+      <div className="mx-auto flex w-full max-w-[1580px] items-start gap-3 xl:gap-4">
         <AdminNavigation />
 
         <div className="min-w-0 flex-1">
-          <header className="mb-4 overflow-hidden rounded-[22px] border border-[#dfe3ea] bg-white shadow-[0_10px_30px_rgba(18,26,43,.04)]">
+          <header className="mb-3 overflow-hidden rounded-[18px] sm:mb-4 sm:rounded-[20px] xl:rounded-[22px] border border-[#dfe3ea] bg-white shadow-[0_10px_30px_rgba(18,26,43,.04)]">
             <div className="h-1 w-full bg-[#001cac]" />
-            <div className="px-4 py-4 sm:px-5 md:px-6 md:py-5">
-              <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="px-3.5 py-3.5 sm:px-5 sm:py-4 md:px-6 md:py-5">
+              <div className="flex flex-wrap items-start justify-between gap-3 sm:items-center sm:gap-4">
                 <div className="min-w-0">
                   <p className="m-0 text-[9px] font-bold uppercase tracking-[.14em] text-[#001cac]">
                     {eyebrow}
                   </p>
-                  <h1 className="mt-1.5 text-[clamp(30px,4vw,46px)] font-semibold leading-[.96] tracking-[-.05em] text-[#15171a]">
+                  <h1 className="mt-1.5 text-[clamp(28px,7vw,46px)] font-semibold leading-[.96] tracking-[-.05em] text-[#15171a]">
                     {title}
                   </h1>
                   {description ? (
-                    <p className="mt-2 max-w-[760px] text-[10px] leading-5 text-[#626a76] md:text-[11px] md:leading-5">
+                    <p className="mt-2 max-w-[760px] text-[9px] leading-[1.55] text-[#626a76] sm:text-[10px] md:text-[11px] md:leading-5">
                       {description}
                     </p>
                   ) : null}
                 </div>
 
-                <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
+                <div className="flex w-full items-center justify-end gap-2 sm:w-auto sm:self-center">
                   {action}
                   <Link
                     href="/"
                     target="_blank"
-                    className="inline-flex min-h-9 items-center justify-center rounded-full border border-[#d8dce4] bg-[#f8f9fb] px-3.5 text-[9px] font-bold text-[#343943] transition hover:border-[#bfc5cf] hover:bg-white lg:hidden"
+                    className="inline-flex min-h-[34px] items-center justify-center rounded-full border border-[#d8dce4] bg-[#f8f9fb] px-3.5 text-[9px] font-bold text-[#343943] transition hover:border-[#bfc5cf] hover:bg-white lg:hidden"
                   >
                     Store
                   </Link>
                   <form action={logoutAdmin} className="shrink-0">
                     <button
                       type="submit"
-                      className="min-h-9 w-full rounded-full border border-[#111827] bg-[#111827] px-3.5 text-[9px] font-bold !text-white transition hover:bg-[#202938]"
+                      className="min-h-[34px] w-full rounded-full border border-[#111827] bg-[#111827] px-3.5 text-[9px] font-bold !text-white transition hover:bg-[#202938]"
                       style={{ color: "#ffffff" }}
                     >
                       Logout
