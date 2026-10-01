@@ -22,7 +22,6 @@ export const products: Product[] = [
         value: "#111111",
         image: "/images/hero/black-shirt.png",
         stock: 18,
-    wholesaleMinOrder: 12,
       },
       {
         name: "White",
@@ -38,6 +37,7 @@ export const products: Product[] = [
       },
     ],
     stock: 18,
+    wholesaleMinOrder: 12,
     featured: true,
     status: "active",
     image:
