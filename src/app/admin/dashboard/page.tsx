@@ -31,19 +31,19 @@ export default async function AdminDashboardPage() {
     >
       <AdminDashboardOrderMetrics />
 
-      <section className="mt-4 grid gap-4 xl:grid-cols-[1.35fr_.65fr]">
+      <section className="mt-3 grid gap-3 sm:mt-4 sm:gap-4 xl:grid-cols-[1.35fr_.65fr]">
         <AdminDashboardOrderActivity />
 
         <div className="grid gap-4">
-          <div className="rounded-[20px] border border-black/[.07] bg-[#001cac] p-4 text-white md:p-5">
+          <div className="rounded-[18px] border border-[#001cac] bg-[#001cac] p-3.5 text-white sm:rounded-[20px] sm:p-4 md:p-5">
             <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-white/65">
               Store health
             </p>
-            <h2 className="mt-1.5 text-[21px] font-semibold tracking-[-.04em]">
+            <h2 className="mt-1.5 text-[20px] sm:text-[21px] font-semibold tracking-[-.04em]">
               Operations
             </h2>
 
-            <div className="mt-5 grid gap-2">
+            <div className="mt-4 grid gap-1.5 sm:mt-5 sm:gap-2">
               {[
                 ["Products live", String(products.length)],
                 ["Units in stock", String(totalStock)],
@@ -56,7 +56,7 @@ export default async function AdminDashboardPage() {
               ].map(([label, value]) => (
                 <div
                   key={label}
-                  className="flex items-center justify-between gap-4 border-b border-white/10 py-2.5 last:border-b-0"
+                  className="flex items-center justify-between gap-4 border-b border-white/10 py-2 last:border-b-0"
                 >
                   <span className="text-[8px] text-white/65">{label}</span>
                   <strong className="text-[9px] font-semibold text-white">{value}</strong>
@@ -69,8 +69,8 @@ export default async function AdminDashboardPage() {
         </div>
       </section>
 
-      <section className="mt-4 grid gap-4 xl:grid-cols-2">
-        <div className="rounded-[20px] border border-black/[.07] bg-white p-4 md:p-5">
+      <section className="mt-3 grid gap-3 sm:mt-4 sm:gap-4 xl:grid-cols-2">
+        <div className="rounded-[18px] border border-[#dfe3ea] bg-white p-3.5 sm:rounded-[20px] sm:p-4 md:p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-[#7d8490]">
@@ -82,7 +82,7 @@ export default async function AdminDashboardPage() {
             </div>
             <Link
               href="/admin/inventory"
-              className="rounded-full bg-[#eef1f5] px-3 py-2 text-[8px] font-bold text-[#545d69]"
+              className="rounded-full bg-[#eef1f5] px-3 py-1.5 text-[8px] font-bold text-[#545d69]"
             >
               View inventory
             </Link>
@@ -93,7 +93,7 @@ export default async function AdminDashboardPage() {
               {lowStock.slice(0, 5).map((product) => (
                 <div
                   key={product.id}
-                  className="flex items-center justify-between gap-3 rounded-[14px] border border-black/[.06] px-3 py-3"
+                  className="flex items-center justify-between gap-3 rounded-[13px] border border-[#e2e5eb] px-3 py-2.5 sm:rounded-[14px] sm:py-3"
                 >
                   <div className="min-w-0">
                     <strong className="block truncate text-[9px] font-semibold">
@@ -126,7 +126,7 @@ export default async function AdminDashboardPage() {
         <AdminDashboardTestimonials />
       </section>
 
-      <section className="mt-4 rounded-[20px] border border-black/[.07] bg-white p-4 md:p-5">
+      <section className="mt-3 rounded-[18px] border border-[#dfe3ea] bg-white p-3.5 sm:mt-4 sm:rounded-[20px] sm:p-4 md:p-5">
         <div>
           <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-[#7d8490]">
             Shortcuts
@@ -136,7 +136,7 @@ export default async function AdminDashboardPage() {
           </h2>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4">
+        <div className="mt-3.5 grid grid-cols-2 gap-2 sm:mt-4 md:grid-cols-4">
           {[
             ["/admin/orders", "Add order", "Manual customer order"],
             ["/admin/products", "Manage products", "Catalog and pricing"],
@@ -146,10 +146,10 @@ export default async function AdminDashboardPage() {
             <Link
               key={href}
               href={href}
-              className="rounded-[15px] border border-black/[.07] p-3.5 transition hover:border-[#001cac]/25 hover:bg-[#eef2ff]/40"
+              className="rounded-[13px] border border-[#e2e5eb] p-3 sm:rounded-[15px] sm:p-3.5 transition hover:border-[#001cac]/25 hover:bg-[#eef2ff]/40"
             >
-              <strong className="block text-[9px] font-semibold">{label}</strong>
-              <span className="mt-1 block text-[7px] leading-4 text-[#6f7783]">{note}</span>
+              <strong className="block text-[9px] font-bold">{label}</strong>
+              <span className="mt-1 block text-[8px] leading-[1.45] text-[#6f7783]">{note}</span>
             </Link>
           ))}
         </div>
