@@ -13,6 +13,7 @@ import {
   writeTestimonials,
 } from "@/lib/testimonials";
 import type { Testimonial } from "@/types/testimonial";
+import { defaultTestimonials } from "@/data/testimonials";
 
 type ProductOption = {
   slug: string;
@@ -179,6 +180,21 @@ export function AdminTestimonialsManager({
     );
   }
 
+  function addDemoData() {
+    const existingIds = new Set(items.map((item) => item.id));
+    const missing = defaultTestimonials.filter(
+      (item) => !existingIds.has(item.id),
+    );
+
+    if (!missing.length) {
+      setError("Demo testimonials are already added.");
+      return;
+    }
+
+    persist([...missing, ...items]);
+    setError("");
+  }
+
   return (
     <section className="mt-5 rounded-[22px] border border-black/8 bg-white p-4 md:p-5">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
@@ -194,7 +210,16 @@ export function AdminTestimonialsManager({
             on the home page, and upload an optional customer photo.
           </p>
         </div>
-        <strong className="text-[10px] text-black/50">{items.length} saved</strong>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={addDemoData}
+            className="min-h-9 rounded-full border border-black/10 bg-white px-3 text-[8px] font-semibold text-black/65"
+          >
+            Add demo data
+          </button>
+          <strong className="text-[10px] text-black/50">{items.length} saved</strong>
+        </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[.9fr_1.1fr]">

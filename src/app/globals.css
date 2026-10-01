@@ -12865,3 +12865,19 @@ main,
     text-align: left !important;
   }
 }
+
+
+/* Wholesale nav + catalog selling price alignment */
+@media (min-width: 641px) {
+  .catalog-store-grid .product-card-info-refined > .product-card-price {
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+}
+
+.catalog-store-grid .product-card-info-refined > .product-card-price strong {
+  order: 0;
+}
+.catalog-store-grid .product-card-info-refined > .product-card-price del {
+  order: 1;
+}
