@@ -45,30 +45,30 @@ export function AdminDashboardOrderActivity() {
   const delivered = active.filter((order) => order.status === "Delivered").length;
 
   return (
-    <div className="rounded-[20px] border border-black/[.07] bg-white p-4 md:p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className="rounded-[18px] border border-[#dfe3ea] bg-white p-3.5 sm:rounded-[20px] sm:p-4 md:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-2.5 sm:gap-3">
         <div>
           <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-[#7d8490]">
             Business performance
           </p>
-          <h2 className="mt-1.5 text-[21px] font-semibold tracking-[-.04em]">
+          <h2 className="mt-1.5 text-[20px] sm:text-[21px] font-semibold tracking-[-.04em]">
             Order activity
           </h2>
         </div>
         <Link
           href="/admin/orders"
-          className="rounded-full bg-[#eef1f5] px-3 py-2 text-[8px] font-bold text-[#545d69]"
+          className="rounded-full bg-[#eef1f5] px-3 py-1.5 text-[8px] font-bold text-[#545d69]"
         >
           Manage orders
         </Link>
       </div>
 
       {active.length ? (
-        <div className="mt-4 grid gap-2">
+        <div className="mt-3.5 grid gap-2 sm:mt-4">
           {active.slice(0, 5).map((order) => (
             <div
               key={order.id}
-              className="flex items-center justify-between gap-3 rounded-[14px] border border-[#e2e5eb] px-3 py-3"
+              className="flex items-center justify-between gap-3 rounded-[13px] border border-[#e2e5eb] px-3 py-2.5 sm:rounded-[14px] sm:py-3"
             >
               <div className="min-w-0">
                 <strong className="block truncate text-[9px] font-bold">
@@ -85,7 +85,7 @@ export function AdminDashboardOrderActivity() {
           ))}
         </div>
       ) : (
-        <div className="mt-5 grid min-h-[180px] place-items-center rounded-[16px] bg-[#f7f8fb] px-5 py-8 text-center">
+        <div className="mt-4 grid min-h-[150px] sm:mt-5 sm:min-h-[180px] place-items-center rounded-[16px] bg-[#f7f8fb] px-5 py-8 text-center">
           <div>
             <strong className="text-[11px] font-semibold">No order activity yet</strong>
             <p className="mt-1.5 text-[8px] leading-4 text-[#68717d]">
@@ -95,12 +95,12 @@ export function AdminDashboardOrderActivity() {
         </div>
       )}
 
-      <div className="mt-3 grid grid-cols-3 gap-2">
-        <div className="rounded-[14px] bg-[#f7f8fb] p-3">
+      <div className="mt-3 grid grid-cols-3 gap-1.5 sm:gap-2">
+        <div className="rounded-[12px] bg-[#f7f8fb] p-2.5 sm:rounded-[14px] sm:p-3">
           <span className="text-[7px] font-semibold uppercase tracking-[.1em] text-[#7d8490]">
             Avg. order
           </span>
-          <strong className="mt-1.5 block text-[15px] font-semibold">{money(average)}</strong>
+          <strong className="mt-1.5 block text-[14px] sm:text-[15px] font-semibold">{money(average)}</strong>
         </div>
         <div className="rounded-[14px] bg-[#f7f8fb] p-3">
           <span className="text-[7px] font-semibold uppercase tracking-[.1em] text-[#7d8490]">
