@@ -20,7 +20,7 @@ export function AdminShell({
   return (
     <>
       <AdminViewportStyle />
-      <main className="min-h-screen bg-[#f1f3f7] px-2.5 py-2.5 pb-28 sm:px-4 sm:py-3 text-[#15171a] sm:px-4 md:px-5 lg:pb-5">
+      <main className="min-h-screen bg-[#f1f3f7] px-2.5 py-2.5 pb-28 text-[#15171a] sm:px-4 sm:py-3 md:px-5 lg:pb-5">
       <div className="mx-auto flex w-full max-w-[1580px] items-start gap-3 xl:gap-4">
         <AdminNavigation />
 
