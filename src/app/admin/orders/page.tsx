@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AdminShell } from "@/components/AdminShell";
 import { AdminOrdersManager } from "@/components/AdminOrdersManager";
 import { requireAdmin } from "@/lib/admin-auth";
@@ -17,9 +18,18 @@ export default async function AdminOrdersPage() {
   return (
     <AdminShell
       title="Orders"
-      description="Create orders manually, enter the customer delivery address and pincode, add products, track payment and move each order through fulfilment."
+      description="View, search and manage manual orders. Open an order for full details, editing or deletion."
+      action={
+        <Link
+          href="/admin/orders/new"
+          className="inline-flex min-h-[36px] items-center justify-center rounded-full bg-[#001cac] px-4 text-[9px] font-bold text-white transition hover:bg-[#00158a]"
+        >
+          + Add order
+        </Link>
+      }
     >
       <AdminOrdersManager
+        view="list"
         products={products.map((product) => ({
           id: product.id,
           name: product.name,
