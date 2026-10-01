@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ProductDetailClient } from "@/components/ProductDetailClient";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { getCatalogProductBySlug } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 
@@ -48,6 +49,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
           whatsappNumber={settings.whatsappNumber}
         />
       </section>
+
+      <TestimonialsSection
+        productSlug={product.slug}
+        eyebrow="CUSTOMER FEEDBACK"
+        title="What customers say."
+      />
     </>
   );
 }

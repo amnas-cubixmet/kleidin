@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import type { Product } from "@/types/product";
-
+import { getProductWhatsappUrl } from "@/lib/format";
+import { localStoreSettings } from "@/data/store";
 
 type Props = {
   product: Product;
@@ -16,19 +17,22 @@ export function ProductActions({
   compact = false,
 }: Props) {
   const [size, setSize] = useState(product.sizes[0] ?? "One size");
-  const [added, setAdded] = useState(false);
+  const selectedColor = product.colors[0] ?? "Default";
   const disabled = product.status !== "active" || product.stock <= 0;
 
-  function addToCart() {
-    if (disabled) return;
-
-
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 1200);
-  }
+  const orderUrl =
+    whatsappUrl ??
+    getProductWhatsappUrl(
+      product,
+      localStoreSettings.whatsappNumber,
+      selectedColor,
+      size,
+    );
 
   return (
-    <div className={`product-actions ${compact ? "product-actions-compact" : ""}`}>
+    <div
+      className={"product-actions " + (compact ? "product-actions-compact" : "")}
+    >
       <div className="size-picker" aria-label="Select size">
         {product.sizes.map((option) => (
           <button
@@ -43,25 +47,24 @@ export function ProductActions({
       </div>
 
       <div className="product-action-buttons">
-        <button
-          type="button"
-          className="button button-primary add-cart-button"
-          disabled={disabled}
-          onClick={addToCart}
-        >
-          {disabled ? "Sold out" : added ? "Added to cart" : "Add to Cart"}
-        </button>
-
-        {whatsappUrl && whatsappUrl !== "#" ? (
+        {!disabled && orderUrl !== "#" ? (
           <a
-            className="button button-outline"
-            href={whatsappUrl}
+            className="button button-primary whatsapp-order-button"
+            href={orderUrl}
             target="_blank"
             rel="noreferrer"
           >
-            WhatsApp
+            Order on WhatsApp
           </a>
-        ) : null}
+        ) : (
+          <button
+            type="button"
+            className="button button-primary whatsapp-order-button"
+            disabled
+          >
+            {disabled ? "Sold out" : "WhatsApp unavailable"}
+          </button>
+        )}
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { TopFashionHero } from "@/components/TopFashionHero";
 import { ProductActions } from "@/components/ProductActions";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { formatPrice, getWhatsappUrl } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getActiveOffers, getStoreSettings } from "@/lib/site-settings";
@@ -64,6 +65,48 @@ export default async function Home() {
               <Link href="/about" className="ref-pill ref-pill-light">
                 About us
               </Link>
+            </div>
+          </section>
+
+          <section className="mx-auto w-[min(calc(100%_-_24px),1376px)] py-3 md:py-5">
+            <div className="grid overflow-hidden rounded-[24px] bg-[#F4F0E9] md:grid-cols-[1.1fr_.9fr]">
+              <div className="p-6 md:p-8">
+                <p className="m-0 text-[8px] font-semibold tracking-[.14em] text-[#001cac]">
+                  WHOLESALE / DEALERS
+                </p>
+                <h2 className="mt-5 max-w-[760px] text-[clamp(42px,6vw,88px)] font-semibold leading-[.86] tracking-[-.06em]">
+                  Stock KLEID.IN.
+                </h2>
+                <p className="mt-5 max-w-[560px] text-[11px] leading-5 text-black/55">
+                  Wholesale enquiries for retailers, resellers and independent
+                  stores. Ask for current availability, dealer pricing and order
+                  requirements.
+                </p>
+                <Link
+                  href="/wholesale"
+                  className="mt-6 inline-flex min-h-11 items-center rounded-full bg-[#111] px-5 text-[9px] font-semibold !text-white"
+                >
+                  Explore wholesale
+                </Link>
+              </div>
+
+              <div className="grid border-t border-black/10 md:border-l md:border-t-0">
+                {[
+                  ["01", "Retailers"],
+                  ["02", "Resellers"],
+                  ["03", "Repeat orders"],
+                ].map(([number, label]) => (
+                  <div
+                    key={number}
+                    className="flex min-h-[96px] items-center justify-between border-b border-black/10 px-5 last:border-b-0"
+                  >
+                    <span className="text-[8px] text-black/35">{number}</span>
+                    <strong className="text-[18px] font-semibold tracking-[-.035em]">
+                      {label}
+                    </strong>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
 
@@ -138,6 +181,11 @@ export default async function Home() {
               </div>
             </section>
           ) : null}
+
+          <TestimonialsSection
+            eyebrow="CUSTOMER STORIES"
+            title="Worn. Lived in. Repeated."
+          />
         </>
       ) : null}
 
