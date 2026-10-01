@@ -46,3 +46,18 @@ export function getProductWhatsappUrl(
     lines.join("\n"),
   )}`;
 }
+
+
+export function getWholesaleWhatsappUrl(
+  whatsappNumber = store.whatsappNumber,
+) {
+  if (!whatsappNumber) return "#";
+
+  const message = [
+    "Hi KLEID.IN, I’m interested in wholesale / dealer ordering.",
+    "",
+    "Please share current wholesale pricing, minimum order requirements, available products, sizes and colours.",
+  ].join("\n");
+
+  return "https://wa.me/" + whatsappNumber + "?text=" + encodeURIComponent(message);
+}

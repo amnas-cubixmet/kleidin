@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminHeroManager } from "@/components/AdminHeroManager";
+import { AdminTestimonialsManager } from "@/components/AdminTestimonialsManager";
 import { products } from "@/data/products";
 import { localOffers, localStoreSettings } from "@/data/store";
 import { defaultHeroSlides } from "@/data/hero-slides";
@@ -23,8 +24,9 @@ export default function AdminPage() {
               Store control.
             </h1>
             <p className="mt-3 max-w-[620px] text-[10px] leading-5 text-white/60 md:text-[11px]">
-              Manage hero slides in local mode. Changes are saved in this browser
-              and applied to the storefront on the same device.
+              Manage hero slides and real customer testimonials in local mode.
+              Changes are saved in this browser and applied to the storefront on
+              the same device.
             </p>
           </div>
 
@@ -63,9 +65,18 @@ export default function AdminPage() {
 
         <AdminHeroManager />
 
+        <AdminTestimonialsManager
+          products={products.map((product) => ({
+            slug: product.slug,
+            name: product.name,
+          }))}
+        />
+
         <div className="mt-5 rounded-[18px] border border-black/8 bg-white px-4 py-4 text-[10px] leading-5 text-black/50">
-          Local mode: Hero edits are stored in browser localStorage. Product and
-          offer source data still comes from <code>src/data/products.ts</code> and{" "}
+          Local mode: Hero and testimonial edits are stored in browser
+          localStorage. Testimonial photos are stored locally on this device.
+          Product and offer source data still comes from{" "}
+          <code>src/data/products.ts</code> and{" "}
           <code>src/data/store.ts</code>.
         </div>
       </div>
