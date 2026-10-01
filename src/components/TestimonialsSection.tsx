@@ -6,7 +6,6 @@ import {
   type FormEvent,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import {
@@ -27,7 +26,7 @@ type SubmissionDraft = {
   location: string;
   quote: string;
   rating: number;
-  image: string;
+  productImage: string;
 };
 
 const emptyDraft: SubmissionDraft = {
@@ -35,7 +34,7 @@ const emptyDraft: SubmissionDraft = {
   location: "",
   quote: "",
   rating: 5,
-  image: "",
+  productImage: "",
 };
 
 export function TestimonialsSection({
@@ -46,8 +45,6 @@ export function TestimonialsSection({
   const [items, setItems] = useState<Testimonial[]>([]);
   const [draft, setDraft] = useState<SubmissionDraft>(emptyDraft);
   const [message, setMessage] = useState("");
-  const [paused, setPaused] = useState(false);
-  const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const sync = () => setItems(readTestimonials());
@@ -74,35 +71,16 @@ export function TestimonialsSection({
     [items, productSlug],
   );
 
-  function slide(direction: 1 | -1) {
-    const slider = sliderRef.current;
-    if (!slider) return;
+  const loopItems = useMemo(() => {
+    if (!visible.length) return [];
 
-    const distance = Math.max(260, slider.clientWidth * 0.92);
-    slider.scrollBy({ left: distance * direction, behavior: "smooth" });
-  }
+    const copies = Math.max(1, Math.ceil(4 / visible.length));
+    return Array.from({ length: copies }, () => visible)
+      .flat()
+      .map((item, index) => ({ item, loopKey: `${item.id}-${index}` }));
+  }, [visible]);
 
-  useEffect(() => {
-    if (paused || visible.length <= 1) return;
-
-    const timer = window.setInterval(() => {
-      const slider = sliderRef.current;
-      if (!slider) return;
-
-      const atEnd =
-        slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 12;
-
-      if (atEnd) {
-        slider.scrollTo({ left: 0, behavior: "smooth" });
-      } else {
-        slide(1);
-      }
-    }, 4200);
-
-    return () => window.clearInterval(timer);
-  }, [paused, visible.length]);
-
-  function handleImage(event: ChangeEvent<HTMLInputElement>) {
+  function handleProductImage(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -111,8 +89,8 @@ export function TestimonialsSection({
       return;
     }
 
-    if (file.size > 1200000) {
-      setMessage("Keep the photo under 1.2 MB.");
+    if (file.size > 1500000) {
+      setMessage("Keep the product photo under 1.5 MB.");
       return;
     }
 
@@ -120,7 +98,7 @@ export function TestimonialsSection({
     reader.onload = () => {
       setDraft((current) => ({
         ...current,
-        image: typeof reader.result === "string" ? reader.result : "",
+        productImage: typeof reader.result === "string" ? reader.result : "",
       }));
       setMessage("");
     };
@@ -147,7 +125,7 @@ export function TestimonialsSection({
       location: draft.location.trim() || undefined,
       quote: draft.quote.trim(),
       rating: draft.rating,
-      image: draft.image || undefined,
+      productImage: draft.productImage || undefined,
       productSlug: productSlug || undefined,
       showOnHome: !productSlug,
       enabled: false,
@@ -161,6 +139,47 @@ export function TestimonialsSection({
     setMessage("Thank you. Your story was submitted for review.");
   }
 
+  function StoryCard({
+    item,
+    duplicate = false,
+  }: {
+    item: Testimonial;
+    duplicate?: boolean;
+  }) {
+    return (
+      <article className="customer-story-card" aria-hidden={duplicate || undefined}>
+        {item.productImage ? (
+          <div className="customer-story-product-media">
+            <Image
+              src={item.productImage}
+              alt={duplicate ? "" : "Customer product photo"}
+              fill
+              sizes="(max-width: 640px) 82vw, 360px"
+              unoptimized={item.productImage.startsWith("data:")}
+              className="customer-story-product-image"
+            />
+          </div>
+        ) : null}
+
+        <div className="customer-story-body">
+          <div
+            className="customer-story-rating"
+            aria-label={duplicate ? undefined : item.rating + " out of 5 stars"}
+          >
+            {"★".repeat(Math.max(1, Math.min(5, item.rating)))}
+          </div>
+
+          <blockquote>“{item.quote}”</blockquote>
+
+          <div className="customer-story-person">
+            <strong>{item.name}</strong>
+            {item.location ? <span>{item.location}</span> : null}
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   return (
     <section className="customer-stories-section">
       <div className="customer-stories-head">
@@ -168,62 +187,27 @@ export function TestimonialsSection({
           <p>{eyebrow}</p>
           <h2>{title}</h2>
         </div>
-
-        {visible.length > 1 ? (
-          <div className="customer-stories-controls" aria-label="Testimonial controls">
-            <button type="button" onClick={() => slide(-1)} aria-label="Previous story">
-              ←
-            </button>
-            <button type="button" onClick={() => slide(1)} aria-label="Next story">
-              →
-            </button>
-          </div>
-        ) : null}
       </div>
 
-      {visible.length ? (
-        <div
-          ref={sliderRef}
-          className="customer-stories-slider"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-          onFocusCapture={() => setPaused(true)}
-          onBlurCapture={() => setPaused(false)}
-        >
-          {visible.map((item) => (
-            <article key={item.id} className="customer-story-card">
-              <div className="customer-story-person">
-                {item.image ? (
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    width={64}
-                    height={64}
-                    unoptimized
-                    className="customer-story-avatar"
-                  />
-                ) : (
-                  <div className="customer-story-avatar customer-story-avatar-fallback">
-                    {item.name.charAt(0).toUpperCase()}
-                  </div>
-                )}
-
-                <div>
-                  <strong>{item.name}</strong>
-                  {item.location ? <span>{item.location}</span> : null}
-                </div>
-              </div>
-
+      {loopItems.length ? (
+        <div className="customer-stories-loop" aria-label="Customer testimonials">
+          <div className="customer-stories-track">
+            {[0, 1].map((copy) => (
               <div
-                className="customer-story-rating"
-                aria-label={item.rating + " out of 5 stars"}
+                key={copy}
+                className="customer-stories-set"
+                aria-hidden={copy === 1 || undefined}
               >
-                {"★".repeat(Math.max(1, Math.min(5, item.rating)))}
+                {loopItems.map(({ item, loopKey }) => (
+                  <StoryCard
+                    key={`${copy}-${loopKey}`}
+                    item={item}
+                    duplicate={copy === 1}
+                  />
+                ))}
               </div>
-
-              <blockquote>“{item.quote}”</blockquote>
-            </article>
-          ))}
+            ))}
+          </div>
         </div>
       ) : (
         <div className="customer-stories-empty">
@@ -239,7 +223,7 @@ export function TestimonialsSection({
           <h3>Wore it? Tell us.</h3>
           <span>
             {productSlug
-              ? "Share your experience with this product."
+              ? "Share your experience and optionally upload a photo of the product you received."
               : "Share how KLEID.IN fits into your everyday rotation."}
           </span>
         </div>
@@ -304,28 +288,36 @@ export function TestimonialsSection({
             </label>
 
             <label className="customer-story-photo-field">
-              <span>Photo</span>
-              <input type="file" accept="image/*" onChange={handleImage} />
+              <span>Product photo</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleProductImage}
+              />
+              <small>Optional — upload the product you received or wore.</small>
             </label>
           </div>
 
-          {draft.image ? (
+          {draft.productImage ? (
             <div className="customer-story-photo-preview">
               <Image
-                src={draft.image}
-                alt="Story photo preview"
-                width={48}
-                height={48}
+                src={draft.productImage}
+                alt="Product photo preview"
+                width={84}
+                height={84}
                 unoptimized
               />
-              <button
-                type="button"
-                onClick={() =>
-                  setDraft((current) => ({ ...current, image: "" }))
-                }
-              >
-                Remove photo
-              </button>
+              <div>
+                <strong>Product photo ready</strong>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDraft((current) => ({ ...current, productImage: "" }))
+                  }
+                >
+                  Remove photo
+                </button>
+              </div>
             </div>
           ) : null}
 

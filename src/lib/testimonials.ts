@@ -1,7 +1,7 @@
 import { defaultTestimonials } from "@/data/testimonials";
 import type { Testimonial } from "@/types/testimonial";
 
-export const TESTIMONIAL_STORAGE_KEY = "kleidin-testimonials-v1";
+export const TESTIMONIAL_STORAGE_KEY = "kleidin-testimonials-v2";
 export const TESTIMONIAL_UPDATED_EVENT = "kleidin:testimonials-updated";
 
 export function readTestimonials(): Testimonial[] {

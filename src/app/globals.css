@@ -13281,3 +13281,389 @@ main,
     margin-top: 6px !important;
   }
 }
+
+
+/* FINAL customer stories — product-photo cards + seamless loop */
+.customer-stories-section {
+  width: min(calc(100% - 24px), 1376px) !important;
+  margin: 24px auto !important;
+  padding: 26px 0 0 !important;
+  overflow: hidden !important;
+  background: #fff !important;
+}
+
+.customer-stories-head {
+  padding: 0 4px 18px !important;
+  display: flex !important;
+  align-items: end !important;
+  justify-content: space-between !important;
+}
+
+.customer-stories-head p,
+.customer-story-submit-copy > p {
+  margin: 0 !important;
+  color: #001cac !important;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  letter-spacing: .14em !important;
+}
+
+.customer-stories-head h2 {
+  margin: 8px 0 0 !important;
+  font-size: clamp(38px, 5.4vw, 76px) !important;
+  font-weight: 650 !important;
+  line-height: .9 !important;
+  letter-spacing: -.055em !important;
+}
+
+.customer-stories-controls {
+  display: none !important;
+}
+
+.customer-stories-loop {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.customer-stories-track {
+  width: max-content;
+  display: flex;
+  will-change: transform;
+  animation: customerStoriesMarquee 34s linear infinite;
+}
+
+.customer-stories-set {
+  display: flex;
+  gap: 12px;
+  padding-right: 12px;
+}
+
+.customer-story-card {
+  width: clamp(300px, 31vw, 420px) !important;
+  min-width: clamp(300px, 31vw, 420px) !important;
+  min-height: 360px !important;
+  padding: 0 !important;
+  border: 1px solid #e8e6e1 !important;
+  border-radius: 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  background: #f7f4ee !important;
+}
+
+.customer-story-product-media {
+  width: 100%;
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+  background: #eceae5;
+}
+
+.customer-story-product-image {
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
+.customer-story-body {
+  min-height: 160px;
+  padding: 16px 17px 18px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.customer-story-rating {
+  color: #111 !important;
+  font-size: 10px !important;
+  letter-spacing: .12em !important;
+}
+
+.customer-story-card blockquote {
+  margin: 14px 0 22px !important;
+  color: #171717 !important;
+  font-size: 15px !important;
+  font-weight: 520 !important;
+  line-height: 1.45 !important;
+  letter-spacing: -.025em !important;
+}
+
+.customer-story-person {
+  margin-top: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 3px !important;
+}
+
+.customer-story-person strong {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+}
+
+.customer-story-person span {
+  color: #858585 !important;
+  font-size: 8px !important;
+}
+
+.customer-story-avatar,
+.customer-story-avatar-fallback {
+  display: none !important;
+}
+
+@keyframes customerStoriesMarquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.customer-story-submit-wrap {
+  margin-top: 18px !important;
+  padding: 22px !important;
+  border-radius: 22px !important;
+  display: grid !important;
+  grid-template-columns: .72fr 1.28fr !important;
+  gap: 28px !important;
+  background: #111 !important;
+  color: #fff !important;
+}
+
+.customer-story-submit-copy h3 {
+  margin: 10px 0 0 !important;
+  font-size: clamp(38px, 4.8vw, 68px) !important;
+  font-weight: 650 !important;
+  line-height: .92 !important;
+  letter-spacing: -.055em !important;
+}
+
+.customer-story-submit-copy > span {
+  margin-top: 16px !important;
+  max-width: 390px !important;
+  display: block !important;
+  color: rgba(255,255,255,.58) !important;
+  font-size: 10px !important;
+  line-height: 1.65 !important;
+}
+
+.customer-story-form {
+  display: grid !important;
+  gap: 11px !important;
+}
+
+.customer-story-form-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.customer-story-form label,
+.customer-story-form > label {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 6px !important;
+}
+
+.customer-story-form label > span {
+  color: rgba(255,255,255,.62) !important;
+  font-size: 7px !important;
+  font-weight: 700 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+}
+
+.customer-story-form input:not([type="file"]),
+.customer-story-form textarea,
+.customer-story-form select {
+  width: 100% !important;
+  min-height: 44px !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  border-radius: 12px !important;
+  padding: 0 12px !important;
+  outline: none !important;
+  background: #222 !important;
+  color: #fff !important;
+  font-size: 10px !important;
+}
+
+.customer-story-form textarea {
+  min-height: 104px !important;
+  padding-top: 12px !important;
+  resize: vertical !important;
+}
+
+.customer-story-photo-field small {
+  color: rgba(255,255,255,.38) !important;
+  font-size: 7px !important;
+  line-height: 1.4 !important;
+}
+
+.customer-story-photo-field input {
+  color: rgba(255,255,255,.55) !important;
+  font-size: 8px !important;
+}
+
+.customer-story-photo-field input::file-selector-button {
+  margin-right: 8px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  padding: 8px 11px !important;
+  background: #fff !important;
+  color: #111 !important;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+}
+
+.customer-story-photo-preview {
+  padding: 9px !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  background: #1d1d1d !important;
+}
+
+.customer-story-photo-preview img {
+  width: 62px !important;
+  height: 70px !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+}
+
+.customer-story-photo-preview > div {
+  display: grid !important;
+  gap: 5px !important;
+}
+
+.customer-story-photo-preview strong {
+  font-size: 8px !important;
+}
+
+.customer-story-photo-preview button {
+  border: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  color: rgba(255,255,255,.55) !important;
+  font-size: 7px !important;
+  text-align: left !important;
+  text-decoration: underline !important;
+  cursor: pointer !important;
+}
+
+.customer-story-form-message {
+  margin: 0 !important;
+  color: rgba(255,255,255,.72) !important;
+  font-size: 8px !important;
+}
+
+.customer-story-submit-button {
+  min-height: 44px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: #001cac !important;
+  color: #fff !important;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+}
+
+/* Desktop catalog selling price stays left aligned. */
+@media (min-width: 641px) {
+  .catalog-store-grid .product-card-info-refined > .product-card-price,
+  .catalog-store-grid .product-card-price {
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .customer-stories-section {
+    width: 100% !important;
+    margin: 16px 0 !important;
+    padding-top: 18px !important;
+  }
+
+  .customer-stories-head {
+    padding: 0 10px 14px !important;
+  }
+
+  .customer-stories-head h2 {
+    font-size: clamp(34px, 11vw, 48px) !important;
+  }
+
+  .customer-stories-track {
+    animation-duration: 28s !important;
+  }
+
+  .customer-stories-set {
+    gap: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .customer-story-card {
+    width: 82vw !important;
+    min-width: 82vw !important;
+    min-height: 330px !important;
+    border-radius: 14px !important;
+  }
+
+  .customer-story-product-media {
+    height: 190px !important;
+  }
+
+  .customer-story-body {
+    min-height: 140px !important;
+    padding: 14px !important;
+  }
+
+  .customer-story-card blockquote {
+    margin: 10px 0 18px !important;
+    font-size: 13px !important;
+  }
+
+  .customer-story-submit-wrap {
+    margin: 12px 6px 0 !important;
+    padding: 18px 14px !important;
+    border-radius: 18px !important;
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  .customer-story-submit-copy h3 {
+    font-size: clamp(34px, 11vw, 48px) !important;
+  }
+
+  .customer-story-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .customer-story-form input:not([type="file"]),
+  .customer-story-form textarea,
+  .customer-story-form select,
+  .customer-story-submit-button {
+    min-height: 44px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .customer-stories-track {
+    animation: none !important;
+  }
+
+  .customer-stories-loop {
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+  }
+
+  .customer-stories-loop::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .customer-stories-set[aria-hidden="true"] {
+    display: none !important;
+  }
+}

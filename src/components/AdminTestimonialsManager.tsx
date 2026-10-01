@@ -8,10 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import {
-  readTestimonials,
-  writeTestimonials,
-} from "@/lib/testimonials";
+import { readTestimonials, writeTestimonials } from "@/lib/testimonials";
 import type { Testimonial } from "@/types/testimonial";
 import { defaultTestimonials } from "@/data/testimonials";
 
@@ -27,7 +24,7 @@ type Draft = {
   productSlug: string;
   showOnHome: boolean;
   rating: number;
-  image: string;
+  productImage: string;
   enabled: boolean;
 };
 
@@ -38,7 +35,7 @@ const emptyDraft: Draft = {
   productSlug: "",
   showOnHome: true,
   rating: 5,
-  image: "",
+  productImage: "",
   enabled: true,
 };
 
@@ -72,7 +69,7 @@ export function AdminTestimonialsManager({
     setError("");
   }
 
-  function handleImage(event: ChangeEvent<HTMLInputElement>) {
+  function handleProductImage(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -81,8 +78,8 @@ export function AdminTestimonialsManager({
       return;
     }
 
-    if (file.size > 1200000) {
-      setError("Keep testimonial photos under 1.2 MB in local mode.");
+    if (file.size > 1500000) {
+      setError("Keep product photos under 1.5 MB in local mode.");
       return;
     }
 
@@ -90,7 +87,7 @@ export function AdminTestimonialsManager({
     reader.onload = () => {
       setDraft((current) => ({
         ...current,
-        image: typeof reader.result === "string" ? reader.result : "",
+        productImage: typeof reader.result === "string" ? reader.result : "",
       }));
       setError("");
     };
@@ -118,7 +115,7 @@ export function AdminTestimonialsManager({
                 productSlug: draft.productSlug || undefined,
                 showOnHome: draft.showOnHome,
                 rating: draft.rating,
-                image: draft.image || undefined,
+                productImage: draft.productImage || undefined,
                 enabled: draft.enabled,
               }
             : item,
@@ -139,7 +136,7 @@ export function AdminTestimonialsManager({
           productSlug: draft.productSlug || undefined,
           showOnHome: draft.showOnHome,
           rating: draft.rating,
-          image: draft.image || undefined,
+          productImage: draft.productImage || undefined,
           enabled: draft.enabled,
           pending: false,
           submittedByCustomer: false,
@@ -161,7 +158,7 @@ export function AdminTestimonialsManager({
       productSlug: item.productSlug ?? "",
       showOnHome: item.showOnHome,
       rating: item.rating,
-      image: item.image ?? "",
+      productImage: item.productImage ?? "",
       enabled: item.enabled,
     });
     setError("");
@@ -210,12 +207,13 @@ export function AdminTestimonialsManager({
           <h2 className="mt-2 text-[28px] font-semibold tracking-[-.045em]">
             Customer stories.
           </h2>
-          <p className="mt-2 max-w-[620px] text-[9px] leading-4 text-black/45">
-            Add real customer testimonials, assign them to a product, show them
-            on the home page, and upload an optional customer photo. Customer
-            submissions from the storefront appear here as pending for approval.
+          <p className="mt-2 max-w-[660px] text-[9px] leading-4 text-black/45">
+            Add customer feedback, assign it to a product, publish it on Home,
+            and upload an optional photo of the product the customer received.
+            Customer submissions arrive here as pending for approval.
           </p>
         </div>
+
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
@@ -224,7 +222,9 @@ export function AdminTestimonialsManager({
           >
             Add demo data
           </button>
-          <strong className="text-[10px] text-black/50">{items.length} saved</strong>
+          <strong className="text-[10px] text-black/50">
+            {items.length} saved
+          </strong>
         </div>
       </div>
 
@@ -238,10 +238,7 @@ export function AdminTestimonialsManager({
               <input
                 value={draft.name}
                 onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    name: event.target.value,
-                  }))
+                  setDraft((current) => ({ ...current, name: event.target.value }))
                 }
                 className="min-h-11 rounded-xl border border-black/10 bg-white px-3 text-[10px] outline-none"
                 placeholder="Name"
@@ -273,10 +270,7 @@ export function AdminTestimonialsManager({
             <textarea
               value={draft.quote}
               onChange={(event) =>
-                setDraft((current) => ({
-                  ...current,
-                  quote: event.target.value,
-                }))
+                setDraft((current) => ({ ...current, quote: event.target.value }))
               }
               className="min-h-28 resize-y rounded-xl border border-black/10 bg-white p-3 text-[10px] leading-5 outline-none"
               placeholder="Customer's real feedback"
@@ -331,42 +325,48 @@ export function AdminTestimonialsManager({
           </div>
 
           <div className="mt-3 rounded-xl border border-black/10 bg-white p-3">
-            <div className="flex items-center gap-3">
-              {draft.image ? (
+            <span className="block text-[8px] font-semibold uppercase tracking-[.08em] text-black/45">
+              Product photo
+            </span>
+            <p className="mt-1 text-[8px] leading-4 text-black/40">
+              Optional photo of the product the customer received or wore.
+            </p>
+
+            <div className="mt-3 flex items-center gap-3">
+              {draft.productImage ? (
                 <Image
-                  src={draft.image}
-                  alt="Testimonial preview"
-                  width={54}
-                  height={54}
+                  src={draft.productImage}
+                  alt="Product photo preview"
+                  width={72}
+                  height={82}
                   unoptimized
-                  className="h-[54px] w-[54px] rounded-full object-cover"
+                  className="h-[82px] w-[72px] rounded-lg object-cover"
                 />
               ) : (
-                <div className="grid h-[54px] w-[54px] place-items-center rounded-full bg-[#f3f3f0] text-[8px] text-black/35">
+                <div className="grid h-[82px] w-[72px] place-items-center rounded-lg bg-[#f3f3f0] text-center text-[7px] text-black/35">
+                  PRODUCT
+                  <br />
                   PHOTO
                 </div>
               )}
-              <div className="min-w-0 flex-1">
-                <span className="block text-[8px] font-semibold uppercase tracking-[.08em] text-black/45">
-                  Customer photo
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImage}
-                  className="mt-2 block w-full text-[8px] text-black/50 file:mr-2 file:rounded-full file:border-0 file:bg-black file:px-3 file:py-2 file:text-[8px] file:font-semibold file:text-white"
-                />
-              </div>
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleProductImage}
+                className="block min-w-0 flex-1 text-[8px] text-black/50 file:mr-2 file:rounded-full file:border-0 file:bg-black file:px-3 file:py-2 file:text-[8px] file:font-semibold file:text-white"
+              />
             </div>
-            {draft.image ? (
+
+            {draft.productImage ? (
               <button
                 type="button"
                 onClick={() =>
-                  setDraft((current) => ({ ...current, image: "" }))
+                  setDraft((current) => ({ ...current, productImage: "" }))
                 }
                 className="mt-2 text-[8px] font-semibold text-black/45 underline"
               >
-                Remove photo
+                Remove product photo
               </button>
             ) : null}
           </div>
@@ -385,6 +385,7 @@ export function AdminTestimonialsManager({
               />
               Show on home
             </label>
+
             <label className="flex min-h-10 items-center gap-2 text-[9px]">
               <input
                 type="checkbox"
@@ -411,6 +412,7 @@ export function AdminTestimonialsManager({
             >
               {editingId ? "Save testimonial" : "Add testimonial"}
             </button>
+
             {editingId ? (
               <button
                 type="button"
@@ -431,18 +433,20 @@ export function AdminTestimonialsManager({
                 className="rounded-[16px] border border-black/8 p-3"
               >
                 <div className="flex gap-3">
-                  {item.image ? (
+                  {item.productImage ? (
                     <Image
-                      src={item.image}
-                      alt={item.name}
-                      width={48}
-                      height={48}
-                      unoptimized
-                      className="h-12 w-12 rounded-full object-cover"
+                      src={item.productImage}
+                      alt="Customer product"
+                      width={72}
+                      height={84}
+                      unoptimized={item.productImage.startsWith("data:")}
+                      className="h-[84px] w-[72px] flex-none rounded-lg object-cover"
                     />
                   ) : (
-                    <div className="grid h-12 w-12 flex-none place-items-center rounded-full bg-[#f3f3f0] text-[11px] font-semibold">
-                      {item.name.charAt(0).toUpperCase()}
+                    <div className="grid h-[84px] w-[72px] flex-none place-items-center rounded-lg bg-[#f3f3f0] text-center text-[7px] text-black/35">
+                      NO PRODUCT
+                      <br />
+                      PHOTO
                     </div>
                   )}
 
@@ -459,12 +463,18 @@ export function AdminTestimonialsManager({
                               : "bg-black/5 text-black/45")
                         }
                       >
-                        {item.pending ? "Pending" : item.enabled ? "Published" : "Hidden"}
+                        {item.pending
+                          ? "Pending"
+                          : item.enabled
+                            ? "Published"
+                            : "Hidden"}
                       </span>
                     </div>
+
                     <p className="mt-2 text-[9px] leading-4 text-black/60">
                       “{item.quote}”
                     </p>
+
                     <div className="mt-2 flex flex-wrap gap-2 text-[7px] text-black/40">
                       <span>{"★".repeat(item.rating)}</span>
                       <span>
@@ -490,7 +500,11 @@ export function AdminTestimonialsManager({
                     onClick={() => toggle(item)}
                     className="min-h-9 rounded-full border border-black/10 px-3 text-[8px] font-semibold"
                   >
-                    {item.pending ? "Approve & publish" : item.enabled ? "Hide" : "Publish"}
+                    {item.pending
+                      ? "Approve & publish"
+                      : item.enabled
+                        ? "Hide"
+                        : "Publish"}
                   </button>
                   <button
                     type="button"

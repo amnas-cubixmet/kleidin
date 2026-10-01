@@ -52,8 +52,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       <TestimonialsSection
         productSlug={product.slug}
-        eyebrow="CUSTOMER FEEDBACK"
-        title="What customers say."
+        eyebrow="CUSTOMER STORIES"
+        title="Worn. Lived in. Repeated."
       />
     </>
   );
