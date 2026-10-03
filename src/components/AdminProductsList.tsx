@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/types/product";
+import { getProductOfferStatus } from "@/lib/product-offers";
 
 function money(value?: number) {
   if (typeof value !== "number") return "—";
@@ -126,6 +127,7 @@ export function AdminProductsList() {
         ) : filtered.length ? (
           <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {filtered.map((product) => {
+              const offerStatus = getProductOfferStatus(product);
               const preview =
                 product.image ||
                 product.colorVariants?.[0]?.images?.[0] ||
@@ -158,6 +160,21 @@ export function AdminProductsList() {
                       {product.wholesaleEnabled ? (
                         <span className="rounded-full bg-[#efefef] px-2.5 py-1.5 text-[8px] font-bold text-[#444b54]">
                           Wholesale
+                        </span>
+                      ) : null}
+                      {product.offerEnabled ? (
+                        <span
+                          className={
+                            "rounded-full px-2.5 py-1.5 text-[8px] font-bold capitalize " +
+                            (offerStatus === "active"
+                              ? "bg-[#111111] !text-white"
+                              : offerStatus === "expired"
+                                ? "bg-[#fff1f1] text-[#a33d3d]"
+                                : "bg-[#f0f1f2] text-[#555d67]")
+                          }
+                          style={offerStatus === "active" ? { color: "#fff" } : undefined}
+                        >
+                          Offer · {offerStatus}
                         </span>
                       ) : null}
                     </div>
