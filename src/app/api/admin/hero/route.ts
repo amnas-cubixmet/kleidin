@@ -64,7 +64,7 @@ export async function GET() {
   try {
     return NextResponse.json({
       configured: true,
-      slides: await listHeroSlides(),
+      slides: await listHeroSlides({ fallbackDefaults: false }),
     });
   } catch (error) {
     return NextResponse.json(
