@@ -26,6 +26,18 @@ function strings(value: unknown) {
     : [];
 }
 
+function sizeStocks(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {} as Record<string, number>;
+  }
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .map(([size, stock]) => [size.trim(), Math.max(0, Math.floor(number(stock, 0)))])
+      .filter(([size]) => Boolean(size)),
+  );
+}
+
 function variants(value: unknown): ProductColorVariant[] {
   if (!Array.isArray(value)) return [];
 
@@ -45,6 +57,7 @@ function variants(value: unknown): ProductColorVariant[] {
       ...(image ? { image } : {}),
       images,
       stock: Math.max(0, number(row.stock, 0)),
+      sizeStocks: sizeStocks(row.sizeStocks),
     });
 
     return result;
