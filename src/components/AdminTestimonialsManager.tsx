@@ -1,44 +1,26 @@
 "use client";
 
 import Image from "next/image";
-import { StarRatingInput } from "@/components/StarRatingInput";
+import { useEffect, useMemo, useState } from "react";
 import {
-  type ChangeEvent,
-  type FormEvent,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { readTestimonials, writeTestimonials } from "@/lib/testimonials";
+  readTestimonials,
+  writeTestimonials,
+  TESTIMONIAL_UPDATED_EVENT,
+} from "@/lib/testimonials";
 import type { Testimonial } from "@/types/testimonial";
-import { defaultTestimonials } from "@/data/testimonials";
 
 type ProductOption = {
   slug: string;
   name: string;
 };
 
-type Draft = {
-  name: string;
-  quote: string;
-  location: string;
-  productSlug: string;
-  showOnHome: boolean;
-  rating: number;
-  productImage: string;
-  enabled: boolean;
-};
+type Filter = "all" | "pending" | "published" | "hidden";
 
-const emptyDraft: Draft = {
-  name: "",
-  quote: "",
-  location: "",
-  productSlug: "",
-  showOnHome: true,
-  rating: 5,
-  productImage: "",
-  enabled: true,
-};
+function statusOf(item: Testimonial) {
+  if (item.pending) return "pending" as const;
+  if (item.enabled) return "published" as const;
+  return "hidden" as const;
+}
 
 export function AdminTestimonialsManager({
   products,
@@ -46,12 +28,20 @@ export function AdminTestimonialsManager({
   products: ProductOption[];
 }) {
   const [items, setItems] = useState<Testimonial[]>([]);
-  const [draft, setDraft] = useState<Draft>(emptyDraft);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [error, setError] = useState("");
+  const [filter, setFilter] = useState<Filter>("pending");
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
-    setItems(readTestimonials());
+    const sync = () => setItems(readTestimonials());
+    sync();
+
+    window.addEventListener("storage", sync);
+    window.addEventListener(TESTIMONIAL_UPDATED_EVENT, sync);
+
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener(TESTIMONIAL_UPDATED_EVENT, sync);
+    };
   }, []);
 
   const productNames = useMemo(
@@ -59,463 +49,313 @@ export function AdminTestimonialsManager({
     [products],
   );
 
+  const stats = useMemo(() => {
+    const pending = items.filter((item) => item.pending).length;
+    const published = items.filter((item) => !item.pending && item.enabled).length;
+    const hidden = items.filter((item) => !item.pending && !item.enabled).length;
+    return { pending, published, hidden, total: items.length };
+  }, [items]);
+
+  const filtered = useMemo(() => {
+    const term = query.trim().toLowerCase();
+
+    return [...items]
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .filter((item) => {
+        const status = statusOf(item);
+        if (filter !== "all" && status !== filter) return false;
+
+        if (!term) return true;
+
+        const productName = item.productSlug
+          ? productNames.get(item.productSlug) ?? item.productSlug
+          : "general";
+
+        return [
+          item.name,
+          item.quote,
+          item.location ?? "",
+          productName,
+        ].some((value) => value.toLowerCase().includes(term));
+      });
+  }, [filter, items, productNames, query]);
+
   function persist(next: Testimonial[]) {
     setItems(next);
     writeTestimonials(next);
   }
 
-  function resetForm() {
-    setDraft(emptyDraft);
-    setEditingId(null);
-    setError("");
-  }
-
-  function handleProductImage(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      setError("Please choose an image file.");
-      return;
-    }
-
-    if (file.size > 1500000) {
-      setError("Keep product photos under 1.5 MB in local mode.");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      setDraft((current) => ({
-        ...current,
-        productImage: typeof reader.result === "string" ? reader.result : "",
-      }));
-      setError("");
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function submit(event: FormEvent) {
-    event.preventDefault();
-
-    if (!draft.name.trim() || !draft.quote.trim()) {
-      setError("Customer name and testimonial are required.");
-      return;
-    }
-
-    if (editingId) {
-      persist(
-        items.map((item) =>
-          item.id === editingId
-            ? {
-                ...item,
-                pending: item.pending ?? false,
-                name: draft.name.trim(),
-                quote: draft.quote.trim(),
-                location: draft.location.trim() || undefined,
-                productSlug: draft.productSlug || undefined,
-                showOnHome: draft.showOnHome,
-                rating: draft.rating,
-                productImage: draft.productImage || undefined,
-                enabled: draft.enabled,
-              }
-            : item,
-        ),
-      );
-    } else {
-      const id =
-        typeof crypto !== "undefined" && "randomUUID" in crypto
-          ? crypto.randomUUID()
-          : "testimonial-" + Date.now();
-
-      persist([
-        {
-          id,
-          name: draft.name.trim(),
-          quote: draft.quote.trim(),
-          location: draft.location.trim() || undefined,
-          productSlug: draft.productSlug || undefined,
-          showOnHome: draft.showOnHome,
-          rating: draft.rating,
-          productImage: draft.productImage || undefined,
-          enabled: draft.enabled,
-          pending: false,
-          submittedByCustomer: false,
-          createdAt: new Date().toISOString(),
-        },
-        ...items,
-      ]);
-    }
-
-    resetForm();
-  }
-
-  function edit(item: Testimonial) {
-    setEditingId(item.id);
-    setDraft({
-      name: item.name,
-      quote: item.quote,
-      location: item.location ?? "",
-      productSlug: item.productSlug ?? "",
-      showOnHome: item.showOnHome,
-      rating: item.rating,
-      productImage: item.productImage ?? "",
-      enabled: item.enabled,
-    });
-    setError("");
-  }
-
-  function remove(id: string) {
-    if (!window.confirm("Delete this testimonial?")) return;
-    persist(items.filter((item) => item.id !== id));
-    if (editingId === id) resetForm();
-  }
-
-  function toggle(item: Testimonial) {
+  function approve(item: Testimonial) {
     persist(
       items.map((current) =>
         current.id === item.id
-          ? current.pending
-            ? { ...current, pending: false, enabled: true }
-            : { ...current, enabled: !current.enabled }
+          ? { ...current, pending: false, enabled: true }
           : current,
       ),
     );
   }
 
-  function addDemoData() {
-    const existingIds = new Set(items.map((item) => item.id));
-    const missing = defaultTestimonials.filter(
-      (item) => !existingIds.has(item.id),
+  function togglePublished(item: Testimonial) {
+    persist(
+      items.map((current) =>
+        current.id === item.id
+          ? {
+              ...current,
+              pending: false,
+              enabled: !current.enabled,
+            }
+          : current,
+      ),
     );
+  }
 
-    if (!missing.length) {
-      setError("Demo testimonials are already added.");
+  function reject(item: Testimonial) {
+    if (
+      !window.confirm(
+        "Reject and permanently remove this customer submission?",
+      )
+    ) {
       return;
     }
 
-    persist([...missing, ...items]);
-    setError("");
+    persist(items.filter((current) => current.id !== item.id));
   }
 
+  const filters: { key: Filter; label: string; count: number }[] = [
+    { key: "pending", label: "Pending", count: stats.pending },
+    { key: "published", label: "Published", count: stats.published },
+    { key: "hidden", label: "Hidden", count: stats.hidden },
+    { key: "all", label: "All", count: stats.total },
+  ];
+
   return (
-    <section className="mt-5 rounded-[22px] border border-black/8 bg-white p-4 md:p-5">
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="m-0 text-[8px] font-semibold tracking-[.14em] text-[#001cac]">
-            TESTIMONIALS
-          </p>
-          <h2 className="mt-2 text-[28px] font-semibold tracking-[-.045em]">
-            Customer stories.
-          </h2>
-          <p className="mt-2 max-w-[660px] text-[9px] leading-4 text-black/45">
-            Add customer feedback, assign it to a product, publish it on Home,
-            and upload an optional photo of the product the customer received.
-            Customer submissions arrive here as pending for approval.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={addDemoData}
-            className="min-h-9 rounded-full border border-black/10 bg-white px-3 text-[8px] font-semibold text-black/65"
+    <div className="grid gap-4">
+      <section className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {[
+          ["Pending review", stats.pending],
+          ["Published", stats.published],
+          ["Hidden", stats.hidden],
+          ["Total", stats.total],
+        ].map(([label, value]) => (
+          <div
+            key={String(label)}
+            className="rounded-[16px] border border-[#d9dde3] bg-white p-4"
           >
-            Add demo data
-          </button>
-          <strong className="text-[10px] text-black/50">
-            {items.length} saved
-          </strong>
-        </div>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-[.9fr_1.1fr]">
-        <form onSubmit={submit} className="rounded-[18px] bg-[#f5f5f2] p-4">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="grid gap-1.5">
-              <span className="text-[8px] font-semibold uppercase tracking-[.08em] text-black/45">
-                Customer name
-              </span>
-              <input
-                value={draft.name}
-                onChange={(event) =>
-                  setDraft((current) => ({ ...current, name: event.target.value }))
-                }
-                className="min-h-11 rounded-xl border border-black/10 bg-white px-3 text-[10px] outline-none"
-                placeholder="Name"
-              />
-            </label>
-
-            <label className="grid gap-1.5">
-              <span className="text-[8px] font-semibold uppercase tracking-[.08em] text-black/45">
-                Location / label
-              </span>
-              <input
-                value={draft.location}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    location: event.target.value,
-                  }))
-                }
-                className="min-h-11 rounded-xl border border-black/10 bg-white px-3 text-[10px] outline-none"
-                placeholder="Optional"
-              />
-            </label>
-          </div>
-
-          <label className="mt-3 grid gap-1.5">
-            <span className="text-[8px] font-semibold uppercase tracking-[.08em] text-black/45">
-              Testimonial
+            <span className="text-[9px] font-bold uppercase tracking-[.09em] text-[#727985]">
+              {label}
             </span>
-            <textarea
-              value={draft.quote}
-              onChange={(event) =>
-                setDraft((current) => ({ ...current, quote: event.target.value }))
-              }
-              className="min-h-28 resize-y rounded-xl border border-black/10 bg-white p-3 text-[10px] leading-5 outline-none"
-              placeholder="Customer's real feedback"
-            />
-          </label>
-
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <label className="grid gap-1.5">
-              <span className="text-[8px] font-semibold uppercase tracking-[.08em] text-black/45">
-                Product
-              </span>
-              <select
-                value={draft.productSlug}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    productSlug: event.target.value,
-                  }))
-                }
-                className="min-h-11 rounded-xl border border-black/10 bg-white px-3 text-[10px] outline-none"
-              >
-                <option value="">General / no product</option>
-                {products.map((product) => (
-                  <option key={product.slug} value={product.slug}>
-                    {product.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <div className="grid gap-1.5">
-              <span className="text-[8px] font-semibold uppercase tracking-[.08em] text-black/45">
-                Rating
-              </span>
-              <StarRatingInput
-                value={draft.rating}
-                onChange={(rating) =>
-                  setDraft((current) => ({ ...current, rating }))
-                }
-                theme="light"
-                label="Testimonial rating"
-              />
-            </div>
+            <strong className="mt-2 block text-[24px] font-semibold tracking-[-.04em] text-[#17191d]">
+              {value}
+            </strong>
           </div>
+        ))}
+      </section>
 
-          <div className="mt-3 rounded-xl border border-black/10 bg-white p-3">
-            <span className="block text-[8px] font-semibold uppercase tracking-[.08em] text-black/45">
-              Product photo
-            </span>
-            <p className="mt-1 text-[8px] leading-4 text-black/40">
-              Optional photo of the product the customer received or wore.
+      <section className="rounded-[20px] border border-[#d9dde3] bg-white p-4 shadow-[0_8px_28px_rgba(16,24,40,.04)] sm:rounded-[22px] sm:p-5 md:p-6">
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
+          <div>
+            <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#111111]">
+              Review moderation
             </p>
-
-            <div className="mt-3 flex items-center gap-3">
-              {draft.productImage ? (
-                <Image
-                  src={draft.productImage}
-                  alt="Product photo preview"
-                  width={72}
-                  height={82}
-                  unoptimized
-                  className="h-[82px] w-[72px] rounded-lg object-cover"
-                />
-              ) : (
-                <div className="grid h-[82px] w-[72px] place-items-center rounded-lg bg-[#f3f3f0] text-center text-[7px] text-black/35">
-                  PRODUCT
-                  <br />
-                  PHOTO
-                </div>
-              )}
-
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleProductImage}
-                className="block min-w-0 flex-1 text-[8px] text-black/50 file:mr-2 file:rounded-full file:border-0 file:bg-black file:px-3 file:py-2 file:text-[8px] file:font-semibold file:text-white"
-              />
-            </div>
-
-            {draft.productImage ? (
-              <button
-                type="button"
-                onClick={() =>
-                  setDraft((current) => ({ ...current, productImage: "" }))
-                }
-                className="mt-2 text-[8px] font-semibold text-black/45 underline"
-              >
-                Remove product photo
-              </button>
-            ) : null}
+            <h2 className="mt-1.5 text-[26px] font-semibold tracking-[-.045em] sm:text-[30px]">
+              Customer reviews
+            </h2>
+            <p className="mt-1.5 max-w-[720px] text-[10px] leading-5 text-[#626a75] sm:text-[11px]">
+              Customer submissions arrive here for approval. Admin cannot create or rewrite reviews from this page.
+            </p>
           </div>
 
-          <div className="mt-3 flex flex-wrap gap-4">
-            <label className="flex min-h-10 items-center gap-2 text-[9px]">
-              <input
-                type="checkbox"
-                checked={draft.showOnHome}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    showOnHome: event.target.checked,
-                  }))
-                }
-              />
-              Show on home
-            </label>
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            className="h-[46px] w-full rounded-[12px] border border-[#d6dae0] bg-[#f6f6f6] px-4 text-[11px] font-medium outline-none placeholder:text-[#8e959f] focus:border-[#111111] focus:bg-white focus:ring-2 focus:ring-black/10 xl:w-[320px]"
+            placeholder="Search customer / product"
+          />
+        </div>
 
-            <label className="flex min-h-10 items-center gap-2 text-[9px]">
-              <input
-                type="checkbox"
-                checked={draft.enabled}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    enabled: event.target.checked,
-                  }))
-                }
-              />
-              Published
-            </label>
+        <div className="mt-5 rounded-[16px] border border-[#e2e5e9] bg-[#f6f7f8] p-1.5 sm:inline-flex sm:rounded-full">
+          <div className="grid grid-cols-2 gap-1.5 sm:flex sm:gap-1">
+            {filters.map((item) => {
+              const active = filter === item.key;
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => setFilter(item.key)}
+                  className={
+                    "min-h-[44px] rounded-[12px] px-4 text-[10px] font-bold transition sm:rounded-full sm:px-5 " +
+                    (active
+                      ? "bg-[#111111] !text-white shadow-[0_4px_12px_rgba(0,0,0,.10)]"
+                      : "bg-transparent text-[#4f5761] hover:bg-white")
+                  }
+                  style={active ? { color: "#fff" } : undefined}
+                >
+                  {item.label} · {item.count}
+                </button>
+              );
+            })}
           </div>
+        </div>
 
-          {error ? (
-            <p className="mt-2 text-[9px] font-medium text-red-600">{error}</p>
-          ) : null}
+        {filtered.length ? (
+          <div className="mt-5 grid gap-3">
+            {filtered.map((item) => {
+              const status = statusOf(item);
+              const productName = item.productSlug
+                ? productNames.get(item.productSlug) ?? item.productSlug
+                : "General store review";
 
-          <div className="mt-4 flex gap-2">
-            <button
-              type="submit"
-              className="min-h-11 flex-1 rounded-full bg-[#001cac] px-4 text-[9px] font-semibold text-white"
-            >
-              {editingId ? "Save testimonial" : "Add testimonial"}
-            </button>
-
-            {editingId ? (
-              <button
-                type="button"
-                onClick={resetForm}
-                className="min-h-11 rounded-full border border-black/10 bg-white px-4 text-[9px] font-semibold"
-              >
-                Cancel
-              </button>
-            ) : null}
-          </div>
-        </form>
-
-        <div className="grid content-start gap-2.5">
-          {items.length ? (
-            items.map((item) => (
-              <article
-                key={item.id}
-                className="rounded-[16px] border border-black/8 p-3"
-              >
-                <div className="flex gap-3">
-                  {item.productImage ? (
-                    <Image
-                      src={item.productImage}
-                      alt="Customer product"
-                      width={72}
-                      height={84}
-                      unoptimized={item.productImage.startsWith("data:")}
-                      className="h-[84px] w-[72px] flex-none rounded-lg object-cover"
-                    />
-                  ) : (
-                    <div className="grid h-[84px] w-[72px] flex-none place-items-center rounded-lg bg-[#f3f3f0] text-center text-[7px] text-black/35">
-                      NO PRODUCT
-                      <br />
-                      PHOTO
-                    </div>
-                  )}
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <strong className="text-[10px]">{item.name}</strong>
-                      <span
-                        className={
-                          "rounded-full px-2 py-1 text-[7px] font-semibold " +
-                          (item.pending
-                            ? "bg-amber-50 text-amber-700"
-                            : item.enabled
-                              ? "bg-green-50 text-green-700"
-                              : "bg-black/5 text-black/45")
-                        }
-                      >
-                        {item.pending
-                          ? "Pending"
-                          : item.enabled
-                            ? "Published"
-                            : "Hidden"}
-                      </span>
+              return (
+                <article
+                  key={item.id}
+                  className="rounded-[18px] border border-[#d9dde3] bg-white p-4 sm:rounded-[20px] sm:p-5"
+                >
+                  <div className="grid gap-4 md:grid-cols-[84px_minmax(0,1fr)]">
+                    <div>
+                      {item.productImage ? (
+                        <Image
+                          src={item.productImage}
+                          alt="Customer product"
+                          width={168}
+                          height={168}
+                          unoptimized={item.productImage.startsWith("data:")}
+                          className="aspect-square w-full max-w-[84px] rounded-[14px] border border-[#e0e3e7] object-cover"
+                        />
+                      ) : (
+                        <div className="grid aspect-square w-[84px] place-items-center rounded-[14px] bg-[#f2f3f4] text-[9px] font-bold text-[#8a919b]">
+                          {item.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
                     </div>
 
-                    <p className="mt-2 text-[9px] leading-4 text-black/60">
-                      “{item.quote}”
-                    </p>
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <strong className="text-[13px] font-semibold text-[#17191d]">
+                              {item.name}
+                            </strong>
+                            <span
+                              className={
+                                "rounded-full px-2.5 py-1.5 text-[8px] font-bold " +
+                                (status === "pending"
+                                  ? "bg-[#fff7e8] text-[#8a6100]"
+                                  : status === "published"
+                                    ? "bg-[#111111] text-white"
+                                    : "bg-[#eef0f2] text-[#616975]")
+                              }
+                            >
+                              {status === "pending"
+                                ? "Pending"
+                                : status === "published"
+                                  ? "Published"
+                                  : "Hidden"}
+                            </span>
+                          </div>
 
-                    <div className="mt-2 flex flex-wrap gap-2 text-[7px] text-black/40">
-                      <span>{"★".repeat(item.rating)}</span>
-                      <span>
-                        {item.productSlug
-                          ? productNames.get(item.productSlug) ?? item.productSlug
-                          : "General"}
-                      </span>
-                      {item.showOnHome ? <span>Home</span> : null}
+                          <p className="mt-1.5 text-[9px] text-[#747c86]">
+                            {item.location ? item.location + " · " : ""}
+                            {productName}
+                          </p>
+                        </div>
+
+                        <div className="text-left md:text-right">
+                          <div
+                            className="text-[12px] tracking-[.08em] text-[#111111]"
+                            aria-label={item.rating + " out of 5 stars"}
+                          >
+                            {"★".repeat(Math.max(1, Math.min(5, item.rating)))}
+                            <span className="text-[#d4d7db]">
+                              {"★".repeat(Math.max(0, 5 - item.rating))}
+                            </span>
+                          </div>
+                          <span className="mt-1 block text-[8px] text-[#8a919b]">
+                            {new Date(item.createdAt).toLocaleString("en-IN")}
+                          </span>
+                        </div>
+                      </div>
+
+                      <blockquote className="mt-4 rounded-[14px] bg-[#f6f6f6] px-4 py-3.5 text-[11px] leading-6 text-[#434b55]">
+                        “{item.quote}”
+                      </blockquote>
+
+                      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#eceef1] pt-4">
+                        {item.submittedByCustomer ? (
+                          <span className="mr-auto text-[8px] font-bold uppercase tracking-[.08em] text-[#7b828c]">
+                            Customer submission
+                          </span>
+                        ) : (
+                          <span className="mr-auto text-[8px] font-bold uppercase tracking-[.08em] text-[#7b828c]">
+                            Existing review
+                          </span>
+                        )}
+
+                        {status === "pending" ? (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => approve(item)}
+                              className="min-h-[44px] rounded-full bg-[#111111] px-5 text-[10px] font-bold !text-white"
+                              style={{ color: "#fff" }}
+                            >
+                              Approve & publish
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => reject(item)}
+                              className="min-h-[44px] rounded-full border border-[#efcaca] bg-white px-5 text-[10px] font-bold text-[#a33d3d]"
+                            >
+                              Reject
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => togglePublished(item)}
+                              className={
+                                "min-h-[44px] rounded-full px-5 text-[10px] font-bold " +
+                                (status === "published"
+                                  ? "border border-[#d5d9df] bg-white text-[#4e5660]"
+                                  : "bg-[#111111] !text-white")
+                              }
+                              style={
+                                status === "hidden" ? { color: "#fff" } : undefined
+                              }
+                            >
+                              {status === "published" ? "Hide" : "Publish"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => reject(item)}
+                              className="min-h-[44px] rounded-full border border-[#efcaca] bg-white px-5 text-[10px] font-bold text-[#a33d3d]"
+                            >
+                              Delete
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => edit(item)}
-                    className="min-h-9 rounded-full border border-black/10 px-3 text-[8px] font-semibold"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => toggle(item)}
-                    className="min-h-9 rounded-full border border-black/10 px-3 text-[8px] font-semibold"
-                  >
-                    {item.pending
-                      ? "Approve & publish"
-                      : item.enabled
-                        ? "Hide"
-                        : "Publish"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => remove(item.id)}
-                    className="min-h-9 rounded-full border border-red-200 px-3 text-[8px] font-semibold text-red-600"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </article>
-            ))
-          ) : (
-            <div className="rounded-[16px] border border-dashed border-black/15 px-4 py-10 text-center text-[9px] text-black/40">
-              No testimonials yet. Add the first real customer story.
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="mt-5 grid min-h-[240px] place-items-center rounded-[16px] bg-[#f5f5f5] px-5 text-center">
+            <div>
+              <strong className="text-[13px] font-semibold">
+                {filter === "pending" ? "No reviews waiting" : "No reviews found"}
+              </strong>
+              <p className="mt-2 text-[10px] leading-5 text-[#68717b]">
+                {filter === "pending"
+                  ? "New customer submissions will appear here for approval."
+                  : "Try another search or review status."}
+              </p>
             </div>
-          )}
-        </div>
-      </div>
-    </section>
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
