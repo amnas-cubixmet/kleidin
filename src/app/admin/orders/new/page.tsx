@@ -17,12 +17,13 @@ export default async function AdminNewOrderPage() {
 
   return (
     <AdminShell
+      tone="monochrome"
       title="Add order"
       description="Create a manual order with customer, delivery, product and payment details."
       action={
         <Link
           href="/admin/orders"
-          className="inline-flex min-h-[36px] items-center justify-center rounded-full border border-[#d8dce4] bg-white px-4 text-[9px] font-bold text-[#414852]"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-[#d8dce4] bg-white px-5 text-[10px] font-bold text-[#414852]"
         >
           Back to orders
         </Link>
