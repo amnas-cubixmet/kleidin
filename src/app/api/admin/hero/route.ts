@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { demoAdminHeroSlides } from "@/data/demo-admin-hero";
 import {
   createHeroSlide,
   isHeroDatabaseConfigured,
@@ -56,8 +57,8 @@ export async function GET() {
   if (!isHeroDatabaseConfigured()) {
     return NextResponse.json({
       configured: false,
-      slides: [],
-      error: "Supabase hero database is not configured.",
+      demo: true,
+      slides: demoAdminHeroSlides,
     });
   }
 
