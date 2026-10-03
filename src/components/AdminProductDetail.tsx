@@ -238,6 +238,34 @@ export function AdminProductDetail({ productId }: { productId: string }) {
                       </span>
                     </div>
 
+                    {product.sizes.length ? (
+                      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5">
+                        {product.sizes.map((size, index) => {
+                          const hasMatrix =
+                            Object.keys(variant.sizeStocks ?? {}).length > 0;
+                          const stock = hasMatrix
+                            ? variant.sizeStocks?.[size] ?? 0
+                            : index === 0
+                              ? variant.stock ?? 0
+                              : 0;
+
+                          return (
+                            <div
+                              key={size}
+                              className="rounded-[11px] border border-[#d9dde3] bg-white px-3 py-2.5"
+                            >
+                              <span className="block text-[8px] font-bold uppercase tracking-[.08em] text-[#777f89]">
+                                {size}
+                              </span>
+                              <strong className="mt-1 block text-[13px] font-semibold text-[#24282e]">
+                                {stock}
+                              </strong>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : null}
+
                     {images.length ? (
                       <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
                         {images.map((url) => (
