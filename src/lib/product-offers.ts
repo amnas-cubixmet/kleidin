@@ -15,8 +15,8 @@ export function isProductOfferActive(product: Product, now = Date.now()) {
   return true;
 }
 
-export function getProductOfferPrice(product: Product) {
-  if (!isProductOfferActive(product)) return product.price;
+export function getProductOfferPrice(product: Product, now = Date.now()) {
+  if (!isProductOfferActive(product, now)) return product.price;
 
   const value = Math.max(0, Number(product.offerValue ?? 0));
 
