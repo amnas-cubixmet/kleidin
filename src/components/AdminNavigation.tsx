@@ -9,8 +9,6 @@ type IconName =
   | "products"
   | "inventory"
   | "customers"
-  | "partners"
-  | "messages"
   | "testimonials"
   | "hero"
   | "settings"
@@ -31,8 +29,6 @@ const primaryItems: NavItem[] = [
 
 const relationshipItems: NavItem[] = [
   { href: "/admin/customers", label: "Customers", icon: "customers" },
-  { href: "/admin/partners", label: "Partners", icon: "partners" },
-  { href: "/admin/messages", label: "Messages", icon: "messages" },
   { href: "/admin/testimonials", label: "Testimonials", icon: "testimonials" },
 ];
 
@@ -72,10 +68,6 @@ function Icon({ name, className = "h-[19px] w-[19px]" }: { name: IconName; class
       return <svg {...common}><path d="M4 7h16v14H4z" /><path d="M3 3h18v4H3z" /><path d="M9 11h6" /></svg>;
     case "customers":
       return <svg {...common}><circle cx="9" cy="8" r="3" /><path d="M3.5 20c.5-4 2.4-6 5.5-6s5 2 5.5 6" /><path d="M16 11a3 3 0 1 0 0-6" /><path d="M17 14c2.3.6 3.4 2.6 3.5 6" /></svg>;
-    case "partners":
-      return <svg {...common}><path d="m8 12 2 2c1 1 2 1 3 0l4-4" /><path d="m7 17-3-3a3 3 0 0 1 0-4l3-3a3 3 0 0 1 4 0l1 1" /><path d="m17 7 3 3a3 3 0 0 1 0 4l-3 3a3 3 0 0 1-4 0l-1-1" /></svg>;
-    case "messages":
-      return <svg {...common}><path d="M4 5h16v12H8l-4 4V5Z" /><path d="M8 9h8M8 13h5" /></svg>;
     case "testimonials":
       return <svg {...common}><path d="M6 17.5 3 20l.8-4A8.5 8.5 0 1 1 6 17.5Z" /><path d="m9 10 1 1 2-2" /><path d="M14 10h3M9 14h8" /></svg>;
     case "hero":
@@ -153,7 +145,7 @@ export function AdminNavigation() {
         {mobileItems.map((item) => {
           const active =
             item.icon === "more"
-              ? ["/admin/customers", "/admin/partners", "/admin/messages", "/admin/testimonials", "/admin/hero", "/admin/settings", "/admin/more"].some((href) => isActive(pathname, href))
+              ? ["/admin/customers", "/admin/testimonials", "/admin/hero", "/admin/settings", "/admin/more"].some((href) => isActive(pathname, href))
               : isActive(pathname, item.href);
 
           return (
