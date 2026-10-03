@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Product, ProductColorVariant, ProductStatus } from "@/types/product";
+import type { Product, ProductColorVariant, ProductOfferType, ProductStatus } from "@/types/product";
 
 type FormColor = {
   id: string;
@@ -19,6 +19,14 @@ type ProductFormState = {
   category: string;
   price: string;
   compareAtPrice: string;
+  offerEnabled: boolean;
+  offerType: ProductOfferType;
+  offerValue: string;
+  offerLabel: string;
+  offerBadge: string;
+  offerStartsAt: string;
+  offerEndsAt: string;
+  offerCountdown: boolean;
   wholesaleEnabled: boolean;
   wholesalePrice: string;
   wholesaleMinOrder: string;
@@ -60,6 +68,14 @@ function emptyForm(): ProductFormState {
     category: "T-Shirts",
     price: "",
     compareAtPrice: "",
+    offerEnabled: false,
+    offerType: "sale-price",
+    offerValue: "",
+    offerLabel: "Limited offer",
+    offerBadge: "OFFER",
+    offerStartsAt: "",
+    offerEndsAt: "",
+    offerCountdown: true,
     wholesaleEnabled: false,
     wholesalePrice: "",
     wholesaleMinOrder: "12",
@@ -94,6 +110,14 @@ function fromProduct(product: Product): ProductFormState {
     category: product.category,
     price: String(product.price),
     compareAtPrice: product.compareAtPrice ? String(product.compareAtPrice) : "",
+    offerEnabled: Boolean(product.offerEnabled),
+    offerType: product.offerType ?? "sale-price",
+    offerValue: product.offerValue ? String(product.offerValue) : "",
+    offerLabel: product.offerLabel ?? product.saleLabel ?? "Limited offer",
+    offerBadge: product.offerBadge ?? "OFFER",
+    offerStartsAt: product.offerStartsAt ? product.offerStartsAt.slice(0, 16) : "",
+    offerEndsAt: product.offerEndsAt ? product.offerEndsAt.slice(0, 16) : "",
+    offerCountdown: Boolean(product.offerCountdown),
     wholesaleEnabled: Boolean(product.wholesaleEnabled),
     wholesalePrice: product.wholesalePrice ? String(product.wholesalePrice) : "",
     wholesaleMinOrder: product.wholesaleMinOrder
@@ -315,6 +339,32 @@ export function AdminProductForm({
       setMessage("Enter a valid retail price.");
       return;
     }
+    if (form.offerEnabled) {
+      if (!form.offerValue || Number(form.offerValue) <= 0) {
+        setMessage("Enter a valid offer value.");
+        return;
+      }
+      if (form.offerType === "percentage" && Number(form.offerValue) > 100) {
+        setMessage("Percentage discount cannot be above 100%.");
+        return;
+      }
+      if (
+        form.offerType === "sale-price" &&
+        Number(form.offerValue) >= Number(form.price)
+      ) {
+        setMessage("Sale price must be lower than retail price.");
+        return;
+      }
+      if (
+        form.offerStartsAt &&
+        form.offerEndsAt &&
+        new Date(form.offerEndsAt).getTime() <= new Date(form.offerStartsAt).getTime()
+      ) {
+        setMessage("Offer end time must be after start time.");
+        return;
+      }
+    }
+
     if (form.wholesaleEnabled) {
       if (!form.wholesalePrice || Number(form.wholesalePrice) <= 0) {
         setMessage("Enter a wholesale price.");
@@ -343,6 +393,20 @@ export function AdminProductForm({
       category: form.category.trim(),
       price: Number(form.price),
       compareAtPrice: form.compareAtPrice ? Number(form.compareAtPrice) : null,
+      offerEnabled: form.offerEnabled,
+      offerType: form.offerType,
+      offerValue: form.offerEnabled ? Number(form.offerValue) : null,
+      offerLabel: form.offerEnabled ? form.offerLabel.trim() : null,
+      offerBadge: form.offerEnabled ? form.offerBadge.trim() : null,
+      offerStartsAt:
+        form.offerEnabled && form.offerStartsAt
+          ? new Date(form.offerStartsAt).toISOString()
+          : null,
+      offerEndsAt:
+        form.offerEnabled && form.offerEndsAt
+          ? new Date(form.offerEndsAt).toISOString()
+          : null,
+      offerCountdown: form.offerEnabled ? form.offerCountdown : false,
       wholesaleEnabled: form.wholesaleEnabled,
       wholesalePrice: form.wholesaleEnabled ? Number(form.wholesalePrice) : null,
       wholesaleMinOrder: form.wholesaleEnabled
@@ -522,6 +586,137 @@ export function AdminProductForm({
             />
           </label>
         </div>
+      </section>
+
+      <section id="offer-settings" className={section}>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#111111]">
+              Product offer
+            </p>
+            <p className="mt-1 text-[10px] leading-5 text-[#68707b]">
+              Create a normal sale or schedule a time-limited offer for this product.
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={form.offerEnabled}
+            onClick={() => update("offerEnabled", !form.offerEnabled)}
+            className={
+              "relative h-[34px] w-[62px] rounded-full transition " +
+              (form.offerEnabled ? "bg-[#111111]" : "bg-[#d8dce2]")
+            }
+          >
+            <span
+              className={
+                "absolute top-[4px] h-[26px] w-[26px] rounded-full bg-white shadow-sm transition " +
+                (form.offerEnabled ? "left-[32px]" : "left-[4px]")
+              }
+            />
+          </button>
+        </div>
+
+        {form.offerEnabled ? (
+          <div className="mt-4 grid gap-4 rounded-[16px] bg-[#f5f5f5] p-4">
+            <div className="grid gap-3 sm:grid-cols-3">
+              <label>
+                <span className={label}>Offer type</span>
+                <select
+                  className={field}
+                  value={form.offerType}
+                  onChange={(event) =>
+                    update("offerType", event.target.value as ProductOfferType)
+                  }
+                >
+                  <option value="sale-price">Sale price</option>
+                  <option value="percentage">Percentage off</option>
+                  <option value="fixed">Fixed ₹ off</option>
+                </select>
+              </label>
+              <label>
+                <span className={label}>
+                  {form.offerType === "sale-price"
+                    ? "Sale price"
+                    : form.offerType === "percentage"
+                      ? "Discount %"
+                      : "Discount amount"}
+                </span>
+                <input
+                  type="number"
+                  min="0"
+                  className={field}
+                  value={form.offerValue}
+                  onChange={(event) => update("offerValue", event.target.value)}
+                  placeholder={
+                    form.offerType === "sale-price"
+                      ? "1190"
+                      : form.offerType === "percentage"
+                        ? "20"
+                        : "300"
+                  }
+                />
+              </label>
+              <label>
+                <span className={label}>Card badge</span>
+                <input
+                  className={field}
+                  value={form.offerBadge}
+                  onChange={(event) => update("offerBadge", event.target.value)}
+                  placeholder="20% OFF"
+                />
+              </label>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label>
+                <span className={label}>Offer label</span>
+                <input
+                  className={field}
+                  value={form.offerLabel}
+                  onChange={(event) => update("offerLabel", event.target.value)}
+                  placeholder="Limited offer"
+                />
+              </label>
+              <label className="flex min-h-12 items-center gap-3 rounded-[12px] border border-[#d7dbe1] bg-white px-3.5 sm:self-end">
+                <input
+                  type="checkbox"
+                  checked={form.offerCountdown}
+                  onChange={(event) => update("offerCountdown", event.target.checked)}
+                  className="h-4 w-4 accent-black"
+                />
+                <span className="text-[11px] font-semibold">
+                  Show countdown on product card
+                </span>
+              </label>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label>
+                <span className={label}>Offer starts</span>
+                <input
+                  type="datetime-local"
+                  className={field}
+                  value={form.offerStartsAt}
+                  onChange={(event) => update("offerStartsAt", event.target.value)}
+                />
+              </label>
+              <label>
+                <span className={label}>Offer ends</span>
+                <input
+                  type="datetime-local"
+                  className={field}
+                  value={form.offerEndsAt}
+                  onChange={(event) => update("offerEndsAt", event.target.value)}
+                />
+              </label>
+            </div>
+
+            <div className="rounded-[12px] border border-[#dedede] bg-white px-3.5 py-3 text-[9px] leading-5 text-[#69717c]">
+              Leave start/end empty for an always-on offer. Add both times for a scheduled offer; it becomes active and expires automatically.
+            </div>
+          </div>
+        ) : null}
       </section>
 
       <section className={section}>
