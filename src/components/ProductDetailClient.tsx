@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Product } from "@/types/product";
 import { formatPrice, getProductWhatsappUrl } from "@/lib/format";
 import { getProductOfferPrice, isProductOfferActive } from "@/lib/product-offers";
@@ -14,6 +14,7 @@ export function ProductDetailClient({
   whatsappNumber: string;
 }) {
   const variants = product.colorVariants ?? [];
+  const [now, setNow] = useState(() => Date.now());
   const [selectedColor, setSelectedColor] = useState(
     variants[0]?.name ?? product.colors[0] ?? "Default",
   );
@@ -25,8 +26,13 @@ export function ProductDetailClient({
   const image = selectedVariant?.image ?? product.image;
   const stock = selectedVariant?.stock ?? product.stock;
   const soldOut = product.status === "sold-out" || stock <= 0;
-  const offerActive = isProductOfferActive(product);
-  const displayPrice = offerActive ? getProductOfferPrice(product) : product.price;
+  const offerActive = isProductOfferActive(product, now);
+  const displayPrice = offerActive ? getProductOfferPrice(product, now) : product.price;
+  useEffect(() => {
+    const clock = window.setInterval(() => setNow(Date.now()), 30000);
+    return () => window.clearInterval(clock);
+  }, []);
+
   const whatsappUrl = getProductWhatsappUrl(
     product,
     whatsappNumber,
