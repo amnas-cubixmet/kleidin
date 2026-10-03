@@ -25,6 +25,7 @@ export function AdminInventoryManager() {
   const [drafts, setDrafts] = useState<Record<string, {
     stock: number;
     colors: Record<string, number>;
+    sizes: Record<string, Record<string, number>>;
   }>>({});
 
   async function load() {
@@ -51,6 +52,17 @@ export function AdminInventoryManager() {
                 (product.colorVariants ?? []).map((variant) => [
                   variant.name,
                   variant.stock ?? 0,
+                ]),
+              ),
+              sizes: Object.fromEntries(
+                (product.colorVariants ?? []).map((variant) => [
+                  variant.name,
+                  Object.fromEntries(
+                    product.sizes.map((size) => [
+                      size,
+                      variant.sizeStocks?.[size] ?? 0,
+                    ]),
+                  ),
                 ]),
               ),
             },
@@ -96,7 +108,7 @@ export function AdminInventoryManager() {
     setDrafts((current) => ({
       ...current,
       [productId]: {
-        ...(current[productId] ?? { colors: {} }),
+        ...(current[productId] ?? { colors: {}, sizes: {} }),
         stock: Math.max(0, Math.floor(value || 0)),
       },
     }));
@@ -106,13 +118,53 @@ export function AdminInventoryManager() {
     setDrafts((current) => ({
       ...current,
       [productId]: {
-        ...(current[productId] ?? { stock: 0, colors: {} }),
+        ...(current[productId] ?? { stock: 0, colors: {}, sizes: {} }),
         colors: {
           ...(current[productId]?.colors ?? {}),
           [color]: Math.max(0, Math.floor(value || 0)),
         },
       },
     }));
+  }
+
+  function setSizeStock(
+    productId: string,
+    color: string,
+    size: string,
+    value: number,
+  ) {
+    setDrafts((current) => {
+      const nextSizeStock = Math.max(0, Math.floor(value || 0));
+      const colorSizes = {
+        ...(current[productId]?.sizes?.[color] ?? {}),
+        [size]: nextSizeStock,
+      };
+      const colorTotal = Object.values(colorSizes).reduce(
+        (sum, stock) => sum + stock,
+        0,
+      );
+      const colors = {
+        ...(current[productId]?.colors ?? {}),
+        [color]: colorTotal,
+      };
+      const productTotal = Object.values(colors).reduce(
+        (sum, stock) => sum + stock,
+        0,
+      );
+
+      return {
+        ...current,
+        [productId]: {
+          ...(current[productId] ?? { stock: 0, colors: {}, sizes: {} }),
+          stock: productTotal,
+          colors,
+          sizes: {
+            ...(current[productId]?.sizes ?? {}),
+            [color]: colorSizes,
+          },
+        },
+      };
+    });
   }
 
   async function save(product: Product) {
@@ -124,13 +176,31 @@ export function AdminInventoryManager() {
       setMessage("");
 
       if (!configured) {
-        const colorVariants = (product.colorVariants ?? []).map((variant) => ({
-          ...variant,
-          stock:
-            Object.prototype.hasOwnProperty.call(draft.colors, variant.name)
-              ? draft.colors[variant.name]
-              : variant.stock ?? 0,
-        }));
+        const colorVariants = (product.colorVariants ?? []).map((variant) => {
+          const sizeStocks = Object.fromEntries(
+            product.sizes.map((size) => [
+              size,
+              draft.sizes?.[variant.name]?.[size] ??
+                variant.sizeStocks?.[size] ??
+                0,
+            ]),
+          );
+          const hasMatrix = product.sizes.length > 0;
+          const matrixTotal = Object.values(sizeStocks).reduce(
+            (sum, stock) => sum + stock,
+            0,
+          );
+
+          return {
+            ...variant,
+            sizeStocks,
+            stock: hasMatrix
+              ? matrixTotal
+              : Object.prototype.hasOwnProperty.call(draft.colors, variant.name)
+                ? draft.colors[variant.name]
+                : variant.stock ?? 0,
+          };
+        });
         const variantTotal = colorVariants.reduce(
           (sum, variant) => sum + (variant.stock ?? 0),
           0,
@@ -161,6 +231,17 @@ export function AdminInventoryManager() {
                 variant.stock ?? 0,
               ]),
             ),
+            sizes: Object.fromEntries(
+              (updated.colorVariants ?? []).map((variant) => [
+                variant.name,
+                Object.fromEntries(
+                  updated.sizes.map((size) => [
+                    size,
+                    variant.sizeStocks?.[size] ?? 0,
+                  ]),
+                ),
+              ]),
+            ),
           },
         }));
         return;
@@ -172,6 +253,7 @@ export function AdminInventoryManager() {
         body: JSON.stringify({
           stock: draft.stock,
           colorStocks: draft.colors,
+          sizeStocks: draft.sizes,
         }),
       });
 
@@ -190,6 +272,17 @@ export function AdminInventoryManager() {
             (updated.colorVariants ?? []).map((variant) => [
               variant.name,
               variant.stock ?? 0,
+            ]),
+          ),
+          sizes: Object.fromEntries(
+            (updated.colorVariants ?? []).map((variant) => [
+              variant.name,
+              Object.fromEntries(
+                updated.sizes.map((size) => [
+                  size,
+                  variant.sizeStocks?.[size] ?? 0,
+                ]),
+              ),
             ]),
           ),
         },
@@ -248,7 +341,7 @@ export function AdminInventoryManager() {
               Inventory
             </h2>
             <p className="mt-1.5 text-[10px] leading-5 text-[#626a75] sm:text-[11px]">
-              Update total stock or colour-level stock. Saving colour stock automatically recalculates total stock.
+              Manage stock by colour and size. Colour totals and product total are recalculated automatically.
             </p>
           </div>
 
@@ -308,7 +401,11 @@ export function AdminInventoryManager() {
         ) : filtered.length ? (
           <div className="mt-5 grid gap-3">
             {filtered.map((product) => {
-              const draft = drafts[product.id] ?? { stock: product.stock, colors: {} };
+              const draft = drafts[product.id] ?? {
+                stock: product.stock,
+                colors: {},
+                sizes: {},
+              };
               const state = stockState(product.stock);
               const hasVariants = Boolean(product.colorVariants?.length);
 
