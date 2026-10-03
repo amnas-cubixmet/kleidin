@@ -932,7 +932,7 @@ export function AdminProductForm({
               Sizes & colours
             </p>
             <p className="mt-1 text-[10px] text-[#68707b]">
-              Add images separately for each colour.
+              Select sizes, then manage stock for every colour × size combination.
             </p>
           </div>
           <button
@@ -1045,20 +1045,66 @@ export function AdminProductForm({
                   </div>
                 </label>
                 <label>
-                  <span className={label}>Colour stock</span>
+                  <span className={label}>Colour total</span>
                   <input
                     type="number"
                     min="0"
-                    className={field}
-                    value={color.stock}
-                    onChange={(event) =>
-                      updateColor(color.id, { stock: event.target.value })
-                    }
+                    readOnly
+                    className={field + " bg-[#f1f2f3]"}
+                    value={colorStockTotal(color)}
                   />
                 </label>
               </div>
 
-              <div className="mt-3">
+              <div className="mt-4">
+                <div className="flex flex-wrap items-end justify-between gap-2">
+                  <div>
+                    <span className={label}>Stock by size</span>
+                    <p className="text-[9px] text-[#7a828d]">
+                      Set stock for each size in {color.name || "this colour"}.
+                    </p>
+                  </div>
+                  <strong className="text-[10px] font-semibold text-[#343a42]">
+                    Total {colorStockTotal(color)}
+                  </strong>
+                </div>
+
+                {form.sizes.length ? (
+                  <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5">
+                    {form.sizes.map((size) => (
+                      <label
+                        key={size}
+                        className="rounded-[12px] border border-[#d9dde3] bg-white p-2.5"
+                      >
+                        <span className="mb-1.5 block text-[9px] font-bold uppercase tracking-[.08em] text-[#626a75]">
+                          {size}
+                        </span>
+                        <input
+                          type="number"
+                          min="0"
+                          inputMode="numeric"
+                          value={color.sizeStocks[size] ?? ""}
+                          onChange={(event) =>
+                            updateSizeStock(
+                              color.id,
+                              size,
+                              Number(event.target.value),
+                            )
+                          }
+                          placeholder="0"
+                          className="h-[44px] w-full rounded-[10px] border border-[#d5d9df] bg-[#f8f8f8] px-2 text-center text-[12px] font-semibold outline-none focus:border-[#111111] focus:bg-white"
+                        />
+                      </label>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-3 rounded-[12px] bg-white p-3 text-[9px] text-[#777f89]">
+                    Select at least one size above to manage variant stock.
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-4">
                 <span className={label}>Images for {color.name || "this colour"}</span>
                 <label className="flex min-h-[72px] cursor-pointer items-center justify-center rounded-[14px] border border-dashed border-[#bfc5cd] bg-white px-4 text-center text-[10px] font-semibold text-[#555e69]">
                   {uploading === color.id
