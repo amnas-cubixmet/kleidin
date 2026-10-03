@@ -11,8 +11,9 @@ export default async function AdminHeroPage() {
 
   return (
     <AdminShell
+      tone="monochrome"
       title="Hero"
-      description="Control storefront hero slides, content order and presentation from a dedicated page."
+      description="Build product heroes, timed offers, collection highlights and custom campaigns. Add only the slides you need."
     >
       <AdminHeroManager />
     </AdminShell>
