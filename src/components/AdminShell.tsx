@@ -49,7 +49,7 @@ export function AdminShell({
                   <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-end lg:w-auto">
                     <AdminGlobalSearch />
 
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex flex-wrap items-center justify-end gap-2">
                       {action}
                       <Link
                         href="/"
@@ -61,7 +61,7 @@ export function AdminShell({
                       <form action={logoutAdmin} className="shrink-0">
                         <button
                           type="submit"
-                          className="min-h-[36px] rounded-full border border-[#111827] bg-[#111827] px-3.5 text-[9px] font-bold !text-white transition hover:bg-[#202938]"
+                          className="min-h-[44px] rounded-full border border-[#111827] bg-[#111827] px-4 text-[10px] font-bold !text-white transition hover:bg-[#202938]"
                           style={{ color: "#ffffff" }}
                         >
                           Logout
