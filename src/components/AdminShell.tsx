@@ -11,12 +11,14 @@ export function AdminShell({
   eyebrow = "KLEID.IN ADMIN",
   children,
   action,
+  tone = "default",
 }: {
   title: string;
   description?: string;
   eyebrow?: string;
   children: ReactNode;
   action?: ReactNode;
+  tone?: "default" | "monochrome";
 }) {
   return (
     <>
@@ -27,11 +29,11 @@ export function AdminShell({
 
           <div className="min-w-0 flex-1">
             <header className="mb-3 overflow-visible rounded-[18px] border border-[#dfe3ea] bg-white shadow-[0_10px_30px_rgba(18,26,43,.04)] sm:mb-4 sm:rounded-[20px] xl:rounded-[22px]">
-              <div className="h-1 w-full rounded-t-[18px] bg-[#001cac] sm:rounded-t-[20px] xl:rounded-t-[22px]" />
+              <div className={"h-1 w-full rounded-t-[18px] sm:rounded-t-[20px] xl:rounded-t-[22px] " + (tone === "monochrome" ? "bg-[#111111]" : "bg-[#001cac]")} />
               <div className="px-3.5 py-3.5 sm:px-5 sm:py-4 md:px-6 md:py-5">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-5">
                   <div className="min-w-0">
-                    <p className="m-0 text-[10px] font-bold uppercase tracking-[.14em] text-[#001cac]">
+                    <p className={"m-0 text-[10px] font-bold uppercase tracking-[.14em] " + (tone === "monochrome" ? "text-[#111111]" : "text-[#001cac]")}>
                       {eyebrow}
                     </p>
                     <h1 className="mt-1.5 text-[clamp(30px,7vw,46px)] font-semibold leading-[.96] tracking-[-.05em] text-[#15171a]">
