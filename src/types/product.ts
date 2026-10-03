@@ -3,7 +3,8 @@ export type ProductStatus = "active" | "draft" | "sold-out";
 export type ProductColorVariant = {
   name: string;
   value: string;
-  image: string;
+  image?: string;
+  images?: string[];
   stock?: number;
 };
 
@@ -23,6 +24,8 @@ export type Product = {
   colors: string[];
   colorVariants?: ProductColorVariant[];
   stock: number;
+  wholesaleEnabled?: boolean;
+  wholesalePrice?: number;
   wholesaleMinOrder?: number;
   featured: boolean;
   status: ProductStatus;
@@ -40,6 +43,9 @@ export type DbProduct = {
   category: string;
   price: number;
   compare_at_price: number | null;
+  wholesale_enabled?: boolean | null;
+  wholesale_price?: number | null;
+  wholesale_min_order?: number | null;
   sale_ends_at?: string | null;
   sale_label?: string | null;
   description: string;
@@ -47,7 +53,6 @@ export type DbProduct = {
   colors: string[];
   color_variants?: ProductColorVariant[] | null;
   stock: number;
-  wholesale_min_order?: number | null;
   featured: boolean;
   status: ProductStatus;
   image_url: string | null;
