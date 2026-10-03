@@ -16896,3 +16896,107 @@ main,
 .admin-login-submit:active {
   transform: translateY(1px);
 }
+
+
+/* FINAL project-wide dark button contrast + mobile safety */
+button[class*="bg-[#111111]"],
+button[class*="bg-[#111827]"],
+button[class*="bg-[#111]"],
+button[class~="bg-black"],
+a[class*="bg-[#111111]"],
+a[class*="bg-[#111827]"],
+a[class*="bg-[#111]"],
+a[class~="bg-black"] {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+button[class*="bg-[#111111]"] *,
+button[class*="bg-[#111827]"] *,
+button[class*="bg-[#111]"] *,
+button[class~="bg-black"] *,
+a[class*="bg-[#111111]"] *,
+a[class*="bg-[#111827]"] *,
+a[class*="bg-[#111]"] *,
+a[class~="bg-black"] * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+main,
+section,
+article,
+aside,
+header,
+footer,
+nav,
+form,
+fieldset {
+  min-width: 0;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+input,
+textarea,
+select {
+  max-width: 100%;
+}
+
+button,
+a,
+input,
+textarea,
+select,
+[role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+
+  .product-action-buttons {
+    grid-template-columns: 1fr !important;
+  }
+
+  .button,
+  .contact-editorial-actions a,
+  .contact-editorial-footer-cta a,
+  .dealer-intro-dark .dealer-intro-content > a {
+    min-height: 44px;
+  }
+
+  .site-footer,
+  .home-section,
+  .section,
+  .lookbook-section,
+  .social-section,
+  .newsletter-section,
+  .product-page {
+    max-width: 100%;
+  }
+}
+
+@supports not (overflow: clip) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
