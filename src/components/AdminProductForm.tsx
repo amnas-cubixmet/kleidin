@@ -13,6 +13,8 @@ type FormColor = {
   images: string[];
 };
 
+const STANDARD_SIZE_OPTIONS = ["S", "M", "L", "XL", "2XL"] as const;
+
 type ProductFormState = {
   name: string;
   slug: string;
@@ -33,7 +35,7 @@ type ProductFormState = {
   wholesaleMinOrder: string;
   wholesaleSlug: string;
   stock: string;
-  sizes: string;
+  sizes: string[];
   description: string;
   featured: boolean;
   status: ProductStatus;
@@ -82,7 +84,7 @@ function emptyForm(): ProductFormState {
     wholesaleMinOrder: "12",
     wholesaleSlug: "",
     stock: "0",
-    sizes: "S, M, L, XL",
+    sizes: [...STANDARD_SIZE_OPTIONS],
     description: "",
     featured: false,
     status: "draft",
@@ -126,7 +128,7 @@ function fromProduct(product: Product): ProductFormState {
       : "12",
     wholesaleSlug: product.wholesaleSlug ?? "",
     stock: String(product.stock),
-    sizes: product.sizes.join(", "),
+    sizes: [...product.sizes],
     description: product.description,
     featured: product.featured,
     status: product.status,
@@ -459,10 +461,7 @@ export function AdminProductForm({
         0,
         Number(form.stock) || (totalColorStock > 0 ? totalColorStock : 0),
       ),
-      sizes: form.sizes
-        .split(",")
-        .map((value) => value.trim())
-        .filter(Boolean),
+      sizes: form.sizes,
       colors: colorVariants.map((color) => color.name),
       colorVariants,
       description: form.description.trim(),
@@ -898,15 +897,58 @@ export function AdminProductForm({
           </button>
         </div>
 
-        <label className="mt-4 block">
+        <div className="mt-4">
           <span className={label}>Sizes</span>
-          <input
-            className={field}
-            value={form.sizes}
-            onChange={(event) => update("sizes", event.target.value)}
-            placeholder="S, M, L, XL"
-          />
-        </label>
+          <div className="grid grid-cols-5 gap-2" role="group" aria-label="Select product sizes">
+            {STANDARD_SIZE_OPTIONS.map((size) => {
+              const selected = form.sizes.includes(size);
+              return (
+                <button
+                  key={size}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() =>
+                    update(
+                      "sizes",
+                      selected
+                        ? form.sizes.filter((item) => item !== size)
+                        : [...form.sizes, size],
+                    )
+                  }
+                  className={
+                    "min-h-[46px] rounded-[12px] border px-2 text-[10px] font-bold transition " +
+                    (selected
+                      ? "border-[#111111] bg-[#111111] !text-white"
+                      : "border-[#d7dbe1] bg-white text-[#4f5761] hover:border-[#111111]")
+                  }
+                  style={selected ? { color: "#fff" } : undefined}
+                >
+                  {size}
+                </button>
+              );
+            })}
+          </div>
+
+          <p className="mt-2 text-[9px] text-[#7a828d]">
+            Select all sizes available for this product.
+          </p>
+
+          {form.sizes.some(
+            (size) => !STANDARD_SIZE_OPTIONS.includes(size as (typeof STANDARD_SIZE_OPTIONS)[number]),
+          ) ? (
+            <p className="mt-1 text-[9px] font-medium text-[#555d67]">
+              Existing custom sizes:{" "}
+              {form.sizes
+                .filter(
+                  (size) =>
+                    !STANDARD_SIZE_OPTIONS.includes(
+                      size as (typeof STANDARD_SIZE_OPTIONS)[number],
+                    ),
+                )
+                .join(", ")}
+            </p>
+          ) : null}
+        </div>
 
         <div className="mt-4 grid gap-3">
           {form.colors.map((color, index) => (
