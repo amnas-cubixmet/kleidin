@@ -23,7 +23,7 @@ export default async function AdminOrdersPage() {
       action={
         <Link
           href="/admin/orders/new"
-          className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-[#111111] px-5 text-[10px] font-bold text-white transition hover:bg-black"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-[#111111] px-5 text-[10px] font-bold !text-white transition hover:bg-black" style={{ color: "#fff" }}
         >
           + Add order
         </Link>
