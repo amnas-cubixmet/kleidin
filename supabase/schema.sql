@@ -30,6 +30,15 @@ create table if not exists public.products (
   category text not null default 'T-Shirts',
   price integer not null check (price >= 0),
   compare_at_price integer,
+  offer_enabled boolean not null default false,
+  offer_type text not null default 'sale-price'
+    check (offer_type in ('sale-price', 'percentage', 'fixed')),
+  offer_value integer check (offer_value is null or offer_value >= 0),
+  offer_label text not null default '',
+  offer_badge text not null default '',
+  offer_starts_at timestamptz,
+  offer_ends_at timestamptz,
+  offer_countdown boolean not null default false,
   wholesale_enabled boolean not null default false,
   wholesale_price integer check (wholesale_price is null or wholesale_price >= 0),
   wholesale_min_order integer check (wholesale_min_order is null or wholesale_min_order > 0),
@@ -50,6 +59,14 @@ create table if not exists public.products (
 );
 
 alter table public.products
+  add column if not exists offer_enabled boolean not null default false,
+  add column if not exists offer_type text not null default 'sale-price',
+  add column if not exists offer_value integer,
+  add column if not exists offer_label text not null default '',
+  add column if not exists offer_badge text not null default '',
+  add column if not exists offer_starts_at timestamptz,
+  add column if not exists offer_ends_at timestamptz,
+  add column if not exists offer_countdown boolean not null default false,
   add column if not exists wholesale_enabled boolean not null default false,
   add column if not exists wholesale_price integer,
   add column if not exists wholesale_min_order integer,
