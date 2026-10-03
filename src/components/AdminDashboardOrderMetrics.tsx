@@ -91,7 +91,7 @@ export function AdminDashboardOrderMetrics() {
   }, [orders]);
 
   return (
-    <section className="grid grid-cols-2 gap-2 sm:gap-2.5 md:grid-cols-3 xl:grid-cols-6">
+    <section className="grid grid-cols-2 gap-2 sm:gap-2.5 md:grid-cols-4">
       <Card
         label="Total sales"
         value={money(data.sales)}
@@ -113,8 +113,6 @@ export function AdminDashboardOrderMetrics() {
         value={String(data.customers)}
         note="Unique customer phone numbers"
       />
-      <Card label="Messages" value="0" note="Inbox not connected" />
-      <Card label="Partners" value="0" note="Partner records not connected" />
     </section>
   );
 }
