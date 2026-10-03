@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { demoAdminProducts } from "@/data/demo-admin-products";
 import {
   createProduct,
   isProductDatabaseConfigured,
@@ -110,8 +111,8 @@ export async function GET() {
   if (!isProductDatabaseConfigured()) {
     return NextResponse.json({
       configured: false,
-      products: [],
-      error: "Supabase product database is not configured.",
+      demo: true,
+      products: demoAdminProducts,
     });
   }
 
