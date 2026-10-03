@@ -31,7 +31,7 @@ function Card({
   return (
     <div
       className={
-        "min-w-0 rounded-[16px] border p-3.5 sm:rounded-[18px] md:p-5 " +
+        "min-w-0 rounded-[16px] border p-4 sm:rounded-[18px] md:p-5.5 " +
         (accent
           ? "border-[#001cac]/10 bg-[#eef2ff]"
           : "border-[#dfe3ea] bg-white")
@@ -40,7 +40,7 @@ function Card({
       <div className="flex items-center justify-between gap-3">
         <span
           className={
-            "text-[8px] font-semibold uppercase tracking-[.12em] " +
+            "text-[10px] font-bold uppercase tracking-[.12em] " +
             (accent ? "text-[#001cac]/70" : "text-[#7d8490]")
           }
         >
@@ -53,10 +53,10 @@ function Card({
           }
         />
       </div>
-      <strong className="mt-2.5 block overflow-hidden text-ellipsis text-[clamp(20px,6vw,34px)] font-semibold tabular-nums tracking-[-.05em] sm:mt-3">
+      <strong className="mt-2.5 block overflow-hidden text-ellipsis text-[clamp(24px,6vw,36px)] font-semibold tabular-nums tracking-[-.05em] sm:mt-3">
         {value}
       </strong>
-      <p className="mt-1.5 text-[8px] leading-[1.45] text-[#6f7783]">{note}</p>
+      <p className="mt-2 text-[10px] leading-[1.5] text-[#6f7783]">{note}</p>
     </div>
   );
 }
