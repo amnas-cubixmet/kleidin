@@ -1,4 +1,4 @@
-import type { DbProduct, Product, ProductColorVariant, ProductStatus } from "@/types/product";
+import type { DbProduct, Product, ProductColorVariant, ProductOfferType, ProductStatus } from "@/types/product";
 import { getSupabaseServerEnvironment } from "@/lib/server-env";
 
 export type ProductWriteInput = {
@@ -10,6 +10,14 @@ export type ProductWriteInput = {
   category: string;
   price: number;
   compareAtPrice?: number | null;
+  offerEnabled?: boolean;
+  offerType?: ProductOfferType;
+  offerValue?: number | null;
+  offerLabel?: string | null;
+  offerBadge?: string | null;
+  offerStartsAt?: string | null;
+  offerEndsAt?: string | null;
+  offerCountdown?: boolean;
   wholesaleEnabled: boolean;
   wholesalePrice?: number | null;
   wholesaleMinOrder?: number | null;
@@ -46,6 +54,16 @@ function dbToProduct(row: DbProduct): Product {
     category: row.category,
     price: Number(row.price),
     compareAtPrice: row.compare_at_price ?? undefined,
+    offerEnabled: Boolean(row.offer_enabled),
+    offerType: row.offer_type ?? "sale-price",
+    offerValue: row.offer_value ?? undefined,
+    offerLabel: row.offer_label ?? undefined,
+    offerBadge: row.offer_badge ?? undefined,
+    offerStartsAt: row.offer_starts_at ?? undefined,
+    offerEndsAt: row.offer_ends_at ?? undefined,
+    offerCountdown: Boolean(row.offer_countdown),
+    saleEndsAt: row.offer_ends_at ?? undefined,
+    saleLabel: row.offer_label ?? undefined,
     wholesaleEnabled: Boolean(row.wholesale_enabled),
     wholesalePrice: row.wholesale_price ?? undefined,
     wholesaleMinOrder: row.wholesale_min_order ?? undefined,
@@ -74,6 +92,14 @@ function productToDb(input: ProductWriteInput) {
     category: input.category,
     price: input.price,
     compare_at_price: input.compareAtPrice ?? null,
+    offer_enabled: Boolean(input.offerEnabled),
+    offer_type: input.offerType ?? "sale-price",
+    offer_value: input.offerEnabled ? input.offerValue ?? null : null,
+    offer_label: input.offerEnabled ? input.offerLabel ?? "" : "",
+    offer_badge: input.offerEnabled ? input.offerBadge ?? "" : "",
+    offer_starts_at: input.offerEnabled ? input.offerStartsAt ?? null : null,
+    offer_ends_at: input.offerEnabled ? input.offerEndsAt ?? null : null,
+    offer_countdown: input.offerEnabled ? Boolean(input.offerCountdown) : false,
     wholesale_enabled: input.wholesaleEnabled,
     wholesale_price: input.wholesaleEnabled ? input.wholesalePrice ?? null : null,
     wholesale_min_order: input.wholesaleEnabled ? input.wholesaleMinOrder ?? null : null,
