@@ -95,7 +95,7 @@ export function AdminDashboardOrderActivity() {
         </div>
       )}
 
-      <div className="mt-3 grid grid-cols-3 gap-1.5 sm:gap-2">
+      <div className="mt-3 grid grid-cols-1 gap-2 xs:grid-cols-3">
         <div className="rounded-[12px] bg-[#f7f8fb] p-2.5 sm:rounded-[14px] sm:p-3">
           <span className="text-[9px] font-semibold uppercase tracking-[.1em] text-[#7d8490]">
             Avg. order
