@@ -55,15 +55,23 @@ export function AdminInventoryManager() {
                 ]),
               ),
               sizes: Object.fromEntries(
-                (product.colorVariants ?? []).map((variant) => [
-                  variant.name,
-                  Object.fromEntries(
-                    product.sizes.map((size) => [
-                      size,
-                      variant.sizeStocks?.[size] ?? 0,
-                    ]),
-                  ),
-                ]),
+                (product.colorVariants ?? []).map((variant) => {
+                  const hasMatrix =
+                    Object.keys(variant.sizeStocks ?? {}).length > 0;
+                  return [
+                    variant.name,
+                    Object.fromEntries(
+                      product.sizes.map((size, index) => [
+                        size,
+                        hasMatrix
+                          ? variant.sizeStocks?.[size] ?? 0
+                          : index === 0
+                            ? variant.stock ?? 0
+                            : 0,
+                      ]),
+                    ),
+                  ];
+                }),
               ),
             },
           ]),
@@ -232,15 +240,23 @@ export function AdminInventoryManager() {
               ]),
             ),
             sizes: Object.fromEntries(
-              (updated.colorVariants ?? []).map((variant) => [
-                variant.name,
-                Object.fromEntries(
-                  updated.sizes.map((size) => [
-                    size,
-                    variant.sizeStocks?.[size] ?? 0,
-                  ]),
-                ),
-              ]),
+              (updated.colorVariants ?? []).map((variant) => {
+                const hasMatrix =
+                  Object.keys(variant.sizeStocks ?? {}).length > 0;
+                return [
+                  variant.name,
+                  Object.fromEntries(
+                    updated.sizes.map((size, index) => [
+                      size,
+                      hasMatrix
+                        ? variant.sizeStocks?.[size] ?? 0
+                        : index === 0
+                          ? variant.stock ?? 0
+                          : 0,
+                    ]),
+                  ),
+                ];
+              }),
             ),
           },
         }));
