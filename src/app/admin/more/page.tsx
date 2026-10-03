@@ -8,8 +8,6 @@ export const metadata: Metadata = { title: "More | KLEID.IN Admin", robots: { in
 
 const links = [
   ["/admin/customers", "Customers", "Customer profiles and history"],
-  ["/admin/partners", "Partners", "Partner performance and records"],
-  ["/admin/messages", "Messages", "Customer and business inbox"],
   ["/admin/testimonials", "Testimonials", "Review and approve feedback"],
   ["/admin/hero", "Hero", "Storefront hero content"],
   ["/admin/settings", "Settings", "Store and admin preferences"],
