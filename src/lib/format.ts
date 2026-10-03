@@ -1,5 +1,6 @@
 import { store } from "@/config/store";
 import type { Product } from "@/types/product";
+import { getProductOfferPrice, isProductOfferActive } from "@/lib/product-offers";
 
 export function formatPrice(value: number) {
   return new Intl.NumberFormat(store.locale, {
@@ -30,11 +31,15 @@ export function getProductWhatsappUrl(
 ) {
   if (!whatsappNumber) return "#";
 
+  const activeOffer = isProductOfferActive(product);
+  const orderPrice = activeOffer ? getProductOfferPrice(product) : product.price;
+
   const lines = [
     "Hi KLEID.IN, I would like to order this product:",
     "",
     product.name,
-    `Price: ${formatPrice(product.price)}`,
+    `Price: ${formatPrice(orderPrice)}`,
+    activeOffer ? `Offer: ${product.offerBadge || product.offerLabel || "Active offer"}` : "",
     `Product: /products/${product.slug}`,
     selectedColor ? `Colour: ${selectedColor}` : "",
     selectedSize ? `Size: ${selectedSize}` : "",
