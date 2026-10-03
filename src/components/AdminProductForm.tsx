@@ -825,11 +825,11 @@ export function AdminProductForm({
         </div>
       ) : null}
 
-      <div className="sticky bottom-3 z-20 flex gap-2 rounded-[16px] border border-[#d9dde3] bg-white/95 p-2.5 shadow-[0_16px_40px_rgba(16,24,40,.12)] backdrop-blur">
+      <div className="sticky bottom-3 z-20 flex flex-col gap-2 rounded-[16px] border border-[#d9dde3] bg-white/95 p-2.5 shadow-[0_16px_40px_rgba(16,24,40,.12)] backdrop-blur xs:flex-row">
         <button
           type="button"
           onClick={() => router.back()}
-          className="min-h-[46px] rounded-full border border-[#d5d9df] bg-white px-5 text-[10px] font-bold text-[#4f5761]"
+          className="min-h-[46px] w-full rounded-full border border-[#d5d9df] bg-white px-5 text-[10px] font-bold text-[#4f5761] xs:w-auto"
         >
           Cancel
         </button>
