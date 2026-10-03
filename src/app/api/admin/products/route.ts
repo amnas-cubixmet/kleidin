@@ -7,7 +7,7 @@ import {
   listProducts,
   type ProductWriteInput,
 } from "@/lib/supabase-products";
-import type { ProductColorVariant, ProductStatus } from "@/types/product";
+import type { ProductColorVariant, ProductOfferType, ProductStatus } from "@/types/product";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +53,8 @@ function variants(value: unknown): ProductColorVariant[] {
 
 function parseProduct(body: Record<string, unknown>): ProductWriteInput {
   const wholesaleEnabled = Boolean(body.wholesaleEnabled);
+  const offerEnabled = Boolean(body.offerEnabled);
+  const offerType = text(body.offerType) as ProductOfferType;
   const status = text(body.status) as ProductStatus;
 
   return {
@@ -67,6 +69,16 @@ function parseProduct(body: Record<string, unknown>): ProductWriteInput {
       body.compareAtPrice === null || body.compareAtPrice === ""
         ? null
         : Math.max(0, number(body.compareAtPrice)),
+    offerEnabled,
+    offerType: ["sale-price", "percentage", "fixed"].includes(offerType)
+      ? offerType
+      : "sale-price",
+    offerValue: offerEnabled ? Math.max(0, number(body.offerValue)) : null,
+    offerLabel: offerEnabled ? text(body.offerLabel) : null,
+    offerBadge: offerEnabled ? text(body.offerBadge) : null,
+    offerStartsAt: offerEnabled ? text(body.offerStartsAt) || null : null,
+    offerEndsAt: offerEnabled ? text(body.offerEndsAt) || null : null,
+    offerCountdown: offerEnabled ? Boolean(body.offerCountdown) : false,
     wholesaleEnabled,
     wholesalePrice: wholesaleEnabled
       ? Math.max(0, number(body.wholesalePrice))
@@ -92,6 +104,24 @@ function validate(input: ProductWriteInput) {
     return "Product name, slug and SKU are required.";
   }
   if (input.price < 0) return "Retail price must be valid.";
+  if (input.offerEnabled) {
+    if (!input.offerValue || input.offerValue <= 0) {
+      return "Enter a valid offer value.";
+    }
+    if (input.offerType === "percentage" && input.offerValue > 100) {
+      return "Percentage discount cannot be above 100%.";
+    }
+    if (input.offerType === "sale-price" && input.offerValue >= input.price) {
+      return "Sale price must be lower than the retail price.";
+    }
+    if (
+      input.offerStartsAt &&
+      input.offerEndsAt &&
+      new Date(input.offerEndsAt).getTime() <= new Date(input.offerStartsAt).getTime()
+    ) {
+      return "Offer end time must be after the start time.";
+    }
+  }
   if (input.wholesaleEnabled) {
     if (!input.wholesalePrice || input.wholesalePrice <= 0) {
       return "Wholesale price is required when wholesale is enabled.";
