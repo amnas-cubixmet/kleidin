@@ -682,7 +682,7 @@ export function AdminHeroManager() {
             </div>
           ) : null}
 
-          <div className="sticky bottom-3 z-20 flex flex-wrap gap-2 rounded-[16px] border border-[#d9dde3] bg-white/95 p-2.5 shadow-[0_16px_40px_rgba(16,24,40,.12)] backdrop-blur">
+          <div className="sticky bottom-3 z-20 grid grid-cols-2 gap-2 rounded-[16px] border border-[#d9dde3] bg-white/95 p-2.5 shadow-[0_16px_40px_rgba(16,24,40,.12)] backdrop-blur sm:flex sm:flex-wrap">
             <button
               type="button"
               onClick={() => void move(-1)}
@@ -708,7 +708,7 @@ export function AdminHeroManager() {
               type="button"
               onClick={() => void save()}
               disabled={saving}
-              className="ml-auto min-h-[46px] rounded-full bg-[#111111] px-6 text-[10px] font-bold !text-white disabled:opacity-50"
+              className="min-h-[46px] rounded-full bg-[#111111] px-6 text-[10px] font-bold !text-white disabled:opacity-50 sm:ml-auto"
               style={{ color: "#fff" }}
             >
               {saving ? "Saving…" : "Save hero"}
