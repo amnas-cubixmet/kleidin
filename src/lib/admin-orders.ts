@@ -1,3 +1,5 @@
+import { demoAdminOrders } from "@/data/demo-admin-orders";
+
 export const ADMIN_ORDERS_STORAGE_KEY = "kleidin-admin-orders-v1";
 export const ADMIN_ORDERS_UPDATED_EVENT = "kleidin:admin-orders-updated";
 
@@ -52,7 +54,7 @@ export function readAdminOrders(): AdminOrder[] {
 
   try {
     const raw = window.localStorage.getItem(ADMIN_ORDERS_STORAGE_KEY);
-    if (!raw) return [];
+    if (!raw) return demoAdminOrders;
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
   } catch {
