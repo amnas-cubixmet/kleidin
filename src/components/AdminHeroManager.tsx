@@ -1,36 +1,107 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import {
-  defaultHeroSlides,
-  HERO_SLIDE_STORAGE_KEY,
-  type HeroSlideConfig,
+import { useEffect, useMemo, useState } from "react";
+import type { Product } from "@/types/product";
+import type {
+  HeroCtaStyle,
+  HeroImagePosition,
+  HeroSlideConfig,
+  HeroSlideKind,
 } from "@/data/hero-slides";
 
-function readInitialSlides() {
-  if (typeof window === "undefined") return defaultHeroSlides;
+const kindOptions: { value: HeroSlideKind; label: string; note: string }[] = [
+  { value: "product", label: "Product", note: "Feature one product" },
+  { value: "offer", label: "Offer", note: "Timed sale or promotion" },
+  { value: "collection", label: "Collection", note: "Category or edit" },
+  { value: "custom", label: "Custom", note: "Brand message or campaign" },
+];
 
-  try {
-    const saved = window.localStorage.getItem(HERO_SLIDE_STORAGE_KEY);
-    if (!saved) return defaultHeroSlides;
+function datetimeValue(value?: string | null) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const offset = date.getTimezoneOffset();
+  return new Date(date.getTime() - offset * 60_000).toISOString().slice(0, 16);
+}
 
-    const parsed = JSON.parse(saved) as HeroSlideConfig[];
-    if (!Array.isArray(parsed)) return defaultHeroSlides;
+function toIso(value: string) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
 
-    const savedById = new Map(parsed.map((item) => [item.id, item]));
-    return defaultHeroSlides.map((item) => ({
-      ...item,
-      ...(savedById.get(item.id) ?? {}),
-    }));
-  } catch {
-    return defaultHeroSlides;
-  }
+function emptyHero(order: number): Omit<HeroSlideConfig, "id"> {
+  return {
+    kind: "product",
+    productId: null,
+    label: "FEATURED",
+    title: "FEATURED PRODUCT",
+    subtitle: "Select a product and build this hero.",
+    button: "View product",
+    href: "",
+    badge: "FEATURED",
+    discountText: "",
+    imageUrl: "",
+    startsAt: null,
+    endsAt: null,
+    showCountdown: false,
+    ctaStyle: "light",
+    imagePosition: "center",
+    enabled: true,
+    order,
+  };
 }
 
 export function AdminHeroManager() {
-  const [slides, setSlides] = useState<HeroSlideConfig[]>(readInitialSlides);
-  const [selectedId, setSelectedId] = useState(slides[0]?.id ?? "");
-  const [saved, setSaved] = useState(false);
+  const [slides, setSlides] = useState<HeroSlideConfig[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [selectedId, setSelectedId] = useState("");
+  const [configured, setConfigured] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+
+  async function load() {
+    try {
+      setLoading(true);
+      setMessage("");
+
+      const [heroResponse, productResponse] = await Promise.all([
+        fetch("/api/admin/hero", { cache: "no-store" }),
+        fetch("/api/admin/products", { cache: "no-store" }),
+      ]);
+
+      const heroData = await heroResponse.json();
+      const productData = await productResponse.json();
+
+      if (!heroResponse.ok) {
+        throw new Error(heroData.error || "Could not load hero settings.");
+      }
+
+      setConfigured(heroData.configured !== false);
+      const nextSlides = (heroData.slides ?? []) as HeroSlideConfig[];
+      setSlides(nextSlides);
+      setProducts(
+        productResponse.ok ? ((productData.products ?? []) as Product[]) : [],
+      );
+
+      setSelectedId((current) =>
+        nextSlides.some((slide) => slide.id === current)
+          ? current
+          : nextSlides[0]?.id ?? "",
+      );
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Could not load hero settings.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void load();
+  }, []);
 
   const ordered = useMemo(
     () => [...slides].sort((a, b) => a.order - b.order),
@@ -38,12 +109,21 @@ export function AdminHeroManager() {
   );
 
   const selected =
-    slides.find((slide) => slide.id === selectedId) ?? ordered[0];
+    slides.find((slide) => slide.id === selectedId) ?? ordered[0] ?? null;
 
-  function updateSlide(patch: Partial<HeroSlideConfig>) {
+  const selectedProduct = selected?.productId
+    ? products.find((product) => product.id === selected.productId)
+    : undefined;
+
+  const previewImage =
+    selected?.imageUrl ||
+    selectedProduct?.image ||
+    selectedProduct?.colorVariants?.[0]?.images?.[0] ||
+    "";
+
+  function update(patch: Partial<HeroSlideConfig>) {
     if (!selected) return;
-
-    setSaved(false);
+    setMessage("");
     setSlides((current) =>
       current.map((slide) =>
         slide.id === selected.id ? { ...slide, ...patch } : slide,
@@ -51,257 +131,608 @@ export function AdminHeroManager() {
     );
   }
 
-  function moveSelected(direction: -1 | 1) {
+  async function addHero() {
+    if (!configured) {
+      setMessage("Connect Supabase and run the updated schema before adding hero slides.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setMessage("");
+      const order = Math.max(0, ...slides.map((slide) => slide.order)) + 1;
+      const response = await fetch("/api/admin/hero", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(emptyHero(order)),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not add hero.");
+
+      const slide = data.slide as HeroSlideConfig;
+      setSlides((current) => [...current, slide]);
+      setSelectedId(slide.id);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not add hero.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function save() {
+    if (!selected) return;
+
+    try {
+      setSaving(true);
+      setMessage("");
+
+      const response = await fetch("/api/admin/hero/" + selected.id, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(selected),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not save hero.");
+
+      const updated = data.slide as HeroSlideConfig;
+      setSlides((current) =>
+        current.map((slide) => (slide.id === updated.id ? updated : slide)),
+      );
+      setMessage("Hero saved.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not save hero.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function remove() {
+    if (!selected) return;
+    if (!window.confirm("Delete this hero slide?")) return;
+
+    try {
+      setSaving(true);
+      const response = await fetch("/api/admin/hero/" + selected.id, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not delete hero.");
+
+      const next = slides.filter((slide) => slide.id !== selected.id);
+      setSlides(next);
+      setSelectedId(next[0]?.id ?? "");
+      setMessage("");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not delete hero.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function move(direction: -1 | 1) {
     if (!selected) return;
 
     const list = [...ordered];
-    const index = list.findIndex((item) => item.id === selected.id);
-    const nextIndex = index + direction;
+    const index = list.findIndex((slide) => slide.id === selected.id);
+    const targetIndex = index + direction;
+    if (index < 0 || targetIndex < 0 || targetIndex >= list.length) return;
 
-    if (index < 0 || nextIndex < 0 || nextIndex >= list.length) return;
+    const target = list[targetIndex];
+    const first = { ...selected, order: target.order };
+    const second = { ...target, order: selected.order };
 
-    const other = list[nextIndex];
-    const selectedOrder = selected.order;
-
-    setSaved(false);
     setSlides((current) =>
-      current.map((item) => {
-        if (item.id === selected.id) return { ...item, order: other.order };
-        if (item.id === other.id) return { ...item, order: selectedOrder };
-        return item;
+      current.map((slide) => {
+        if (slide.id === first.id) return first;
+        if (slide.id === second.id) return second;
+        return slide;
       }),
+    );
+
+    await Promise.all([
+      fetch("/api/admin/hero/" + first.id, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(first),
+      }),
+      fetch("/api/admin/hero/" + second.id, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(second),
+      }),
+    ]);
+  }
+
+  function chooseProduct(productId: string) {
+    const product = products.find((item) => item.id === productId);
+    if (!product) {
+      update({ productId: null });
+      return;
+    }
+
+    update({
+      productId: product.id,
+      title: product.name.toUpperCase(),
+      subtitle: product.description || "Featured from the current collection.",
+      button: "View product",
+      href: "/products/" + product.slug,
+      badge: selected?.kind === "offer" ? selected.badge : product.category.toUpperCase(),
+    });
+  }
+
+  const field =
+    "h-12 w-full rounded-[12px] border border-[#d7dbe1] bg-white px-3.5 text-[12px] font-medium text-[#1d2025] outline-none transition placeholder:text-[#989fa8] focus:border-[#111111] focus:ring-2 focus:ring-black/10";
+  const label =
+    "mb-1.5 block text-[9px] font-bold uppercase tracking-[.09em] text-[#636b76]";
+
+  if (loading) {
+    return (
+      <div className="grid min-h-[360px] place-items-center rounded-[20px] border border-[#d9dde3] bg-white text-[11px] font-semibold text-[#69717c]">
+        Loading hero builder…
+      </div>
     );
   }
 
-  function save() {
-    window.localStorage.setItem(HERO_SLIDE_STORAGE_KEY, JSON.stringify(slides));
-    setSaved(true);
-  }
-
-  function reset() {
-    window.localStorage.removeItem(HERO_SLIDE_STORAGE_KEY);
-    setSlides(defaultHeroSlides);
-    setSelectedId(defaultHeroSlides[0]?.id ?? "");
-    setSaved(false);
-  }
-
-  if (!selected) return null;
-
-  const fieldClass =
-    "w-full rounded-xl border border-black/10 bg-white px-3 py-2.5 text-[13px] text-[#111] outline-none transition focus:border-[#001cac]";
-
   return (
-    <section className="grid gap-5 lg:grid-cols-[340px_minmax(0,1fr)]">
-      <aside className="rounded-[22px] border border-black/8 bg-white p-3 shadow-[0_12px_40px_rgba(0,0,0,.04)]">
-        <div className="flex items-center justify-between px-2 pb-3 pt-1">
+    <div className="grid gap-4 lg:grid-cols-[300px_minmax(0,1fr)]">
+      <aside className="rounded-[20px] border border-[#d9dde3] bg-white p-3 sm:p-4">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="m-0 text-[9px] font-semibold tracking-[.14em] text-[#001cac]">
-              HERO MANAGER
+            <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#111111]">
+              Hero slides
             </p>
-            <h2 className="mt-1 text-[20px] font-semibold tracking-[-.03em]">
-              {slides.filter((slide) => slide.enabled).length} active slides
-            </h2>
+            <strong className="mt-1.5 block text-[20px] font-semibold tracking-[-.035em]">
+              {slides.length} saved
+            </strong>
           </div>
           <button
             type="button"
-            onClick={reset}
-            className="rounded-full border border-black/10 px-3 py-2 text-[9px] font-semibold"
+            onClick={() => void addHero()}
+            disabled={saving}
+            className="min-h-[44px] rounded-full bg-[#111111] px-4 text-[10px] font-bold !text-white disabled:opacity-50"
+            style={{ color: "#fff" }}
           >
-            Reset
+            + Add
           </button>
         </div>
 
-        <div className="space-y-1.5">
-          {ordered.map((slide, index) => (
-            <button
-              key={slide.id}
-              type="button"
-              onClick={() => setSelectedId(slide.id)}
-              className={
-                "flex w-full items-center gap-3 rounded-[14px] px-3 py-3 text-left transition " +
-                (selected.id === slide.id
-                  ? "bg-[#001cac] text-white"
-                  : "bg-[#f7f7f5] text-[#111] hover:bg-[#efefec]")
-              }
-            >
-              <span className="w-7 shrink-0 text-[9px] font-semibold opacity-60">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className="min-w-0 flex-1">
-                <strong className="block truncate text-[11px] font-semibold">
-                  {slide.title}
-                </strong>
-                <span className="mt-1 block truncate text-[8px] opacity-60">
-                  {slide.label}
-                </span>
-              </span>
-              <span
-                className={
-                  "size-2 shrink-0 rounded-full " +
-                  (slide.enabled ? "bg-[#46d47c]" : "bg-black/20")
-                }
-              />
-            </button>
-          ))}
+        {!configured ? (
+          <div className="mt-3 rounded-[14px] border border-[#ead3a6] bg-[#fffaf0] p-3 text-[9px] leading-5 text-[#745d2c]">
+            Supabase hero settings are not connected. Add the server env values and run the updated schema.
+          </div>
+        ) : null}
+
+        <div className="mt-4 grid gap-2">
+          {ordered.length ? (
+            ordered.map((slide, index) => {
+              const active = slide.id === selected?.id;
+              return (
+                <button
+                  key={slide.id}
+                  type="button"
+                  onClick={() => setSelectedId(slide.id)}
+                  className={
+                    "flex min-h-[64px] w-full items-center gap-3 rounded-[14px] px-3 text-left transition " +
+                    (active
+                      ? "bg-[#111111] !text-white"
+                      : "bg-[#f5f5f5] text-[#25292f] hover:bg-[#ededed]")
+                  }
+                  style={active ? { color: "#fff" } : undefined}
+                >
+                  <span className="w-7 shrink-0 text-[9px] font-bold opacity-60">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <strong className="block truncate text-[11px] font-semibold">
+                      {slide.title || "Untitled hero"}
+                    </strong>
+                    <span className="mt-1 block truncate text-[8px] opacity-65">
+                      {slide.kind.toUpperCase()}
+                      {slide.enabled ? " · ACTIVE" : " · OFF"}
+                    </span>
+                  </span>
+                </button>
+              );
+            })
+          ) : (
+            <div className="rounded-[14px] bg-[#f5f5f5] px-4 py-8 text-center">
+              <strong className="text-[11px] font-semibold">No hero slides</strong>
+              <p className="mt-1.5 text-[9px] leading-5 text-[#747c86]">
+                Add only the promotions or product heroes you actually need.
+              </p>
+            </div>
+          )}
         </div>
       </aside>
 
-      <div className="rounded-[22px] border border-black/8 bg-white p-5 shadow-[0_12px_40px_rgba(0,0,0,.04)] md:p-7">
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-black/8 pb-5">
-          <div>
-            <p className="m-0 text-[9px] font-semibold tracking-[.14em] text-[#001cac]">
-              EDIT SLIDE
+      {selected ? (
+        <div className="grid gap-4">
+          <section className="rounded-[20px] border border-[#d9dde3] bg-white p-4 sm:p-5 md:p-6">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#111111]">
+                  Hero type
+                </p>
+                <h2 className="mt-1.5 text-[26px] font-semibold tracking-[-.045em]">
+                  Build this hero
+                </h2>
+              </div>
+
+              <button
+                type="button"
+                role="switch"
+                aria-checked={selected.enabled}
+                onClick={() => update({ enabled: !selected.enabled })}
+                className={
+                  "relative h-[34px] w-[62px] rounded-full transition " +
+                  (selected.enabled ? "bg-[#111111]" : "bg-[#d8dce2]")
+                }
+              >
+                <span
+                  className={
+                    "absolute top-[4px] h-[26px] w-[26px] rounded-full bg-white shadow-sm transition " +
+                    (selected.enabled ? "left-[32px]" : "left-[4px]")
+                  }
+                />
+              </button>
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-2 xl:grid-cols-4">
+              {kindOptions.map((option) => {
+                const active = selected.kind === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() =>
+                      update({
+                        kind: option.value,
+                        showCountdown:
+                          option.value === "offer"
+                            ? selected.showCountdown
+                            : false,
+                      })
+                    }
+                    className={
+                      "min-h-[72px] rounded-[14px] border p-3 text-left transition " +
+                      (active
+                        ? "border-[#111111] bg-[#111111] !text-white"
+                        : "border-[#d9dde3] bg-white text-[#2d3238]")
+                    }
+                    style={active ? { color: "#fff" } : undefined}
+                  >
+                    <strong className="block text-[11px] font-bold">
+                      {option.label}
+                    </strong>
+                    <span className="mt-1 block text-[8px] leading-4 opacity-65">
+                      {option.note}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {(selected.kind === "product" || selected.kind === "offer") ? (
+              <label className="mt-4 block">
+                <span className={label}>
+                  {selected.kind === "offer" ? "Offer product (optional)" : "Product"}
+                </span>
+                <select
+                  className={field}
+                  value={selected.productId ?? ""}
+                  onChange={(event) => chooseProduct(event.target.value)}
+                >
+                  <option value="">
+                    {selected.kind === "offer"
+                      ? "No specific product"
+                      : "Choose product"}
+                  </option>
+                  {products.map((product) => (
+                    <option key={product.id} value={product.id}>
+                      {product.name} · {product.sku}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
+          </section>
+
+          <section className="rounded-[20px] border border-[#d9dde3] bg-white p-4 sm:p-5 md:p-6">
+            <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#111111]">
+              Content
             </p>
-            <h2 className="mt-1 text-[28px] font-semibold tracking-[-.045em]">
-              {selected.title}
-            </h2>
-            <p className="mt-1 text-[10px] text-black/45">{selected.id}</p>
-          </div>
 
-          <label className="flex cursor-pointer items-center gap-2 rounded-full border border-black/10 px-3 py-2">
-            <input
-              type="checkbox"
-              checked={selected.enabled}
-              onChange={(event) =>
-                updateSlide({ enabled: event.target.checked })
-              }
-              className="accent-[#001cac]"
-            />
-            <span className="text-[10px] font-semibold">
-              {selected.enabled ? "Enabled" : "Disabled"}
-            </span>
-          </label>
-        </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <label>
+                <span className={label}>Label</span>
+                <input
+                  className={field}
+                  value={selected.label}
+                  onChange={(event) => update({ label: event.target.value })}
+                  placeholder="LIMITED OFFER"
+                />
+              </label>
+              <label>
+                <span className={label}>Badge</span>
+                <input
+                  className={field}
+                  value={selected.badge}
+                  onChange={(event) => update({ badge: event.target.value })}
+                  placeholder="ONLY THIS WEEK"
+                />
+              </label>
 
-        <div className="grid gap-4 py-5 md:grid-cols-2">
-          <label className="block">
-            <span className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[.08em] text-black/45">
-              Label
-            </span>
-            <input
-              value={selected.label}
-              onChange={(event) => updateSlide({ label: event.target.value })}
-              className={fieldClass}
-            />
-          </label>
+              {selected.kind === "offer" ? (
+                <label className="sm:col-span-2">
+                  <span className={label}>Offer / discount text</span>
+                  <input
+                    className={field}
+                    value={selected.discountText ?? ""}
+                    onChange={(event) =>
+                      update({ discountText: event.target.value })
+                    }
+                    placeholder="15% OFF / ₹500 OFF / BUY 2 GET 1"
+                  />
+                </label>
+              ) : null}
 
-          <label className="block">
-            <span className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[.08em] text-black/45">
-              Badge
-            </span>
-            <input
-              value={selected.badge}
-              onChange={(event) => updateSlide({ badge: event.target.value })}
-              className={fieldClass}
-              placeholder="Auto when blank"
-            />
-          </label>
+              <label className="sm:col-span-2">
+                <span className={label}>Title</span>
+                <input
+                  className={field}
+                  value={selected.title}
+                  onChange={(event) => update({ title: event.target.value })}
+                />
+              </label>
 
-          <label className="block md:col-span-2">
-            <span className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[.08em] text-black/45">
-              Title
-            </span>
-            <input
-              value={selected.title}
-              onChange={(event) => updateSlide({ title: event.target.value })}
-              className={fieldClass}
-            />
-          </label>
+              <label className="sm:col-span-2">
+                <span className={label}>Subtitle</span>
+                <textarea
+                  className="min-h-[110px] w-full resize-y rounded-[12px] border border-[#d7dbe1] bg-white p-3.5 text-[12px] leading-5 outline-none focus:border-[#111111] focus:ring-2 focus:ring-black/10"
+                  value={selected.subtitle}
+                  onChange={(event) => update({ subtitle: event.target.value })}
+                />
+              </label>
+            </div>
+          </section>
 
-          <label className="block md:col-span-2">
-            <span className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[.08em] text-black/45">
-              Subtitle
-            </span>
-            <textarea
-              value={selected.subtitle}
-              onChange={(event) =>
-                updateSlide({ subtitle: event.target.value })
-              }
-              rows={3}
-              className={fieldClass + " resize-none"}
-            />
-          </label>
+          <section className="rounded-[20px] border border-[#d9dde3] bg-white p-4 sm:p-5 md:p-6">
+            <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#111111]">
+              Timing
+            </p>
+            <p className="mt-1 text-[10px] leading-5 text-[#68707b]">
+              Leave dates empty to keep this hero available whenever it is enabled.
+            </p>
 
-          <label className="block">
-            <span className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[.08em] text-black/45">
-              Button text
-            </span>
-            <input
-              value={selected.button}
-              onChange={(event) => updateSlide({ button: event.target.value })}
-              className={fieldClass}
-            />
-          </label>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <label>
+                <span className={label}>Start</span>
+                <input
+                  type="datetime-local"
+                  className={field}
+                  value={datetimeValue(selected.startsAt)}
+                  onChange={(event) =>
+                    update({ startsAt: toIso(event.target.value) })
+                  }
+                />
+              </label>
+              <label>
+                <span className={label}>End</span>
+                <input
+                  type="datetime-local"
+                  className={field}
+                  value={datetimeValue(selected.endsAt)}
+                  onChange={(event) =>
+                    update({ endsAt: toIso(event.target.value) })
+                  }
+                />
+              </label>
+            </div>
 
-          <label className="block">
-            <span className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[.08em] text-black/45">
-              CTA link
-            </span>
-            <input
-              value={selected.href}
-              onChange={(event) => updateSlide({ href: event.target.value })}
-              className={fieldClass}
-              placeholder="Leave blank for automatic product/contact link"
-            />
-          </label>
+            {selected.kind === "offer" ? (
+              <label className="mt-3 flex min-h-[48px] items-center gap-3 rounded-[12px] border border-[#d7dbe1] px-3.5">
+                <input
+                  type="checkbox"
+                  checked={Boolean(selected.showCountdown)}
+                  onChange={(event) =>
+                    update({ showCountdown: event.target.checked })
+                  }
+                  className="h-4 w-4 accent-black"
+                />
+                <span className="text-[11px] font-semibold">
+                  Show countdown until end time
+                </span>
+              </label>
+            ) : null}
+          </section>
 
-          <label className="block md:col-span-2">
-            <span className="mb-1.5 block text-[9px] font-semibold uppercase tracking-[.08em] text-black/45">
-              Custom image URL
-            </span>
-            <input
-              value={selected.imageUrl}
-              onChange={(event) =>
-                updateSlide({ imageUrl: event.target.value })
-              }
-              className={fieldClass}
-              placeholder="Leave blank to use the automatic product/offer image"
-            />
-          </label>
-        </div>
+          <section className="rounded-[20px] border border-[#d9dde3] bg-white p-4 sm:p-5 md:p-6">
+            <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#111111]">
+              Button & media
+            </p>
 
-        <div className="rounded-[18px] bg-[#071225] p-5 text-white">
-          <p className="m-0 text-[8px] font-semibold tracking-[.14em] text-[#7395ff]">
-            {selected.label}
-          </p>
-          <h3 className="mt-3 max-w-[760px] text-[clamp(34px,6vw,72px)] font-semibold leading-[.88] tracking-[-.055em]">
-            {selected.title}
-          </h3>
-          <p className="mt-3 max-w-[520px] text-[11px] leading-5 text-white/60">
-            {selected.subtitle}
-          </p>
-          <span className="mt-5 inline-flex min-h-10 items-center rounded-full bg-white px-4 text-[9px] font-semibold text-[#111]">
-            {selected.button}
-          </span>
-        </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <label>
+                <span className={label}>Button text</span>
+                <input
+                  className={field}
+                  value={selected.button}
+                  onChange={(event) => update({ button: event.target.value })}
+                />
+              </label>
+              <label>
+                <span className={label}>Button link</span>
+                <input
+                  className={field}
+                  value={selected.href}
+                  onChange={(event) => update({ href: event.target.value })}
+                  placeholder="/products or product auto-link"
+                />
+              </label>
+              <label className="sm:col-span-2">
+                <span className={label}>Custom image URL</span>
+                <input
+                  className={field}
+                  value={selected.imageUrl}
+                  onChange={(event) => update({ imageUrl: event.target.value })}
+                  placeholder="Leave blank to use selected product image"
+                />
+              </label>
+            </div>
 
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex gap-2">
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div>
+                <span className={label}>Button style</span>
+                <div className="grid grid-cols-3 gap-1.5 rounded-[14px] bg-[#f5f5f5] p-1.5">
+                  {(["light", "dark", "outline"] as HeroCtaStyle[]).map(
+                    (style) => {
+                      const active = (selected.ctaStyle ?? "light") === style;
+                      return (
+                        <button
+                          key={style}
+                          type="button"
+                          onClick={() => update({ ctaStyle: style })}
+                          className={
+                            "min-h-[42px] rounded-[10px] text-[9px] font-bold capitalize " +
+                            (active
+                              ? "bg-[#111111] !text-white"
+                              : "bg-white text-[#555d67]")
+                          }
+                          style={active ? { color: "#fff" } : undefined}
+                        >
+                          {style}
+                        </button>
+                      );
+                    },
+                  )}
+                </div>
+              </div>
+
+              <label>
+                <span className={label}>Image position</span>
+                <select
+                  className={field}
+                  value={selected.imagePosition ?? "center"}
+                  onChange={(event) =>
+                    update({
+                      imagePosition: event.target.value as HeroImagePosition,
+                    })
+                  }
+                >
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <section className="overflow-hidden rounded-[20px] border border-[#d9dde3] bg-[#071225] text-white">
+            <div className="relative min-h-[340px] overflow-hidden p-5 sm:p-7">
+              {previewImage ? (
+                <img
+                  src={previewImage}
+                  alt=""
+                  className={
+                    "absolute inset-0 h-full w-full object-cover opacity-55 " +
+                    ((selected.imagePosition ?? "center") === "left"
+                      ? "object-left"
+                      : (selected.imagePosition ?? "center") === "right"
+                        ? "object-right"
+                        : "object-center")
+                  }
+                />
+              ) : null}
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,10,24,.94),rgba(3,10,24,.55),rgba(3,10,24,.12))]" />
+
+              <div className="relative z-10 flex min-h-[290px] max-w-[680px] flex-col justify-end">
+                <span className="text-[9px] font-bold tracking-[.14em] text-white/65">
+                  {selected.label}
+                </span>
+                {selected.discountText ? (
+                  <strong className="mt-3 text-[14px] font-bold">
+                    {selected.discountText}
+                  </strong>
+                ) : null}
+                <h3 className="mt-2 text-[clamp(38px,7vw,72px)] font-semibold leading-[.9] tracking-[-.055em]">
+                  {selected.title}
+                </h3>
+                <p className="mt-3 max-w-[500px] text-[11px] leading-5 text-white/70">
+                  {selected.subtitle}
+                </p>
+                <span
+                  className={
+                    "mt-5 inline-flex min-h-[44px] w-fit items-center rounded-full px-5 text-[10px] font-bold " +
+                    ((selected.ctaStyle ?? "light") === "dark"
+                      ? "bg-[#111111] text-white"
+                      : (selected.ctaStyle ?? "light") === "outline"
+                        ? "border border-white/70 text-white"
+                        : "bg-white text-[#111111]")
+                  }
+                >
+                  {selected.button || "Shop now"}
+                </span>
+              </div>
+            </div>
+          </section>
+
+          {message ? (
+            <div className="rounded-[14px] border border-[#d9dde3] bg-white px-4 py-3 text-[10px] font-semibold text-[#555d67]">
+              {message}
+            </div>
+          ) : null}
+
+          <div className="sticky bottom-3 z-20 flex flex-wrap gap-2 rounded-[16px] border border-[#d9dde3] bg-white/95 p-2.5 shadow-[0_16px_40px_rgba(16,24,40,.12)] backdrop-blur">
             <button
               type="button"
-              onClick={() => moveSelected(-1)}
-              className="rounded-full border border-black/10 px-4 py-2.5 text-[9px] font-semibold"
+              onClick={() => void move(-1)}
+              className="min-h-[44px] rounded-full border border-[#d5d9df] bg-white px-4 text-[9px] font-bold"
             >
               Move up
             </button>
             <button
               type="button"
-              onClick={() => moveSelected(1)}
-              className="rounded-full border border-black/10 px-4 py-2.5 text-[9px] font-semibold"
+              onClick={() => void move(1)}
+              className="min-h-[44px] rounded-full border border-[#d5d9df] bg-white px-4 text-[9px] font-bold"
             >
               Move down
             </button>
+            <button
+              type="button"
+              onClick={() => void remove()}
+              className="min-h-[44px] rounded-full border border-[#efcaca] bg-white px-4 text-[9px] font-bold text-[#a33d3d]"
+            >
+              Delete
+            </button>
+            <button
+              type="button"
+              onClick={() => void save()}
+              disabled={saving}
+              className="ml-auto min-h-[46px] rounded-full bg-[#111111] px-6 text-[10px] font-bold !text-white disabled:opacity-50"
+              style={{ color: "#fff" }}
+            >
+              {saving ? "Saving…" : "Save hero"}
+            </button>
           </div>
-
-          <button
-            type="button"
-            onClick={save}
-            className="rounded-full bg-[#001cac] px-5 py-3 text-[10px] font-semibold text-white"
-          >
-            {saved ? "Saved" : "Save hero settings"}
-          </button>
         </div>
-      </div>
-    </section>
+      ) : (
+        <section className="grid min-h-[420px] place-items-center rounded-[20px] border border-[#d9dde3] bg-white px-5 text-center">
+          <div>
+            <strong className="text-[16px] font-semibold">Build only what you need</strong>
+            <p className="mt-2 max-w-[420px] text-[10px] leading-5 text-[#68717b]">
+              Add a product hero, timed offer, collection highlight or custom brand message.
+            </p>
+            <button
+              type="button"
+              onClick={() => void addHero()}
+              className="mt-5 min-h-[46px] rounded-full bg-[#111111] px-6 text-[10px] font-bold !text-white"
+              style={{ color: "#fff" }}
+            >
+              + Add first hero
+            </button>
+          </div>
+        </section>
+      )}
+    </div>
   );
 }
