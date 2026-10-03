@@ -6,6 +6,7 @@ import {
 } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getAdminEnvironment } from "@/lib/server-env";
 
 export const ADMIN_SESSION_COOKIE = "kleid_admin_session";
 export const ADMIN_SESSION_MAX_AGE = 60 * 60 * 12;
@@ -36,20 +37,23 @@ function getDevelopmentSessionSecret(
 }
 
 function readAdminConfig(): AdminAuthConfig | null {
-  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const env = getAdminEnvironment();
+  if (!env) return null;
 
-  const password = process.env.ADMIN_PASSWORD?.trim();
-  const passwordSalt = process.env.ADMIN_PASSWORD_SALT?.trim();
-  const passwordHash = process.env.ADMIN_PASSWORD_HASH?.trim();
+  const {
+    email,
+    password,
+    passwordSalt,
+    passwordHash,
+    sessionSecret: configuredSecret,
+  } = env;
 
   const hasPlainPassword = Boolean(password);
   const hasHashedPassword = Boolean(passwordSalt && passwordHash);
 
-  if (!email || (!hasPlainPassword && !hasHashedPassword)) {
+  if (!hasPlainPassword && !hasHashedPassword) {
     return null;
   }
-
-  const configuredSecret = process.env.ADMIN_SESSION_SECRET?.trim();
 
   // Local development only: allow ADMIN_EMAIL + ADMIN_PASSWORD to be enough.
   // Production should always use a separate long ADMIN_SESSION_SECRET.
