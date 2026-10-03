@@ -20,6 +20,7 @@ export default async function AdminOrderDetailPage({
 
   return (
     <AdminShell
+      tone="monochrome"
       title="Order details"
       description="Review the complete order, update fulfilment status, edit information or delete the order."
     >
