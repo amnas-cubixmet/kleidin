@@ -30,6 +30,7 @@ function getOfferTimer(endAt?: string) {
 
 export function ProductCard({ product }: { product: Product }) {
   const variants = product.colorVariants ?? [];
+  const [now, setNow] = useState(() => Date.now());
   const [selectedColor, setSelectedColor] = useState(
     variants[0]?.name ?? product.colors[0] ?? "Default",
   );
@@ -41,8 +42,8 @@ export function ProductCard({ product }: { product: Product }) {
   const currentStock = selectedVariant?.stock ?? product.stock;
   const soldOut = product.status === "sold-out" || currentStock <= 0;
   const limitedStock = !soldOut && currentStock <= 7;
-  const activeProductOffer = isProductOfferActive(product);
-  const offerPrice = getProductOfferPrice(product);
+  const activeProductOffer = isProductOfferActive(product, now);
+  const offerPrice = getProductOfferPrice(product, now);
   const legacyOffer =
     !activeProductOffer &&
     Boolean(product.compareAtPrice) &&
@@ -59,6 +60,11 @@ export function ProductCard({ product }: { product: Product }) {
       : 0;
 
   const [offerTimer, setOfferTimer] = useState<ReturnType<typeof getOfferTimer> | null>(null);
+
+  useEffect(() => {
+    const clock = window.setInterval(() => setNow(Date.now()), 30000);
+    return () => window.clearInterval(clock);
+  }, []);
 
   useEffect(() => {
     const endAt =
