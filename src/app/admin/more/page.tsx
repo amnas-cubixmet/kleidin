@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "More | KLEID.IN Admin", robots: { index: false, follow: false } };
 
 const links = [
+  ["/admin/offers", "Offers", "Product discounts and scheduled promotions"],
   ["/admin/testimonials", "Testimonials", "Review and approve feedback"],
   ["/admin/hero", "Hero", "Storefront hero content"],
 ];
