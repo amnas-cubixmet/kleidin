@@ -21,6 +21,7 @@ const pages: SearchResult[] = [
   { key: "dashboard", label: "Dashboard", meta: "Overview and business metrics", href: "/admin/dashboard", type: "Page" },
   { key: "orders", label: "Orders", meta: "Manual orders and fulfilment", href: "/admin/orders", type: "Page" },
   { key: "products", label: "Products", meta: "Catalog and pricing", href: "/admin/products", type: "Page" },
+  { key: "offers", label: "Offers", meta: "Product discounts and scheduled promotions", href: "/admin/offers", type: "Page" },
   { key: "inventory", label: "Inventory", meta: "Stock and low-stock alerts", href: "/admin/inventory", type: "Page" },
   { key: "testimonials", label: "Testimonials", meta: "Review and approve feedback", href: "/admin/testimonials", type: "Page" },
   { key: "hero", label: "Hero", meta: "Storefront hero content", href: "/admin/hero", type: "Page" },
