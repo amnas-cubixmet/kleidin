@@ -8,10 +8,8 @@ type IconName =
   | "orders"
   | "products"
   | "inventory"
-  | "customers"
   | "testimonials"
   | "hero"
-  | "settings"
   | "more";
 
 type NavItem = {
@@ -28,13 +26,11 @@ const primaryItems: NavItem[] = [
 ];
 
 const relationshipItems: NavItem[] = [
-  { href: "/admin/customers", label: "Customers", icon: "customers" },
   { href: "/admin/testimonials", label: "Testimonials", icon: "testimonials" },
 ];
 
 const storefrontItems: NavItem[] = [
   { href: "/admin/hero", label: "Hero", icon: "hero" },
-  { href: "/admin/settings", label: "Settings", icon: "settings" },
 ];
 
 const mobileItems: NavItem[] = [
@@ -66,14 +62,10 @@ function Icon({ name, className = "h-[19px] w-[19px]" }: { name: IconName; class
       return <svg {...common}><path d="m12 3 8 4.5-8 4.5-8-4.5L12 3Z" /><path d="m4 7.5 8 4.5 8-4.5V16l-8 5-8-5V7.5Z" /><path d="M12 12v9" /></svg>;
     case "inventory":
       return <svg {...common}><path d="M4 7h16v14H4z" /><path d="M3 3h18v4H3z" /><path d="M9 11h6" /></svg>;
-    case "customers":
-      return <svg {...common}><circle cx="9" cy="8" r="3" /><path d="M3.5 20c.5-4 2.4-6 5.5-6s5 2 5.5 6" /><path d="M16 11a3 3 0 1 0 0-6" /><path d="M17 14c2.3.6 3.4 2.6 3.5 6" /></svg>;
     case "testimonials":
       return <svg {...common}><path d="M6 17.5 3 20l.8-4A8.5 8.5 0 1 1 6 17.5Z" /><path d="m9 10 1 1 2-2" /><path d="M14 10h3M9 14h8" /></svg>;
     case "hero":
       return <svg {...common}><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8.5" cy="9" r="1.5" /><path d="m5 17 5-5 3 3 2-2 4 4" /></svg>;
-    case "settings":
-      return <svg {...common}><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z" /></svg>;
     default:
       return <svg {...common}><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" /><circle cx="19" cy="12" r="1" fill="currentColor" stroke="none" /></svg>;
   }
@@ -145,7 +137,7 @@ export function AdminNavigation() {
         {mobileItems.map((item) => {
           const active =
             item.icon === "more"
-              ? ["/admin/customers", "/admin/testimonials", "/admin/hero", "/admin/settings", "/admin/more"].some((href) => isActive(pathname, href))
+              ? ["/admin/testimonials", "/admin/hero", "/admin/more"].some((href) => isActive(pathname, href))
               : isActive(pathname, item.href);
 
           return (
