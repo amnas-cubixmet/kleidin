@@ -27,23 +27,27 @@ function strings(value: unknown) {
 
 function variants(value: unknown): ProductColorVariant[] {
   if (!Array.isArray(value)) return [];
-  return value
-    .map((item) => {
-      if (!item || typeof item !== "object") return null;
-      const row = item as Record<string, unknown>;
-      const name = text(row.name);
-      if (!name) return null;
-      const images = strings(row.images);
-      const image = text(row.image) || images[0] || undefined;
-      return {
-        name,
-        value: text(row.value) || "#111111",
-        image,
-        images,
-        stock: Math.max(0, number(row.stock, 0)),
-      };
-    })
-    .filter((item): item is ProductColorVariant => Boolean(item));
+
+  return value.reduce<ProductColorVariant[]>((result, item) => {
+    if (!item || typeof item !== "object") return result;
+
+    const row = item as Record<string, unknown>;
+    const name = text(row.name);
+    if (!name) return result;
+
+    const images = strings(row.images);
+    const image = text(row.image) || images[0] || undefined;
+
+    result.push({
+      name,
+      value: text(row.value) || "#111111",
+      ...(image ? { image } : {}),
+      images,
+      stock: Math.max(0, number(row.stock, 0)),
+    });
+
+    return result;
+  }, []);
 }
 
 function parseProduct(body: Record<string, unknown>): ProductWriteInput {
