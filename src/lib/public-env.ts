@@ -1,17 +1,13 @@
-function readPublicEnv(name: string) {
-  return process.env[name]?.trim() ?? "";
-}
-
 export const publicEnv = {
-  whatsappNumber: readPublicEnv("NEXT_PUBLIC_WHATSAPP_NUMBER"),
+  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.trim() ?? "",
   supportEmail:
-    readPublicEnv("NEXT_PUBLIC_SUPPORT_EMAIL") || "hello@kleid.in",
-  instagramUrl: readPublicEnv("NEXT_PUBLIC_INSTAGRAM_URL"),
-  facebookUrl: readPublicEnv("NEXT_PUBLIC_FACEBOOK_URL"),
+    process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || "hello@kleid.in",
+  instagramUrl: process.env.NEXT_PUBLIC_INSTAGRAM_URL?.trim() ?? "",
+  facebookUrl: process.env.NEXT_PUBLIC_FACEBOOK_URL?.trim() ?? "",
   announcementText:
-    readPublicEnv("NEXT_PUBLIC_ANNOUNCEMENT_TEXT") ||
+    process.env.NEXT_PUBLIC_ANNOUNCEMENT_TEXT?.trim() ||
     "Free shipping on prepaid orders above ₹1,999",
   announcementLinkLabel:
-    readPublicEnv("NEXT_PUBLIC_ANNOUNCEMENT_LINK_LABEL") ||
+    process.env.NEXT_PUBLIC_ANNOUNCEMENT_LINK_LABEL?.trim() ||
     "Shop the collection",
 } as const;
