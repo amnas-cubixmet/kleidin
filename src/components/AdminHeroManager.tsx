@@ -8,6 +8,12 @@ import type {
   HeroSlideConfig,
   HeroSlideKind,
 } from "@/data/hero-slides";
+import {
+  DEMO_ADMIN_HERO_UPDATED_EVENT,
+  readDemoAdminHero,
+  writeDemoAdminHero,
+} from "@/lib/demo-admin-hero-client";
+import { readDemoAdminProducts } from "@/lib/demo-admin-products-client";
 
 const kindOptions: { value: HeroSlideKind; label: string; note: string }[] = [
   { value: "product", label: "Product", note: "Feature one product" },
@@ -78,11 +84,18 @@ export function AdminHeroManager() {
         throw new Error(heroData.error || "Could not load hero settings.");
       }
 
-      setConfigured(heroData.configured !== false);
-      const nextSlides = (heroData.slides ?? []) as HeroSlideConfig[];
+      const isConfigured = heroData.configured !== false;
+      setConfigured(isConfigured);
+      const nextSlides = isConfigured
+        ? ((heroData.slides ?? []) as HeroSlideConfig[])
+        : readDemoAdminHero();
       setSlides(nextSlides);
       setProducts(
-        productResponse.ok ? ((productData.products ?? []) as Product[]) : [],
+        productResponse.ok
+          ? productData.configured === false
+            ? readDemoAdminProducts()
+            : ((productData.products ?? []) as Product[])
+          : [],
       );
 
       setSelectedId((current) =>
@@ -102,6 +115,28 @@ export function AdminHeroManager() {
   useEffect(() => {
     void load();
   }, []);
+
+  useEffect(() => {
+    if (configured) return;
+
+    const sync = () => {
+      const nextSlides = readDemoAdminHero();
+      setSlides(nextSlides);
+      setSelectedId((current) =>
+        nextSlides.some((slide) => slide.id === current)
+          ? current
+          : nextSlides[0]?.id ?? "",
+      );
+    };
+
+    window.addEventListener(DEMO_ADMIN_HERO_UPDATED_EVENT, sync);
+    window.addEventListener("storage", sync);
+
+    return () => {
+      window.removeEventListener(DEMO_ADMIN_HERO_UPDATED_EVENT, sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, [configured]);
 
   const ordered = useMemo(
     () => [...slides].sort((a, b) => a.order - b.order),
@@ -132,15 +167,24 @@ export function AdminHeroManager() {
   }
 
   async function addHero() {
-    if (!configured) {
-      setMessage("Connect Supabase and run the updated schema before adding hero slides.");
-      return;
-    }
-
     try {
       setSaving(true);
       setMessage("");
       const order = Math.max(0, ...slides.map((slide) => slide.order)) + 1;
+      if (!configured) {
+        const slide: HeroSlideConfig = {
+          id:
+            "demo-hero-" +
+            (globalThis.crypto?.randomUUID?.() ?? Date.now().toString()),
+          ...emptyHero(order),
+        };
+        const next = [...slides, slide];
+        setSlides(next);
+        writeDemoAdminHero(next);
+        setSelectedId(slide.id);
+        return;
+      }
+
       const response = await fetch("/api/admin/hero", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -165,6 +209,16 @@ export function AdminHeroManager() {
     try {
       setSaving(true);
       setMessage("");
+
+      if (!configured) {
+        const next = slides.map((slide) =>
+          slide.id === selected.id ? selected : slide,
+        );
+        setSlides(next);
+        writeDemoAdminHero(next);
+        setMessage("Demo hero saved in this browser.");
+        return;
+      }
 
       const response = await fetch("/api/admin/hero/" + selected.id, {
         method: "PATCH",
@@ -192,13 +246,22 @@ export function AdminHeroManager() {
 
     try {
       setSaving(true);
+      const next = slides.filter((slide) => slide.id !== selected.id);
+
+      if (!configured) {
+        setSlides(next);
+        writeDemoAdminHero(next);
+        setSelectedId(next[0]?.id ?? "");
+        setMessage("");
+        return;
+      }
+
       const response = await fetch("/api/admin/hero/" + selected.id, {
         method: "DELETE",
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not delete hero.");
 
-      const next = slides.filter((slide) => slide.id !== selected.id);
       setSlides(next);
       setSelectedId(next[0]?.id ?? "");
       setMessage("");
@@ -228,6 +291,16 @@ export function AdminHeroManager() {
         return slide;
       }),
     );
+
+    if (!configured) {
+      const next = slides.map((slide) => {
+        if (slide.id === first.id) return first;
+        if (slide.id === second.id) return second;
+        return slide;
+      });
+      writeDemoAdminHero(next);
+      return;
+    }
 
     await Promise.all([
       fetch("/api/admin/hero/" + first.id, {
@@ -297,8 +370,19 @@ export function AdminHeroManager() {
         </div>
 
         {!configured ? (
-          <div className="mt-3 rounded-[14px] border border-[#ead3a6] bg-[#fffaf0] p-3 text-[9px] leading-5 text-[#745d2c]">
-            Supabase hero settings are not connected. Add the server env values and run the updated schema.
+          <div className="mt-3 rounded-[14px] border border-[#d9dde3] bg-[#f6f6f6] p-3 text-[9px] leading-5 text-[#555d67]">
+            <div className="flex flex-wrap items-center gap-2">
+              <strong className="text-[10px] text-[#17191d]">Demo hero data</strong>
+              <span
+                className="rounded-full bg-[#111111] px-2 py-1 text-[7px] font-bold !text-white"
+                style={{ color: "#fff" }}
+              >
+                FAKE DATA
+              </span>
+            </div>
+            <p className="mt-1">
+              Add, edit, schedule, reorder and delete heroes here. Changes save in this browser until Supabase is connected.
+            </p>
           </div>
         ) : null}
 
