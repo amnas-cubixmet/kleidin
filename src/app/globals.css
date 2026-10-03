@@ -17000,3 +17000,34 @@ select,
     overflow-x: hidden;
   }
 }
+
+
+/* FINAL mobile touch target hardening */
+@media (max-width: 700px) {
+  .icon-button,
+  .menu-button,
+  .search-close,
+  .announcement-close,
+  .header-whatsapp-button {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
+  .header-whatsapp-button {
+    flex-basis: 44px !important;
+  }
+
+  .mobile-card-link,
+  .product-whatsapp-cta,
+  .size-picker button {
+    min-height: 44px !important;
+  }
+
+  .star-rating-buttons button {
+    width: 44px !important;
+    height: 44px !important;
+    flex-basis: 44px !important;
+  }
+}
