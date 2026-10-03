@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Product } from "@/types/product";
+import { getProductOfferPrice, getProductOfferStatus } from "@/lib/product-offers";
 
 function money(value?: number) {
   if (typeof value !== "number") return "—";
@@ -99,6 +100,8 @@ export function AdminProductDetail({ productId }: { productId: string }) {
     product.image ||
     product.colorVariants?.[0]?.images?.[0] ||
     product.colorVariants?.[0]?.image;
+  const offerStatus = getProductOfferStatus(product);
+  const offerPrice = getProductOfferPrice(product);
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(300px,.8fr)]">
@@ -132,6 +135,11 @@ export function AdminProductDetail({ productId }: { productId: string }) {
                 {product.wholesaleEnabled ? (
                   <span className="rounded-full bg-[#ededed] px-3 py-1.5 text-[8px] font-bold text-[#444b54]">
                     Wholesale enabled
+                  </span>
+                ) : null}
+                {product.offerEnabled ? (
+                  <span className="rounded-full bg-[#111111] px-3 py-1.5 text-[8px] font-bold !text-white" style={{ color: "#fff" }}>
+                    Offer · {offerStatus}
                   </span>
                 ) : null}
               </div>
@@ -254,6 +262,35 @@ export function AdminProductDetail({ productId }: { productId: string }) {
             <div className="border-t border-[#e5e7ea] pt-3">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-[10px] font-semibold text-[#454d57]">
+                  Offer
+                </span>
+                <strong className="text-[11px] capitalize">
+                  {product.offerEnabled ? offerStatus : "Off"}
+                </strong>
+              </div>
+            </div>
+            {product.offerEnabled ? (
+              <>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[10px] text-[#656e79]">Offer price</span>
+                  <strong className="text-[12px]">{money(offerPrice)}</strong>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[10px] text-[#656e79]">Offer label</span>
+                  <strong className="max-w-[160px] truncate text-right text-[11px]">
+                    {product.offerBadge || product.offerLabel || "Offer"}
+                  </strong>
+                </div>
+                <div className="grid gap-1 rounded-[12px] bg-[#f5f5f5] p-3 text-[9px] text-[#69717c]">
+                  <span>Start: {product.offerStartsAt ? new Date(product.offerStartsAt).toLocaleString("en-IN") : "Always"}</span>
+                  <span>End: {product.offerEndsAt ? new Date(product.offerEndsAt).toLocaleString("en-IN") : "No expiry"}</span>
+                  <span>Countdown: {product.offerCountdown ? "On" : "Off"}</span>
+                </div>
+              </>
+            ) : null}
+            <div className="border-t border-[#e5e7ea] pt-3">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[10px] font-semibold text-[#454d57]">
                   Wholesale
                 </span>
                 <strong className="text-[11px]">
@@ -319,8 +356,15 @@ export function AdminProductDetail({ productId }: { productId: string }) {
         <section className="rounded-[20px] border border-[#d9dde3] bg-white p-4 sm:rounded-[22px] sm:p-5">
           <div className="grid gap-2">
             <Link
+              href={"/admin/products/" + product.id + "/edit#offer-settings"}
+              className="inline-flex min-h-[46px] items-center justify-center rounded-full bg-[#111111] px-5 text-[10px] font-bold !text-white"
+              style={{ color: "#fff" }}
+            >
+              Manage offer
+            </Link>
+            <Link
               href={"/admin/products/" + product.id + "/edit"}
-              className="inline-flex min-h-[46px] items-center justify-center rounded-full bg-[#111111] px-5 text-[10px] font-bold text-white"
+              className="inline-flex min-h-[46px] items-center justify-center rounded-full border border-[#d5d9df] bg-white px-5 text-[10px] font-bold text-[#4d5661]"
             >
               Edit product
             </Link>
