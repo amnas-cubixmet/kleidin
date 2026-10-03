@@ -22,12 +22,13 @@ export default async function AdminEditOrderPage({
 
   return (
     <AdminShell
+      tone="monochrome"
       title="Edit order"
       description="Update customer, delivery, product, pricing and payment information."
       action={
         <Link
           href={"/admin/orders/" + id}
-          className="inline-flex min-h-[36px] items-center justify-center rounded-full border border-[#d8dce4] bg-white px-4 text-[9px] font-bold text-[#414852]"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-[#d8dce4] bg-white px-5 text-[10px] font-bold text-[#414852]"
         >
           Back to order
         </Link>
