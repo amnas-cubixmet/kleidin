@@ -41,8 +41,13 @@ export function AdminOffersManager() {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Could not load offers.");
         if (!active) return;
-        setProducts((data.products ?? []) as Product[]);
-        setConfigured(data.configured !== false);
+        const isConfigured = data.configured !== false;
+        setConfigured(isConfigured);
+        setProducts(
+          isConfigured
+            ? ((data.products ?? []) as Product[])
+            : readDemoAdminProducts(),
+        );
       })
       .catch((error) => {
         if (active) setMessage(error instanceof Error ? error.message : "Could not load offers.");
@@ -55,6 +60,17 @@ export function AdminOffersManager() {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (configured) return;
+    const sync = () => setProducts(readDemoAdminProducts());
+    window.addEventListener(DEMO_ADMIN_PRODUCTS_UPDATED_EVENT, sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener(DEMO_ADMIN_PRODUCTS_UPDATED_EVENT, sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, [configured]);
 
   const counts = useMemo(() => {
     const base = { active: 0, scheduled: 0, expired: 0, off: 0 };
