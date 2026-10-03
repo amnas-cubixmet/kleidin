@@ -111,7 +111,7 @@ export function isHeroDatabaseConfigured() {
   return getSupabaseServerEnvironment() !== null;
 }
 
-export async function listHeroSlides(options?: { enabledOnly?: boolean }) {
+export async function listHeroSlides(options?: { enabledOnly?: boolean; fallbackDefaults?: boolean }) {
   if (!isHeroDatabaseConfigured()) return defaultHeroSlides;
 
   const enabled = options?.enabledOnly ? "&enabled=eq.true" : "";
@@ -119,7 +119,8 @@ export async function listHeroSlides(options?: { enabledOnly?: boolean }) {
     `/rest/v1/hero_slides?select=*&order=sort_order.asc,created_at.asc${enabled}`,
   );
 
-  return rows.length ? rows.map(fromDb) : defaultHeroSlides;
+  if (rows.length) return rows.map(fromDb);
+  return options?.fallbackDefaults === false ? [] : defaultHeroSlides;
 }
 
 export async function createHeroSlide(input: HeroSlideWriteInput) {
