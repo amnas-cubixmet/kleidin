@@ -500,7 +500,7 @@ export function AdminOrdersManager({
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className={inputClass + " min-h-[84px] resize-y py-3 sm:min-h-[92px]"} placeholder="Delivery instruction, customer request, reference, etc." />
         </label>
 
-        <div className="mt-5 grid grid-cols-3 gap-2 rounded-[16px] bg-[#f3f3f3] p-4 sm:rounded-[18px] sm:p-5">
+        <div className="mt-5 grid grid-cols-1 gap-2 rounded-[16px] bg-[#f3f3f3] p-4 xs:grid-cols-3 sm:rounded-[18px] sm:p-5">
           <div>
             <span className="text-[9px] font-bold uppercase tracking-[.08em] text-[#6e7681]">Subtotal</span>
             <strong className="mt-1 block text-[15px] sm:text-[17px]">{money(subtotal)}</strong>
