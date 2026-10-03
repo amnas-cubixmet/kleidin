@@ -44,14 +44,14 @@ export function AdminDashboardTestimonials() {
     <section className="rounded-[18px] border border-[#dfe3ea] bg-white p-3.5 sm:rounded-[20px] sm:p-4 md:p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-[#7d8490]">
+          <p className="text-[12px] font-semibold uppercase tracking-[.13em] text-[#7d8490]">
             Approval queue
           </p>
-          <h2 className="mt-1.5 text-[20px] sm:text-[21px] font-semibold tracking-[-.04em]">
+          <h2 className="mt-1.5 text-[22px] sm:text-[24px] font-semibold tracking-[-.04em]">
             Testimonials
           </h2>
         </div>
-        <div className="grid h-8 min-w-8 sm:h-9 sm:min-w-9 place-items-center rounded-full bg-[#eef2ff] px-2 text-[10px] font-bold text-[#001cac]">
+        <div className="grid h-8 min-w-8 sm:h-9 sm:min-w-9 place-items-center rounded-full bg-[#eef2ff] px-2 text-[11px] font-bold text-[#001cac]">
           {pending.length}
         </div>
       </div>
@@ -68,14 +68,14 @@ export function AdminDashboardTestimonials() {
                   <strong className="block truncate text-[10px] font-semibold">
                     {item.name}
                   </strong>
-                  <p className="mt-1 line-clamp-2 text-[8px] leading-4 text-[#68717d]">
+                  <p className="mt-1 line-clamp-2 text-[10px] leading-4 text-[#68717d]">
                     {item.quote}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => approve(item.id)}
-                  className="shrink-0 rounded-full bg-[#001cac] px-3 py-1.5 text-[8px] font-bold text-white"
+                  className="shrink-0 rounded-full bg-[#001cac] min-h-[44px] px-4 py-2 text-[10px] font-bold text-white"
                 >
                   Approve
                 </button>
@@ -86,7 +86,7 @@ export function AdminDashboardTestimonials() {
       ) : (
         <div className="mt-3.5 rounded-[14px] bg-[#f7f8fb] px-4 py-4 sm:mt-4 sm:rounded-[15px] sm:py-5">
           <strong className="text-[10px] font-semibold">All caught up</strong>
-          <p className="mt-1 text-[8px] leading-4 text-[#68717d]">
+          <p className="mt-1 text-[10px] leading-4 text-[#68717d]">
             New customer submissions will appear here for approval.
           </p>
         </div>
@@ -94,7 +94,7 @@ export function AdminDashboardTestimonials() {
 
       <Link
         href="/admin/testimonials"
-        className="mt-3.5 inline-flex min-h-8 items-center text-[8px] font-bold sm:mt-4 text-[#001cac]"
+        className="mt-3.5 inline-flex min-h-[44px] items-center text-[10px] font-bold sm:mt-4 text-[#001cac]"
       >
         Manage testimonials
         <span className="ml-1.5" aria-hidden="true">→</span>
