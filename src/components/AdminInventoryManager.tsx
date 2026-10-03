@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/types/product";
+import { readDemoAdminProducts, upsertDemoAdminProduct } from "@/lib/demo-admin-products-client";
 
 type Filter = "all" | "low" | "critical" | "out";
 
@@ -34,9 +35,12 @@ export function AdminInventoryManager() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not load inventory.");
 
-      const nextProducts = (data.products ?? []) as Product[];
+      const isConfigured = data.configured !== false;
+      const nextProducts = isConfigured
+        ? ((data.products ?? []) as Product[])
+        : readDemoAdminProducts();
       setProducts(nextProducts);
-      setConfigured(data.configured !== false);
+      setConfigured(isConfigured);
       setDrafts(
         Object.fromEntries(
           nextProducts.map((product) => [
@@ -119,6 +123,49 @@ export function AdminInventoryManager() {
       setSavingId(product.id);
       setMessage("");
 
+      if (!configured) {
+        const colorVariants = (product.colorVariants ?? []).map((variant) => ({
+          ...variant,
+          stock:
+            Object.prototype.hasOwnProperty.call(draft.colors, variant.name)
+              ? draft.colors[variant.name]
+              : variant.stock ?? 0,
+        }));
+        const variantTotal = colorVariants.reduce(
+          (sum, variant) => sum + (variant.stock ?? 0),
+          0,
+        );
+        const nextStock = colorVariants.length ? variantTotal : draft.stock;
+        const updated: Product = {
+          ...product,
+          colorVariants,
+          stock: nextStock,
+          status:
+            nextStock === 0
+              ? "sold-out"
+              : product.status === "sold-out"
+                ? "active"
+                : product.status,
+        };
+        upsertDemoAdminProduct(updated);
+        setProducts((current) =>
+          current.map((item) => (item.id === updated.id ? updated : item)),
+        );
+        setDrafts((current) => ({
+          ...current,
+          [updated.id]: {
+            stock: updated.stock,
+            colors: Object.fromEntries(
+              (updated.colorVariants ?? []).map((variant) => [
+                variant.name,
+                variant.stock ?? 0,
+              ]),
+            ),
+          },
+        }));
+        return;
+      }
+
       const response = await fetch("/api/admin/inventory/" + product.id, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -164,9 +211,9 @@ export function AdminInventoryManager() {
   return (
     <div className="grid gap-4">
       {!configured ? (
-        <div className="rounded-[16px] border border-[#ead3a6] bg-[#fffaf0] p-4 text-[10px] leading-5 text-[#745d2c]">
-          <strong className="block text-[11px]">Supabase inventory is not connected yet.</strong>
-          Configure the product database first. Inventory will use the same product records and storage setup.
+        <div className="rounded-[16px] border border-[#d9dde3] bg-[#f6f6f6] p-4 text-[10px] leading-5 text-[#555d67]">
+          <strong className="block text-[11px] text-[#17191d]">Demo inventory active</strong>
+          Stock changes save in this browser so you can test low-stock, critical and sold-out flows without Supabase.
         </div>
       ) : null}
 
