@@ -27,7 +27,7 @@ export default async function AdminDashboardPage() {
   return (
     <AdminShell
       title="Dashboard"
-      description="Sales, profit, manual orders, customers, inventory, messages, partners and customer trust in one place."
+      description="Sales, profit, manual orders, customers, inventory and customer trust in one place."
     >
       <AdminDashboardOrderMetrics />
 
