@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Product, ProductColorVariant, ProductOfferType, ProductStatus } from "@/types/product";
+import { readDemoAdminProducts, upsertDemoAdminProduct } from "@/lib/demo-admin-products-client";
 
 type FormColor = {
   id: string;
@@ -169,20 +170,43 @@ export function AdminProductForm({
   const [loading, setLoading] = useState(mode === "edit");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState("");
+  const [demoMode, setDemoMode] = useState(false);
+  const [loadedProduct, setLoadedProduct] = useState<Product | null>(null);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (mode !== "edit" || !productId) return;
+    if (mode === "create") {
+      let active = true;
+      fetch("/api/admin/products", { cache: "no-store" })
+        .then((response) => response.json())
+        .then((data) => {
+          if (active) setDemoMode(data.configured === false);
+        })
+        .catch(() => {});
+      return () => {
+        active = false;
+      };
+    }
+
+    if (!productId) return;
 
     let active = true;
     fetch("/api/admin/products/" + productId, { cache: "no-store" })
       .then(async (response) => {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Could not load product.");
-        return data.product as Product;
+        const apiProduct = data.product as Product;
+        const product = data.demo
+          ? readDemoAdminProducts().find((item) => item.id === productId) ?? apiProduct
+          : apiProduct;
+        return { product, demo: Boolean(data.demo) };
       })
-      .then((product) => {
-        if (active) setForm(fromProduct(product));
+      .then(({ product, demo }) => {
+        if (active) {
+          setLoadedProduct(product);
+          setDemoMode(demo);
+          setForm(fromProduct(product));
+        }
       })
       .catch((error) => {
         if (active) setMessage(error instanceof Error ? error.message : "Could not load product.");
@@ -250,6 +274,22 @@ export function AdminProductForm({
   }
 
   async function upload(file: File, color: string) {
+    if (demoMode) {
+      if (file.size > 700 * 1024) {
+        throw new Error("Demo image must be 700 KB or smaller.");
+      }
+
+      return await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () =>
+          typeof reader.result === "string"
+            ? resolve(reader.result)
+            : reject(new Error("Could not read image."));
+        reader.onerror = () => reject(new Error("Could not read image."));
+        reader.readAsDataURL(file);
+      });
+    }
+
     const body = new FormData();
     body.set("file", file);
     body.set("productId", productId || uploadKey);
@@ -316,7 +356,7 @@ export function AdminProductForm({
     const path = storagePath(url);
     onRemove();
 
-    if (!path) return;
+    if (!path || demoMode) return;
     try {
       await fetch("/api/admin/products/upload", {
         method: "DELETE",
@@ -436,6 +476,51 @@ export function AdminProductForm({
     try {
       setSaving(true);
       setMessage("");
+      if (demoMode) {
+        const id =
+          mode === "edit" && productId
+            ? productId
+            : "demo-" + (globalThis.crypto?.randomUUID?.() ?? Date.now());
+
+        const product: Product = {
+          ...(loadedProduct ?? {}),
+          id,
+          sku: payload.sku,
+          name: payload.name,
+          slug: payload.slug,
+          category: payload.category,
+          price: payload.price,
+          compareAtPrice: payload.compareAtPrice ?? undefined,
+          offerEnabled: payload.offerEnabled,
+          offerType: payload.offerType,
+          offerValue: payload.offerValue ?? undefined,
+          offerLabel: payload.offerLabel ?? undefined,
+          offerBadge: payload.offerBadge ?? undefined,
+          offerStartsAt: payload.offerStartsAt ?? undefined,
+          offerEndsAt: payload.offerEndsAt ?? undefined,
+          offerCountdown: payload.offerCountdown,
+          wholesaleEnabled: payload.wholesaleEnabled,
+          wholesalePrice: payload.wholesalePrice ?? undefined,
+          wholesaleMinOrder: payload.wholesaleMinOrder ?? undefined,
+          wholesaleSlug: payload.wholesaleSlug ?? undefined,
+          stock: payload.stock,
+          sizes: payload.sizes,
+          colors: payload.colors,
+          colorVariants: payload.colorVariants,
+          description: payload.description,
+          featured: payload.featured,
+          status: payload.status,
+          image: payload.image ?? undefined,
+          tryOnImage: payload.tryOnImage ?? undefined,
+          sortOrder: payload.sortOrder,
+        };
+
+        upsertDemoAdminProduct(product);
+        router.push("/admin/products/" + product.id);
+        router.refresh();
+        return;
+      }
+
       const endpoint =
         mode === "edit" && productId
           ? "/api/admin/products/" + productId
@@ -474,6 +559,11 @@ export function AdminProductForm({
 
   return (
     <form onSubmit={submit} className="grid gap-4">
+      {demoMode ? (
+        <div className="rounded-[14px] border border-[#d9dde3] bg-[#f6f6f6] px-4 py-3 text-[9px] leading-5 text-[#626a75]">
+          Demo mode: changes save in this browser so you can test the complete product and offer flow without Supabase.
+        </div>
+      ) : null}
       <section className={section}>
         <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#111111]">
           Product information
