@@ -30,9 +30,14 @@ create table if not exists public.products (
   category text not null default 'T-Shirts',
   price integer not null check (price >= 0),
   compare_at_price integer,
+  wholesale_enabled boolean not null default false,
+  wholesale_price integer check (wholesale_price is null or wholesale_price >= 0),
+  wholesale_min_order integer check (wholesale_min_order is null or wholesale_min_order > 0),
+  wholesale_slug text unique,
   description text not null default '',
   sizes text[] not null default '{}',
   colors text[] not null default '{}',
+  color_variants jsonb not null default '[]'::jsonb,
   stock integer not null default 0 check (stock >= 0),
   featured boolean not null default false,
   status text not null default 'active'
@@ -43,6 +48,17 @@ create table if not exists public.products (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.products
+  add column if not exists wholesale_enabled boolean not null default false,
+  add column if not exists wholesale_price integer,
+  add column if not exists wholesale_min_order integer,
+  add column if not exists wholesale_slug text,
+  add column if not exists color_variants jsonb not null default '[]'::jsonb;
+
+create unique index if not exists products_wholesale_slug_key
+on public.products (wholesale_slug)
+where wholesale_slug is not null;
 
 create table if not exists public.offers (
   id uuid primary key default gen_random_uuid(),
