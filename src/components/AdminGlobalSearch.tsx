@@ -23,8 +23,6 @@ const pages: SearchResult[] = [
   { key: "products", label: "Products", meta: "Catalog and pricing", href: "/admin/products", type: "Page" },
   { key: "inventory", label: "Inventory", meta: "Stock and low-stock alerts", href: "/admin/inventory", type: "Page" },
   { key: "customers", label: "Customers", meta: "Customer records", href: "/admin/customers", type: "Page" },
-  { key: "partners", label: "Partners", meta: "Partner records", href: "/admin/partners", type: "Page" },
-  { key: "messages", label: "Messages", meta: "Customer inbox", href: "/admin/messages", type: "Page" },
   { key: "testimonials", label: "Testimonials", meta: "Review and approve feedback", href: "/admin/testimonials", type: "Page" },
   { key: "hero", label: "Hero", meta: "Storefront hero content", href: "/admin/hero", type: "Page" },
   { key: "settings", label: "Settings", meta: "Store and admin preferences", href: "/admin/settings", type: "Page" },
