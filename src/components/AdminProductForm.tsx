@@ -77,14 +77,14 @@ function emptyForm(): ProductFormState {
 }
 
 function fromProduct(product: Product): ProductFormState {
-  const variants =
+  const variants: ProductColorVariant[] =
     product.colorVariants?.length
       ? product.colorVariants
       : product.colors.map((name) => ({
           name,
           value: "#111111",
           stock: 0,
-          images: [] as string[],
+          images: [],
         }));
 
   return {
