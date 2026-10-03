@@ -325,30 +325,30 @@ export function AdminOrdersManager({
   }
 
   const inputClass =
-    "h-10 w-full min-w-0 rounded-[10px] border border-[#d9dee7] bg-white px-3 text-[11px] font-medium text-[#20242a] outline-none transition placeholder:text-[#9aa1ac] focus:border-[#001cac] focus:ring-2 focus:ring-[#001cac]/10 sm:h-11";
+    "h-11 w-full min-w-0 rounded-[11px] border border-[#d5d9df] bg-white px-3.5 text-[11px] font-medium text-[#20242a] outline-none transition placeholder:text-[#9aa1ac] focus:border-[#111111] focus:ring-2 focus:ring-black/10 sm:h-12";
   const labelClass =
-    "text-[8px] font-bold uppercase tracking-[.1em] text-[#6f7783]";
+    "text-[9px] font-bold uppercase tracking-[.09em] text-[#626a75]";
 
   return (
     <div className="min-w-0">
       {view !== "list" ? (
       <form
         onSubmit={saveOrder}
-        className="min-w-0 rounded-[18px] border border-[#dfe3ea] bg-white p-3.5 sm:rounded-[20px] sm:p-4 md:p-5"
+        className="min-w-0 rounded-[20px] border border-[#d9dde3] bg-white p-4 shadow-[0_8px_28px_rgba(16,24,40,.04)] sm:rounded-[22px] sm:p-5 md:p-6"
       >
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-[8px] font-bold uppercase tracking-[.13em] text-[#001cac]">
+            <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#111111]">
               Manual entry
             </p>
-            <h2 className="mt-1.5 text-[22px] font-semibold tracking-[-.04em]">
+            <h2 className="mt-1.5 text-[26px] font-semibold tracking-[-.045em] sm:text-[30px]">
               {view === "edit" ? "Edit order" : "Add order"}
             </h2>
-            <p className="mt-1 text-[8px] leading-4 text-[#6a7280]">
+            <p className="mt-1.5 text-[10px] leading-5 text-[#626a75] sm:text-[11px]">
               Enter the customer, delivery address and product details yourself.
             </p>
           </div>
-          <span className="rounded-full bg-[#eef2ff] px-2.5 py-1.5 text-[8px] font-bold text-[#001cac]">
+          <span className="inline-flex min-h-[34px] items-center rounded-full bg-[#111111] px-3.5 text-[9px] font-bold text-white">
             {view === "edit" ? "Editing" : "Admin order"}
           </span>
         </div>
@@ -364,9 +364,9 @@ export function AdminOrdersManager({
           </label>
         </div>
 
-        <div className="mt-4 rounded-[14px] bg-[#f7f8fb] p-3 sm:mt-5 sm:rounded-[16px] sm:p-3.5">
+        <div className="mt-5 rounded-[16px] bg-[#f5f5f5] p-4 sm:rounded-[18px] sm:p-5">
           <div className="mb-3">
-            <p className="text-[8px] font-bold uppercase tracking-[.12em] text-[#59616d]">
+            <p className="text-[9px] font-bold uppercase tracking-[.1em] text-[#555d68]">
               Delivery address
             </p>
           </div>
@@ -402,10 +402,10 @@ export function AdminOrdersManager({
 
         <div className="mt-4 sm:mt-5">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-[8px] font-bold uppercase tracking-[.12em] text-[#59616d]">
+            <p className="text-[9px] font-bold uppercase tracking-[.1em] text-[#555d68]">
               Products
             </p>
-            <button type="button" onClick={addItem} className="min-h-8 rounded-full bg-[#eef2ff] px-3 text-[8px] font-bold text-[#001cac]">
+            <button type="button" onClick={addItem} className="min-h-[44px] rounded-full bg-[#111111] px-4 text-[10px] font-bold text-white transition hover:bg-black">
               + Add item
             </button>
           </div>
@@ -414,11 +414,11 @@ export function AdminOrdersManager({
             {items.map((item, index) => {
               const product = productMap.get(item.productId);
               return (
-                <div key={item.id} className="rounded-[14px] border border-[#dfe3ea] p-3 sm:rounded-[16px] sm:p-3.5">
+                <div key={item.id} className="rounded-[16px] border border-[#d9dde3] bg-white p-4 sm:rounded-[18px] sm:p-5">
                   <div className="mb-3 flex items-center justify-between gap-2">
-                    <strong className="text-[9px] font-bold">Item {index + 1}</strong>
+                    <strong className="text-[11px] font-bold">Item {index + 1}</strong>
                     {items.length > 1 ? (
-                      <button type="button" onClick={() => removeItem(item.id)} className="text-[8px] font-bold text-[#b42318]">
+                      <button type="button" onClick={() => removeItem(item.id)} className="inline-flex min-h-[40px] items-center px-2 text-[9px] font-bold text-[#b42318]">
                         Remove
                       </button>
                     ) : null}
@@ -500,53 +500,53 @@ export function AdminOrdersManager({
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className={inputClass + " min-h-[84px] resize-y py-3 sm:min-h-[92px]"} placeholder="Delivery instruction, customer request, reference, etc." />
         </label>
 
-        <div className="mt-4 grid grid-cols-3 gap-1.5 rounded-[14px] bg-[#f7f8fb] p-2.5 sm:mt-5 sm:gap-2 sm:rounded-[16px] sm:p-3">
+        <div className="mt-5 grid grid-cols-3 gap-2 rounded-[16px] bg-[#f3f3f3] p-4 sm:rounded-[18px] sm:p-5">
           <div>
-            <span className="text-[7px] font-bold uppercase tracking-[.1em] text-[#7b8490]">Subtotal</span>
-            <strong className="mt-1 block text-[13px] sm:text-[14px]">{money(subtotal)}</strong>
+            <span className="text-[9px] font-bold uppercase tracking-[.08em] text-[#6e7681]">Subtotal</span>
+            <strong className="mt-1 block text-[15px] sm:text-[17px]">{money(subtotal)}</strong>
           </div>
           <div>
-            <span className="text-[7px] font-bold uppercase tracking-[.1em] text-[#7b8490]">Order total</span>
-            <strong className="mt-1 block text-[13px] sm:text-[14px]">{money(total)}</strong>
+            <span className="text-[9px] font-bold uppercase tracking-[.08em] text-[#6e7681]">Order total</span>
+            <strong className="mt-1 block text-[15px] sm:text-[17px]">{money(total)}</strong>
           </div>
           <div>
-            <span className="text-[7px] font-bold uppercase tracking-[.1em] text-[#7b8490]">Est. profit</span>
-            <strong className={"mt-1 block text-[13px] sm:text-[14px] " + (estimatedProfit < 0 ? "text-[#b42318]" : "text-[#18794e]")}>
+            <span className="text-[9px] font-bold uppercase tracking-[.08em] text-[#6e7681]">Est. profit</span>
+            <strong className={"mt-1 block text-[15px] sm:text-[17px] " + (estimatedProfit < 0 ? "text-[#b42318]" : "text-[#18794e]")}>
               {money(estimatedProfit)}
             </strong>
           </div>
         </div>
 
         {error ? (
-          <div className="mt-4 rounded-[12px] border border-[#efc0c0] bg-[#fff5f5] px-3 py-2.5 text-[8px] font-semibold text-[#a43a3a]">
+          <div className="mt-4 rounded-[12px] border border-[#efc0c0] bg-[#fff5f5] px-3.5 py-3 text-[10px] font-semibold text-[#a43a3a]">
             {error}
           </div>
         ) : null}
 
-        <button type="submit" className="mt-4 min-h-9 rounded-full bg-[#001cac] px-5 text-[9px] font-bold text-white transition hover:bg-[#00158a] sm:mt-5 sm:min-h-10">
+        <button type="submit" className="mt-5 min-h-[46px] rounded-full bg-[#111111] px-6 text-[10px] font-bold text-white transition hover:bg-black">
           {view === "edit" ? "Save changes" : "Save order"}
         </button>
       </form>
       ) : null}
 
       {view === "list" ? (
-      <section className="min-w-0 rounded-[18px] border border-[#dfe3ea] bg-white p-3.5 sm:rounded-[20px] sm:p-4 md:p-5">
+      <section className="min-w-0 rounded-[20px] border border-[#d9dde3] bg-white p-4 shadow-[0_8px_28px_rgba(16,24,40,.04)] sm:rounded-[22px] sm:p-5 md:p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-[8px] font-bold uppercase tracking-[.13em] text-[#001cac]">
+            <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#111111]">
               Orders
             </p>
-            <h2 className="mt-1.5 text-[22px] font-semibold tracking-[-.04em]">
+            <h2 className="mt-1.5 text-[26px] font-semibold tracking-[-.045em] sm:text-[30px]">
               Manual orders
             </h2>
-            <p className="mt-1 text-[8px] leading-4 text-[#6a7280]">
-              {orders.length} saved order{orders.length === 1 ? "" : "s"} on this device.
+            <p className="mt-1.5 text-[10px] leading-5 text-[#626a75] sm:text-[11px]">
+              {orders.length} order{orders.length === 1 ? "" : "s"} saved on this device.
             </p>
           </div>
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-10 w-full rounded-[11px] border border-[#d9dee7] bg-[#f8f9fb] px-3 text-[10px] font-medium outline-none placeholder:text-[#969da8] focus:border-[#001cac] focus:ring-2 focus:ring-[#001cac]/10 sm:w-[280px]"
+            className="h-[46px] w-full rounded-[12px] border border-[#d6dae0] bg-[#f6f6f6] px-4 text-[11px] font-medium text-[#20242a] outline-none placeholder:text-[#8e959f] focus:border-[#111111] focus:bg-white focus:ring-2 focus:ring-black/10 sm:w-[320px]"
             placeholder="Search orders"
           />
         </div>
@@ -556,37 +556,37 @@ export function AdminOrdersManager({
             {filteredOrders.map((order) => (
               <article
                 key={order.id}
-                className="rounded-[15px] border border-[#dfe3ea] bg-white p-3 transition hover:border-[#cbd2dc] hover:shadow-[0_8px_24px_rgba(16,24,40,.04)] sm:rounded-[17px] sm:p-3.5 md:p-4"
+                className="rounded-[18px] border border-[#d9dde3] bg-white p-4 transition hover:border-[#111111] hover:shadow-[0_10px_28px_rgba(16,24,40,.06)] sm:rounded-[20px] sm:p-5"
               >
                 <div className="grid gap-3 sm:grid-cols-[minmax(0,1.2fr)_minmax(150px,.7fr)_auto] sm:items-center">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <strong className="text-[10px] font-bold text-[#20242a]">
+                      <strong className="text-[12px] font-bold text-[#17191d]">
                         {order.orderNumber}
                       </strong>
-                      <span className="rounded-full bg-[#eef2ff] px-2 py-1 text-[7px] font-bold text-[#001cac]">
+                      <span className="rounded-full bg-[#111111] px-2.5 py-1.5 text-[8px] font-bold text-white">
                         {order.status}
                       </span>
-                      <span className="rounded-full bg-[#f3f5f8] px-2 py-1 text-[7px] font-bold text-[#606975]">
+                      <span className="rounded-full bg-[#f0f1f3] px-2.5 py-1.5 text-[8px] font-bold text-[#4f5762]">
                         {order.paymentStatus}
                       </span>
                     </div>
-                    <p className="mt-1.5 truncate text-[9px] font-semibold text-[#4f5864]">
+                    <p className="mt-2 truncate text-[11px] font-semibold text-[#3f4650]">
                       {order.customerName} · {order.phone}
                     </p>
-                    <p className="mt-1 text-[7px] text-[#8a919b]">
+                    <p className="mt-1.5 text-[9px] text-[#858c96]">
                       {new Date(order.createdAt).toLocaleString("en-IN")}
                     </p>
                   </div>
 
-                  <div className="min-w-0 rounded-[12px] bg-[#f7f8fb] px-3 py-2.5 sm:bg-transparent sm:px-0 sm:py-0">
-                    <span className="block text-[7px] font-bold uppercase tracking-[.1em] text-[#7d8490]">
+                  <div className="min-w-0 rounded-[14px] bg-[#f5f5f5] px-3.5 py-3 sm:bg-transparent sm:px-0 sm:py-0">
+                    <span className="block text-[9px] font-bold uppercase tracking-[.08em] text-[#747c86]">
                       Delivery
                     </span>
-                    <p className="mt-1 truncate text-[8px] text-[#555e69]">
+                    <p className="mt-1.5 truncate text-[10px] font-medium text-[#4c545f]">
                       {order.city}, {order.state} · {order.pincode}
                     </p>
-                    <p className="mt-1 text-[7px] text-[#8a919b]">
+                    <p className="mt-1.5 text-[9px] text-[#858c96]">
                       {order.items.reduce((sum, item) => sum + item.quantity, 0)} item
                       {order.items.reduce((sum, item) => sum + item.quantity, 0) === 1 ? "" : "s"}
                     </p>
@@ -594,13 +594,13 @@ export function AdminOrdersManager({
 
                   <div className="flex items-end justify-between gap-3 sm:block sm:text-right">
                     <div>
-                      <strong className="block text-[17px] font-semibold tracking-[-.04em] text-[#20242a]">
+                      <strong className="block text-[20px] font-semibold tracking-[-.04em] text-[#17191d] sm:text-[22px]">
                         {money(getOrderTotal(order))}
                       </strong>
                       <span
                         className={
-                          "mt-1 block text-[8px] font-bold " +
-                          (getOrderProfit(order) < 0 ? "text-[#b42318]" : "text-[#18794e]")
+                          "mt-1.5 block text-[9px] font-bold " +
+                          (getOrderProfit(order) < 0 ? "text-[#b42318]" : "text-[#2f343b]")
                         }
                       >
                         Profit {money(getOrderProfit(order))}
@@ -608,7 +608,7 @@ export function AdminOrdersManager({
                     </div>
                     <Link
                       href={"/admin/orders/" + order.id}
-                      className="inline-flex min-h-8 items-center justify-center rounded-full bg-[#001cac] px-3.5 text-[8px] font-bold text-white sm:mt-2"
+                      className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-[#111111] px-5 text-[10px] font-bold text-white transition hover:bg-black sm:mt-2"
                     >
                       View
                     </Link>
@@ -618,10 +618,10 @@ export function AdminOrdersManager({
             ))}
           </div>
         ) : (
-          <div className="mt-4 grid min-h-[220px] place-items-center rounded-[14px] bg-[#f7f8fb] px-5 text-center sm:min-h-[300px] sm:rounded-[16px]">
+          <div className="mt-5 grid min-h-[240px] place-items-center rounded-[16px] bg-[#f5f5f5] px-5 text-center sm:min-h-[300px] sm:rounded-[18px]">
             <div>
-              <strong className="text-[11px] font-semibold">No orders yet</strong>
-              <p className="mt-1.5 text-[8px] leading-4 text-[#737b87]">
+              <strong className="text-[13px] font-semibold">No orders yet</strong>
+              <p className="mt-2 text-[10px] leading-5 text-[#68717b]">
                 Use Add order to create your first manual order.
               </p>
             </div>
