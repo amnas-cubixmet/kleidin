@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/types/product";
 import { getProductOfferStatus } from "@/lib/product-offers";
+import { DEMO_ADMIN_PRODUCTS_UPDATED_EVENT, readDemoAdminProducts } from "@/lib/demo-admin-products-client";
 
 function money(value?: number) {
   if (typeof value !== "number") return "—";
@@ -27,8 +28,9 @@ export function AdminProductsList() {
       const response = await fetch("/api/admin/products", { cache: "no-store" });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not load products.");
-      setConfigured(data.configured !== false);
-      setProducts(data.products ?? []);
+      const isConfigured = data.configured !== false;
+      setConfigured(isConfigured);
+      setProducts(isConfigured ? (data.products ?? []) : readDemoAdminProducts());
       setMessage(data.error ?? "");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not load products.");
@@ -39,7 +41,18 @@ export function AdminProductsList() {
 
   useEffect(() => {
     void load();
-  }, []);
+
+    const syncDemo = () => {
+      if (!configured) setProducts(readDemoAdminProducts());
+    };
+    window.addEventListener(DEMO_ADMIN_PRODUCTS_UPDATED_EVENT, syncDemo);
+    window.addEventListener("storage", syncDemo);
+
+    return () => {
+      window.removeEventListener(DEMO_ADMIN_PRODUCTS_UPDATED_EVENT, syncDemo);
+      window.removeEventListener("storage", syncDemo);
+    };
+  }, [configured]);
 
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase();
