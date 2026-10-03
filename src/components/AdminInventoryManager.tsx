@@ -472,10 +472,10 @@ export function AdminInventoryManager() {
                           Current total
                         </span>
                         <strong className="mt-1 block text-[19px] font-semibold">
-                          {product.stock}
+                          {draft.stock}
                         </strong>
                         <span className="mt-1 block text-[8px] text-[#858c96]">
-                          Calculated from colours
+                          Calculated from colour × size stock
                         </span>
                       </div>
                     )}
@@ -491,64 +491,107 @@ export function AdminInventoryManager() {
                   </div>
 
                   {hasVariants ? (
-                    <div className="mt-4 grid gap-2 border-t border-[#eceef1] pt-4 sm:grid-cols-2 xl:grid-cols-4">
-                      {product.colorVariants?.map((variant) => (
-                        <div
-                          key={variant.name}
-                          className="rounded-[14px] bg-[#f7f7f7] p-3"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span
-                              className="h-6 w-6 rounded-full border border-black/10"
-                              style={{ backgroundColor: variant.value || "#111111" }}
-                            />
-                            <strong className="text-[10px] font-semibold">
-                              {variant.name}
-                            </strong>
+                    <div className="mt-4 grid gap-3 border-t border-[#eceef1] pt-4">
+                      {product.colorVariants?.map((variant) => {
+                        const colorTotal =
+                          draft.colors[variant.name] ?? variant.stock ?? 0;
+
+                        return (
+                          <div
+                            key={variant.name}
+                            className="rounded-[16px] border border-[#e1e4e8] bg-[#f7f7f7] p-3.5 sm:p-4"
+                          >
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <div className="flex items-center gap-2.5">
+                                <span
+                                  className="h-7 w-7 rounded-full border border-black/10"
+                                  style={{
+                                    backgroundColor: variant.value || "#111111",
+                                  }}
+                                />
+                                <div>
+                                  <strong className="block text-[11px] font-semibold">
+                                    {variant.name}
+                                  </strong>
+                                  <span className="mt-0.5 block text-[8px] text-[#7b828c]">
+                                    Stock by size
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="rounded-full bg-white px-3 py-2 text-[9px] font-semibold text-[#454c55]">
+                                Colour total · {colorTotal}
+                              </div>
+                            </div>
+
+                            {product.sizes.length ? (
+                              <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+                                {product.sizes.map((size) => (
+                                  <label
+                                    key={size}
+                                    className="rounded-[12px] border border-[#d9dde3] bg-white p-2.5"
+                                  >
+                                    <span className="mb-1.5 block text-[9px] font-bold uppercase tracking-[.08em] text-[#626a75]">
+                                      {size}
+                                    </span>
+                                    <div className="flex items-center gap-1.5">
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          setSizeStock(
+                                            product.id,
+                                            variant.name,
+                                            size,
+                                            (draft.sizes?.[variant.name]?.[size] ?? 0) - 1,
+                                          )
+                                        }
+                                        className="h-[40px] w-[40px] shrink-0 rounded-full border border-[#d5d9df] bg-white text-[16px]"
+                                      >
+                                        −
+                                      </button>
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        inputMode="numeric"
+                                        value={
+                                          draft.sizes?.[variant.name]?.[size] ?? 0
+                                        }
+                                        onChange={(event) =>
+                                          setSizeStock(
+                                            product.id,
+                                            variant.name,
+                                            size,
+                                            Number(event.target.value),
+                                          )
+                                        }
+                                        className="h-[42px] min-w-0 flex-1 rounded-[10px] border border-[#d5d9df] bg-[#fafafa] px-1.5 text-center text-[11px] font-semibold outline-none focus:border-[#111111] focus:bg-white"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          setSizeStock(
+                                            product.id,
+                                            variant.name,
+                                            size,
+                                            (draft.sizes?.[variant.name]?.[size] ?? 0) + 1,
+                                          )
+                                        }
+                                        className="h-[40px] w-[40px] shrink-0 rounded-full border border-[#d5d9df] bg-white text-[16px]"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </label>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="mt-3 rounded-[12px] bg-white p-3 text-[9px] text-[#777f89]">
+                                Add sizes from the product edit page before entering size stock.
+                              </div>
+                            )}
                           </div>
-                          <div className="mt-3 flex items-center gap-1.5">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setColorStock(
-                                  product.id,
-                                  variant.name,
-                                  (draft.colors[variant.name] ?? 0) - 1,
-                                )
-                              }
-                              className="h-[40px] w-[40px] rounded-full border border-[#d5d9df] bg-white text-[16px]"
-                            >
-                              −
-                            </button>
-                            <input
-                              type="number"
-                              min="0"
-                              value={draft.colors[variant.name] ?? 0}
-                              onChange={(event) =>
-                                setColorStock(
-                                  product.id,
-                                  variant.name,
-                                  Number(event.target.value),
-                                )
-                              }
-                              className="h-[42px] min-w-0 flex-1 rounded-[10px] border border-[#d5d9df] bg-white px-2 text-center text-[11px] font-semibold outline-none focus:border-[#111111]"
-                            />
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setColorStock(
-                                  product.id,
-                                  variant.name,
-                                  (draft.colors[variant.name] ?? 0) + 1,
-                                )
-                              }
-                              className="h-[40px] w-[40px] rounded-full border border-[#d5d9df] bg-white text-[16px]"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   ) : null}
                 </article>
