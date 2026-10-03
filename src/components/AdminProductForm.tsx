@@ -137,23 +137,36 @@ function fromProduct(product: Product): ProductFormState {
     image: product.image ?? "",
     tryOnImage: product.tryOnImage ?? "",
     sortOrder: String(product.sortOrder ?? 100),
-    colors: variants.map((variant) => ({
-      id: "color-" + Math.random().toString(36).slice(2, 9),
-      name: variant.name,
-      value: variant.value || "#111111",
-      stock: String(variant.stock ?? 0),
-      sizeStocks: Object.fromEntries(
-        Object.entries(variant.sizeStocks ?? {}).map(([size, stock]) => [
-          size,
-          String(stock),
-        ]),
-      ),
-      images: variant.images?.length
-        ? variant.images
-        : variant.image
-          ? [variant.image]
-          : [],
-    })),
+    colors: variants.map((variant) => {
+      const existingSizeStocks = variant.sizeStocks ?? {};
+      const hasSizeStocks = Object.keys(existingSizeStocks).length > 0;
+      const normalizedSizeStocks = hasSizeStocks
+        ? existingSizeStocks
+        : Object.fromEntries(
+            product.sizes.map((size, index) => [
+              size,
+              index === 0 ? variant.stock ?? 0 : 0,
+            ]),
+          );
+
+      return {
+        id: "color-" + Math.random().toString(36).slice(2, 9),
+        name: variant.name,
+        value: variant.value || "#111111",
+        stock: String(variant.stock ?? 0),
+        sizeStocks: Object.fromEntries(
+          Object.entries(normalizedSizeStocks).map(([size, stock]) => [
+            size,
+            String(stock),
+          ]),
+        ),
+        images: variant.images?.length
+          ? variant.images
+          : variant.image
+            ? [variant.image]
+            : [],
+      };
+    }),
   };
 }
 
