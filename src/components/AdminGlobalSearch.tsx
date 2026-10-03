@@ -135,7 +135,7 @@ export function AdminGlobalSearch() {
             setQuery(event.target.value);
             setOpen(true);
           }}
-          className="h-[36px] w-full rounded-full border border-[#d9dee7] bg-[#f7f8fb] pl-9 pr-12 text-[10px] font-medium text-[#22262d] outline-none placeholder:text-[#8f97a3] focus:border-[#001cac] focus:bg-white focus:ring-2 focus:ring-[#001cac]/10"
+          className="h-[44px] w-full rounded-full border border-[#d9dee7] bg-[#f7f8fb] pl-9 pr-12 text-[11px] font-medium text-[#22262d] outline-none placeholder:text-[#8f97a3] focus:border-[#001cac] focus:bg-white focus:ring-2 focus:ring-[#001cac]/10"
           placeholder="Search admin"
           aria-label="Search admin"
         />
@@ -156,17 +156,17 @@ export function AdminGlobalSearch() {
                     setOpen(false);
                     setQuery("");
                   }}
-                  className="flex items-center justify-between gap-3 rounded-[11px] px-3 py-2.5 transition hover:bg-[#f4f6fb]"
+                  className="flex items-center justify-between gap-3 rounded-[11px] min-h-[52px] px-3 py-2.5 transition hover:bg-[#f4f6fb]"
                 >
                   <div className="min-w-0">
-                    <strong className="block truncate text-[9px] font-bold text-[#20242a]">
+                    <strong className="block truncate text-[11px] font-bold text-[#20242a]">
                       {result.label}
                     </strong>
-                    <span className="mt-0.5 block truncate text-[7.5px] text-[#737c88]">
+                    <span className="mt-0.5 block truncate text-[9px] text-[#737c88]">
                       {result.meta}
                     </span>
                   </div>
-                  <span className="shrink-0 rounded-full bg-[#eef2ff] px-2 py-1 text-[7px] font-bold text-[#001cac]">
+                  <span className="shrink-0 rounded-full bg-[#eef2ff] px-2.5 py-1.5 text-[8px] font-bold text-[#001cac]">
                     {result.type}
                   </span>
                 </Link>
@@ -174,8 +174,8 @@ export function AdminGlobalSearch() {
             </div>
           ) : (
             <div className="px-4 py-6 text-center">
-              <strong className="text-[9px] font-semibold text-[#454c56]">No results</strong>
-              <p className="mt-1 text-[8px] text-[#8a919c]">Try another name, order number, phone or page.</p>
+              <strong className="text-[11px] font-semibold text-[#454c56]">No results</strong>
+              <p className="mt-1 text-[10px] text-[#8a919c]">Try another name, order number, phone or page.</p>
             </div>
           )}
         </div>
