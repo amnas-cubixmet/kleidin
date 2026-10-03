@@ -10,6 +10,7 @@ type FormColor = {
   name: string;
   value: string;
   stock: string;
+  sizeStocks: Record<string, string>;
   images: string[];
 };
 
@@ -59,6 +60,7 @@ function makeColor(): FormColor {
     name: "Black",
     value: "#111111",
     stock: "0",
+    sizeStocks: {},
     images: [],
   };
 }
@@ -140,6 +142,12 @@ function fromProduct(product: Product): ProductFormState {
       name: variant.name,
       value: variant.value || "#111111",
       stock: String(variant.stock ?? 0),
+      sizeStocks: Object.fromEntries(
+        Object.entries(variant.sizeStocks ?? {}).map(([size, stock]) => [
+          size,
+          String(stock),
+        ]),
+      ),
       images: variant.images?.length
         ? variant.images
         : variant.image
@@ -222,13 +230,20 @@ export function AdminProductForm({
     };
   }, [mode, productId]);
 
+  const colorStockTotal = (color: FormColor) => {
+    const sizeValues = form.sizes.map((size) =>
+      Math.max(0, Number(color.sizeStocks[size]) || 0),
+    );
+    const matrixTotal = sizeValues.reduce((sum, value) => sum + value, 0);
+    const hasMatrix = form.sizes.some((size) =>
+      Object.prototype.hasOwnProperty.call(color.sizeStocks, size),
+    );
+    return hasMatrix ? matrixTotal : Math.max(0, Number(color.stock) || 0);
+  };
+
   const totalColorStock = useMemo(
-    () =>
-      form.colors.reduce(
-        (sum, color) => sum + Math.max(0, Number(color.stock) || 0),
-        0,
-      ),
-    [form.colors],
+    () => form.colors.reduce((sum, color) => sum + colorStockTotal(color), 0),
+    [form.colors, form.sizes],
   );
 
   function update<K extends keyof ProductFormState>(
@@ -255,6 +270,25 @@ export function AdminProductForm({
       colors: current.colors.map((color) =>
         color.id === id ? { ...color, ...patch } : color,
       ),
+    }));
+  }
+
+  function updateSizeStock(colorId: string, size: string, value: number) {
+    setForm((current) => ({
+      ...current,
+      colors: current.colors.map((color) => {
+        if (color.id !== colorId) return color;
+        const sizeStocks = {
+          ...color.sizeStocks,
+          [size]: String(Math.max(0, Math.floor(value || 0))),
+        };
+        const stock = current.sizes.reduce(
+          (sum, currentSize) =>
+            sum + Math.max(0, Number(sizeStocks[currentSize]) || 0),
+          0,
+        );
+        return { ...color, sizeStocks, stock: String(stock) };
+      }),
     }));
   }
 
@@ -419,13 +453,29 @@ export function AdminProductForm({
     }
 
     const colorVariants: ProductColorVariant[] = form.colors
-      .map((color) => ({
-        name: color.name.trim(),
-        value: color.value || "#111111",
-        stock: Math.max(0, Number(color.stock) || 0),
-        image: color.images[0],
-        images: color.images,
-      }))
+      .map((color) => {
+        const sizeStocks = Object.fromEntries(
+          form.sizes.map((size) => [
+            size,
+            Math.max(0, Number(color.sizeStocks[size]) || 0),
+          ]),
+        );
+        const hasMatrix = form.sizes.some((size) =>
+          Object.prototype.hasOwnProperty.call(color.sizeStocks, size),
+        );
+        const stock = hasMatrix
+          ? Object.values(sizeStocks).reduce((sum, value) => sum + value, 0)
+          : Math.max(0, Number(color.stock) || 0);
+
+        return {
+          name: color.name.trim(),
+          value: color.value || "#111111",
+          stock,
+          sizeStocks,
+          image: color.images[0],
+          images: color.images,
+        };
+      })
       .filter((color) => Boolean(color.name));
 
     const payload = {
@@ -457,10 +507,7 @@ export function AdminProductForm({
       wholesaleSlug: form.wholesaleEnabled
         ? slugify(form.wholesaleSlug || form.slug + "-dealer")
         : null,
-      stock: Math.max(
-        0,
-        Number(form.stock) || (totalColorStock > 0 ? totalColorStock : 0),
-      ),
+      stock: Math.max(0, totalColorStock || Number(form.stock) || 0),
       sizes: form.sizes,
       colors: colorVariants.map((color) => color.name),
       colorVariants,
