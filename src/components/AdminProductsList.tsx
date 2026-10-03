@@ -61,10 +61,16 @@ export function AdminProductsList() {
   return (
     <div className="grid gap-4">
       {!configured ? (
-        <div className="rounded-[16px] border border-[#ead3a6] bg-[#fffaf0] p-4 text-[10px] leading-5 text-[#745d2c]">
-          <strong className="block text-[11px]">Supabase is not connected yet.</strong>
-          Add <code>SUPABASE_URL</code> and <code>SUPABASE_SERVICE_ROLE_KEY</code> to
-          your server environment, then run the updated <code>supabase/schema.sql</code>.
+        <div className="rounded-[16px] border border-[#d9dde3] bg-[#f6f6f6] p-4 text-[10px] leading-5 text-[#555d67]">
+          <div className="flex flex-wrap items-center gap-2">
+            <strong className="text-[11px] text-[#17191d]">Demo products active</strong>
+            <span className="rounded-full bg-[#111111] px-2.5 py-1 text-[8px] font-bold !text-white" style={{ color: "#fff" }}>
+              FAKE DATA
+            </span>
+          </div>
+          <p className="mt-1.5">
+            These products are realistic local demo data for UI testing. Connect Supabase to switch this page to the real product database.
+          </p>
         </div>
       ) : null}
 
@@ -99,7 +105,9 @@ export function AdminProductsList() {
               Products
             </h2>
             <p className="mt-1.5 text-[10px] leading-5 text-[#626a75] sm:text-[11px]">
-              Retail and wholesale product records stored in the product database.
+              {configured
+                ? "Retail and wholesale product records stored in the product database."
+                : "Retail and wholesale demo products for local testing."}
             </p>
           </div>
 
