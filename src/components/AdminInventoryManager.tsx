@@ -222,27 +222,41 @@ export function AdminInventoryManager() {
           </div>
         </div>
 
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
-          {filterButtons.map((item) => (
-            <button
-              key={item.key}
-              type="button"
-              onClick={() => setFilter(item.key)}
-              className={
-                "min-h-[42px] shrink-0 rounded-full px-4 text-[9px] font-bold transition " +
-                (filter === item.key
-                  ? "bg-[#111111] text-white"
-                  : "border border-[#d9dde3] bg-white text-[#555e69]")
-              }
-            >
-              {item.label}
-            </button>
-          ))}
+        <div className="mt-5 rounded-[16px] border border-[#e2e5e9] bg-[#f6f7f8] p-1.5 sm:inline-flex sm:rounded-full">
+          <div className="grid grid-cols-2 gap-1.5 sm:flex sm:gap-1">
+            {filterButtons.map((item) => {
+              const active = filter === item.key;
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => setFilter(item.key)}
+                  className={
+                    "min-h-[44px] rounded-[12px] px-4 text-[10px] font-bold transition sm:rounded-full sm:px-5 " +
+                    (active
+                      ? "bg-[#111111] !text-white shadow-[0_4px_12px_rgba(0,0,0,.10)]"
+                      : "bg-transparent text-[#4f5761] hover:bg-white")
+                  }
+                  style={active ? { color: "#fff" } : undefined}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {loading ? (
-          <div className="mt-5 grid min-h-[260px] place-items-center rounded-[16px] bg-[#f5f5f5] text-[11px] font-semibold text-[#6d7580]">
-            Loading inventory…
+          <div className="mt-4 flex min-h-[150px] items-center justify-center rounded-[16px] border border-[#e5e7ea] bg-white px-5 text-center sm:min-h-[180px]">
+            <div>
+              <span className="mx-auto block h-7 w-7 animate-spin rounded-full border-2 border-[#d5d9df] border-t-[#111111]" />
+              <strong className="mt-3 block text-[11px] font-semibold text-[#4f5761]">
+                Loading inventory
+              </strong>
+              <span className="mt-1 block text-[9px] text-[#8a919b]">
+                Fetching current stock levels…
+              </span>
+            </div>
           </div>
         ) : filtered.length ? (
           <div className="mt-5 grid gap-3">
