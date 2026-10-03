@@ -8,7 +8,7 @@ import {
   updateProduct,
   type ProductWriteInput,
 } from "@/lib/supabase-products";
-import type { ProductColorVariant, ProductStatus } from "@/types/product";
+import type { ProductColorVariant, ProductOfferType, ProductStatus } from "@/types/product";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +54,8 @@ function variants(value: unknown): ProductColorVariant[] {
 
 function parseProduct(body: Record<string, unknown>): ProductWriteInput {
   const wholesaleEnabled = Boolean(body.wholesaleEnabled);
+  const offerEnabled = Boolean(body.offerEnabled);
+  const offerType = text(body.offerType) as ProductOfferType;
   const status = text(body.status) as ProductStatus;
 
   return {
@@ -67,6 +69,16 @@ function parseProduct(body: Record<string, unknown>): ProductWriteInput {
       body.compareAtPrice === null || body.compareAtPrice === ""
         ? null
         : Math.max(0, number(body.compareAtPrice)),
+    offerEnabled,
+    offerType: ["sale-price", "percentage", "fixed"].includes(offerType)
+      ? offerType
+      : "sale-price",
+    offerValue: offerEnabled ? Math.max(0, number(body.offerValue)) : null,
+    offerLabel: offerEnabled ? text(body.offerLabel) : null,
+    offerBadge: offerEnabled ? text(body.offerBadge) : null,
+    offerStartsAt: offerEnabled ? text(body.offerStartsAt) || null : null,
+    offerEndsAt: offerEnabled ? text(body.offerEndsAt) || null : null,
+    offerCountdown: offerEnabled ? Boolean(body.offerCountdown) : false,
     wholesaleEnabled,
     wholesalePrice: wholesaleEnabled
       ? Math.max(0, number(body.wholesalePrice))
