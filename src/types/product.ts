@@ -7,6 +7,7 @@ export type ProductColorVariant = {
   image?: string;
   images?: string[];
   stock?: number;
+  sizeStocks?: Record<string, number>;
 };
 
 export type Product = {
