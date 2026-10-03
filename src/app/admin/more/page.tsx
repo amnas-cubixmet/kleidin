@@ -7,10 +7,8 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "More | KLEID.IN Admin", robots: { index: false, follow: false } };
 
 const links = [
-  ["/admin/customers", "Customers", "Customer profiles and history"],
   ["/admin/testimonials", "Testimonials", "Review and approve feedback"],
   ["/admin/hero", "Hero", "Storefront hero content"],
-  ["/admin/settings", "Settings", "Store and admin preferences"],
 ];
 
 export default async function AdminMorePage() {
