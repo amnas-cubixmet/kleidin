@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/types/product";
 import { formatPrice, getProductWhatsappUrl } from "@/lib/format";
 import { localStoreSettings } from "@/data/store";
+import { getProductOfferPrice, isProductOfferActive } from "@/lib/product-offers";
 
 function getOfferTimer(endAt?: string) {
   if (!endAt) return null;
@@ -40,28 +41,44 @@ export function ProductCard({ product }: { product: Product }) {
   const currentStock = selectedVariant?.stock ?? product.stock;
   const soldOut = product.status === "sold-out" || currentStock <= 0;
   const limitedStock = !soldOut && currentStock <= 7;
-  const hasOffer =
+  const activeProductOffer = isProductOfferActive(product);
+  const offerPrice = getProductOfferPrice(product);
+  const legacyOffer =
+    !activeProductOffer &&
     Boolean(product.compareAtPrice) &&
     Number(product.compareAtPrice) > product.price;
+  const hasOffer = activeProductOffer || legacyOffer;
+  const displayPrice = activeProductOffer ? offerPrice : product.price;
+  const originalPrice = activeProductOffer
+    ? product.price
+    : product.compareAtPrice;
 
   const discount =
-    hasOffer && product.compareAtPrice
-      ? Math.round(
-          ((product.compareAtPrice - product.price) /
-            product.compareAtPrice) *
-            100,
-        )
+    hasOffer && originalPrice && originalPrice > displayPrice
+      ? Math.round(((originalPrice - displayPrice) / originalPrice) * 100)
       : 0;
 
   const [offerTimer, setOfferTimer] = useState<ReturnType<typeof getOfferTimer> | null>(null);
 
   useEffect(() => {
-    if (!product.saleEndsAt) return;
-    const update = () => setOfferTimer(getOfferTimer(product.saleEndsAt));
+    const endAt =
+      activeProductOffer && product.offerCountdown
+        ? product.offerEndsAt
+        : product.saleEndsAt;
+    if (!endAt) {
+      setOfferTimer(null);
+      return;
+    }
+    const update = () => setOfferTimer(getOfferTimer(endAt));
     update();
     const timer = window.setInterval(update, 60000);
     return () => window.clearInterval(timer);
-  }, [product.saleEndsAt]);
+  }, [
+    activeProductOffer,
+    product.offerCountdown,
+    product.offerEndsAt,
+    product.saleEndsAt,
+  ]);
 
   const badge = useMemo(
     () =>
@@ -69,8 +86,10 @@ export function ProductCard({ product }: { product: Product }) {
         ? "Sold out"
         : limitedStock
           ? `Limited stock · ${currentStock} left`
-          : hasOffer
-            ? product.saleLabel ?? "Limited offer"
+          : activeProductOffer
+            ? product.offerLabel ?? product.offerBadge ?? "Limited offer"
+            : hasOffer
+              ? product.saleLabel ?? "Limited offer"
             : product.featured
               ? "New"
               : product.category,
@@ -81,6 +100,9 @@ export function ProductCard({ product }: { product: Product }) {
       product.category,
       product.featured,
       product.saleLabel,
+      product.offerLabel,
+      product.offerBadge,
+      activeProductOffer,
       soldOut,
     ],
   );
@@ -135,7 +157,11 @@ export function ProductCard({ product }: { product: Product }) {
               <strong>{offerTimer.countdown}</strong>
             </span>
           ) : hasOffer && discount > 0 ? (
-            <span className="product-card-discount">{discount}% OFF</span>
+            <span className="product-card-discount">
+              {activeProductOffer && product.offerBadge
+                ? product.offerBadge
+                : discount + "% OFF"}
+            </span>
           ) : null}
         </div>
       </div>
@@ -146,9 +172,9 @@ export function ProductCard({ product }: { product: Product }) {
         </Link>
 
         <div className="product-card-price">
-          <strong>{formatPrice(product.price)}</strong>
-          {hasOffer && product.compareAtPrice ? (
-            <del>{formatPrice(product.compareAtPrice)}</del>
+          <strong>{formatPrice(displayPrice)}</strong>
+          {hasOffer && originalPrice && originalPrice > displayPrice ? (
+            <del>{formatPrice(originalPrice)}</del>
           ) : null}
         </div>
 
