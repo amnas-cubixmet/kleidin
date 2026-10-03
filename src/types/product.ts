@@ -1,4 +1,5 @@
 export type ProductStatus = "active" | "draft" | "sold-out";
+export type ProductOfferType = "sale-price" | "percentage" | "fixed";
 
 export type ProductColorVariant = {
   name: string;
@@ -17,6 +18,14 @@ export type Product = {
   category: string;
   price: number;
   compareAtPrice?: number;
+  offerEnabled?: boolean;
+  offerType?: ProductOfferType;
+  offerValue?: number;
+  offerLabel?: string;
+  offerBadge?: string;
+  offerStartsAt?: string;
+  offerEndsAt?: string;
+  offerCountdown?: boolean;
   saleEndsAt?: string;
   saleLabel?: string;
   description: string;
@@ -43,6 +52,14 @@ export type DbProduct = {
   category: string;
   price: number;
   compare_at_price: number | null;
+  offer_enabled?: boolean | null;
+  offer_type?: ProductOfferType | null;
+  offer_value?: number | null;
+  offer_label?: string | null;
+  offer_badge?: string | null;
+  offer_starts_at?: string | null;
+  offer_ends_at?: string | null;
+  offer_countdown?: boolean | null;
   wholesale_enabled?: boolean | null;
   wholesale_price?: number | null;
   wholesale_min_order?: number | null;
