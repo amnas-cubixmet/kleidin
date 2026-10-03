@@ -40,17 +40,42 @@ export async function PATCH(
     const body = (await request.json()) as {
       stock?: unknown;
       colorStocks?: Record<string, unknown>;
+      sizeStocks?: Record<string, Record<string, unknown>>;
     };
 
     const colorStocks = body.colorStocks ?? {};
+    const sizeStocks = body.sizeStocks ?? {};
+
     const colorVariants: ProductColorVariant[] = (product.colorVariants ?? []).map(
-      (variant) => ({
-        ...variant,
-        stock:
-          Object.prototype.hasOwnProperty.call(colorStocks, variant.name)
-            ? stockNumber(colorStocks[variant.name])
-            : stockNumber(variant.stock),
-      }),
+      (variant) => {
+        const requestedSizeStocks = sizeStocks[variant.name];
+        const normalizedSizeStocks = requestedSizeStocks
+          ? Object.fromEntries(
+              product.sizes.map((size) => [
+                size,
+                stockNumber(requestedSizeStocks[size]),
+              ]),
+            )
+          : variant.sizeStocks ?? {};
+
+        const matrixTotal = Object.values(normalizedSizeStocks).reduce(
+          (sum, value) => sum + stockNumber(value),
+          0,
+        );
+        const hasMatrix =
+          requestedSizeStocks !== undefined ||
+          Object.keys(variant.sizeStocks ?? {}).length > 0;
+
+        return {
+          ...variant,
+          sizeStocks: normalizedSizeStocks,
+          stock: hasMatrix
+            ? matrixTotal
+            : Object.prototype.hasOwnProperty.call(colorStocks, variant.name)
+              ? stockNumber(colorStocks[variant.name])
+              : stockNumber(variant.stock),
+        };
+      },
     );
 
     const variantTotal = colorVariants.reduce(
@@ -61,7 +86,8 @@ export async function PATCH(
     const requestedStock =
       body.stock === undefined ? product.stock : stockNumber(body.stock);
     const nextStock =
-      colorVariants.length && Object.keys(colorStocks).length
+      colorVariants.length &&
+      (Object.keys(colorStocks).length || Object.keys(sizeStocks).length)
         ? variantTotal
         : requestedStock;
 
