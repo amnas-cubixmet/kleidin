@@ -42,10 +42,10 @@ export function AdminDashboardBestSellers() {
 
   return (
     <div className="rounded-[18px] border border-[#dfe3ea] bg-white p-3.5 sm:rounded-[20px] sm:p-4 md:p-5">
-      <p className="text-[8px] font-semibold uppercase tracking-[.13em] text-[#7d8490]">
+      <p className="text-[12px] font-semibold uppercase tracking-[.13em] text-[#7d8490]">
         Top selling
       </p>
-      <h2 className="mt-1.5 text-[20px] sm:text-[21px] font-semibold tracking-[-.04em]">
+      <h2 className="mt-1.5 text-[22px] sm:text-[24px] font-semibold tracking-[-.04em]">
         Best sellers
       </h2>
 
@@ -54,26 +54,26 @@ export function AdminDashboardBestSellers() {
           {ranked.map((item, index) => (
             <div
               key={item.name}
-              className="flex items-center justify-between gap-3 rounded-[12px] bg-[#f7f8fb] px-3 py-2.5 sm:rounded-[13px] sm:py-3"
+              className="flex items-center justify-between gap-3 rounded-[12px] bg-[#f7f8fb] px-3.5 py-3 sm:rounded-[13px] sm:py-3"
             >
               <div className="flex min-w-0 items-center gap-3">
-                <span className="grid h-6 w-6 sm:h-7 sm:w-7 shrink-0 place-items-center rounded-full bg-white text-[8px] font-bold text-[#001cac]">
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white text-[10px] font-bold text-[#001cac]">
                   {index + 1}
                 </span>
-                <strong className="truncate text-[9px] font-semibold">
+                <strong className="truncate text-[11px] font-semibold">
                   {item.name}
                 </strong>
               </div>
-              <span className="shrink-0 text-[8px] font-bold text-[#5f6874]">
+              <span className="shrink-0 text-[10px] font-bold text-[#5f6874]">
                 {item.qty} sold
               </span>
             </div>
           ))}
         </div>
       ) : (
-        <div className="mt-3.5 rounded-[14px] sm:mt-4 sm:rounded-[15px] bg-[#f7f8fb] px-4 py-5">
+        <div className="mt-3.5 rounded-[14px] sm:mt-4 sm:rounded-[15px] bg-[#f7f8fb] px-4 py-6">
           <strong className="text-[10px] font-semibold">Waiting for orders</strong>
-          <p className="mt-1 text-[8px] leading-4 text-[#68717d]">
+          <p className="mt-1 text-[10px] leading-4 text-[#68717d]">
             Product ranking will appear after you add manual orders.
           </p>
         </div>
