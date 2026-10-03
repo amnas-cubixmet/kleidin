@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import type { Product } from "@/types/product";
 import { formatPrice, getProductWhatsappUrl } from "@/lib/format";
+import { getProductOfferPrice, isProductOfferActive } from "@/lib/product-offers";
 
 export function ProductDetailClient({
   product,
@@ -24,6 +25,8 @@ export function ProductDetailClient({
   const image = selectedVariant?.image ?? product.image;
   const stock = selectedVariant?.stock ?? product.stock;
   const soldOut = product.status === "sold-out" || stock <= 0;
+  const offerActive = isProductOfferActive(product);
+  const displayPrice = offerActive ? getProductOfferPrice(product) : product.price;
   const whatsappUrl = getProductWhatsappUrl(
     product,
     whatsappNumber,
@@ -64,12 +67,27 @@ export function ProductDetailClient({
             </div>
 
             <div className="product-detail-price">
-              <strong>{formatPrice(product.price)}</strong>
-              {product.compareAtPrice ? (
+              <strong>{formatPrice(displayPrice)}</strong>
+              {offerActive ? (
+                <del>{formatPrice(product.price)}</del>
+              ) : product.compareAtPrice ? (
                 <del>{formatPrice(product.compareAtPrice)}</del>
               ) : null}
             </div>
           </div>
+
+          {offerActive ? (
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-[#111111] px-3 py-1.5 text-[9px] font-bold text-white">
+                {product.offerBadge || product.offerLabel || "Offer"}
+              </span>
+              {product.offerEndsAt ? (
+                <span className="text-[9px] font-medium text-black/50">
+                  Ends {new Date(product.offerEndsAt).toLocaleString("en-IN")}
+                </span>
+              ) : null}
+            </div>
+          ) : null}
 
           <p className="product-description">{product.description}</p>
 
