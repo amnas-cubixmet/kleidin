@@ -86,7 +86,7 @@ function isActive(pathname: string, href: string) {
 function DesktopGroup({ title, items, pathname }: { title: string; items: NavItem[]; pathname: string }) {
   return (
     <div className="mt-4 xl:mt-5">
-      <p className="mb-2 px-3 text-[9px] font-bold uppercase tracking-[.13em] text-[#8a919d]">{title}</p>
+      <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[.13em] text-[#8a919d]">{title}</p>
       <div className="grid gap-1">
         {items.map((item) => {
           const active = isActive(pathname, item.href);
@@ -96,7 +96,7 @@ function DesktopGroup({ title, items, pathname }: { title: string; items: NavIte
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={
-                "relative flex min-h-[42px] items-center gap-3 rounded-[11px] px-3 text-[10px] font-bold transition-colors " +
+                "relative flex min-h-[46px] items-center gap-3 rounded-[11px] px-3 text-[11px] font-bold transition-colors " +
                 (active
                   ? "bg-[#e9edff] text-[#001cac]"
                   : "text-[#59616d] hover:bg-[#f3f5f8] hover:text-[#15171a]")
@@ -129,7 +129,7 @@ export function AdminNavigation() {
         <DesktopGroup title="Storefront" items={storefrontItems} pathname={pathname} />
 
         <div className="mt-auto pt-5">
-          <Link href="/" target="_blank" className="flex min-h-9 items-center justify-between rounded-[12px] border border-[#dfe3ea] bg-[#f8f9fb] px-3 text-[9px] font-bold text-[#4d5561] transition hover:bg-white hover:text-[#15171a]">
+          <Link href="/" target="_blank" className="flex min-h-[44px] items-center justify-between rounded-[12px] border border-[#dfe3ea] bg-[#f8f9fb] px-3 text-[10px] font-bold text-[#4d5561] transition hover:bg-white hover:text-[#15171a]">
             <span>View storefront</span>
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M7 17 17 7M9 7h8v8" />
@@ -154,11 +154,11 @@ export function AdminNavigation() {
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={
-                "flex min-h-[52px] flex-col items-center justify-center gap-1 rounded-[12px] px-1 text-[8px] font-bold transition-colors " +
+                "flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-[12px] px-1 text-[9px] font-bold transition-colors " +
                 (active ? "bg-[#e9edff] text-[#001cac]" : "text-[#6b7280]")
               }
             >
-              <Icon name={item.icon} className="h-[17px] w-[17px]" />
+              <Icon name={item.icon} className="h-[19px] w-[19px]" />
               <span>{item.label}</span>
             </Link>
           );
