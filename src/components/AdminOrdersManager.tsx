@@ -251,23 +251,24 @@ export function AdminOrdersManager({
       return;
     }
 
-    const normalizedItems: AdminOrderItem[] = items
-      .map((item) => {
-        const product = productMap.get(item.productId);
-        if (!product) return null;
-        return {
-          id: item.id,
-          productId: product.id,
-          name: product.name,
-          sku: product.sku,
-          size: item.size || undefined,
-          color: item.color || undefined,
-          quantity: Math.max(1, Number(item.quantity) || 1),
-          unitPrice: Math.max(0, Number(item.unitPrice) || 0),
-          unitCost: Math.max(0, Number(item.unitCost) || 0),
-        };
-      })
-      .filter((item): item is AdminOrderItem => Boolean(item));
+    const normalizedItems = items.reduce<AdminOrderItem[]>((result, item) => {
+      const product = productMap.get(item.productId);
+      if (!product) return result;
+
+      result.push({
+        id: item.id,
+        productId: product.id,
+        name: product.name,
+        sku: product.sku,
+        size: item.size || undefined,
+        color: item.color || undefined,
+        quantity: Math.max(1, Number(item.quantity) || 1),
+        unitPrice: Math.max(0, Number(item.unitPrice) || 0),
+        unitCost: Math.max(0, Number(item.unitCost) || 0),
+      });
+
+      return result;
+    }, []);
 
     if (!normalizedItems.length) {
       setError("Add at least one valid product.");
