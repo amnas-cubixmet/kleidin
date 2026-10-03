@@ -3,12 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import type { Offer } from "@/types/commerce";
 import type { Product } from "@/types/product";
-import {
-  defaultHeroSlides,
-  HERO_SLIDE_STORAGE_KEY,
-  type HeroSlideConfig,
+import type {
+  HeroCtaStyle,
+  HeroImagePosition,
+  HeroSlideConfig,
 } from "@/data/hero-slides";
 
 type TimeLeft = {
@@ -18,7 +17,7 @@ type TimeLeft = {
   seconds: number;
 };
 
-type HeroSlide = {
+type ResolvedHeroSlide = {
   id: string;
   label: string;
   title: string;
@@ -28,8 +27,11 @@ type HeroSlide = {
   image?: string;
   badge?: string;
   meta?: string;
+  discountText?: string;
   showCountdown?: boolean;
-  brandOnly?: boolean;
+  endsAt?: string | null;
+  ctaStyle: HeroCtaStyle;
+  imagePosition: HeroImagePosition;
 };
 
 function getTimeLeft(endAt?: string | null): TimeLeft {
@@ -56,17 +58,24 @@ function money(value: number) {
   return `₹${value.toLocaleString("en-IN")}`;
 }
 
+function isScheduledNow(slide: HeroSlideConfig, now: number) {
+  const starts = slide.startsAt ? new Date(slide.startsAt).getTime() : null;
+  const ends = slide.endsAt ? new Date(slide.endsAt).getTime() : null;
+
+  if (starts !== null && Number.isFinite(starts) && now < starts) return false;
+  if (ends !== null && Number.isFinite(ends) && now > ends) return false;
+  return true;
+}
+
 export function TopFashionHero({
   products,
-  contactHref,
-  offer,
+  heroSlides,
 }: {
   products: Product[];
-  contactHref: string;
-  offer?: Offer | null;
+  heroSlides: HeroSlideConfig[];
 }) {
   const [index, setIndex] = useState(0);
-  const [heroConfig, setHeroConfig] = useState<HeroSlideConfig[]>(defaultHeroSlides);
+  const [now, setNow] = useState(() => Date.now());
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -74,131 +83,81 @@ export function TopFashionHero({
     seconds: 0,
   });
 
-  useEffect(() => {
-    if (!offer?.endsAt) return;
-    const update = () => setTimeLeft(getTimeLeft(offer.endsAt));
-    update();
-    const timer = window.setInterval(update, 1000);
-    return () => window.clearInterval(timer);
-  }, [offer?.endsAt]);
-
-  useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem(HERO_SLIDE_STORAGE_KEY);
-      if (!saved) return;
-
-      const parsed = JSON.parse(saved) as HeroSlideConfig[];
-      if (!Array.isArray(parsed)) return;
-
-      const savedById = new Map(parsed.map((item) => [item.id, item]));
-      setHeroConfig(
-        defaultHeroSlides.map((item) => ({
-          ...item,
-          ...(savedById.get(item.id) ?? {}),
-        })),
-      );
-    } catch {
-      setHeroConfig(defaultHeroSlides);
-    }
-  }, []);
-
-  const slides = useMemo<HeroSlide[]>(() => {
+  const slides = useMemo<ResolvedHeroSlide[]>(() => {
     if (!products.length) return [];
 
-    const withImage = products.filter((item) => item.image);
-    const pick = (position: number) =>
-      withImage[position % Math.max(1, withImage.length)] ?? products[0];
+    const featured =
+      products.find((product) => product.featured && product.stock > 0) ??
+      products.find((product) => product.stock > 0) ??
+      products[0];
 
-    const bestSeller =
-      products.find((item) => item.featured && item.stock > 0) ?? products[0];
-
-    const tee =
-      products.find((item) => item.category === "T-Shirts") ?? products[0];
-
-    const lowStock =
-      [...products]
-        .filter((item) => item.stock > 0)
-        .sort((a, b) => a.stock - b.stock)[0] ?? products[0];
-
-    const styleProduct = pick(2);
-    const colorProduct = pick(1);
-    const backProduct = pick(3);
-    const tryOnProduct = pick(0);
-
-    const dynamic = new Map<string, Partial<HeroSlide>>([
-      ["new-drop", { image: pick(0).image }],
-      ["best-seller", {
-        image: bestSeller.image,
-        href: `/products/${bestSeller.slug}`,
-        meta: `${bestSeller.name} · ${money(bestSeller.price)}`,
-      }],
-      ["category-focus", { image: tee.image }],
-      ["limited-stock", {
-        image: lowStock.image,
-        href: `/products/${lowStock.slug}`,
-        badge: `ONLY ${lowStock.stock} LEFT`,
-        meta: `${lowStock.name} · ${money(lowStock.price)}`,
-      }],
-      ["free-shipping", { image: pick(4).image }],
-      ["bundle", { image: pick(1).image }],
-      ["style-edit", {
-        image: styleProduct.image,
-        href: `/products/${styleProduct.slug}`,
-      }],
-      ["color-drop", { image: colorProduct.image }],
-      ["back-in-stock", {
-        image: backProduct.image,
-        href: `/products/${backProduct.slug}`,
-      }],
-      ["seasonal", {
-        label: offer?.badge ?? "SEASONAL EDIT",
-        image: offer?.imageUrl ?? pick(2).image,
-        href: offer?.ctaHref ?? "/products",
-        badge: offer?.discountText ? `${offer.discountText} OFF` : "SEASONAL",
-      }],
-      ["brand-message", { image: pick(5).image, brandOnly: true }],
-      ["journal", { image: tee.image }],
-      ["countdown-launch", {
-        image: offer?.imageUrl ?? pick(0).image,
-        showCountdown: true,
-      }],
-      ["whatsapp-order", {
-        image: pick(4).image,
-        href: contactHref,
-        button: contactHref.startsWith("https://wa.me/")
-          ? "Chat on WhatsApp"
-          : "Contact KLEID.IN",
-      }],
-      ["try-on-anywhere", {
-        image: tryOnProduct.image,
-        href: `/products/${tryOnProduct.slug}`,
-      }],
-    ]);
-
-    return [...heroConfig]
-      .filter((config) => config.enabled)
+    return [...heroSlides]
+      .filter((slide) => slide.enabled && isScheduledNow(slide, now))
       .sort((a, b) => a.order - b.order)
-      .map((config) => {
-        const auto = dynamic.get(config.id) ?? {};
+      .map((slide) => {
+        const selectedProduct = slide.productId
+          ? products.find((product) => product.id === slide.productId)
+          : undefined;
+
+        const product =
+          selectedProduct ??
+          (slide.kind === "product" ? featured : undefined);
+
+        const image =
+          slide.imageUrl ||
+          product?.image ||
+          product?.colorVariants?.[0]?.images?.[0] ||
+          featured.image;
+
+        const href =
+          slide.href ||
+          (product ? `/products/${product.slug}` : "/products");
+
+        const meta = product
+          ? `${product.name} · ${money(product.price)}`
+          : undefined;
 
         return {
-          id: config.id,
-          label: config.label || auto.label || "",
-          title: config.title,
-          subtitle: config.subtitle,
-          button: config.button || auto.button || "Explore",
-          href: config.href || auto.href || "/products",
-          image: config.imageUrl || auto.image,
-          badge: config.badge || auto.badge,
-          meta: auto.meta,
-          showCountdown: auto.showCountdown,
-          brandOnly: auto.brandOnly,
+          id: slide.id,
+          label: slide.label,
+          title: slide.title || product?.name || "KLEID.IN",
+          subtitle:
+            slide.subtitle ||
+            product?.description ||
+            "Everyday clothing without unnecessary noise.",
+          button: slide.button || (product ? "View product" : "Shop now"),
+          href,
+          image,
+          badge: slide.badge || slide.discountText || slide.label,
+          meta,
+          discountText: slide.discountText,
+          showCountdown: Boolean(slide.showCountdown && slide.endsAt),
+          endsAt: slide.endsAt,
+          ctaStyle: slide.ctaStyle ?? "light",
+          imagePosition: slide.imagePosition ?? "center",
         };
       });
-  }, [contactHref, heroConfig, offer, products]);
+  }, [heroSlides, now, products]);
 
   const slideCount = slides.length;
   const current = slides[index] ?? slides[0];
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!current?.showCountdown || !current.endsAt) {
+      setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      return;
+    }
+
+    const update = () => setTimeLeft(getTimeLeft(current.endsAt));
+    update();
+    const timer = window.setInterval(update, 1000);
+    return () => window.clearInterval(timer);
+  }, [current?.endsAt, current?.showCountdown]);
 
   useEffect(() => {
     if (slideCount <= 1) return;
@@ -206,15 +165,12 @@ export function TopFashionHero({
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-
     if (reduceMotion) return;
 
     let timer = 0;
-
     const start = () => {
       window.clearInterval(timer);
       if (document.hidden) return;
-
       timer = window.setInterval(() => {
         setIndex((currentIndex) => (currentIndex + 1) % slideCount);
       }, 5600);
@@ -222,22 +178,11 @@ export function TopFashionHero({
 
     start();
     document.addEventListener("visibilitychange", start);
-
     return () => {
       window.clearInterval(timer);
       document.removeEventListener("visibilitychange", start);
     };
   }, [slideCount]);
-
-  useEffect(() => {
-    if (!offer?.endsAt) return;
-
-    const update = () => setTimeLeft(getTimeLeft(offer.endsAt));
-    update();
-
-    const timer = window.setInterval(update, 1000);
-    return () => window.clearInterval(timer);
-  }, [offer?.endsAt]);
 
   useEffect(() => {
     if (index >= slideCount) setIndex(0);
@@ -252,8 +197,20 @@ export function TopFashionHero({
 
   const titleIsLong = current.title.length > 20;
 
+  const imagePositionClass =
+    current.imagePosition === "left"
+      ? "object-left"
+      : current.imagePosition === "right"
+        ? "object-right"
+        : "object-center";
+
   const ctaClass =
-    "inline-flex min-h-11 items-center justify-center rounded-full bg-white px-5 text-[9px] font-semibold !text-[#111111] transition hover:bg-[#eef2ff] md:text-[10px]";
+    "inline-flex min-h-[44px] items-center justify-center rounded-full px-5 text-[10px] font-bold transition " +
+    (current.ctaStyle === "dark"
+      ? "bg-[#111111] !text-white hover:bg-black"
+      : current.ctaStyle === "outline"
+        ? "border border-white/70 bg-transparent !text-white hover:bg-white/10"
+        : "bg-white !text-[#111111] hover:bg-[#f1f1f1]");
 
   return (
     <section className="mx-auto mb-0 w-full px-0 sm:mb-3 sm:w-[min(calc(100%-24px),1440px)]">
@@ -262,7 +219,7 @@ export function TopFashionHero({
           {slides.map((slide, slideIndex) => (
             <div
               key={slide.id}
-              className={`top-fashion-slide absolute inset-0 transition-[opacity,transform] duration-700 ease-out ${
+              className={`absolute inset-0 transition-[opacity,transform] duration-700 ease-out ${
                 slideIndex === index
                   ? "scale-100 opacity-100"
                   : "pointer-events-none scale-[1.02] opacity-0"
@@ -276,20 +233,14 @@ export function TopFashionHero({
                   fill
                   priority={slideIndex === 0}
                   sizes="100vw"
-                  className="object-cover object-[62%_center] md:object-center"
+                  className={`object-cover ${slide.imagePosition === "left" ? "object-left" : slide.imagePosition === "right" ? "object-right" : "object-center"}`}
                 />
               ) : null}
             </div>
           ))}
         </div>
 
-        <div
-          className={`absolute inset-0 transition-colors duration-500 ${
-            current.brandOnly
-              ? "bg-[linear-gradient(90deg,rgba(0,28,172,.94)_0%,rgba(0,28,172,.82)_45%,rgba(0,28,172,.22)_100%)]"
-              : "bg-[linear-gradient(90deg,rgba(3,10,24,.91)_0%,rgba(3,10,24,.72)_43%,rgba(3,10,24,.22)_72%,rgba(3,10,24,.04)_100%)] md:bg-[linear-gradient(90deg,rgba(3,10,24,.96)_0%,rgba(3,10,24,.84)_38%,rgba(3,10,24,.22)_69%,rgba(3,10,24,.03)_100%)]"
-          }`}
-        />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,10,24,.94)_0%,rgba(3,10,24,.74)_43%,rgba(3,10,24,.20)_72%,rgba(3,10,24,.04)_100%)] md:bg-[linear-gradient(90deg,rgba(3,10,24,.96)_0%,rgba(3,10,24,.84)_38%,rgba(3,10,24,.22)_69%,rgba(3,10,24,.03)_100%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,24,.04)_22%,rgba(3,10,24,.10)_50%,rgba(3,10,24,.76)_100%)] md:hidden" />
 
         <div className="relative z-10 flex h-full flex-col justify-between px-5 py-5 md:px-12 md:py-9 lg:px-16 lg:py-10">
@@ -299,10 +250,16 @@ export function TopFashionHero({
             </span>
           </div>
 
-          <div className="top-fashion-copy max-w-[860px] pb-1 md:pb-4">
-            <p className="mb-2.5 text-[8px] font-semibold tracking-[0.16em] text-[#7395ff] md:mb-4 md:text-[10px]">
+          <div className="max-w-[860px] pb-1 md:pb-4">
+            <p className="mb-2.5 text-[8px] font-semibold tracking-[0.16em] text-white/65 md:mb-4 md:text-[10px]">
               {current.label}
             </p>
+
+            {current.discountText ? (
+              <strong className="mb-3 block text-[13px] font-bold tracking-[.04em] text-white md:text-[15px]">
+                {current.discountText}
+              </strong>
+            ) : null}
 
             <h1
               className={`m-0 max-w-[900px] font-semibold leading-[0.84] tracking-[-0.065em] ${
@@ -326,38 +283,24 @@ export function TopFashionHero({
 
             {current.showCountdown ? (
               <div className="mt-5 flex flex-wrap items-center gap-2 text-white md:mt-6">
-                {offer?.endsAt ? (
-                  <>
-                    <div className="min-w-[68px] rounded-[10px] border border-white/15 bg-white/5 px-3 py-2.5 backdrop-blur-sm">
-                      <strong className="block text-[18px] font-semibold md:text-[22px]">
-                        {pad(timeLeft.days)}
-                      </strong>
-                      <span className="text-[6px] uppercase tracking-[0.1em] text-white/45">
-                        Days
-                      </span>
-                    </div>
-                    <div className="min-w-[68px] rounded-[10px] border border-white/15 bg-white/5 px-3 py-2.5 backdrop-blur-sm">
-                      <strong className="block text-[18px] font-semibold md:text-[22px]">
-                        {pad(timeLeft.hours)}
-                      </strong>
-                      <span className="text-[6px] uppercase tracking-[0.1em] text-white/45">
-                        Hrs
-                      </span>
-                    </div>
-                    <div className="min-w-[68px] rounded-[10px] border border-white/15 bg-white/5 px-3 py-2.5 backdrop-blur-sm">
-                      <strong className="block text-[18px] font-semibold md:text-[22px]">
-                        {pad(timeLeft.minutes)}
-                      </strong>
-                      <span className="text-[6px] uppercase tracking-[0.1em] text-white/45">
-                        Min
-                      </span>
-                    </div>
-                  </>
-                ) : (
-                  <span className="text-[9px] font-semibold tracking-[0.12em] text-white/65">
-                    COMING SOON
-                  </span>
-                )}
+                {[
+                  ["Days", timeLeft.days],
+                  ["Hrs", timeLeft.hours],
+                  ["Min", timeLeft.minutes],
+                  ["Sec", timeLeft.seconds],
+                ].map(([label, value]) => (
+                  <div
+                    key={String(label)}
+                    className="min-w-[64px] rounded-[10px] border border-white/15 bg-white/5 px-3 py-2.5 backdrop-blur-sm"
+                  >
+                    <strong className="block text-[18px] font-semibold md:text-[22px]">
+                      {pad(Number(value))}
+                    </strong>
+                    <span className="text-[6px] uppercase tracking-[0.1em] text-white/45">
+                      {label}
+                    </span>
+                  </div>
+                ))}
               </div>
             ) : null}
 
@@ -368,16 +311,11 @@ export function TopFashionHero({
                   target={current.href.startsWith("https://") ? "_blank" : undefined}
                   rel={current.href.startsWith("https://") ? "noreferrer" : undefined}
                   className={ctaClass}
-                  style={{ color: "#111111" }}
                 >
                   {current.button}
                 </a>
               ) : (
-                <Link
-                  href={current.href}
-                  className={ctaClass}
-                  style={{ color: "#111111" }}
-                >
+                <Link href={current.href} className={ctaClass}>
                   {current.button}
                 </Link>
               )}
@@ -387,7 +325,8 @@ export function TopFashionHero({
           <div className="flex items-center pt-1">
             <div className="flex min-w-0 items-center gap-2.5">
               <span className="shrink-0 text-[8px] font-semibold text-white/70">
-                {String(index + 1).padStart(2, "0")} / {String(slideCount).padStart(2, "0")}
+                {String(index + 1).padStart(2, "0")} /{" "}
+                {String(slideCount).padStart(2, "0")}
               </span>
 
               <div className="flex max-w-[220px] items-center gap-1 overflow-hidden md:max-w-none">
@@ -395,12 +334,12 @@ export function TopFashionHero({
                   <button
                     key={slide.id}
                     type="button"
-                    aria-label={`Show ${slide.label} slide`}
+                    aria-label={`Show ${slide.label || slide.title} slide`}
                     onClick={() => setIndex(slideIndex)}
-                    className={`h-[2px] shrink-0 rounded-full transition-all duration-300 ${
+                    className={`h-[3px] shrink-0 rounded-full transition-all duration-300 ${
                       slideIndex === index
-                        ? "w-6 bg-white md:w-8"
-                        : "w-2 bg-white/25 hover:bg-white/50 md:w-3"
+                        ? "w-7 bg-white md:w-9"
+                        : "w-3 bg-white/25 hover:bg-white/50"
                     }`}
                   />
                 ))}
