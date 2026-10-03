@@ -311,6 +311,26 @@ export const demoAdminProducts: Product[] = [
   },
 ];
 
+for (const product of demoAdminProducts) {
+  for (const variant of product.colorVariants ?? []) {
+    if (Object.keys(variant.sizeStocks ?? {}).length || !product.sizes.length) {
+      continue;
+    }
+
+    const total = Math.max(0, variant.stock ?? 0);
+    const base = Math.floor(total / product.sizes.length);
+    let remainder = total % product.sizes.length;
+
+    variant.sizeStocks = Object.fromEntries(
+      product.sizes.map((size) => {
+        const stock = base + (remainder > 0 ? 1 : 0);
+        remainder = Math.max(0, remainder - 1);
+        return [size, stock];
+      }),
+    );
+  }
+}
+
 export function getDemoAdminProduct(id: string) {
   return demoAdminProducts.find((product) => product.id === id) ?? null;
 }
