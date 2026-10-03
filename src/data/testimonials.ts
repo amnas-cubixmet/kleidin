@@ -4,6 +4,52 @@ import type { Testimonial } from "@/types/testimonial";
 // Product photos are intentionally product-focused, not customer profile photos.
 export const defaultTestimonials: Testimonial[] = [
   {
+    id: "demo-pending-tee-review",
+    name: "Rahil T.",
+    quote:
+      "The washed black tee feels premium and the fit is exactly what I wanted. I would size down only if you prefer a closer fit.",
+    location: "Kochi",
+    productImage:
+      "https://images.unsplash.com/photo-1583743814966-8936f37f0b?auto=format&fit=crop&w=1200&q=86",
+    rating: 5,
+    productSlug: "core-heavy-tee-washed-black",
+    showOnHome: false,
+    enabled: false,
+    pending: true,
+    submittedByCustomer: true,
+    createdAt: "2026-10-03T14:10:00.000Z",
+  },
+  {
+    id: "demo-pending-shirt-review",
+    name: "Shan P.",
+    quote:
+      "The white oxford is clean enough for work but still relaxed. Fabric feels better than I expected for the price.",
+    location: "Thrissur",
+    productImage:
+      "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=1200&q=86",
+    rating: 4,
+    productSlug: "relaxed-oxford-shirt-white",
+    showOnHome: false,
+    enabled: false,
+    pending: true,
+    submittedByCustomer: true,
+    createdAt: "2026-10-03T09:20:00.000Z",
+  },
+  {
+    id: "demo-hidden-review",
+    name: "Afsal K.",
+    quote:
+      "Good fit and colour. Delivery took a little longer than expected, but the product itself is solid.",
+    location: "Kannur",
+    rating: 4,
+    productSlug: "daily-tee-cobalt",
+    showOnHome: false,
+    enabled: false,
+    pending: false,
+    submittedByCustomer: true,
+    createdAt: "2026-10-01T11:40:00.000Z",
+  },
+  {
     id: "demo-core-heavy-tee",
     name: "Nihal K.",
     quote:
