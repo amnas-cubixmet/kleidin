@@ -204,6 +204,46 @@ on conflict (sku) do update set
   sort_order = excluded.sort_order,
   updated_at = now();
 
+-- Product-level offer states for admin testing.
+update public.products
+set
+  offer_enabled = true,
+  offer_type = 'percentage',
+  offer_value = 20,
+  offer_label = 'Weekend offer',
+  offer_badge = '20% OFF',
+  offer_starts_at = now() - interval '2 hours',
+  offer_ends_at = now() + interval '70 hours',
+  offer_countdown = true,
+  updated_at = now()
+where sku = 'KLD-TS-101';
+
+update public.products
+set
+  offer_enabled = true,
+  offer_type = 'sale-price',
+  offer_value = 1890,
+  offer_label = 'Oxford special',
+  offer_badge = '₹400 OFF',
+  offer_starts_at = now() + interval '2 days',
+  offer_ends_at = now() + interval '7 days',
+  offer_countdown = true,
+  updated_at = now()
+where sku = 'KLD-SH-201';
+
+update public.products
+set
+  offer_enabled = true,
+  offer_type = 'fixed',
+  offer_value = 500,
+  offer_label = 'Outerwear flash offer',
+  offer_badge = '₹500 OFF',
+  offer_starts_at = now() - interval '8 days',
+  offer_ends_at = now() - interval '3 days',
+  offer_countdown = false,
+  updated_at = now()
+where sku = 'KLD-OS-301';
+
 insert into public.hero_slides
 (
   id, kind, product_id, label, title, subtitle, button_text, cta_href,
