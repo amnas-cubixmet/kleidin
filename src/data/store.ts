@@ -1,16 +1,13 @@
 import type { Offer, StoreSettings } from "@/types/commerce";
+import { publicEnv } from "@/lib/public-env";
 
 export const localStoreSettings: StoreSettings = {
-  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "",
-  announcementText:
-    process.env.NEXT_PUBLIC_ANNOUNCEMENT_TEXT ??
-    "Free shipping on prepaid orders above ₹1,999",
-  announcementLinkLabel:
-    process.env.NEXT_PUBLIC_ANNOUNCEMENT_LINK_LABEL ?? "Shop the collection",
-  instagramUrl: process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "",
-  facebookUrl: process.env.NEXT_PUBLIC_FACEBOOK_URL ?? "",
-  supportEmail:
-    process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "hello@kleid.in",
+  whatsappNumber: publicEnv.whatsappNumber,
+  announcementText: publicEnv.announcementText,
+  announcementLinkLabel: publicEnv.announcementLinkLabel,
+  instagramUrl: publicEnv.instagramUrl,
+  facebookUrl: publicEnv.facebookUrl,
+  supportEmail: publicEnv.supportEmail,
 };
 
 export const localOffers: Offer[] = [
