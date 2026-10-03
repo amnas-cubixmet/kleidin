@@ -77,6 +77,32 @@ create table if not exists public.offers (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.hero_slides (
+  id uuid primary key default gen_random_uuid(),
+  kind text not null default 'custom'
+    check (kind in ('product', 'offer', 'collection', 'custom')),
+  product_id uuid references public.products(id) on delete set null,
+  label text not null default '',
+  title text not null default '',
+  subtitle text not null default '',
+  button_text text not null default 'Shop now',
+  cta_href text not null default '',
+  badge text not null default '',
+  discount_text text not null default '',
+  image_url text not null default '',
+  starts_at timestamptz,
+  ends_at timestamptz,
+  show_countdown boolean not null default false,
+  cta_style text not null default 'light'
+    check (cta_style in ('light', 'dark', 'outline')),
+  image_position text not null default 'center'
+    check (image_position in ('left', 'center', 'right')),
+  enabled boolean not null default true,
+  sort_order integer not null default 100,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists public.site_settings (
   id integer primary key default 1 check (id = 1),
   whatsapp_number text not null default '',
@@ -94,6 +120,7 @@ on conflict (id) do nothing;
 alter table public.profiles enable row level security;
 alter table public.products enable row level security;
 alter table public.offers enable row level security;
+alter table public.hero_slides enable row level security;
 alter table public.site_settings enable row level security;
 
 drop policy if exists "Public read active products" on public.products;
@@ -115,6 +142,17 @@ using (enabled = true or public.is_admin());
 drop policy if exists "Admin write offers" on public.offers;
 create policy "Admin write offers"
 on public.offers for all
+using (public.is_admin())
+with check (public.is_admin());
+
+drop policy if exists "Public read hero slides" on public.hero_slides;
+create policy "Public read hero slides"
+on public.hero_slides for select
+using (enabled = true or public.is_admin());
+
+drop policy if exists "Admin write hero slides" on public.hero_slides;
+create policy "Admin write hero slides"
+on public.hero_slides for all
 using (public.is_admin())
 with check (public.is_admin());
 
