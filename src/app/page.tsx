@@ -5,21 +5,14 @@ import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { TopFashionHero } from "@/components/TopFashionHero";
 import { ProductActions } from "@/components/ProductActions";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
-import { formatPrice, getWhatsappUrl } from "@/lib/format";
+import { formatPrice } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
-import { getActiveOffers, getStoreSettings } from "@/lib/site-settings";
+import { listHeroSlides } from "@/lib/supabase-hero";
 export default async function Home() {
-  const [products, settings, offers] = await Promise.all([
+  const [products, heroSlides] = await Promise.all([
     getCatalogProducts(),
-    getStoreSettings(),
-    getActiveOffers(),
+    listHeroSlides({ enabledOnly: true }),
   ]);
-
-  const contactHref = settings.whatsappNumber
-    ? getWhatsappUrl(undefined, settings.whatsappNumber)
-    : settings.supportEmail
-      ? `mailto:${settings.supportEmail}`
-      : "/contact";
   const tShirts = products.filter((product) => product.category === "T-Shirts");
   const featured = products.filter((product) => product.featured);
   const showcaseProducts = (tShirts.length ? tShirts : featured.length ? featured : products).slice(0, 3);
@@ -30,11 +23,7 @@ export default async function Home() {
     <div className="reference-home">
       {products.length ? (
         <>
-          <TopFashionHero
-            products={products}
-            contactHref={contactHref}
-            offer={offers[0] ?? null}
-          />
+          <TopFashionHero products={products} heroSlides={heroSlides} />
 
           {showcaseProducts.length ? (
             <AutoOutfitHero products={showcaseProducts} />
