@@ -6,7 +6,7 @@ import { AdminDashboardOrderMetrics } from "@/components/AdminDashboardOrderMetr
 import { AdminDashboardOrderActivity } from "@/components/AdminDashboardOrderActivity";
 import { AdminDashboardBestSellers } from "@/components/AdminDashboardBestSellers";
 import { requireAdmin } from "@/lib/admin-auth";
-import { getCatalogProducts } from "@/lib/catalog";
+import { listProducts } from "@/lib/mongodb-products";
 import { localStoreSettings } from "@/data/store";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default async function AdminDashboardPage() {
   await requireAdmin();
 
-  const products = await getCatalogProducts();
+  const products = await listProducts().catch(() => []);
   const totalStock = products.reduce((sum, product) => sum + product.stock, 0);
   const lowStock = products
     .filter((product) => product.stock <= 10)
