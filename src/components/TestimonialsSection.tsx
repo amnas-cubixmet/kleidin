@@ -5,15 +5,11 @@ import { StarRatingInput } from "@/components/StarRatingInput";
 import {
   type ChangeEvent,
   type FormEvent,
+  useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
-import {
-  readTestimonials,
-  writeTestimonials,
-  TESTIMONIAL_UPDATED_EVENT,
-} from "@/lib/testimonials";
 import type { Testimonial } from "@/types/testimonial";
 
 type Props = {
@@ -27,7 +23,6 @@ type SubmissionDraft = {
   location: string;
   quote: string;
   rating: number;
-  productImage: string;
 };
 
 const emptyDraft: SubmissionDraft = {
@@ -35,7 +30,6 @@ const emptyDraft: SubmissionDraft = {
   location: "",
   quote: "",
   rating: 5,
-  productImage: "",
 };
 
 export function TestimonialsSection({
@@ -45,36 +39,39 @@ export function TestimonialsSection({
 }: Props) {
   const [items, setItems] = useState<Testimonial[]>([]);
   const [draft, setDraft] = useState<SubmissionDraft>(emptyDraft);
+  const [productImageFile, setProductImageFile] = useState<File | null>(null);
+  const [productImagePreview, setProductImagePreview] = useState("");
   const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      const query = productSlug
+        ? "?productSlug=" + encodeURIComponent(productSlug)
+        : "";
+      const response = await fetch("/api/testimonials" + query, {
+        cache: "no-store",
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not load reviews.");
+      setItems((data.testimonials ?? []) as Testimonial[]);
+    } catch {
+      setItems([]);
+    }
+  }, [productSlug]);
 
   useEffect(() => {
-    const sync = () => setItems(readTestimonials());
-    sync();
-
-    window.addEventListener("storage", sync);
-    window.addEventListener(TESTIMONIAL_UPDATED_EVENT, sync);
-
-    return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener(TESTIMONIAL_UPDATED_EVENT, sync);
-    };
-  }, []);
+    void load();
+  }, [load]);
 
   const visible = useMemo(
     () =>
-      items
-        .filter((item) => {
-          if (!item.enabled || item.pending) return false;
-          if (productSlug) return item.productSlug === productSlug;
-          return item.showOnHome;
-        })
-        .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-    [items, productSlug],
+      [...items].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    [items],
   );
 
   const loopItems = useMemo(() => {
     if (!visible.length) return [];
-
     const copies = Math.max(1, Math.ceil(4 / visible.length));
     return Array.from({ length: copies }, () => visible)
       .flat()
@@ -82,31 +79,34 @@ export function TestimonialsSection({
   }, [visible]);
 
   function handleProductImage(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
+    const file = event.target.files?.[0] ?? null;
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
       setMessage("Please choose an image file.");
+      event.target.value = "";
       return;
     }
 
-    if (file.size > 1500000) {
-      setMessage("Keep the product photo under 1.5 MB.");
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage("Keep the product photo under 5 MB.");
+      event.target.value = "";
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      setDraft((current) => ({
-        ...current,
-        productImage: typeof reader.result === "string" ? reader.result : "",
-      }));
-      setMessage("");
-    };
-    reader.readAsDataURL(file);
+    if (productImagePreview) URL.revokeObjectURL(productImagePreview);
+    setProductImageFile(file);
+    setProductImagePreview(URL.createObjectURL(file));
+    setMessage("");
   }
 
-  function submitStory(event: FormEvent) {
+  function clearProductImage() {
+    if (productImagePreview) URL.revokeObjectURL(productImagePreview);
+    setProductImageFile(null);
+    setProductImagePreview("");
+  }
+
+  async function submitStory(event: FormEvent) {
     event.preventDefault();
 
     if (!draft.name.trim() || !draft.quote.trim()) {
@@ -114,30 +114,36 @@ export function TestimonialsSection({
       return;
     }
 
-    const current = readTestimonials();
-    const id =
-      typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID()
-        : "customer-story-" + Date.now();
+    try {
+      setSubmitting(true);
+      setMessage("");
 
-    const next: Testimonial = {
-      id,
-      name: draft.name.trim(),
-      location: draft.location.trim() || undefined,
-      quote: draft.quote.trim(),
-      rating: draft.rating,
-      productImage: draft.productImage || undefined,
-      productSlug: productSlug || undefined,
-      showOnHome: !productSlug,
-      enabled: false,
-      pending: true,
-      submittedByCustomer: true,
-      createdAt: new Date().toISOString(),
-    };
+      const body = new FormData();
+      body.set("name", draft.name.trim());
+      body.set("location", draft.location.trim());
+      body.set("quote", draft.quote.trim());
+      body.set("rating", String(draft.rating));
+      if (productSlug) body.set("productSlug", productSlug);
+      if (productImageFile) body.set("productImage", productImageFile);
 
-    writeTestimonials([next, ...current]);
-    setDraft(emptyDraft);
-    setMessage("Thank you. Your story was submitted for review.");
+      const response = await fetch("/api/testimonials", {
+        method: "POST",
+        body,
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not submit review.");
+
+      setDraft(emptyDraft);
+      clearProductImage();
+      setMessage(data.message || "Thank you. Your story was submitted for review.");
+      await load();
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Could not submit review.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   function StoryCard({
@@ -158,7 +164,6 @@ export function TestimonialsSection({
                   alt={duplicate ? "" : "Customer product photo"}
                   fill
                   sizes="56px"
-                  unoptimized={item.productImage.startsWith("data:")}
                   className="customer-story-product-image"
                 />
               </div>
@@ -296,14 +301,14 @@ export function TestimonialsSection({
                 accept="image/*"
                 onChange={handleProductImage}
               />
-              <small>Optional — upload the product you received or wore.</small>
+              <small>Uploaded securely to Cloudinary after submission.</small>
             </label>
           </div>
 
-          {draft.productImage ? (
+          {productImagePreview ? (
             <div className="customer-story-photo-preview">
               <Image
-                src={draft.productImage}
+                src={productImagePreview}
                 alt="Product photo preview"
                 width={84}
                 height={84}
@@ -311,12 +316,7 @@ export function TestimonialsSection({
               />
               <div>
                 <strong>Product photo ready</strong>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setDraft((current) => ({ ...current, productImage: "" }))
-                  }
-                >
+                <button type="button" onClick={clearProductImage}>
                   Remove photo
                 </button>
               </div>
@@ -325,8 +325,12 @@ export function TestimonialsSection({
 
           {message ? <p className="customer-story-form-message">{message}</p> : null}
 
-          <button type="submit" className="customer-story-submit-button">
-            Submit story
+          <button
+            type="submit"
+            className="customer-story-submit-button"
+            disabled={submitting}
+          >
+            {submitting ? "Submitting…" : "Submit story"}
           </button>
         </form>
       </div>
