@@ -6,6 +6,7 @@ import type {
 } from "@/types/product";
 import type { Filter } from "mongodb";
 import { deleteCloudinaryImages } from "@/lib/cloudinary";
+import { getDemoModeEnabled } from "@/lib/demo-mode";
 import {
   getMongoDatabase,
   isMongoDatabaseConfigured,
@@ -152,9 +153,20 @@ export function isProductDatabaseConfigured() {
 
 export async function listProducts(options?: { activeOnly?: boolean }) {
   const db = await getMongoDatabase();
+  const demoModeEnabled = await getDemoModeEnabled();
+
   const filter: Filter<ProductDocument> = options?.activeOnly
-    ? { status: { $ne: "draft" as const } }
-    : {};
+    ? demoModeEnabled
+      ? {
+          $or: [
+            { isDemo: true },
+            { isDemo: { $ne: true }, status: { $ne: "draft" as const } },
+          ],
+        }
+      : { isDemo: { $ne: true }, status: { $ne: "draft" as const } }
+    : demoModeEnabled
+      ? {}
+      : { isDemo: { $ne: true } };
 
   const rows = await db
     .collection<ProductDocument>("products")
@@ -167,31 +179,56 @@ export async function listProducts(options?: { activeOnly?: boolean }) {
 
 export async function getProduct(id: string) {
   const db = await getMongoDatabase();
+  const demoModeEnabled = await getDemoModeEnabled();
   const row = await db
     .collection<ProductDocument>("products")
-    .findOne({ id });
+    .findOne(demoModeEnabled ? { id } : { id, isDemo: { $ne: true } });
 
   return row ? toProduct(row) : null;
 }
 
 export async function getProductBySlugFromDb(slug: string) {
   const db = await getMongoDatabase();
+  const demoModeEnabled = await getDemoModeEnabled();
   const row = await db
     .collection<ProductDocument>("products")
-    .findOne({ slug, status: { $ne: "draft" } });
+    .findOne(
+      demoModeEnabled
+        ? {
+            slug,
+            $or: [
+              { isDemo: true },
+              { isDemo: { $ne: true }, status: { $ne: "draft" } },
+            ],
+          }
+        : { slug, isDemo: { $ne: true }, status: { $ne: "draft" } },
+    );
 
   return row ? toProduct(row) : null;
 }
 
 export async function getWholesaleProductBySlugFromDb(slug: string) {
   const db = await getMongoDatabase();
+  const demoModeEnabled = await getDemoModeEnabled();
   const row = await db
     .collection<ProductDocument>("products")
-    .findOne({
-      wholesaleSlug: slug,
-      wholesaleEnabled: true,
-      status: { $ne: "draft" },
-    });
+    .findOne(
+      demoModeEnabled
+        ? {
+            wholesaleSlug: slug,
+            wholesaleEnabled: true,
+            $or: [
+              { isDemo: true },
+              { isDemo: { $ne: true }, status: { $ne: "draft" } },
+            ],
+          }
+        : {
+            wholesaleSlug: slug,
+            wholesaleEnabled: true,
+            isDemo: { $ne: true },
+            status: { $ne: "draft" },
+          },
+    );
 
   return row ? toProduct(row) : null;
 }
