@@ -1,5 +1,6 @@
 import type { DbProduct, Product, ProductColorVariant, ProductOfferType, ProductStatus } from "@/types/product";
 import { getSupabaseServerEnvironment } from "@/lib/server-env";
+import { deleteCloudinaryImages } from "@/lib/cloudinary";
 
 export type ProductWriteInput = {
   id?: string;
@@ -29,7 +30,9 @@ export type ProductWriteInput = {
   featured: boolean;
   status: ProductStatus;
   image?: string | null;
+  imagePublicId?: string | null;
   tryOnImage?: string | null;
+  tryOnImagePublicId?: string | null;
   sortOrder?: number;
 };
 
@@ -75,7 +78,9 @@ function dbToProduct(row: DbProduct): Product {
     featured: Boolean(row.featured),
     status: row.status,
     image: row.image_url ?? undefined,
+    imagePublicId: row.image_public_id ?? undefined,
     tryOnImage: row.try_on_image_url ?? undefined,
+    tryOnImagePublicId: row.try_on_image_public_id ?? undefined,
     sortOrder: row.sort_order ?? 100,
   };
 }
@@ -111,7 +116,9 @@ function productToDb(input: ProductWriteInput) {
     featured: input.featured,
     status: input.status,
     image_url: input.image ?? null,
+    image_public_id: input.imagePublicId ?? null,
     try_on_image_url: input.tryOnImage ?? null,
+    try_on_image_public_id: input.tryOnImagePublicId ?? null,
     sort_order: input.sortOrder ?? 100,
     updated_at: new Date().toISOString(),
   };
@@ -197,97 +204,26 @@ export async function updateProduct(id: string, input: ProductWriteInput) {
   return rows[0] ? dbToProduct(rows[0]) : null;
 }
 
-export function collectProductStoragePaths(product: Product) {
-  const env = getSupabaseServerEnvironment();
-  if (!env) return [] as string[];
-  const prefix = `${env.url}/storage/v1/object/public/products/`;
-  const urls = [
-    product.image,
-    product.tryOnImage,
-    ...(product.colorVariants ?? []).flatMap((variant) => [
-      variant.image,
-      ...(variant.images ?? []),
-    ]),
-  ].filter((value): value is string => Boolean(value));
-
-  return [...new Set(urls)]
-    .filter((url) => url.startsWith(prefix))
-    .map((url) => decodeURIComponent(url.slice(prefix.length)));
-}
-
-export async function deleteStorageObjects(paths: string[]) {
-  if (!paths.length) return;
-  const env = getSupabaseServerEnvironment();
-  if (!env) throw new Error("Supabase is not configured.");
-
-  const response = await fetch(`${env.url}/storage/v1/object/products`, {
-    method: "DELETE",
-    headers: headers({ "Content-Type": "application/json" }),
-    body: JSON.stringify({ prefixes: paths }),
-  });
-
-  if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(detail || "Could not delete product images.");
-  }
-}
-
 export async function deleteProduct(id: string) {
   const product = await getProduct(id);
   if (!product) return false;
 
-  const paths = collectProductStoragePaths(product);
+  const publicIds = [
+    product.imagePublicId,
+    product.tryOnImagePublicId,
+    ...(product.colorVariants ?? []).flatMap((variant) => variant.imagePublicIds ?? []),
+  ];
+
   await request<void>(`/rest/v1/products?id=eq.${encodeURIComponent(id)}`, {
     method: "DELETE",
     headers: { Prefer: "return=minimal" },
   });
 
-  if (paths.length) {
-    try {
-      await deleteStorageObjects(paths);
-    } catch (error) {
-      console.error("Product deleted but storage cleanup failed:", error);
-    }
+  try {
+    await deleteCloudinaryImages(publicIds);
+  } catch (error) {
+    console.error("Product deleted but Cloudinary cleanup failed:", error);
   }
 
   return true;
-}
-
-export async function uploadProductImage(
-  path: string,
-  bytes: ArrayBuffer,
-  contentType: string,
-) {
-  const env = getSupabaseServerEnvironment();
-  if (!env) throw new Error("Supabase is not configured.");
-
-  const safePath = path
-    .split("/")
-    .map((part) => encodeURIComponent(part))
-    .join("/");
-
-  const response = await fetch(
-    `${env.url}/storage/v1/object/products/${safePath}`,
-    {
-      method: "POST",
-      headers: headers({
-        "Content-Type": contentType,
-        "x-upsert": "true",
-      }),
-      body: bytes,
-    },
-  );
-
-  if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(detail || "Image upload failed.");
-  }
-
-  return {
-    path,
-    url: `${env.url}/storage/v1/object/public/products/${path
-      .split("/")
-      .map((part) => encodeURIComponent(part))
-      .join("/")}`,
-  };
 }
