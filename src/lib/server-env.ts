@@ -25,23 +25,18 @@ export function getAdminEnvironment(): AdminEnvironment | null {
 }
 
 
-export type SupabaseServerEnvironment = {
-  url: string;
-  serviceRoleKey: string;
+export type MongoServerEnvironment = {
+  uri: string;
+  dbName: string;
 };
 
-export function getSupabaseServerEnvironment(): SupabaseServerEnvironment | null {
-  const url =
-    process.env.SUPABASE_URL?.trim() ||
-    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+export function getMongoServerEnvironment(): MongoServerEnvironment | null {
+  const uri = process.env.MONGODB_URI?.trim();
+  const dbName = process.env.MONGODB_DB?.trim() || "kleidin";
 
-  if (!url || !serviceRoleKey) return null;
+  if (!uri) return null;
 
-  return {
-    url: url.replace(/\/$/, ""),
-    serviceRoleKey,
-  };
+  return { uri, dbName };
 }
 
 
