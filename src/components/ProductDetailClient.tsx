@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Product } from "@/types/product";
 import { formatPrice, getProductWhatsappUrl } from "@/lib/format";
@@ -156,6 +157,14 @@ export function ProductDetailClient({
           </div>
 
           <div className="product-action-buttons product-detail-actions product-detail-whatsapp-actions">
+            {product.tryOnImage ? (
+              <Link
+                href={"/try-on/" + product.slug}
+                className="button border border-black/10 bg-white !text-[#111111]"
+              >
+                Try-On Anywhere
+              </Link>
+            ) : null}
             {whatsappUrl !== "#" && !soldOut ? (
               <a
                 className="button button-primary product-detail-whatsapp-primary"
@@ -177,6 +186,9 @@ export function ProductDetailClient({
           </div>
 
           <div className="product-notes">
+            {product.tryOnImage ? (
+              <span>Live camera try-on available</span>
+            ) : null}
             <span>Colour-specific product image</span>
             <span>Selected colour + size sent to WhatsApp</span>
             <span>Variant stock supported</span>
