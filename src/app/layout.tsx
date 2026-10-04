@@ -4,7 +4,7 @@ import "./globals.css";
 import { SiteChrome } from "@/components/SiteChrome";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
-import { listActiveAnnouncements } from "@/lib/supabase-announcements";
+import { listActiveAnnouncements } from "@/lib/mongodb-announcements";
 import { store } from "@/config/store";
 
 const inter = Inter({
