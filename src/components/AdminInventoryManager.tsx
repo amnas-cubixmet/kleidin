@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/types/product";
-import { readDemoAdminProducts, upsertDemoAdminProduct } from "@/lib/demo-admin-products-client";
 
 type Filter = "all" | "low" | "critical" | "out";
 
@@ -36,12 +35,9 @@ export function AdminInventoryManager() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not load inventory.");
 
-      const isConfigured = data.configured !== false;
-      const nextProducts = isConfigured
-        ? ((data.products ?? []) as Product[])
-        : readDemoAdminProducts();
+      const nextProducts = (data.products ?? []) as Product[];
       setProducts(nextProducts);
-      setConfigured(isConfigured);
+      setConfigured(true);
       setDrafts(
         Object.fromEntries(
           nextProducts.map((product) => [
@@ -183,86 +179,6 @@ export function AdminInventoryManager() {
       setSavingId(product.id);
       setMessage("");
 
-      if (!configured) {
-        const colorVariants = (product.colorVariants ?? []).map((variant) => {
-          const sizeStocks = Object.fromEntries(
-            product.sizes.map((size) => [
-              size,
-              draft.sizes?.[variant.name]?.[size] ??
-                variant.sizeStocks?.[size] ??
-                0,
-            ]),
-          );
-          const hasMatrix = product.sizes.length > 0;
-          const matrixTotal = Object.values(sizeStocks).reduce(
-            (sum, stock) => sum + stock,
-            0,
-          );
-
-          return {
-            ...variant,
-            sizeStocks,
-            stock: hasMatrix
-              ? matrixTotal
-              : Object.prototype.hasOwnProperty.call(draft.colors, variant.name)
-                ? draft.colors[variant.name]
-                : variant.stock ?? 0,
-          };
-        });
-        const variantTotal = colorVariants.reduce(
-          (sum, variant) => sum + (variant.stock ?? 0),
-          0,
-        );
-        const nextStock = colorVariants.length ? variantTotal : draft.stock;
-        const updated: Product = {
-          ...product,
-          colorVariants,
-          stock: nextStock,
-          status:
-            nextStock === 0
-              ? "sold-out"
-              : product.status === "sold-out"
-                ? "active"
-                : product.status,
-        };
-        upsertDemoAdminProduct(updated);
-        setProducts((current) =>
-          current.map((item) => (item.id === updated.id ? updated : item)),
-        );
-        setDrafts((current) => ({
-          ...current,
-          [updated.id]: {
-            stock: updated.stock,
-            colors: Object.fromEntries(
-              (updated.colorVariants ?? []).map((variant) => [
-                variant.name,
-                variant.stock ?? 0,
-              ]),
-            ),
-            sizes: Object.fromEntries(
-              (updated.colorVariants ?? []).map((variant) => {
-                const hasMatrix =
-                  Object.keys(variant.sizeStocks ?? {}).length > 0;
-                return [
-                  variant.name,
-                  Object.fromEntries(
-                    updated.sizes.map((size, index) => [
-                      size,
-                      hasMatrix
-                        ? variant.sizeStocks?.[size] ?? 0
-                        : index === 0
-                          ? variant.stock ?? 0
-                          : 0,
-                    ]),
-                  ),
-                ];
-              }),
-            ),
-          },
-        }));
-        return;
-      }
-
       const response = await fetch("/api/admin/inventory/" + product.id, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -320,9 +236,8 @@ export function AdminInventoryManager() {
   return (
     <div className="grid gap-4">
       {!configured ? (
-        <div className="rounded-[16px] border border-[#d9dde3] bg-[#f6f6f6] p-4 text-[10px] leading-5 text-[#555d67]">
-          <strong className="block text-[11px] text-[#17191d]">Demo inventory active</strong>
-          Stock changes save in this browser so you can test low-stock, critical and sold-out flows without Supabase.
+        <div className="rounded-[16px] border border-[#e0c2c2] bg-[#fff6f6] p-4 text-[10px] leading-5 text-[#8a3636]">
+          Supabase is required for inventory management.
         </div>
       ) : null}
 
