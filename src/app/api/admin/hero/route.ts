@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { demoAdminHeroSlides } from "@/data/demo-admin-hero";
 import {
   createHeroSlide,
   isHeroDatabaseConfigured,
@@ -39,6 +38,7 @@ function parse(body: Record<string, unknown>) {
     badge: text(body.badge),
     discountText: text(body.discountText),
     imageUrl: text(body.imageUrl),
+    imagePublicId: text(body.imagePublicId) || null,
     startsAt: text(body.startsAt) || null,
     endsAt: text(body.endsAt) || null,
     showCountdown: Boolean(body.showCountdown),
@@ -55,11 +55,10 @@ export async function GET() {
   }
 
   if (!isHeroDatabaseConfigured()) {
-    return NextResponse.json({
-      configured: false,
-      demo: true,
-      slides: demoAdminHeroSlides,
-    });
+    return NextResponse.json(
+      { configured: false, slides: [], error: "Supabase is not configured." },
+      { status: 503 },
+    );
   }
 
   try {
