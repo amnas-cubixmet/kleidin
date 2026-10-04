@@ -4,7 +4,7 @@ import {
   deleteAnnouncement,
   updateAnnouncement,
   type AnnouncementInput,
-} from "@/lib/supabase-announcements";
+} from "@/lib/mongodb-announcements";
 
 export const dynamic = "force-dynamic";
 
