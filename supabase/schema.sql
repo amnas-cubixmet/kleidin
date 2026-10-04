@@ -52,7 +52,9 @@ create table if not exists public.products (
   status text not null default 'active'
     check (status in ('active', 'draft', 'sold-out')),
   image_url text,
+  image_public_id text,
   try_on_image_url text,
+  try_on_image_public_id text,
   sort_order integer not null default 100,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -71,7 +73,9 @@ alter table public.products
   add column if not exists wholesale_price integer,
   add column if not exists wholesale_min_order integer,
   add column if not exists wholesale_slug text,
-  add column if not exists color_variants jsonb not null default '[]'::jsonb;
+  add column if not exists color_variants jsonb not null default '[]'::jsonb,
+  add column if not exists image_public_id text,
+  add column if not exists try_on_image_public_id text;
 
 create unique index if not exists products_wholesale_slug_key
 on public.products (wholesale_slug)
@@ -86,6 +90,7 @@ create table if not exists public.offers (
   cta_label text not null default 'Shop the Offer',
   cta_href text not null default '/products',
   image_url text not null default '',
+  image_public_id text,
   starts_at timestamptz,
   ends_at timestamptz,
   enabled boolean not null default true,
@@ -120,6 +125,69 @@ create table if not exists public.hero_slides (
   updated_at timestamptz not null default now()
 );
 
+alter table public.hero_slides
+  add column if not exists image_public_id text;
+
+create table if not exists public.orders (
+  id uuid primary key default gen_random_uuid(),
+  order_number text not null unique,
+  customer_name text not null,
+  phone text not null,
+  address_line_1 text not null,
+  address_line_2 text,
+  landmark text,
+  city text not null,
+  state text not null,
+  pincode text not null,
+  delivery_charge integer not null default 0 check (delivery_charge >= 0),
+  shipping_cost integer not null default 0 check (shipping_cost >= 0),
+  discount integer not null default 0 check (discount >= 0),
+  payment_status text not null default 'Pending'
+    check (payment_status in ('Pending', 'Paid', 'Cash on Delivery')),
+  status text not null default 'New'
+    check (status in ('New', 'Confirmed', 'Packed', 'Shipped', 'Delivered', 'Cancelled')),
+  notes text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.order_items (
+  id uuid primary key default gen_random_uuid(),
+  order_id uuid not null references public.orders(id) on delete cascade,
+  product_id uuid references public.products(id) on delete set null,
+  product_name text not null,
+  sku text not null,
+  size text,
+  color text,
+  quantity integer not null default 1 check (quantity > 0),
+  unit_price integer not null default 0 check (unit_price >= 0),
+  unit_cost integer not null default 0 check (unit_cost >= 0),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists order_items_order_id_idx
+on public.order_items (order_id);
+
+create table if not exists public.testimonials (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  quote text not null,
+  location text,
+  product_image_url text,
+  product_image_public_id text,
+  rating integer not null default 5 check (rating between 1 and 5),
+  product_slug text,
+  show_on_home boolean not null default false,
+  enabled boolean not null default false,
+  pending boolean not null default true,
+  submitted_by_customer boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists testimonials_product_slug_idx
+on public.testimonials (product_slug);
+
 create table if not exists public.site_settings (
   id integer primary key default 1 check (id = 1),
   whatsapp_number text not null default '',
@@ -138,6 +206,9 @@ alter table public.profiles enable row level security;
 alter table public.products enable row level security;
 alter table public.offers enable row level security;
 alter table public.hero_slides enable row level security;
+alter table public.orders enable row level security;
+alter table public.order_items enable row level security;
+alter table public.testimonials enable row level security;
 alter table public.site_settings enable row level security;
 
 drop policy if exists "Public read active products" on public.products;
@@ -173,6 +244,29 @@ on public.hero_slides for all
 using (public.is_admin())
 with check (public.is_admin());
 
+drop policy if exists "Admin manage orders" on public.orders;
+create policy "Admin manage orders"
+on public.orders for all
+using (public.is_admin())
+with check (public.is_admin());
+
+drop policy if exists "Admin manage order items" on public.order_items;
+create policy "Admin manage order items"
+on public.order_items for all
+using (public.is_admin())
+with check (public.is_admin());
+
+drop policy if exists "Public read published testimonials" on public.testimonials;
+create policy "Public read published testimonials"
+on public.testimonials for select
+using ((enabled = true and pending = false) or public.is_admin());
+
+drop policy if exists "Admin manage testimonials" on public.testimonials;
+create policy "Admin manage testimonials"
+on public.testimonials for all
+using (public.is_admin())
+with check (public.is_admin());
+
 drop policy if exists "Public read site settings" on public.site_settings;
 create policy "Public read site settings"
 on public.site_settings for select
@@ -189,32 +283,7 @@ create policy "Users read own profile"
 on public.profiles for select
 using (auth.uid() = user_id or public.is_admin());
 
--- Product image storage
-insert into storage.buckets (id, name, public)
-values ('products', 'products', true)
-on conflict (id) do update set public = true;
-
-drop policy if exists "Public read product images" on storage.objects;
-create policy "Public read product images"
-on storage.objects for select
-using (bucket_id = 'products');
-
-drop policy if exists "Admin upload product images" on storage.objects;
-create policy "Admin upload product images"
-on storage.objects for insert
-with check (bucket_id = 'products' and public.is_admin());
-
-drop policy if exists "Admin update product images" on storage.objects;
-create policy "Admin update product images"
-on storage.objects for update
-using (bucket_id = 'products' and public.is_admin());
-
-drop policy if exists "Admin delete product images" on storage.objects;
-create policy "Admin delete product images"
-on storage.objects for delete
-using (bucket_id = 'products' and public.is_admin());
-
--- After creating your first Supabase Auth user, grant admin manually:
+-- Media is stored in Cloudinary. Supabase stores media URLs/public IDs only.\n\n-- After creating your first Supabase Auth user, grant admin manually:
 -- insert into public.profiles (user_id, is_admin)
 -- values ('YOUR_AUTH_USER_UUID', true)
 -- on conflict (user_id) do update set is_admin = true;
