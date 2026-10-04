@@ -2,11 +2,6 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import {
-  readTestimonials,
-  writeTestimonials,
-  TESTIMONIAL_UPDATED_EVENT,
-} from "@/lib/testimonials";
 import type { Testimonial } from "@/types/testimonial";
 
 type ProductOption = {
@@ -30,18 +25,31 @@ export function AdminTestimonialsManager({
   const [items, setItems] = useState<Testimonial[]>([]);
   const [filter, setFilter] = useState<Filter>("pending");
   const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState("");
+  const [message, setMessage] = useState("");
+
+  async function load() {
+    try {
+      setLoading(true);
+      setMessage("");
+      const response = await fetch("/api/admin/testimonials", {
+        cache: "no-store",
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not load reviews.");
+      setItems((data.testimonials ?? []) as Testimonial[]);
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Could not load reviews.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    const sync = () => setItems(readTestimonials());
-    sync();
-
-    window.addEventListener("storage", sync);
-    window.addEventListener(TESTIMONIAL_UPDATED_EVENT, sync);
-
-    return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener(TESTIMONIAL_UPDATED_EVENT, sync);
-    };
+    void load();
   }, []);
 
   const productNames = useMemo(
@@ -64,7 +72,6 @@ export function AdminTestimonialsManager({
       .filter((item) => {
         const status = statusOf(item);
         if (filter !== "all" && status !== filter) return false;
-
         if (!term) return true;
 
         const productName = item.productSlug
@@ -80,45 +87,56 @@ export function AdminTestimonialsManager({
       });
   }, [filter, items, productNames, query]);
 
-  function persist(next: Testimonial[]) {
-    setItems(next);
-    writeTestimonials(next);
-  }
+  async function updateModeration(
+    item: Testimonial,
+    values: { enabled: boolean; pending: boolean },
+  ) {
+    try {
+      setBusyId(item.id);
+      setMessage("");
 
-  function approve(item: Testimonial) {
-    persist(
-      items.map((current) =>
-        current.id === item.id
-          ? { ...current, pending: false, enabled: true }
-          : current,
-      ),
-    );
-  }
+      const response = await fetch("/api/admin/testimonials/" + item.id, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not update review.");
 
-  function togglePublished(item: Testimonial) {
-    persist(
-      items.map((current) =>
-        current.id === item.id
-          ? {
-              ...current,
-              pending: false,
-              enabled: !current.enabled,
-            }
-          : current,
-      ),
-    );
-  }
-
-  function reject(item: Testimonial) {
-    if (
-      !window.confirm(
-        "Reject and permanently remove this customer submission?",
-      )
-    ) {
-      return;
+      const updated = data.testimonial as Testimonial;
+      setItems((current) =>
+        current.map((review) => (review.id === updated.id ? updated : review)),
+      );
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Could not update review.",
+      );
+    } finally {
+      setBusyId("");
     }
+  }
 
-    persist(items.filter((current) => current.id !== item.id));
+  async function remove(item: Testimonial) {
+    if (!window.confirm("Delete this customer review permanently?")) return;
+
+    try {
+      setBusyId(item.id);
+      setMessage("");
+
+      const response = await fetch("/api/admin/testimonials/" + item.id, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not delete review.");
+
+      setItems((current) => current.filter((review) => review.id !== item.id));
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Could not delete review.",
+      );
+    } finally {
+      setBusyId("");
+    }
   }
 
   const filters: { key: Filter; label: string; count: number }[] = [
@@ -161,7 +179,7 @@ export function AdminTestimonialsManager({
               Customer reviews
             </h2>
             <p className="mt-1.5 max-w-[720px] text-[10px] leading-5 text-[#626a75] sm:text-[11px]">
-              Customer submissions arrive here for approval. Admin cannot create or rewrite reviews from this page.
+              Customer submissions are stored in Supabase and reviewed here before publishing.
             </p>
           </div>
 
@@ -197,13 +215,18 @@ export function AdminTestimonialsManager({
           </div>
         </div>
 
-        {filtered.length ? (
+        {loading ? (
+          <div className="mt-5 grid min-h-[240px] place-items-center rounded-[16px] bg-[#f5f5f5] text-[11px] font-semibold text-[#68717b]">
+            Loading customer reviews…
+          </div>
+        ) : filtered.length ? (
           <div className="mt-5 grid gap-3">
             {filtered.map((item) => {
               const status = statusOf(item);
               const productName = item.productSlug
                 ? productNames.get(item.productSlug) ?? item.productSlug
                 : "General store review";
+              const busy = busyId === item.id;
 
               return (
                 <article
@@ -218,7 +241,6 @@ export function AdminTestimonialsManager({
                           alt="Customer product"
                           width={168}
                           height={168}
-                          unoptimized={item.productImage.startsWith("data:")}
                           className="aspect-square w-full max-w-[84px] rounded-[14px] border border-[#e0e3e7] object-cover"
                         />
                       ) : (
@@ -252,7 +274,6 @@ export function AdminTestimonialsManager({
                                   : "Hidden"}
                             </span>
                           </div>
-
                           <p className="mt-1.5 text-[9px] text-[#747c86]">
                             {item.location ? item.location + " · " : ""}
                             {productName}
@@ -280,30 +301,31 @@ export function AdminTestimonialsManager({
                       </blockquote>
 
                       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#eceef1] pt-4">
-                        {item.submittedByCustomer ? (
-                          <span className="mr-auto text-[8px] font-bold uppercase tracking-[.08em] text-[#7b828c]">
-                            Customer submission
-                          </span>
-                        ) : (
-                          <span className="mr-auto text-[8px] font-bold uppercase tracking-[.08em] text-[#7b828c]">
-                            Existing review
-                          </span>
-                        )}
+                        <span className="mr-auto text-[8px] font-bold uppercase tracking-[.08em] text-[#7b828c]">
+                          Customer submission
+                        </span>
 
                         {status === "pending" ? (
                           <>
                             <button
                               type="button"
-                              onClick={() => approve(item)}
-                              className="min-h-[44px] rounded-full bg-[#111111] px-5 text-[10px] font-bold !text-white"
+                              disabled={busy}
+                              onClick={() =>
+                                void updateModeration(item, {
+                                  pending: false,
+                                  enabled: true,
+                                })
+                              }
+                              className="min-h-[44px] rounded-full bg-[#111111] px-5 text-[10px] font-bold !text-white disabled:opacity-50"
                               style={{ color: "#fff" }}
                             >
-                              Approve & publish
+                              {busy ? "Saving…" : "Approve & publish"}
                             </button>
                             <button
                               type="button"
-                              onClick={() => reject(item)}
-                              className="min-h-[44px] rounded-full border border-[#efcaca] bg-white px-5 text-[10px] font-bold text-[#a33d3d]"
+                              disabled={busy}
+                              onClick={() => void remove(item)}
+                              className="min-h-[44px] rounded-full border border-[#efcaca] bg-white px-5 text-[10px] font-bold text-[#a33d3d] disabled:opacity-50"
                             >
                               Reject
                             </button>
@@ -312,9 +334,15 @@ export function AdminTestimonialsManager({
                           <>
                             <button
                               type="button"
-                              onClick={() => togglePublished(item)}
+                              disabled={busy}
+                              onClick={() =>
+                                void updateModeration(item, {
+                                  pending: false,
+                                  enabled: status !== "published",
+                                })
+                              }
                               className={
-                                "min-h-[44px] rounded-full px-5 text-[10px] font-bold " +
+                                "min-h-[44px] rounded-full px-5 text-[10px] font-bold disabled:opacity-50 " +
                                 (status === "published"
                                   ? "border border-[#d5d9df] bg-white text-[#4e5660]"
                                   : "bg-[#111111] !text-white")
@@ -327,8 +355,9 @@ export function AdminTestimonialsManager({
                             </button>
                             <button
                               type="button"
-                              onClick={() => reject(item)}
-                              className="min-h-[44px] rounded-full border border-[#efcaca] bg-white px-5 text-[10px] font-bold text-[#a33d3d]"
+                              disabled={busy}
+                              onClick={() => void remove(item)}
+                              className="min-h-[44px] rounded-full border border-[#efcaca] bg-white px-5 text-[10px] font-bold text-[#a33d3d] disabled:opacity-50"
                             >
                               Delete
                             </button>
@@ -355,6 +384,12 @@ export function AdminTestimonialsManager({
             </div>
           </div>
         )}
+
+        {message ? (
+          <p className="mt-4 text-[10px] font-semibold text-[#9a3d3d]">
+            {message}
+          </p>
+        ) : null}
       </section>
     </div>
   );
