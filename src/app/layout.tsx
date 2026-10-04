@@ -4,6 +4,7 @@ import "./globals.css";
 import { SiteChrome } from "@/components/SiteChrome";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
+import { listActiveAnnouncements } from "@/lib/supabase-announcements";
 import { store } from "@/config/store";
 
 const inter = Inter({
@@ -27,9 +28,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [products, settings] = await Promise.all([
+  const [products, settings, announcements] = await Promise.all([
     getCatalogProducts(),
     getStoreSettings(),
+    listActiveAnnouncements().catch(() => []),
   ]);
 
   return (
@@ -37,7 +39,11 @@ export default async function RootLayout({
       <body
         className={`${inter.variable} min-h-screen bg-white text-kleid-ink antialiased`}
       >
-        <SiteChrome products={products} settings={settings}>
+        <SiteChrome
+          products={products}
+          settings={settings}
+          announcements={announcements}
+        >
           {children}
         </SiteChrome>
       </body>
