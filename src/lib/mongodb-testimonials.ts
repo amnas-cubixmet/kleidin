@@ -1,6 +1,7 @@
 import type { Testimonial } from "@/types/testimonial";
 import { deleteCloudinaryImage } from "@/lib/cloudinary";
 import { getMongoDatabase } from "@/lib/mongodb";
+import { getDemoModeEnabled } from "@/lib/demo-mode";
 
 export type TestimonialCreateInput = {
   name: string;
@@ -42,16 +43,41 @@ function toTestimonial(doc: TestimonialDocument): Testimonial {
 
 export async function listPublishedTestimonials(productSlug?: string) {
   const db = await getMongoDatabase();
-  const filter: Record<string, unknown> = {
-    enabled: true,
-    pending: false,
-  };
+  const demoModeEnabled = await getDemoModeEnabled();
 
-  if (productSlug) {
-    filter.productSlug = productSlug;
-  } else {
-    filter.showOnHome = true;
-  }
+  const filter: Record<string, unknown> = productSlug
+    ? demoModeEnabled
+      ? {
+          productSlug,
+          $or: [
+            { isDemo: true },
+            { isDemo: { $ne: true }, enabled: true, pending: false },
+          ],
+        }
+      : {
+          productSlug,
+          isDemo: { $ne: true },
+          enabled: true,
+          pending: false,
+        }
+    : demoModeEnabled
+      ? {
+          $or: [
+            { isDemo: true },
+            {
+              isDemo: { $ne: true },
+              enabled: true,
+              pending: false,
+              showOnHome: true,
+            },
+          ],
+        }
+      : {
+          isDemo: { $ne: true },
+          enabled: true,
+          pending: false,
+          showOnHome: true,
+        };
 
   const rows = await db
     .collection<TestimonialDocument>("testimonials")
@@ -64,9 +90,10 @@ export async function listPublishedTestimonials(productSlug?: string) {
 
 export async function listAllTestimonials() {
   const db = await getMongoDatabase();
+  const demoModeEnabled = await getDemoModeEnabled();
   const rows = await db
     .collection<TestimonialDocument>("testimonials")
-    .find({})
+    .find(demoModeEnabled ? {} : { isDemo: { $ne: true } })
     .sort({ createdAt: -1 })
     .toArray();
 
