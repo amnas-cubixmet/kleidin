@@ -10,6 +10,7 @@ const links = [
   ["/admin/offers", "Offers", "Product discounts and scheduled promotions"],
   ["/admin/testimonials", "Testimonials", "Review and approve feedback"],
   ["/admin/hero", "Hero", "Storefront hero content"],
+  ["/admin/announcements", "Announcements", "Create and schedule storefront announcement bars"],
 ];
 
 export default async function AdminMorePage() {
