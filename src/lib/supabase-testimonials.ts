@@ -27,6 +27,10 @@ export type TestimonialCreateInput = {
   productSlug?: string;
   productImage?: string;
   productImagePublicId?: string;
+  showOnHome?: boolean;
+  enabled?: boolean;
+  pending?: boolean;
+  submittedByCustomer?: boolean;
 };
 
 function headers(extra?: HeadersInit) {
@@ -111,10 +115,10 @@ export async function createTestimonial(input: TestimonialCreateInput) {
       product_image_public_id: input.productImagePublicId || null,
       rating: input.rating,
       product_slug: input.productSlug || null,
-      show_on_home: !input.productSlug,
-      enabled: false,
-      pending: true,
-      submitted_by_customer: true,
+      show_on_home: input.showOnHome ?? !input.productSlug,
+      enabled: input.enabled ?? false,
+      pending: input.pending ?? true,
+      submitted_by_customer: input.submittedByCustomer ?? true,
       updated_at: new Date().toISOString(),
     }),
   });
