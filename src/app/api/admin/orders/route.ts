@@ -4,12 +4,12 @@ import {
   createOrder,
   listOrders,
   type AdminOrderWriteInput,
-} from "@/lib/supabase-orders";
+} from "@/lib/mongodb-orders";
 import type {
   AdminOrderStatus,
   AdminPaymentStatus,
 } from "@/lib/admin-orders";
-import { isProductDatabaseConfigured } from "@/lib/supabase-products";
+import { isProductDatabaseConfigured } from "@/lib/mongodb-products";
 
 export const dynamic = "force-dynamic";
 
@@ -87,7 +87,7 @@ export async function GET() {
 
   if (!isProductDatabaseConfigured()) {
     return NextResponse.json(
-      { error: "Supabase is not configured." },
+      { error: "MongoDB Atlas is not configured." },
       { status: 503 },
     );
   }
