@@ -49,6 +49,7 @@ function variants(value: unknown): ProductColorVariant[] {
     if (!name) return result;
 
     const images = strings(row.images);
+    const imagePublicIds = strings(row.imagePublicIds);
     const image = text(row.image) || images[0] || undefined;
 
     result.push({
@@ -56,6 +57,7 @@ function variants(value: unknown): ProductColorVariant[] {
       value: text(row.value) || "#111111",
       ...(image ? { image } : {}),
       images,
+      imagePublicIds,
       stock: Math.max(0, number(row.stock, 0)),
       sizeStocks: sizeStocks(row.sizeStocks),
     });
@@ -107,7 +109,9 @@ function parseProduct(body: Record<string, unknown>): ProductWriteInput {
     featured: Boolean(body.featured),
     status: ["active", "draft", "sold-out"].includes(status) ? status : "draft",
     image: text(body.image) || null,
+    imagePublicId: text(body.imagePublicId) || null,
     tryOnImage: text(body.tryOnImage) || null,
+    tryOnImagePublicId: text(body.tryOnImagePublicId) || null,
     sortOrder: Math.floor(number(body.sortOrder, 100)),
   };
 }
