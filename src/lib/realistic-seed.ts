@@ -20,6 +20,7 @@ import {
   deleteDemoTestimonials,
 } from "@/lib/mongodb-testimonials";
 import type { Product } from "@/types/product";
+import { setDemoModeEnabled } from "@/lib/demo-mode";
 
 const SEED_TAG = "[KLEID_HARDCODE_DEMO_V2]";
 const STANDARD_SIZES = ["S", "M", "L", "XL", "2XL"];
@@ -507,7 +508,7 @@ async function seedProducts() {
         wholesalePrice: seed.wholesalePrice ?? null,
         wholesaleMinOrder: seed.wholesaleMinOrder ?? null,
         featured: seed.featured,
-        status: "draft",
+        status: "active",
         image: seed.image,
         imagePublicId: null,
         tryOnImage: null,
@@ -722,6 +723,8 @@ async function seedAnnouncements() {
 }
 
 export async function seedRealisticInternalData() {
+  await setDemoModeEnabled(true);
+
   // A hardcoded demo pack is reset before every generation so repeated runs
   // always produce the same predictable admin/testing dataset.
   await clearRealisticInternalData();
@@ -737,7 +740,7 @@ export async function seedRealisticInternalData() {
   return {
     mode: "hardcoded-internal-demo",
     publicVisibility: {
-      products: "draft",
+      products: "active while Demo Mode is ON",
       testimonials: "pending + disabled",
       hero: "disabled",
       announcements: "disabled",
