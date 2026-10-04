@@ -34,6 +34,7 @@ function parse(body: Record<string, unknown>) {
     badge: text(body.badge),
     discountText: text(body.discountText),
     imageUrl: text(body.imageUrl),
+    imagePublicId: text(body.imagePublicId) || null,
     startsAt: text(body.startsAt) || null,
     endsAt: text(body.endsAt) || null,
     showCountdown: Boolean(body.showCountdown),
