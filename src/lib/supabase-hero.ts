@@ -1,5 +1,4 @@
 import {
-  defaultHeroSlides,
   type HeroCtaStyle,
   type HeroImagePosition,
   type HeroSlideConfig,
@@ -112,7 +111,7 @@ export function isHeroDatabaseConfigured() {
 }
 
 export async function listHeroSlides(options?: { enabledOnly?: boolean; fallbackDefaults?: boolean }) {
-  if (!isHeroDatabaseConfigured()) return defaultHeroSlides;
+  if (!isHeroDatabaseConfigured()) return [];
 
   const enabled = options?.enabledOnly ? "&enabled=eq.true" : "";
   const rows = await request<DbHeroSlide[]>(
@@ -120,7 +119,7 @@ export async function listHeroSlides(options?: { enabledOnly?: boolean; fallback
   );
 
   if (rows.length) return rows.map(fromDb);
-  return options?.fallbackDefaults === false ? [] : defaultHeroSlides;
+  return rows.map(fromDb);
 }
 
 export async function createHeroSlide(input: HeroSlideWriteInput) {
