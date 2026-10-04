@@ -2,12 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { products } from "@/data/products";
-import {
-  type AdminOrder,
-  readAdminOrders,
-  ADMIN_ORDERS_UPDATED_EVENT,
-} from "@/lib/admin-orders";
+import type { AdminOrder } from "@/lib/admin-orders";
+import type { Product } from "@/types/product";
 
 type SearchResult = {
   key: string;
@@ -30,18 +26,44 @@ const pages: SearchResult[] = [
 export function AdminGlobalSearch() {
   const [query, setQuery] = useState("");
   const [orders, setOrders] = useState<AdminOrder[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const sync = () => setOrders(readAdminOrders());
-    sync();
-    window.addEventListener(ADMIN_ORDERS_UPDATED_EVENT, sync);
-    window.addEventListener("storage", sync);
+    let active = true;
+
+    Promise.all([
+      fetch("/api/admin/orders", { cache: "no-store" }),
+      fetch("/api/admin/products", { cache: "no-store" }),
+    ])
+      .then(async ([ordersResponse, productsResponse]) => {
+        const [ordersData, productsData] = await Promise.all([
+          ordersResponse.json(),
+          productsResponse.json(),
+        ]);
+
+        if (!ordersResponse.ok) throw new Error("Could not load orders.");
+        if (!productsResponse.ok) throw new Error("Could not load products.");
+
+        return {
+          orders: (ordersData.orders ?? []) as AdminOrder[],
+          products: (productsData.products ?? []) as Product[],
+        };
+      })
+      .then((data) => {
+        if (!active) return;
+        setOrders(data.orders);
+        setProducts(data.products);
+      })
+      .catch(() => {
+        if (!active) return;
+        setOrders([]);
+        setProducts([]);
+      });
 
     return () => {
-      window.removeEventListener(ADMIN_ORDERS_UPDATED_EVENT, sync);
-      window.removeEventListener("storage", sync);
+      active = false;
     };
   }, []);
 
@@ -105,12 +127,12 @@ export function AdminGlobalSearch() {
         key: product.id,
         label: product.name,
         meta: `${product.sku} · ${product.category}`,
-        href: "/admin/products",
+        href: "/admin/products/" + product.id,
         type: "Product" as const,
       }));
 
     return [...orderResults, ...pageResults, ...productResults].slice(0, 10);
-  }, [orders, query]);
+  }, [orders, products, query]);
 
   return (
     <div ref={rootRef} className="relative w-full sm:w-[280px] xl:w-[320px]">
