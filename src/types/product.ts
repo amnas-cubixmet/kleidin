@@ -6,6 +6,7 @@ export type ProductColorVariant = {
   value: string;
   image?: string;
   images?: string[];
+  imagePublicIds?: string[];
   stock?: number;
   sizeStocks?: Record<string, number>;
 };
@@ -40,7 +41,9 @@ export type Product = {
   featured: boolean;
   status: ProductStatus;
   image?: string;
+  imagePublicId?: string;
   tryOnImage?: string;
+  tryOnImagePublicId?: string;
   sortOrder?: number;
 };
 
@@ -74,6 +77,8 @@ export type DbProduct = {
   featured: boolean;
   status: ProductStatus;
   image_url: string | null;
+  image_public_id?: string | null;
   try_on_image_url: string | null;
+  try_on_image_public_id?: string | null;
   sort_order: number;
 };
