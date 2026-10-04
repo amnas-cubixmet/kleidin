@@ -3,7 +3,7 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import {
   deleteTestimonial,
   updateTestimonialModeration,
-} from "@/lib/supabase-testimonials";
+} from "@/lib/mongodb-testimonials";
 
 export const dynamic = "force-dynamic";
 
