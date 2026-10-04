@@ -7,7 +7,7 @@ import { ProductActions } from "@/components/ProductActions";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { formatPrice } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
-import { listHeroSlides } from "@/lib/supabase-hero";
+import { listHeroSlides } from "@/lib/mongodb-hero";
 export default async function Home() {
   const [products, heroSlides] = await Promise.all([
     getCatalogProducts(),
