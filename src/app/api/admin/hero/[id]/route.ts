@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { deleteHeroSlide, updateHeroSlide } from "@/lib/supabase-hero";
+import { deleteHeroSlide, updateHeroSlide } from "@/lib/mongodb-hero";
 import type {
   HeroCtaStyle,
   HeroImagePosition,
