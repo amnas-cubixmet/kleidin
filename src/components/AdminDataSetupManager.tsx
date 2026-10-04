@@ -178,10 +178,10 @@ export function AdminDataSetupManager() {
           </p>
           <div className="mt-4 grid gap-2">
             {[
-              ["Products", "Draft"],
-              ["Reviews", "Pending + disabled"],
-              ["Hero", "Disabled"],
-              ["Announcements", "Disabled"],
+              ["Products", "Visible when Demo Mode is ON"],
+              ["Reviews", "Demo preview when ON"],
+              ["Hero", "Demo preview when ON"],
+              ["Announcements", "Demo preview when ON"],
               ["Orders", "Admin only"],
             ].map(([label, state]) => (
               <div
