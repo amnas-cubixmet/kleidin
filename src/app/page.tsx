@@ -13,11 +13,10 @@ export default async function Home() {
     getCatalogProducts(),
     listHeroSlides({ enabledOnly: true }),
   ]);
-  const tShirts = products.filter((product) => product.category === "T-Shirts");
   const featured = products.filter((product) => product.featured);
-  const showcaseProducts = (tShirts.length ? tShirts : featured.length ? featured : products).slice(0, 3);
+  const showcaseProducts = featured.slice(0, 3);
   const arrivals = products.slice(0, 4);
-  const mostLoved = featured[0] ?? products[0];
+  const mostLoved = featured[0];
 
   return (
     <div className="reference-home">
