@@ -8,12 +8,13 @@
     "start": "next start",
     "lint": "tsc --noEmit",
     "admin:credentials": "node scripts/generate-admin-credentials.mjs",
-    "db:schema": "node scripts/apply-schema.mjs"
+    "db:setup": "node scripts/setup-mongodb.mjs"
   },
   "dependencies": {
     "next": "16.3.8",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "mongodb": "7.7.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",
