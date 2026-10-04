@@ -1,27 +1,22 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import {
-  deleteStorageObjects,
-  isProductDatabaseConfigured,
-  uploadProductImage,
-} from "@/lib/supabase-products";
+  deleteCloudinaryImage,
+  isCloudinaryConfigured,
+  uploadCloudinaryImage,
+} from "@/lib/cloudinary";
+import { isProductDatabaseConfigured } from "@/lib/supabase-products";
 
 export const dynamic = "force-dynamic";
 
 function slug(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "general";
-}
-
-function safeName(name: string) {
-  const cleaned = name
-    .toLowerCase()
-    .replace(/[^a-z0-9._-]+/g, "-")
-    .replace(/-+/g, "-");
-  return cleaned || "image.jpg";
+  return (
+    value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "general"
+  );
 }
 
 export async function POST(request: Request) {
@@ -36,31 +31,41 @@ export async function POST(request: Request) {
     );
   }
 
+  if (!isCloudinaryConfigured()) {
+    return NextResponse.json(
+      { error: "Cloudinary is not configured." },
+      { status: 503 },
+    );
+  }
+
   try {
     const form = await request.formData();
     const file = form.get("file");
     const productId = String(form.get("productId") ?? "").trim();
-    const color = String(form.get("color") ?? "general");
+    const group = String(form.get("color") ?? "general");
 
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "Choose an image file." }, { status: 400 });
     }
-    if (!productId || !/^[a-zA-Z0-9-]{8,80}$/.test(productId)) {
+
+    if (!productId || !/^[a-zA-Z0-9-]{8,100}$/.test(productId)) {
       return NextResponse.json({ error: "Invalid product ID." }, { status: 400 });
     }
+
     if (!file.type.startsWith("image/")) {
       return NextResponse.json({ error: "Only image files are allowed." }, { status: 400 });
     }
-    if (file.size > 8 * 1024 * 1024) {
-      return NextResponse.json({ error: "Image must be 8 MB or smaller." }, { status: 400 });
+
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: "Image must be 10 MB or smaller." }, { status: 400 });
     }
 
-    const path = `${productId}/${slug(color)}/${Date.now()}-${safeName(file.name)}`;
-    const uploaded = await uploadProductImage(
-      path,
-      await file.arrayBuffer(),
-      file.type || "application/octet-stream",
-    );
+    const uploaded = await uploadCloudinaryImage({
+      bytes: await file.arrayBuffer(),
+      contentType: file.type || "application/octet-stream",
+      filename: file.name,
+      folder: `kleidin/products/${slug(productId)}/${slug(group)}`,
+    });
 
     return NextResponse.json(uploaded, { status: 201 });
   } catch (error) {
@@ -76,21 +81,22 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (!isProductDatabaseConfigured()) {
+  if (!isCloudinaryConfigured()) {
     return NextResponse.json(
-      { error: "Supabase product database is not configured." },
+      { error: "Cloudinary is not configured." },
       { status: 503 },
     );
   }
 
   try {
-    const body = (await request.json()) as { path?: string };
-    const path = body.path?.trim() ?? "";
-    if (!path || path.includes("..") || path.startsWith("/")) {
-      return NextResponse.json({ error: "Invalid storage path." }, { status: 400 });
+    const body = (await request.json()) as { publicId?: string };
+    const publicId = body.publicId?.trim() ?? "";
+
+    if (!publicId) {
+      return NextResponse.json({ error: "Cloudinary public ID is required." }, { status: 400 });
     }
 
-    await deleteStorageObjects([path]);
+    await deleteCloudinaryImage(publicId);
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json(
