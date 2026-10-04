@@ -6,15 +6,18 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import type { Product } from "@/types/product";
 import type { StoreSettings } from "@/types/commerce";
+import type { Announcement } from "@/types/announcement";
 
 export function SiteChrome({
   children,
   products,
   settings,
+  announcements,
 }: {
   children: React.ReactNode;
   products: Product[];
   settings: StoreSettings;
+  announcements: Announcement[];
 }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
@@ -48,7 +51,7 @@ export function SiteChrome({
 
   return (
     <>
-      <Header products={products} settings={settings} />
+      <Header products={products} settings={settings} announcements={announcements} />
       <main>{children}</main>
       <Footer />
     </>
