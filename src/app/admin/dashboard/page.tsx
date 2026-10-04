@@ -5,6 +5,7 @@ import { AdminDashboardTestimonials } from "@/components/AdminDashboardTestimoni
 import { AdminDashboardOrderMetrics } from "@/components/AdminDashboardOrderMetrics";
 import { AdminDashboardOrderActivity } from "@/components/AdminDashboardOrderActivity";
 import { AdminDashboardBestSellers } from "@/components/AdminDashboardBestSellers";
+import { AdminDashboardSalesChart } from "@/components/AdminDashboardSalesChart";
 import { requireAdmin } from "@/lib/admin-auth";
 import { listProducts } from "@/lib/mongodb-products";
 import { localStoreSettings } from "@/data/store";
@@ -31,6 +32,7 @@ export default async function AdminDashboardPage() {
       description="Sales, profit, manual orders, customers, inventory and customer trust in one place."
     >
       <AdminDashboardOrderMetrics />
+      <AdminDashboardSalesChart />
 
       <section className="mt-3 grid gap-3 sm:mt-4 sm:gap-4 xl:grid-cols-[1.35fr_.65fr]">
         <AdminDashboardOrderActivity />
