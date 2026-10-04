@@ -8,11 +8,11 @@ import { formatPrice, getProductWhatsappUrl } from "@/lib/format";
 import { localStoreSettings } from "@/data/store";
 import { getProductOfferPrice, isProductOfferActive } from "@/lib/product-offers";
 
-function getOfferTimer(endAt?: string) {
+function getOfferTimer(endAt: string | undefined, now: number) {
   if (!endAt) return null;
 
   const end = new Date(endAt);
-  const remaining = Math.max(0, end.getTime() - Date.now());
+  const remaining = Math.max(0, end.getTime() - now);
   if (remaining <= 0) return null;
 
   const totalMinutes = Math.floor(remaining / 60000);
@@ -31,6 +31,11 @@ function getOfferTimer(endAt?: string) {
 export function ProductCard({ product }: { product: Product }) {
   const variants = product.colorVariants ?? [];
   const [now, setNow] = useState(() => Date.now());
+  const needsOfferClock = Boolean(
+    (product.offerEnabled &&
+      (product.offerStartsAt || product.offerEndsAt || product.offerCountdown)) ||
+      product.saleEndsAt,
+  );
   const [selectedColor, setSelectedColor] = useState(
     variants[0]?.name ?? product.colors[0] ?? "Default",
   );
@@ -59,32 +64,18 @@ export function ProductCard({ product }: { product: Product }) {
       ? Math.round(((originalPrice - displayPrice) / originalPrice) * 100)
       : 0;
 
-  const [offerTimer, setOfferTimer] = useState<ReturnType<typeof getOfferTimer> | null>(null);
-
   useEffect(() => {
+    if (!needsOfferClock) return;
+
     const clock = window.setInterval(() => setNow(Date.now()), 30000);
     return () => window.clearInterval(clock);
-  }, []);
+  }, [needsOfferClock]);
 
-  useEffect(() => {
-    const endAt =
-      activeProductOffer && product.offerCountdown
-        ? product.offerEndsAt
-        : product.saleEndsAt;
-    if (!endAt) {
-      setOfferTimer(null);
-      return;
-    }
-    const update = () => setOfferTimer(getOfferTimer(endAt));
-    update();
-    const timer = window.setInterval(update, 60000);
-    return () => window.clearInterval(timer);
-  }, [
-    activeProductOffer,
-    product.offerCountdown,
-    product.offerEndsAt,
-    product.saleEndsAt,
-  ]);
+  const offerEndAt =
+    activeProductOffer && product.offerCountdown
+      ? product.offerEndsAt
+      : product.saleEndsAt;
+  const offerTimer = getOfferTimer(offerEndAt, now);
 
   const badge = useMemo(
     () =>
