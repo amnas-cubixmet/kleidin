@@ -3,10 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   type AdminOrder,
-  readAdminOrders,
   getOrderTotal,
   getOrderProfit,
-  ADMIN_ORDERS_UPDATED_EVENT,
 } from "@/lib/admin-orders";
 
 function money(value: number) {
@@ -65,14 +63,23 @@ export function AdminDashboardOrderMetrics() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
 
   useEffect(() => {
-    const sync = () => setOrders(readAdminOrders());
-    sync();
-    window.addEventListener(ADMIN_ORDERS_UPDATED_EVENT, sync);
-    window.addEventListener("storage", sync);
+    let active = true;
+
+    fetch("/api/admin/orders", { cache: "no-store" })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Could not load orders.");
+        return (data.orders ?? []) as AdminOrder[];
+      })
+      .then((nextOrders) => {
+        if (active) setOrders(nextOrders);
+      })
+      .catch(() => {
+        if (active) setOrders([]);
+      });
 
     return () => {
-      window.removeEventListener(ADMIN_ORDERS_UPDATED_EVENT, sync);
-      window.removeEventListener("storage", sync);
+      active = false;
     };
   }, []);
 
