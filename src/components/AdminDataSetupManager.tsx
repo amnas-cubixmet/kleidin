@@ -21,7 +21,7 @@ export function AdminDataSetupManager() {
   async function seed() {
     if (
       !window.confirm(
-        "Load realistic INTERNAL test data into the connected Supabase database? Products will stay draft and storefront content will stay disabled.",
+        "Load realistic INTERNAL test data into the connected MongoDB Atlas database? Products will stay draft and storefront content will stay disabled.",
       )
     ) {
       return;
@@ -93,7 +93,7 @@ export function AdminDataSetupManager() {
           <p className="mt-4 max-w-[680px] text-[11px] leading-6 text-[#626a75]">
             This creates realistic products, colour × size inventory, offers,
             orders, review records, hero drafts and announcements directly in
-            Supabase. Product photos are copied into Cloudinary.
+            MongoDB Atlas. Product photos are copied into Cloudinary.
           </p>
         </div>
 
@@ -125,7 +125,7 @@ export function AdminDataSetupManager() {
             Before running
           </strong>
           <p className="mt-1.5 text-[9px] leading-5 text-[#7b6328]">
-            Run <code>supabase/schema.sql</code> in Supabase SQL Editor and add
+            Run <code>supabase/schema.sql</code> in MongoDB Atlas SQL Editor and add
             all three Cloudinary environment variables. Running this again is
             safe — known seed records are skipped instead of duplicated.
           </p>
@@ -137,7 +137,30 @@ export function AdminDataSetupManager() {
           onClick={() => void seed()}
           className="mt-6 min-h-[50px] rounded-full bg-[#111111] px-7 text-[10px] font-bold text-white disabled:cursor-wait disabled:opacity-55"
         >
-          {loading ? "Loading data into Supabase…" : "Load realistic test data"}
+          {loading ? "Loading data into MongoDB Atlas…" : "Load realistic test data"}
+        </button>
+
+        <button
+          type="button"
+          disabled={loading}
+          onClick={async () => {
+            if (!window.confirm("Clear only internal demo data from MongoDB Atlas? Real store records will not be touched.")) return;
+            try {
+              setLoading(true);
+              setError("");
+              const response = await fetch("/api/admin/seed/realistic", { method: "DELETE" });
+              const data = await response.json();
+              if (!response.ok) throw new Error(data.error || "Could not clear demo data.");
+              setResult(null);
+            } catch (clearError) {
+              setError(clearError instanceof Error ? clearError.message : "Could not clear demo data.");
+            } finally {
+              setLoading(false);
+            }
+          }}
+          className="ml-2 mt-6 min-h-[50px] rounded-full border border-[#d4d7db] bg-white px-7 text-[10px] font-bold text-[#111111] disabled:opacity-55"
+        >
+          Clear demo data
         </button>
 
         {error ? (
