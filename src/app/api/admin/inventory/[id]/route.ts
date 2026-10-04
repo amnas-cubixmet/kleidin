@@ -4,7 +4,7 @@ import {
   getProduct,
   isProductDatabaseConfigured,
   updateProduct,
-} from "@/lib/supabase-products";
+} from "@/lib/mongodb-products";
 import type { ProductColorVariant } from "@/types/product";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +24,7 @@ export async function PATCH(
 
   if (!isProductDatabaseConfigured()) {
     return NextResponse.json(
-      { error: "Supabase product database is not configured." },
+      { error: "MongoDB Atlas product database is not configured." },
       { status: 503 },
     );
   }
