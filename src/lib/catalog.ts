@@ -1,3 +1,4 @@
+import { cache } from "react";
 import {
   getProductBySlugFromDb,
   getWholesaleProductBySlugFromDb,
@@ -5,7 +6,7 @@ import {
   listProducts,
 } from "@/lib/supabase-products";
 
-export async function getCatalogProducts() {
+export const getCatalogProducts = cache(async () => {
   if (!isProductDatabaseConfigured()) return [];
 
   try {
@@ -15,9 +16,9 @@ export async function getCatalogProducts() {
     // is being created, migrated, or temporarily unavailable.
     return [];
   }
-}
+});
 
-export async function getCatalogProductBySlug(slug: string) {
+export const getCatalogProductBySlug = cache(async (slug: string) => {
   if (!isProductDatabaseConfigured()) return null;
 
   try {
@@ -25,9 +26,9 @@ export async function getCatalogProductBySlug(slug: string) {
   } catch {
     return null;
   }
-}
+});
 
-export async function getWholesaleProductBySlug(slug: string) {
+export const getWholesaleProductBySlug = cache(async (slug: string) => {
   if (!isProductDatabaseConfigured()) return null;
 
   try {
@@ -35,4 +36,4 @@ export async function getWholesaleProductBySlug(slug: string) {
   } catch {
     return null;
   }
-}
+});
