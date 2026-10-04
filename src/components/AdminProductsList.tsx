@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/types/product";
 import { getProductOfferStatus } from "@/lib/product-offers";
-import { DEMO_ADMIN_PRODUCTS_UPDATED_EVENT, readDemoAdminProducts } from "@/lib/demo-admin-products-client";
 
 function money(value?: number) {
   if (typeof value !== "number") return "—";
@@ -28,10 +27,9 @@ export function AdminProductsList() {
       const response = await fetch("/api/admin/products", { cache: "no-store" });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not load products.");
-      const isConfigured = data.configured !== false;
-      setConfigured(isConfigured);
-      setProducts(isConfigured ? (data.products ?? []) : readDemoAdminProducts());
-      setMessage(data.error ?? "");
+      setConfigured(true);
+      setProducts(data.products ?? []);
+      setMessage("");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not load products.");
     } finally {
@@ -41,18 +39,7 @@ export function AdminProductsList() {
 
   useEffect(() => {
     void load();
-
-    const syncDemo = () => {
-      if (!configured) setProducts(readDemoAdminProducts());
-    };
-    window.addEventListener(DEMO_ADMIN_PRODUCTS_UPDATED_EVENT, syncDemo);
-    window.addEventListener("storage", syncDemo);
-
-    return () => {
-      window.removeEventListener(DEMO_ADMIN_PRODUCTS_UPDATED_EVENT, syncDemo);
-      window.removeEventListener("storage", syncDemo);
-    };
-  }, [configured]);
+  }, []);
 
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase();
@@ -75,16 +62,8 @@ export function AdminProductsList() {
   return (
     <div className="grid gap-4">
       {!configured ? (
-        <div className="rounded-[16px] border border-[#d9dde3] bg-[#f6f6f6] p-4 text-[10px] leading-5 text-[#555d67]">
-          <div className="flex flex-wrap items-center gap-2">
-            <strong className="text-[11px] text-[#17191d]">Demo products active</strong>
-            <span className="rounded-full bg-[#111111] px-2.5 py-1 text-[8px] font-bold !text-white" style={{ color: "#fff" }}>
-              FAKE DATA
-            </span>
-          </div>
-          <p className="mt-1.5">
-            These products are realistic local demo data for UI testing. Connect Supabase to switch this page to the real product database.
-          </p>
+        <div className="rounded-[16px] border border-[#e0c2c2] bg-[#fff6f6] p-4 text-[10px] leading-5 text-[#8a3636]">
+          Supabase is required. Add the production environment variables and run the schema.
         </div>
       ) : null}
 
@@ -119,9 +98,7 @@ export function AdminProductsList() {
               Products
             </h2>
             <p className="mt-1.5 text-[10px] leading-5 text-[#626a75] sm:text-[11px]">
-              {configured
-                ? "Retail and wholesale product records stored in the product database."
-                : "Retail and wholesale demo products for local testing."}
+              Retail and wholesale product records stored in Supabase PostgreSQL.
             </p>
           </div>
 
