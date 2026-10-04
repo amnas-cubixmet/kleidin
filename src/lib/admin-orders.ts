@@ -1,8 +1,3 @@
-import { demoAdminOrders } from "@/data/demo-admin-orders";
-
-export const ADMIN_ORDERS_STORAGE_KEY = "kleidin-admin-orders-v1";
-export const ADMIN_ORDERS_UPDATED_EVENT = "kleidin:admin-orders-updated";
-
 export type AdminOrderStatus =
   | "New"
   | "Confirmed"
@@ -32,8 +27,6 @@ export type AdminOrder = {
   updatedAt: string;
   customerName: string;
   phone: string;
-  alternatePhone?: string;
-  source?: string;
   addressLine1: string;
   addressLine2?: string;
   landmark?: string;
@@ -49,25 +42,6 @@ export type AdminOrder = {
   notes?: string;
 };
 
-export function readAdminOrders(): AdminOrder[] {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const raw = window.localStorage.getItem(ADMIN_ORDERS_STORAGE_KEY);
-    if (!raw) return demoAdminOrders;
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-export function writeAdminOrders(orders: AdminOrder[]) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(ADMIN_ORDERS_STORAGE_KEY, JSON.stringify(orders));
-  window.dispatchEvent(new Event(ADMIN_ORDERS_UPDATED_EVENT));
-}
-
 export function getOrderSubtotal(order: AdminOrder) {
   return order.items.reduce(
     (sum, item) => sum + item.unitPrice * item.quantity,
@@ -76,7 +50,10 @@ export function getOrderSubtotal(order: AdminOrder) {
 }
 
 export function getOrderTotal(order: AdminOrder) {
-  return Math.max(0, getOrderSubtotal(order) + order.deliveryCharge - order.discount);
+  return Math.max(
+    0,
+    getOrderSubtotal(order) + order.deliveryCharge - order.discount,
+  );
 }
 
 export function getOrderCost(order: AdminOrder) {
