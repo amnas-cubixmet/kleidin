@@ -2,17 +2,17 @@ import { NextResponse } from "next/server";
 import {
   createTestimonial,
   listPublishedTestimonials,
-} from "@/lib/supabase-testimonials";
+} from "@/lib/mongodb-testimonials";
 import {
   isCloudinaryConfigured,
   uploadCloudinaryImage,
 } from "@/lib/cloudinary";
-import { getSupabaseServerEnvironment } from "@/lib/server-env";
+import { isMongoDatabaseConfigured } from "@/lib/mongodb";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  if (!getSupabaseServerEnvironment()) {
+  if (!isMongoDatabaseConfigured()) {
     return NextResponse.json({ testimonials: [] });
   }
 
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  if (!getSupabaseServerEnvironment()) {
+  if (!isMongoDatabaseConfigured()) {
     return NextResponse.json(
       { error: "Review service is not configured." },
       { status: 503 },
