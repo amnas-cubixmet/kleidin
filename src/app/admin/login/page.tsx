@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { loginAdmin } from "@/app/admin/actions";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import PasswordField from "./PasswordField";
 
@@ -59,7 +58,7 @@ export default async function AdminLoginPage({
             </div>
           ) : null}
 
-          <form action={loginAdmin} className="grid gap-5">
+          <form action="/api/admin/session" method="post" className="grid gap-5">
             <label className="grid gap-2">
               <span className="text-[8px] font-semibold uppercase tracking-[.12em] text-black/45">
                 Email
