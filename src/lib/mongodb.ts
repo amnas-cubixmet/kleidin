@@ -21,6 +21,7 @@ async function getClient() {
       appName: "kleidin-nextjs",
       maxPoolSize: 10,
       minPoolSize: 0,
+      ignoreUndefined: true,
       maxIdleTimeMS: 30_000,
       serverSelectionTimeoutMS: 8_000,
     });
