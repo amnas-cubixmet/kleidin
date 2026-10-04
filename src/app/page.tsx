@@ -20,10 +20,10 @@ export default async function Home() {
 
   return (
     <div className="reference-home">
+      <TopFashionHero products={products} heroSlides={heroSlides} />
+
       {products.length ? (
         <>
-          <TopFashionHero products={products} heroSlides={heroSlides} />
-
           {showcaseProducts.length ? (
             <AutoOutfitHero products={showcaseProducts} />
           ) : null}
@@ -152,38 +152,6 @@ export default async function Home() {
         </>
       ) : (
         <>
-          <section className="mx-auto w-full px-0 sm:w-[min(calc(100%-24px),1440px)] sm:pt-3">
-            <div className="flex min-h-[58svh] items-end overflow-hidden bg-[#071225] px-5 py-8 text-white sm:min-h-[620px] sm:rounded-[26px] sm:px-10 sm:py-10 md:px-14 lg:px-16">
-              <div className="max-w-[860px]">
-                <p className="text-[9px] font-semibold uppercase tracking-[.16em] text-white/55">
-                  KLEID.IN
-                </p>
-                <h1 className="mt-4 max-w-[900px] text-[clamp(54px,12vw,132px)] font-semibold leading-[.84] tracking-[-.07em]">
-                  ESSENTIALS
-                  <br />
-                  WITHOUT NOISE.
-                </h1>
-                <p className="mt-5 max-w-[460px] text-[11px] leading-6 text-white/60">
-                  The catalog is being prepared. The storefront stays live while products are added from the admin panel.
-                </p>
-                <div className="mt-6 flex flex-wrap gap-2.5">
-                  <Link
-                    href="/about"
-                    className="inline-flex min-h-[46px] items-center rounded-full bg-white px-6 text-[10px] font-bold text-[#111111]"
-                  >
-                    About KLEID.IN
-                  </Link>
-                  <Link
-                    href="/contact"
-                    className="inline-flex min-h-[46px] items-center rounded-full border border-white/25 px-6 text-[10px] font-bold text-white"
-                  >
-                    Contact
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </section>
-
           <section className="ref-brand-strip">
             <div className="ref-brand-strip-inner">
               <p>KLEID.IN</p>
