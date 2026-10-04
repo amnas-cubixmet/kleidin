@@ -1,9 +1,4 @@
 import {
-  getActiveProducts,
-  getProductBySlug,
-  getProductByWholesaleSlug,
-} from "@/data/products";
-import {
   getProductBySlugFromDb,
   getWholesaleProductBySlugFromDb,
   isProductDatabaseConfigured,
@@ -11,34 +6,34 @@ import {
 } from "@/lib/supabase-products";
 
 export async function getCatalogProducts() {
-  if (!isProductDatabaseConfigured()) return getActiveProducts();
+  if (!isProductDatabaseConfigured()) return [];
 
   try {
     return await listProducts({ activeOnly: true });
   } catch (error) {
-    console.error("Falling back to bundled catalog:", error);
-    return getActiveProducts();
+    console.error("Could not load Supabase catalog:", error);
+    return [];
   }
 }
 
 export async function getCatalogProductBySlug(slug: string) {
-  if (!isProductDatabaseConfigured()) return getProductBySlug(slug);
+  if (!isProductDatabaseConfigured()) return null;
 
   try {
     return await getProductBySlugFromDb(slug);
   } catch (error) {
-    console.error("Falling back to bundled product:", error);
-    return getProductBySlug(slug);
+    console.error("Could not load Supabase product:", error);
+    return null;
   }
 }
 
 export async function getWholesaleProductBySlug(slug: string) {
-  if (!isProductDatabaseConfigured()) return getProductByWholesaleSlug(slug);
+  if (!isProductDatabaseConfigured()) return null;
 
   try {
     return await getWholesaleProductBySlugFromDb(slug);
   } catch (error) {
-    console.error("Falling back to bundled wholesale product:", error);
-    return getProductByWholesaleSlug(slug);
+    console.error("Could not load Supabase wholesale product:", error);
+    return null;
   }
 }
