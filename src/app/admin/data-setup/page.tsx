@@ -17,7 +17,7 @@ export default async function AdminDataSetupPage() {
     <AdminShell
       tone="monochrome"
       title="Data Setup"
-      description="Load realistic internal test records into Supabase and Cloudinary without publishing them to customers."
+      description="Load realistic internal test records into MongoDB Atlas and Cloudinary without publishing them to customers."
     >
       <AdminDataSetupManager />
     </AdminShell>
