@@ -5,7 +5,7 @@ import {
   isCloudinaryConfigured,
   uploadCloudinaryImage,
 } from "@/lib/cloudinary";
-import { isProductDatabaseConfigured } from "@/lib/supabase-products";
+import { isProductDatabaseConfigured } from "@/lib/mongodb-products";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
   if (!isProductDatabaseConfigured()) {
     return NextResponse.json(
-      { error: "Supabase product database is not configured." },
+      { error: "MongoDB Atlas product database is not configured." },
       { status: 503 },
     );
   }
