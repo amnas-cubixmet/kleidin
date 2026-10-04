@@ -10,8 +10,9 @@ export async function getCatalogProducts() {
 
   try {
     return await listProducts({ activeOnly: true });
-  } catch (error) {
-    console.error("Could not load Supabase catalog:", error);
+  } catch {
+    // Public storefront must remain available even while the database schema
+    // is being created, migrated, or temporarily unavailable.
     return [];
   }
 }
@@ -21,8 +22,7 @@ export async function getCatalogProductBySlug(slug: string) {
 
   try {
     return await getProductBySlugFromDb(slug);
-  } catch (error) {
-    console.error("Could not load Supabase product:", error);
+  } catch {
     return null;
   }
 }
@@ -32,8 +32,7 @@ export async function getWholesaleProductBySlug(slug: string) {
 
   try {
     return await getWholesaleProductBySlugFromDb(slug);
-  } catch (error) {
-    console.error("Could not load Supabase wholesale product:", error);
+  } catch {
     return null;
   }
 }
