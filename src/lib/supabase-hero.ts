@@ -5,6 +5,7 @@ import {
   type HeroSlideKind,
 } from "@/data/hero-slides";
 import { getSupabaseServerEnvironment } from "@/lib/server-env";
+import { deleteCloudinaryImage } from "@/lib/cloudinary";
 
 type DbHeroSlide = {
   id: string;
@@ -18,6 +19,7 @@ type DbHeroSlide = {
   badge: string;
   discount_text: string;
   image_url: string;
+  image_public_id: string | null;
   starts_at: string | null;
   ends_at: string | null;
   show_countdown: boolean;
@@ -73,6 +75,7 @@ function fromDb(row: DbHeroSlide): HeroSlideConfig {
     badge: row.badge,
     discountText: row.discount_text,
     imageUrl: row.image_url,
+    imagePublicId: row.image_public_id,
     startsAt: row.starts_at,
     endsAt: row.ends_at,
     showCountdown: row.show_countdown,
@@ -95,6 +98,7 @@ function toDb(input: HeroSlideWriteInput) {
     badge: input.badge,
     discount_text: input.discountText ?? "",
     image_url: input.imageUrl,
+    image_public_id: input.imagePublicId || null,
     starts_at: input.startsAt || null,
     ends_at: input.endsAt || null,
     show_countdown: Boolean(input.showCountdown),
@@ -154,7 +158,16 @@ export async function updateHeroSlide(
   return rows[0] ? fromDb(rows[0]) : null;
 }
 
+export async function getHeroSlide(id: string) {
+  const rows = await request<DbHeroSlide[]>(
+    `/rest/v1/hero_slides?id=eq.${encodeURIComponent(id)}&select=*&limit=1`,
+  );
+  return rows[0] ? fromDb(rows[0]) : null;
+}
+
 export async function deleteHeroSlide(id: string) {
+  const slide = await getHeroSlide(id);
+
   await request<void>(
     `/rest/v1/hero_slides?id=eq.${encodeURIComponent(id)}`,
     {
@@ -162,4 +175,12 @@ export async function deleteHeroSlide(id: string) {
       headers: { Prefer: "return=minimal" },
     },
   );
+
+  if (slide?.imagePublicId) {
+    try {
+      await deleteCloudinaryImage(slide.imagePublicId);
+    } catch (error) {
+      console.error("Hero deleted but Cloudinary cleanup failed:", error);
+    }
+  }
 }
