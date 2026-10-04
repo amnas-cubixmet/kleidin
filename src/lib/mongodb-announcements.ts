@@ -1,5 +1,6 @@
 import type { Announcement } from "@/types/announcement";
 import { getMongoDatabase } from "@/lib/mongodb";
+import { getDemoModeEnabled } from "@/lib/demo-mode";
 
 export type AnnouncementInput = {
   text: string;
@@ -33,9 +34,10 @@ function toAnnouncement(doc: AnnouncementDocument): Announcement {
 
 export async function listAnnouncements() {
   const db = await getMongoDatabase();
+  const demoModeEnabled = await getDemoModeEnabled();
   const rows = await db
     .collection<AnnouncementDocument>("announcements")
-    .find({})
+    .find(demoModeEnabled ? {} : { isDemo: { $ne: true } })
     .sort({ sortOrder: 1, createdAt: -1 })
     .toArray();
 
@@ -43,15 +45,33 @@ export async function listAnnouncements() {
 }
 
 export async function listActiveAnnouncements() {
-  const rows = await listAnnouncements();
+  const db = await getMongoDatabase();
+  const demoModeEnabled = await getDemoModeEnabled();
+  const rows = await db
+    .collection<AnnouncementDocument>("announcements")
+    .find(
+      demoModeEnabled
+        ? {
+            $or: [
+              { isDemo: true },
+              { isDemo: { $ne: true }, enabled: true },
+            ],
+          }
+        : { isDemo: { $ne: true }, enabled: true },
+    )
+    .sort({ sortOrder: 1, createdAt: -1 })
+    .toArray();
+
   const now = Date.now();
 
-  return rows.filter((item) => {
-    if (!item.enabled) return false;
-    if (item.startsAt && new Date(item.startsAt).getTime() > now) return false;
-    if (item.endsAt && new Date(item.endsAt).getTime() < now) return false;
-    return true;
-  });
+  return rows
+    .filter((item) => {
+      if (!item.isDemo && !item.enabled) return false;
+      if (item.startsAt && new Date(item.startsAt).getTime() > now) return false;
+      if (item.endsAt && new Date(item.endsAt).getTime() < now) return false;
+      return true;
+    })
+    .map(toAnnouncement);
 }
 
 export async function createAnnouncement(input: AnnouncementInput) {
