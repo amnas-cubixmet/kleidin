@@ -302,7 +302,7 @@ export function AdminTestimonialsManager({
 
                       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#eceef1] pt-4">
                         <span className="mr-auto text-[8px] font-bold uppercase tracking-[.08em] text-[#7b828c]">
-                          Customer submission
+                          {item.submittedByCustomer ? "Customer submission" : "Internal test record"}
                         </span>
 
                         {status === "pending" ? (
