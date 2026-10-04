@@ -59,7 +59,7 @@ export function AdminDataSetupManager() {
           "Products",
           result.products.created,
           result.products.skipped,
-          result.products.imagesUploaded + " Cloudinary images",
+          "Hardcoded demo media",
         ],
         ["Orders", result.orders.created, result.orders.skipped, "Admin only"],
         [
@@ -91,20 +91,20 @@ export function AdminDataSetupManager() {
           </h2>
 
           <p className="mt-4 max-w-[680px] text-[11px] leading-6 text-[#626a75]">
-            This creates realistic products, colour × size inventory, offers,
-            orders, review records, hero drafts and announcements directly in
-            MongoDB Atlas. Product photos are copied into Cloudinary.
+            This loads a complete hardcoded demo store into MongoDB Atlas:
+            products, colour × size inventory, pricing, offers, orders, reviews,
+            hero drafts and announcements. Every record is tagged as demo data.
           </p>
         </div>
 
         <div className="mt-6 grid gap-2 sm:grid-cols-2">
           {[
-            ["6 products", "Draft only — not visible to customers"],
-            ["Real product photos", "Copied to your Cloudinary account"],
-            ["Colour × size stock", "S / M / L / XL / 2XL inventory matrix"],
-            ["8 orders", "Mixed fulfilment and payment states"],
-            ["6 reviews", "Pending and labelled internal test records"],
-            ["Hero + announcements", "Created disabled so public UI stays clean"],
+            ["20 products", "Featured, wholesale, offers and multiple categories"],
+            ["Hardcoded product media", "Stable demo image URLs stored with product records"],
+            ["Colour × size stock", "Normal, low-stock and out-of-stock variants"],
+            ["50 orders", "Spread across the last 90 days for sales and profit data"],
+            ["12 reviews", "Pending and labelled internal demo records"],
+            ["4 hero + 4 announcements", "Created disabled so public UI stays clean"],
           ].map(([title, copy]) => (
             <div
               key={title}
@@ -126,9 +126,9 @@ export function AdminDataSetupManager() {
           </strong>
           <p className="mt-1.5 text-[9px] leading-5 text-[#7b6328]">
             Add <code>MONGODB_URI</code> and <code>MONGODB_DB</code> to
-            <code> .env.local</code>, run <code>npm run db:setup</code>, and add
-            all three Cloudinary environment variables. Running this again is
-            safe — known demo records are skipped instead of duplicated.
+            <code> .env.local</code> and run <code>npm run db:setup</code>.
+            Cloudinary is not required for this demo pack. Running the generator
+            again safely replaces only records tagged as demo data.
           </p>
         </div>
 
@@ -138,7 +138,7 @@ export function AdminDataSetupManager() {
           onClick={() => void seed()}
           className="mt-6 min-h-[50px] rounded-full bg-[#111111] px-7 text-[10px] font-bold text-white disabled:cursor-wait disabled:opacity-55"
         >
-          {loading ? "Loading data into MongoDB Atlas…" : "Load realistic test data"}
+          {loading ? "Building hardcoded demo store…" : "Load full demo database"}
         </button>
 
         <button
