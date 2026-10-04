@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { getDemoAdminProduct } from "@/data/demo-admin-products";
 import {
   deleteProduct,
   getProduct,
@@ -140,12 +139,10 @@ export async function GET(
   }
 
   if (!isProductDatabaseConfigured()) {
-    const { id } = await params;
-    const product = getDemoAdminProduct(id);
-    if (!product) {
-      return NextResponse.json({ error: "Product not found." }, { status: 404 });
-    }
-    return NextResponse.json({ product, demo: true });
+    return NextResponse.json(
+      { error: "Supabase is not configured." },
+      { status: 503 },
+    );
   }
 
   try {
