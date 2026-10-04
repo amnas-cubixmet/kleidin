@@ -4,6 +4,7 @@ export type Testimonial = {
   quote: string;
   location?: string;
   productImage?: string;
+  productImagePublicId?: string;
   rating: number;
   productSlug?: string;
   showOnHome: boolean;
