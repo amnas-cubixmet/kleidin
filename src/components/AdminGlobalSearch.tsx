@@ -22,6 +22,7 @@ const pages: SearchResult[] = [
   { key: "testimonials", label: "Testimonials", meta: "Review and approve feedback", href: "/admin/testimonials", type: "Page" },
   { key: "hero", label: "Hero", meta: "Storefront hero content", href: "/admin/hero", type: "Page" },
   { key: "announcements", label: "Announcements", meta: "Storefront announcement bars and schedules", href: "/admin/announcements", type: "Page" },
+  { key: "data-setup", label: "Data Setup", meta: "Realistic internal Supabase test data", href: "/admin/data-setup", type: "Page" },
 ];
 
 export function AdminGlobalSearch() {
