@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export function ProductSearchBar({
@@ -12,21 +12,22 @@ export function ProductSearchBar({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [value, setValue] = useState(initialValue);
-  const firstRun = useRef(true);
 
   useEffect(() => {
     setValue(initialValue);
   }, [initialValue]);
 
   useEffect(() => {
-    if (firstRun.current) {
-      firstRun.current = false;
-      return;
-    }
+    const clean = value.trim();
+    const currentQuery = searchParams.get("q")?.trim() ?? "";
+
+    // Never navigate when the URL already represents the current input.
+    // Without this guard, router.replace() re-created searchParams and caused
+    // an endless /products request loop.
+    if (clean === currentQuery) return;
 
     const timer = window.setTimeout(() => {
       const params = new URLSearchParams(searchParams.toString());
-      const clean = value.trim();
 
       if (clean) {
         params.set("q", clean);
@@ -35,9 +36,14 @@ export function ProductSearchBar({
       }
 
       const next = params.toString();
-      router.replace(next ? `${pathname}?${next}` : pathname, {
-        scroll: false,
-      });
+      const nextUrl = next ? `${pathname}?${next}` : pathname;
+      const currentUrl = searchParams.toString()
+        ? `${pathname}?${searchParams.toString()}`
+        : pathname;
+
+      if (nextUrl !== currentUrl) {
+        router.replace(nextUrl, { scroll: false });
+      }
     }, 280);
 
     return () => window.clearTimeout(timer);
