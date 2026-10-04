@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AdminShell } from "@/components/AdminShell";
 import { AdminOrdersManager } from "@/components/AdminOrdersManager";
 import { requireAdmin } from "@/lib/admin-auth";
-import { products } from "@/data/products";
+import { getCatalogProducts } from "@/lib/catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +14,7 @@ export const metadata: Metadata = {
 
 export default async function AdminNewOrderPage() {
   await requireAdmin();
+  const products = await getCatalogProducts();
 
   return (
     <AdminShell
