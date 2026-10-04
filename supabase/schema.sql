@@ -188,6 +188,22 @@ create table if not exists public.testimonials (
 create index if not exists testimonials_product_slug_idx
 on public.testimonials (product_slug);
 
+create table if not exists public.announcements (
+  id uuid primary key default gen_random_uuid(),
+  text text not null,
+  link_label text not null default '',
+  link_href text not null default '',
+  starts_at timestamptz,
+  ends_at timestamptz,
+  enabled boolean not null default true,
+  sort_order integer not null default 100,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists announcements_active_sort_idx
+on public.announcements (enabled, sort_order, created_at);
+
 create table if not exists public.site_settings (
   id integer primary key default 1 check (id = 1),
   whatsapp_number text not null default '',
@@ -209,6 +225,7 @@ alter table public.hero_slides enable row level security;
 alter table public.orders enable row level security;
 alter table public.order_items enable row level security;
 alter table public.testimonials enable row level security;
+alter table public.announcements enable row level security;
 alter table public.site_settings enable row level security;
 
 drop policy if exists "Public read active products" on public.products;
@@ -264,6 +281,17 @@ using ((enabled = true and pending = false) or public.is_admin());
 drop policy if exists "Admin manage testimonials" on public.testimonials;
 create policy "Admin manage testimonials"
 on public.testimonials for all
+using (public.is_admin())
+with check (public.is_admin());
+
+drop policy if exists "Public read announcements" on public.announcements;
+create policy "Public read announcements"
+on public.announcements for select
+using (enabled = true or public.is_admin());
+
+drop policy if exists "Admin manage announcements" on public.announcements;
+create policy "Admin manage announcements"
+on public.announcements for all
 using (public.is_admin())
 with check (public.is_admin());
 
