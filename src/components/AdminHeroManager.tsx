@@ -8,12 +8,6 @@ import type {
   HeroSlideConfig,
   HeroSlideKind,
 } from "@/data/hero-slides";
-import {
-  DEMO_ADMIN_HERO_UPDATED_EVENT,
-  readDemoAdminHero,
-  writeDemoAdminHero,
-} from "@/lib/demo-admin-hero-client";
-import { readDemoAdminProducts } from "@/lib/demo-admin-products-client";
 
 const kindOptions: { value: HeroSlideKind; label: string; note: string }[] = [
   { value: "product", label: "Product", note: "Feature one product" },
@@ -48,6 +42,7 @@ function emptyHero(order: number): Omit<HeroSlideConfig, "id"> {
     badge: "FEATURED",
     discountText: "",
     imageUrl: "",
+    imagePublicId: null,
     startsAt: null,
     endsAt: null,
     showCountdown: false,
@@ -65,6 +60,7 @@ export function AdminHeroManager() {
   const [configured, setConfigured] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
   const [message, setMessage] = useState("");
 
   async function load() {
@@ -84,18 +80,11 @@ export function AdminHeroManager() {
         throw new Error(heroData.error || "Could not load hero settings.");
       }
 
-      const isConfigured = heroData.configured !== false;
-      setConfigured(isConfigured);
-      const nextSlides = isConfigured
-        ? ((heroData.slides ?? []) as HeroSlideConfig[])
-        : readDemoAdminHero();
+      setConfigured(true);
+      const nextSlides = (heroData.slides ?? []) as HeroSlideConfig[];
       setSlides(nextSlides);
       setProducts(
-        productResponse.ok
-          ? productData.configured === false
-            ? readDemoAdminProducts()
-            : ((productData.products ?? []) as Product[])
-          : [],
+        productResponse.ok ? ((productData.products ?? []) as Product[]) : [],
       );
 
       setSelectedId((current) =>
@@ -115,28 +104,6 @@ export function AdminHeroManager() {
   useEffect(() => {
     void load();
   }, []);
-
-  useEffect(() => {
-    if (configured) return;
-
-    const sync = () => {
-      const nextSlides = readDemoAdminHero();
-      setSlides(nextSlides);
-      setSelectedId((current) =>
-        nextSlides.some((slide) => slide.id === current)
-          ? current
-          : nextSlides[0]?.id ?? "",
-      );
-    };
-
-    window.addEventListener(DEMO_ADMIN_HERO_UPDATED_EVENT, sync);
-    window.addEventListener("storage", sync);
-
-    return () => {
-      window.removeEventListener(DEMO_ADMIN_HERO_UPDATED_EVENT, sync);
-      window.removeEventListener("storage", sync);
-    };
-  }, [configured]);
 
   const ordered = useMemo(
     () => [...slides].sort((a, b) => a.order - b.order),
@@ -171,20 +138,6 @@ export function AdminHeroManager() {
       setSaving(true);
       setMessage("");
       const order = Math.max(0, ...slides.map((slide) => slide.order)) + 1;
-      if (!configured) {
-        const slide: HeroSlideConfig = {
-          id:
-            "demo-hero-" +
-            (globalThis.crypto?.randomUUID?.() ?? Date.now().toString()),
-          ...emptyHero(order),
-        };
-        const next = [...slides, slide];
-        setSlides(next);
-        writeDemoAdminHero(next);
-        setSelectedId(slide.id);
-        return;
-      }
-
       const response = await fetch("/api/admin/hero", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -209,16 +162,6 @@ export function AdminHeroManager() {
     try {
       setSaving(true);
       setMessage("");
-
-      if (!configured) {
-        const next = slides.map((slide) =>
-          slide.id === selected.id ? selected : slide,
-        );
-        setSlides(next);
-        writeDemoAdminHero(next);
-        setMessage("Demo hero saved in this browser.");
-        return;
-      }
 
       const response = await fetch("/api/admin/hero/" + selected.id, {
         method: "PATCH",
@@ -247,14 +190,6 @@ export function AdminHeroManager() {
     try {
       setSaving(true);
       const next = slides.filter((slide) => slide.id !== selected.id);
-
-      if (!configured) {
-        setSlides(next);
-        writeDemoAdminHero(next);
-        setSelectedId(next[0]?.id ?? "");
-        setMessage("");
-        return;
-      }
 
       const response = await fetch("/api/admin/hero/" + selected.id, {
         method: "DELETE",
@@ -292,16 +227,6 @@ export function AdminHeroManager() {
       }),
     );
 
-    if (!configured) {
-      const next = slides.map((slide) => {
-        if (slide.id === first.id) return first;
-        if (slide.id === second.id) return second;
-        return slide;
-      });
-      writeDemoAdminHero(next);
-      return;
-    }
-
     await Promise.all([
       fetch("/api/admin/hero/" + first.id, {
         method: "PATCH",
@@ -314,6 +239,68 @@ export function AdminHeroManager() {
         body: JSON.stringify(second),
       }),
     ]);
+  }
+
+  async function uploadHeroImage(file: File) {
+    if (!selected) return;
+
+    try {
+      setUploadingMedia(true);
+      setMessage("");
+
+      const body = new FormData();
+      body.set("file", file);
+      body.set("heroId", selected.id);
+
+      const response = await fetch("/api/admin/hero/upload", {
+        method: "POST",
+        body,
+      });
+      const data = (await response.json()) as {
+        url?: string;
+        publicId?: string;
+        error?: string;
+      };
+
+      if (!response.ok || !data.url || !data.publicId) {
+        throw new Error(data.error || "Could not upload hero image.");
+      }
+
+      const previousPublicId = selected.imagePublicId ?? "";
+      update({
+        imageUrl: data.url,
+        imagePublicId: data.publicId,
+      });
+
+      if (previousPublicId && previousPublicId !== data.publicId) {
+        await fetch("/api/admin/hero/upload", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ publicId: previousPublicId }),
+        }).catch(() => {});
+      }
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Could not upload hero image.",
+      );
+    } finally {
+      setUploadingMedia(false);
+    }
+  }
+
+  async function removeHeroImage() {
+    if (!selected) return;
+
+    const publicId = selected.imagePublicId ?? "";
+    update({ imageUrl: "", imagePublicId: null });
+
+    if (publicId) {
+      await fetch("/api/admin/hero/upload", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ publicId }),
+      }).catch(() => {});
+    }
   }
 
   function chooseProduct(productId: string) {
@@ -370,19 +357,8 @@ export function AdminHeroManager() {
         </div>
 
         {!configured ? (
-          <div className="mt-3 rounded-[14px] border border-[#d9dde3] bg-[#f6f6f6] p-3 text-[9px] leading-5 text-[#555d67]">
-            <div className="flex flex-wrap items-center gap-2">
-              <strong className="text-[10px] text-[#17191d]">Demo hero data</strong>
-              <span
-                className="rounded-full bg-[#111111] px-2 py-1 text-[7px] font-bold !text-white"
-                style={{ color: "#fff" }}
-              >
-                FAKE DATA
-              </span>
-            </div>
-            <p className="mt-1">
-              Add, edit, schedule, reorder and delete heroes here. Changes save in this browser until Supabase is connected.
-            </p>
+          <div className="mt-3 rounded-[14px] border border-[#e0c2c2] bg-[#fff6f6] p-3 text-[9px] leading-5 text-[#8a3636]">
+            Supabase is required for hero management.
           </div>
         ) : null}
 
@@ -653,15 +629,41 @@ export function AdminHeroManager() {
                   placeholder="/products or product auto-link"
                 />
               </label>
-              <label className="sm:col-span-2">
-                <span className={label}>Custom image URL</span>
-                <input
-                  className={field}
-                  value={selected.imageUrl}
-                  onChange={(event) => update({ imageUrl: event.target.value })}
-                  placeholder="Leave blank to use selected product image"
-                />
-              </label>
+              <div className="sm:col-span-2">
+                <span className={label}>Hero image</span>
+                <label className="flex min-h-[90px] cursor-pointer items-center justify-center rounded-[14px] border border-dashed border-[#bfc5cd] bg-[#f8f8f8] px-4 text-center text-[10px] font-semibold text-[#555e69]">
+                  {uploadingMedia
+                    ? "Uploading to Cloudinary…"
+                    : "Upload hero image · leave empty to use selected product image"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    disabled={uploadingMedia}
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) void uploadHeroImage(file);
+                      event.target.value = "";
+                    }}
+                  />
+                </label>
+                {selected.imageUrl ? (
+                  <div className="mt-2 overflow-hidden rounded-[12px] border border-[#d9dde3] bg-[#f5f5f5]">
+                    <img
+                      src={selected.imageUrl}
+                      alt="Hero media"
+                      className="aspect-[16/8] w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => void removeHeroImage()}
+                      className="min-h-[42px] w-full border-t border-[#e2e5e9] bg-white text-[9px] font-bold text-[#a33d3d]"
+                    >
+                      Remove hero image
+                    </button>
+                  </div>
+                ) : null}
+              </div>
             </div>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -791,7 +793,7 @@ export function AdminHeroManager() {
             <button
               type="button"
               onClick={() => void save()}
-              disabled={saving}
+              disabled={saving || uploadingMedia}
               className="min-h-[46px] rounded-full bg-[#111111] px-6 text-[10px] font-bold !text-white disabled:opacity-50 sm:ml-auto"
               style={{ color: "#fff" }}
             >
