@@ -6,7 +6,7 @@ import {
   updateOrder,
   updateOrderStatus,
   type AdminOrderWriteInput,
-} from "@/lib/supabase-orders";
+} from "@/lib/mongodb-orders";
 import type {
   AdminOrderStatus,
   AdminPaymentStatus,
