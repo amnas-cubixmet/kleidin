@@ -7,10 +7,6 @@ import {
   getProductOfferPrice,
   getProductOfferStatus,
 } from "@/lib/product-offers";
-import {
-  DEMO_ADMIN_PRODUCTS_UPDATED_EVENT,
-  readDemoAdminProducts,
-} from "@/lib/demo-admin-products-client";
 
 type Filter = "all" | "active" | "scheduled" | "expired" | "off";
 
