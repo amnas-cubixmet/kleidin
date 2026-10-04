@@ -6,13 +6,10 @@ import { useEffect, useState } from "react";
 import {
   type AdminOrder,
   type AdminOrderStatus,
-  readAdminOrders,
-  writeAdminOrders,
   getOrderSubtotal,
   getOrderTotal,
   getOrderCost,
   getOrderProfit,
-  ADMIN_ORDERS_UPDATED_EVENT,
 } from "@/lib/admin-orders";
 
 const statusOptions: AdminOrderStatus[] = [
@@ -38,40 +35,59 @@ export function AdminOrderDetail({ orderId }: { orderId: string }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const sync = () => {
-      const found = readAdminOrders().find((item) => item.id === orderId) ?? null;
-      setOrder(found);
-      setReady(true);
-    };
+    let active = true;
 
-    sync();
-    window.addEventListener(ADMIN_ORDERS_UPDATED_EVENT, sync);
-    window.addEventListener("storage", sync);
+    fetch("/api/admin/orders/" + orderId, { cache: "no-store" })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Could not load order.");
+        return data.order as AdminOrder;
+      })
+      .then((value) => {
+        if (active) setOrder(value);
+      })
+      .catch(() => {
+        if (active) setOrder(null);
+      })
+      .finally(() => {
+        if (active) setReady(true);
+      });
 
     return () => {
-      window.removeEventListener(ADMIN_ORDERS_UPDATED_EVENT, sync);
-      window.removeEventListener("storage", sync);
+      active = false;
     };
   }, [orderId]);
 
-  function updateStatus(status: AdminOrderStatus) {
+  async function updateStatus(status: AdminOrderStatus) {
     if (!order) return;
-    const orders = readAdminOrders();
-    const updated: AdminOrder = {
-      ...order,
-      status,
-      updatedAt: new Date().toISOString(),
-    };
-    writeAdminOrders(
-      orders.map((item) => (item.id === order.id ? updated : item)),
-    );
-    setOrder(updated);
+
+    const previous = order;
+    setOrder({ ...order, status });
+
+    try {
+      const response = await fetch("/api/admin/orders/" + order.id, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not update status.");
+      setOrder(data.order as AdminOrder);
+    } catch {
+      setOrder(previous);
+    }
   }
 
-  function removeOrder() {
+  async function removeOrder() {
     if (!order || !window.confirm("Delete this order permanently?")) return;
-    writeAdminOrders(readAdminOrders().filter((item) => item.id !== order.id));
+
+    const response = await fetch("/api/admin/orders/" + order.id, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) return;
     router.push("/admin/orders");
+    router.refresh();
   }
 
   if (!ready) {
@@ -88,7 +104,7 @@ export function AdminOrderDetail({ orderId }: { orderId: string }) {
         <div>
           <strong className="text-[15px] font-semibold">Order not found</strong>
           <p className="mt-2 text-[11px] leading-5 text-[#66707b]">
-            This order may have been deleted or is not available on this device.
+            This order may have been deleted or is unavailable in the database.
           </p>
           <Link
             href="/admin/orders"
