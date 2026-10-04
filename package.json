@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "tsc --noEmit",
-    "admin:credentials": "node scripts/generate-admin-credentials.mjs"
+    "admin:credentials": "node scripts/generate-admin-credentials.mjs",
+    "db:schema": "node scripts/apply-schema.mjs"
   },
   "dependencies": {
     "next": "16.3.8",
