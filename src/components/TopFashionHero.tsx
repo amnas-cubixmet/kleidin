@@ -75,7 +75,7 @@ export function TopFashionHero({
   heroSlides: HeroSlideConfig[];
 }) {
   const [index, setIndex] = useState(0);
-  const [now, setNow] = useState(() => Date.now());
+  const [now, setNow] = useState(0);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -84,15 +84,51 @@ export function TopFashionHero({
   });
 
   const slides = useMemo<ResolvedHeroSlide[]>(() => {
-    if (!products.length) return [];
+    const fallbackSlide: ResolvedHeroSlide = {
+      id: "kleidin-default-hero",
+      label: "KLEID.IN / ESSENTIALS",
+      title: "ESSENTIALS WITHOUT NOISE.",
+      subtitle:
+        "Clean everyday pieces, considered proportions and a wardrobe built to be repeated.",
+      button: "Shop collection",
+      href: "/products",
+      image:
+        "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=2000&q=88",
+      badge: "KLEID.IN",
+      ctaStyle: "light",
+      imagePosition: "center",
+    };
+
+    if (!products.length) {
+      return heroSlides.length
+        ? heroSlides
+            .filter((slide) => slide.enabled && (!now || isScheduledNow(slide, now)))
+            .sort((a, b) => a.order - b.order)
+            .map((slide) => ({
+              id: slide.id,
+              label: slide.label || "KLEID.IN",
+              title: slide.title || fallbackSlide.title,
+              subtitle: slide.subtitle || fallbackSlide.subtitle,
+              button: slide.button || "Explore",
+              href: slide.href || "/products",
+              image: slide.imageUrl || fallbackSlide.image,
+              badge: slide.badge || slide.label || "KLEID.IN",
+              discountText: slide.discountText,
+              showCountdown: Boolean(slide.showCountdown && slide.endsAt),
+              endsAt: slide.endsAt,
+              ctaStyle: slide.ctaStyle ?? "light",
+              imagePosition: slide.imagePosition ?? "center",
+            }))
+        : [fallbackSlide];
+    }
 
     const featured =
       products.find((product) => product.featured && product.stock > 0) ??
       products.find((product) => product.stock > 0) ??
       products[0];
 
-    return [...heroSlides]
-      .filter((slide) => slide.enabled && isScheduledNow(slide, now))
+    const resolved = [...heroSlides]
+      .filter((slide) => slide.enabled && (!now || isScheduledNow(slide, now)))
       .sort((a, b) => a.order - b.order)
       .map((slide) => {
         const selectedProduct = slide.productId
@@ -137,12 +173,27 @@ export function TopFashionHero({
           imagePosition: slide.imagePosition ?? "center",
         };
       });
+
+    if (resolved.length) return resolved;
+
+    return [
+      {
+        ...fallbackSlide,
+        image:
+          featured.image ||
+          featured.colorVariants?.[0]?.images?.[0] ||
+          featured.colorVariants?.[0]?.image ||
+          fallbackSlide.image,
+        meta: `${featured.name} · ${money(featured.price)}`,
+      },
+    ];
   }, [heroSlides, now, products]);
 
   const slideCount = slides.length;
   const current = slides[index] ?? slides[0];
 
   useEffect(() => {
+    setNow(Date.now());
     const timer = window.setInterval(() => setNow(Date.now()), 30_000);
     return () => window.clearInterval(timer);
   }, []);
