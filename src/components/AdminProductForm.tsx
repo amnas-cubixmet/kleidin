@@ -1249,7 +1249,12 @@ export function AdminProductForm({
               onChange={(event) => update("featured", event.target.checked)}
               className="h-4 w-4 accent-black"
             />
-            <span className="text-[11px] font-semibold">Featured product</span>
+            <span className="text-[11px] font-semibold">
+              Featured on storefront
+              <small className="mt-0.5 block text-[9px] font-normal text-[#7a828d]">
+                Shows in featured homepage sections.
+              </small>
+            </span>
           </label>
         </div>
       </section>
