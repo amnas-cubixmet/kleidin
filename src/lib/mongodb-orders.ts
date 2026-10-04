@@ -23,6 +23,7 @@ export type AdminOrderWriteInput = {
   status: AdminOrderStatus;
   notes?: string;
   isDemo?: boolean;
+  createdAt?: string;
 };
 
 type OrderDocument = AdminOrder & {
@@ -65,7 +66,7 @@ function toDocument(
   return {
     id: existing?.id ?? crypto.randomUUID(),
     orderNumber: existing?.orderNumber ?? makeOrderNumber(),
-    createdAt: existing?.createdAt ?? now,
+    createdAt: existing?.createdAt ?? input.createdAt ?? now,
     updatedAt: now,
     customerName: input.customerName,
     phone: input.phone,
