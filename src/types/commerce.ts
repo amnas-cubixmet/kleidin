@@ -1,7 +1,5 @@
 export type StoreSettings = {
   whatsappNumber: string;
-  announcementText: string;
-  announcementLinkLabel: string;
   instagramUrl: string;
   facebookUrl: string;
   supportEmail: string;
