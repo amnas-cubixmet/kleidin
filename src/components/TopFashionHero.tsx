@@ -75,7 +75,7 @@ export function TopFashionHero({
   heroSlides: HeroSlideConfig[];
 }) {
   const [index, setIndex] = useState(0);
-  const [now, setNow] = useState(0);
+  const [scheduleNow, setScheduleNow] = useState(0);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -102,7 +102,7 @@ export function TopFashionHero({
     if (!products.length) {
       return heroSlides.length
         ? heroSlides
-            .filter((slide) => slide.enabled && (!now || isScheduledNow(slide, now)))
+            .filter((slide) => slide.enabled && (!scheduleNow || isScheduledNow(slide, scheduleNow)))
             .sort((a, b) => a.order - b.order)
             .map((slide) => ({
               id: slide.id,
@@ -128,7 +128,7 @@ export function TopFashionHero({
       products[0];
 
     const resolved = [...heroSlides]
-      .filter((slide) => slide.enabled && (!now || isScheduledNow(slide, now)))
+      .filter((slide) => slide.enabled && (!scheduleNow || isScheduledNow(slide, scheduleNow)))
       .sort((a, b) => a.order - b.order)
       .map((slide) => {
         const selectedProduct = slide.productId
@@ -187,15 +187,15 @@ export function TopFashionHero({
         meta: `${featured.name} · ${money(featured.price)}`,
       },
     ];
-  }, [heroSlides, now, products]);
+  }, [heroSlides, products, scheduleNow]);
 
   const slideCount = slides.length;
   const current = slides[index] ?? slides[0];
 
   useEffect(() => {
-    setNow(Date.now());
-    const timer = window.setInterval(() => setNow(Date.now()), 30_000);
-    return () => window.clearInterval(timer);
+    // Resolve scheduled slides once after hydration. Avoid periodically changing
+    // the set of rendered slide children; countdown timing is handled separately.
+    setScheduleNow(Date.now());
   }, []);
 
   useEffect(() => {
