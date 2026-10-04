@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Product, ProductColorVariant, ProductOfferType, ProductStatus } from "@/types/product";
-import { readDemoAdminProducts, upsertDemoAdminProduct } from "@/lib/demo-admin-products-client";
 
 type FormColor = {
   id: string;
@@ -12,6 +11,7 @@ type FormColor = {
   stock: string;
   sizeStocks: Record<string, string>;
   images: string[];
+  imagePublicIds: string[];
 };
 
 const STANDARD_SIZE_OPTIONS = ["S", "M", "L", "XL", "2XL"] as const;
@@ -41,7 +41,9 @@ type ProductFormState = {
   featured: boolean;
   status: ProductStatus;
   image: string;
+  imagePublicId: string;
   tryOnImage: string;
+  tryOnImagePublicId: string;
   sortOrder: string;
   colors: FormColor[];
 };
@@ -62,6 +64,7 @@ function makeColor(): FormColor {
     stock: "0",
     sizeStocks: {},
     images: [],
+    imagePublicIds: [],
   };
 }
 
@@ -91,7 +94,9 @@ function emptyForm(): ProductFormState {
     featured: false,
     status: "draft",
     image: "",
+    imagePublicId: "",
     tryOnImage: "",
+    tryOnImagePublicId: "",
     sortOrder: "100",
     colors: [makeColor()],
   };
@@ -135,7 +140,9 @@ function fromProduct(product: Product): ProductFormState {
     featured: product.featured,
     status: product.status,
     image: product.image ?? "",
+    imagePublicId: product.imagePublicId ?? "",
     tryOnImage: product.tryOnImage ?? "",
+    tryOnImagePublicId: product.tryOnImagePublicId ?? "",
     sortOrder: String(product.sortOrder ?? 100),
     colors: variants.map((variant) => {
       const existingSizeStocks = variant.sizeStocks ?? {};
@@ -165,16 +172,10 @@ function fromProduct(product: Product): ProductFormState {
           : variant.image
             ? [variant.image]
             : [],
+        imagePublicIds: variant.imagePublicIds ?? [],
       };
     }),
   };
-}
-
-function storagePath(url: string) {
-  const marker = "/storage/v1/object/public/products/";
-  const index = url.indexOf(marker);
-  if (index === -1) return "";
-  return decodeURIComponent(url.slice(index + marker.length));
 }
 
 export function AdminProductForm({
@@ -193,46 +194,27 @@ export function AdminProductForm({
   const [loading, setLoading] = useState(mode === "edit");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState("");
-  const [demoMode, setDemoMode] = useState(false);
-  const [loadedProduct, setLoadedProduct] = useState<Product | null>(null);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (mode === "create") {
-      let active = true;
-      fetch("/api/admin/products", { cache: "no-store" })
-        .then((response) => response.json())
-        .then((data) => {
-          if (active) setDemoMode(data.configured === false);
-        })
-        .catch(() => {});
-      return () => {
-        active = false;
-      };
-    }
-
-    if (!productId) return;
+    if (mode !== "edit" || !productId) return;
 
     let active = true;
     fetch("/api/admin/products/" + productId, { cache: "no-store" })
       .then(async (response) => {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Could not load product.");
-        const apiProduct = data.product as Product;
-        const product = data.demo
-          ? readDemoAdminProducts().find((item) => item.id === productId) ?? apiProduct
-          : apiProduct;
-        return { product, demo: Boolean(data.demo) };
+        return data.product as Product;
       })
-      .then(({ product, demo }) => {
-        if (active) {
-          setLoadedProduct(product);
-          setDemoMode(demo);
-          setForm(fromProduct(product));
-        }
+      .then((product) => {
+        if (active) setForm(fromProduct(product));
       })
       .catch((error) => {
-        if (active) setMessage(error instanceof Error ? error.message : "Could not load product.");
+        if (active) {
+          setMessage(
+            error instanceof Error ? error.message : "Could not load product.",
+          );
+        }
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -322,35 +304,43 @@ export function AdminProductForm({
     }));
   }
 
-  async function upload(file: File, color: string) {
-    if (demoMode) {
-      if (file.size > 700 * 1024) {
-        throw new Error("Demo image must be 700 KB or smaller.");
-      }
-
-      return await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () =>
-          typeof reader.result === "string"
-            ? resolve(reader.result)
-            : reject(new Error("Could not read image."));
-        reader.onerror = () => reject(new Error("Could not read image."));
-        reader.readAsDataURL(file);
-      });
-    }
-
+  async function upload(file: File, group: string) {
     const body = new FormData();
     body.set("file", file);
     body.set("productId", productId || uploadKey);
-    body.set("color", color);
+    body.set("color", group);
 
     const response = await fetch("/api/admin/products/upload", {
       method: "POST",
       body,
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Image upload failed.");
-    return data.url as string;
+    const data = (await response.json()) as {
+      url?: string;
+      publicId?: string;
+      error?: string;
+    };
+
+    if (!response.ok || !data.url || !data.publicId) {
+      throw new Error(data.error || "Image upload failed.");
+    }
+
+    return { url: data.url, publicId: data.publicId };
+  }
+
+  async function deleteCloudinaryAsset(publicId: string) {
+    const clean = publicId.trim();
+    if (!clean) return;
+
+    const response = await fetch("/api/admin/products/upload", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ publicId: clean }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || "Could not delete image.");
+    }
   }
 
   async function uploadMain(
@@ -360,11 +350,34 @@ export function AdminProductForm({
     const file = event.target.files?.[0];
     if (!file) return;
 
+    if (kind === "tryOnImage" && !["image/png", "image/webp"].includes(file.type)) {
+      setMessage("Transparent / masked try-on image should be PNG or WebP.");
+      event.target.value = "";
+      return;
+    }
+
     try {
       setUploading(kind);
       setMessage("");
-      const url = await upload(file, kind === "image" ? "main" : "try-on");
-      update(kind, url);
+
+      const previousPublicId =
+        kind === "image" ? form.imagePublicId : form.tryOnImagePublicId;
+      const uploaded = await upload(
+        file,
+        kind === "image" ? "main" : "try-on-transparent",
+      );
+
+      if (kind === "image") {
+        update("image", uploaded.url);
+        update("imagePublicId", uploaded.publicId);
+      } else {
+        update("tryOnImage", uploaded.url);
+        update("tryOnImagePublicId", uploaded.publicId);
+      }
+
+      if (previousPublicId && previousPublicId !== uploaded.publicId) {
+        await deleteCloudinaryAsset(previousPublicId).catch(() => {});
+      }
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Image upload failed.");
     } finally {
@@ -383,13 +396,22 @@ export function AdminProductForm({
     try {
       setUploading(colorId);
       setMessage("");
-      const urls: string[] = [];
+
+      const uploaded = [];
       for (const file of Array.from(files).slice(0, 6)) {
-        urls.push(await upload(file, colorName || "color"));
+        uploaded.push(await upload(file, colorName || "color"));
       }
+
       const current = form.colors.find((color) => color.id === colorId);
       updateColor(colorId, {
-        images: [...(current?.images ?? []), ...urls].slice(0, 8),
+        images: [
+          ...(current?.images ?? []),
+          ...uploaded.map((asset) => asset.url),
+        ].slice(0, 8),
+        imagePublicIds: [
+          ...(current?.imagePublicIds ?? []),
+          ...uploaded.map((asset) => asset.publicId),
+        ].slice(0, 8),
       });
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Image upload failed.");
@@ -398,22 +420,40 @@ export function AdminProductForm({
     }
   }
 
-  async function removeUploadedImage(
-    url: string,
-    onRemove: () => void,
+  async function removeColorImage(
+    colorId: string,
+    imageIndex: number,
   ) {
-    const path = storagePath(url);
-    onRemove();
+    const color = form.colors.find((item) => item.id === colorId);
+    if (!color) return;
 
-    if (!path || demoMode) return;
-    try {
-      await fetch("/api/admin/products/upload", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path }),
-      });
-    } catch {
-      // UI stays responsive; final product deletion also performs storage cleanup.
+    const publicId = color.imagePublicIds[imageIndex] ?? "";
+    updateColor(colorId, {
+      images: color.images.filter((_, index) => index !== imageIndex),
+      imagePublicIds: color.imagePublicIds.filter(
+        (_, index) => index !== imageIndex,
+      ),
+    });
+
+    if (publicId) {
+      await deleteCloudinaryAsset(publicId).catch(() => {});
+    }
+  }
+
+  async function removeMainImage(kind: "image" | "tryOnImage") {
+    const publicId =
+      kind === "image" ? form.imagePublicId : form.tryOnImagePublicId;
+
+    if (kind === "image") {
+      update("image", "");
+      update("imagePublicId", "");
+    } else {
+      update("tryOnImage", "");
+      update("tryOnImagePublicId", "");
+    }
+
+    if (publicId) {
+      await deleteCloudinaryAsset(publicId).catch(() => {});
     }
   }
 
@@ -487,6 +527,7 @@ export function AdminProductForm({
           sizeStocks,
           image: color.images[0],
           images: color.images,
+          imagePublicIds: color.imagePublicIds,
         };
       })
       .filter((color) => Boolean(color.name));
@@ -528,58 +569,15 @@ export function AdminProductForm({
       featured: form.featured,
       status: form.status,
       image: form.image || colorVariants[0]?.images?.[0] || null,
+      imagePublicId: form.imagePublicId || null,
       tryOnImage: form.tryOnImage || null,
+      tryOnImagePublicId: form.tryOnImagePublicId || null,
       sortOrder: Number(form.sortOrder) || 100,
     };
 
     try {
       setSaving(true);
       setMessage("");
-      if (demoMode) {
-        const id =
-          mode === "edit" && productId
-            ? productId
-            : "demo-" + (globalThis.crypto?.randomUUID?.() ?? Date.now());
-
-        const product: Product = {
-          ...(loadedProduct ?? {}),
-          id,
-          sku: payload.sku,
-          name: payload.name,
-          slug: payload.slug,
-          category: payload.category,
-          price: payload.price,
-          compareAtPrice: payload.compareAtPrice ?? undefined,
-          offerEnabled: payload.offerEnabled,
-          offerType: payload.offerType,
-          offerValue: payload.offerValue ?? undefined,
-          offerLabel: payload.offerLabel ?? undefined,
-          offerBadge: payload.offerBadge ?? undefined,
-          offerStartsAt: payload.offerStartsAt ?? undefined,
-          offerEndsAt: payload.offerEndsAt ?? undefined,
-          offerCountdown: payload.offerCountdown,
-          wholesaleEnabled: payload.wholesaleEnabled,
-          wholesalePrice: payload.wholesalePrice ?? undefined,
-          wholesaleMinOrder: payload.wholesaleMinOrder ?? undefined,
-          wholesaleSlug: payload.wholesaleSlug ?? undefined,
-          stock: payload.stock,
-          sizes: payload.sizes,
-          colors: payload.colors,
-          colorVariants: payload.colorVariants,
-          description: payload.description,
-          featured: payload.featured,
-          status: payload.status,
-          image: payload.image ?? undefined,
-          tryOnImage: payload.tryOnImage ?? undefined,
-          sortOrder: payload.sortOrder,
-        };
-
-        upsertDemoAdminProduct(product);
-        router.push("/admin/products/" + product.id);
-        router.refresh();
-        return;
-      }
-
       const endpoint =
         mode === "edit" && productId
           ? "/api/admin/products/" + productId
@@ -618,11 +616,7 @@ export function AdminProductForm({
 
   return (
     <form onSubmit={submit} className="grid gap-4">
-      {demoMode ? (
-        <div className="rounded-[14px] border border-[#d9dde3] bg-[#f6f6f6] px-4 py-3 text-[9px] leading-5 text-[#626a75]">
-          Demo mode: changes save in this browser so you can test the complete product and offer flow without Supabase.
-        </div>
-      ) : null}
+
       <section className={section}>
         <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#111111]">
           Product information
@@ -1122,7 +1116,7 @@ export function AdminProductForm({
                 <label className="flex min-h-[72px] cursor-pointer items-center justify-center rounded-[14px] border border-dashed border-[#bfc5cd] bg-white px-4 text-center text-[10px] font-semibold text-[#555e69]">
                   {uploading === color.id
                     ? "Uploading…"
-                    : "Choose images · up to 8 per colour · 8 MB each"}
+                    : "Choose images · up to 8 per colour · Cloudinary"}
                   <input
                     type="file"
                     accept="image/*"
@@ -1142,7 +1136,7 @@ export function AdminProductForm({
 
                 {color.images.length ? (
                   <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                    {color.images.map((url) => (
+                    {color.images.map((url, imageIndex) => (
                       <div
                         key={url}
                         className="overflow-hidden rounded-[12px] border border-[#d9dde3] bg-white"
@@ -1155,13 +1149,7 @@ export function AdminProductForm({
                         <button
                           type="button"
                           onClick={() =>
-                            void removeUploadedImage(url, () =>
-                              updateColor(color.id, {
-                                images: color.images.filter(
-                                  (image) => image !== url,
-                                ),
-                              }),
-                            )
+                            void removeColorImage(color.id, imageIndex)
                           }
                           className="min-h-[40px] w-full border-t border-[#e2e5e9] text-[9px] font-bold text-[#a33d3d]"
                         >
@@ -1200,6 +1188,13 @@ export function AdminProductForm({
                   alt="Main product"
                   className="aspect-[4/3] w-full object-cover"
                 />
+                <button
+                  type="button"
+                  onClick={() => void removeMainImage("image")}
+                  className="min-h-[42px] w-full border-t border-[#e2e5e9] text-[9px] font-bold text-[#a33d3d]"
+                >
+                  Remove main image
+                </button>
               </div>
             ) : null}
           </div>
@@ -1207,22 +1202,29 @@ export function AdminProductForm({
             <span className={label}>Try-on image</span>
             <label className="flex min-h-[90px] cursor-pointer items-center justify-center rounded-[14px] border border-dashed border-[#bfc5cd] bg-[#f8f8f8] px-4 text-center text-[10px] font-semibold text-[#555e69]">
               {uploading === "tryOnImage"
-                ? "Uploading…"
-                : "Upload transparent try-on image"}
+                ? "Uploading to Cloudinary…"
+                : "Upload transparent / masked try-on image (PNG or WebP)"}
               <input
                 type="file"
-                accept="image/*"
+                accept="image/png,image/webp"
                 className="hidden"
                 onChange={(event) => void uploadMain(event, "tryOnImage")}
               />
             </label>
             {form.tryOnImage ? (
-              <div className="mt-2 overflow-hidden rounded-[12px] border border-[#d9dde3] bg-[#f5f5f5]">
+              <div className="mt-2 overflow-hidden rounded-[12px] border border-[#d9dde3] bg-[linear-gradient(45deg,#eee_25%,transparent_25%,transparent_75%,#eee_75%),linear-gradient(45deg,#eee_25%,#fff_25%,#fff_75%,#eee_75%)] bg-[length:20px_20px] bg-[position:0_0,10px_10px]">
                 <img
                   src={form.tryOnImage}
-                  alt="Try-on"
+                  alt="Transparent try-on mask"
                   className="aspect-[4/3] w-full object-contain"
                 />
+                <button
+                  type="button"
+                  onClick={() => void removeMainImage("tryOnImage")}
+                  className="min-h-[42px] w-full border-t border-[#e2e5e9] bg-white text-[9px] font-bold text-[#a33d3d]"
+                >
+                  Remove transparent image
+                </button>
               </div>
             ) : null}
           </div>
