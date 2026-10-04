@@ -4,12 +4,24 @@ import { useEffect, useMemo, useState } from "react";
 import { type AdminOrder, getOrderTotal } from "@/lib/admin-orders";
 
 function money(value: number) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(value || 0);
+  const amount = Math.max(0, Number(value) || 0);
+
+  if (amount >= 10_000_000) {
+    const crore = amount / 10_000_000;
+    return "₹" + (crore >= 10 ? Math.round(crore) : crore.toFixed(1).replace(/\.0$/, "")) + "Cr";
+  }
+
+  if (amount >= 100_000) {
+    const lakh = amount / 100_000;
+    return "₹" + (lakh >= 10 ? Math.round(lakh) : lakh.toFixed(1).replace(/\.0$/, "")) + "L";
+  }
+
+  if (amount >= 1_000) {
+    const thousand = amount / 1_000;
+    return "₹" + (thousand >= 10 ? Math.round(thousand) : thousand.toFixed(1).replace(/\.0$/, "")) + "K";
+  }
+
+  return "₹" + Math.round(amount);
 }
 
 function dayKey(date: Date) {
@@ -18,6 +30,11 @@ function dayKey(date: Date) {
 
 export function AdminDashboardSalesChart() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -77,6 +94,20 @@ export function AdminDashboardSalesChart() {
 
     return { days, maxRevenue, totalRevenue, totalOrders };
   }, [orders]);
+
+  if (!mounted) {
+    return (
+      <section className="mt-3 rounded-[18px] border border-[#dfe3ea] bg-white p-3.5 sm:mt-4 sm:rounded-[20px] sm:p-4 md:p-5">
+        <p className="text-[10px] font-bold uppercase tracking-[.12em] text-[#6f7783]">
+          Last 30 days
+        </p>
+        <h2 className="mt-1.5 text-[22px] font-semibold tracking-[-.04em] sm:text-[24px]">
+          Sales trend
+        </h2>
+        <div className="mt-5 h-[180px] animate-pulse rounded-[14px] bg-[#f3f4f6]" />
+      </section>
+    );
+  }
 
   return (
     <section className="mt-3 rounded-[18px] border border-[#dfe3ea] bg-white p-3.5 sm:mt-4 sm:rounded-[20px] sm:p-4 md:p-5">
