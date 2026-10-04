@@ -5,6 +5,7 @@ import type {
   AdminPaymentStatus,
 } from "@/lib/admin-orders";
 import { getMongoDatabase } from "@/lib/mongodb";
+import { getDemoModeEnabled } from "@/lib/demo-mode";
 
 export type AdminOrderWriteInput = {
   customerName: string;
@@ -113,9 +114,10 @@ function toOrder(doc: OrderDocument): AdminOrder {
 
 export async function listOrders() {
   const db = await getMongoDatabase();
+  const demoModeEnabled = await getDemoModeEnabled();
   const rows = await db
     .collection<OrderDocument>("orders")
-    .find({})
+    .find(demoModeEnabled ? {} : { isDemo: { $ne: true } })
     .sort({ createdAt: -1 })
     .toArray();
 
@@ -124,7 +126,10 @@ export async function listOrders() {
 
 export async function getOrder(id: string) {
   const db = await getMongoDatabase();
-  const row = await db.collection<OrderDocument>("orders").findOne({ id });
+  const demoModeEnabled = await getDemoModeEnabled();
+  const row = await db
+    .collection<OrderDocument>("orders")
+    .findOne(demoModeEnabled ? { id } : { id, isDemo: { $ne: true } });
   return row ? toOrder(row) : null;
 }
 
