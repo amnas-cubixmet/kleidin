@@ -63,7 +63,7 @@ export function AdminProductsList() {
     <div className="grid gap-4">
       {!configured ? (
         <div className="rounded-[16px] border border-[#e0c2c2] bg-[#fff6f6] p-4 text-[10px] leading-5 text-[#8a3636]">
-          Supabase is required. Add the production environment variables and run the schema.
+          MongoDB Atlas is required. Add MONGODB_URI and run npm run db:setup.
         </div>
       ) : null}
 
@@ -98,7 +98,7 @@ export function AdminProductsList() {
               Products
             </h2>
             <p className="mt-1.5 text-[10px] leading-5 text-[#626a75] sm:text-[11px]">
-              Retail and wholesale product records stored in Supabase PostgreSQL.
+              Retail, wholesale, inventory and media records stored in MongoDB Atlas.
             </p>
           </div>
 
@@ -218,8 +218,22 @@ export function AdminProductsList() {
             <div>
               <strong className="text-[13px] font-semibold">No products found</strong>
               <p className="mt-2 text-[10px] leading-5 text-[#68717b]">
-                Use Add product to create the first database product.
+                Create the first product manually or load realistic internal demo products into MongoDB Atlas.
               </p>
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                <Link
+                  href="/admin/products/new"
+                  className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-[#111111] px-5 text-[10px] font-bold text-white"
+                >
+                  + Add product
+                </Link>
+                <Link
+                  href="/admin/data-setup"
+                  className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-[#cfd4da] bg-white px-5 text-[10px] font-bold text-[#111111]"
+                >
+                  Load demo products
+                </Link>
+              </div>
             </div>
           </div>
         )}
