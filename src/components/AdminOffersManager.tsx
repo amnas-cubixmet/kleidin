@@ -45,13 +45,8 @@ export function AdminOffersManager() {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Could not load offers.");
         if (!active) return;
-        const isConfigured = data.configured !== false;
-        setConfigured(isConfigured);
-        setProducts(
-          isConfigured
-            ? ((data.products ?? []) as Product[])
-            : readDemoAdminProducts(),
-        );
+        setConfigured(true);
+        setProducts((data.products ?? []) as Product[]);
       })
       .catch((error) => {
         if (active) setMessage(error instanceof Error ? error.message : "Could not load offers.");
@@ -64,17 +59,6 @@ export function AdminOffersManager() {
       active = false;
     };
   }, []);
-
-  useEffect(() => {
-    if (configured) return;
-    const sync = () => setProducts(readDemoAdminProducts());
-    window.addEventListener(DEMO_ADMIN_PRODUCTS_UPDATED_EVENT, sync);
-    window.addEventListener("storage", sync);
-    return () => {
-      window.removeEventListener(DEMO_ADMIN_PRODUCTS_UPDATED_EVENT, sync);
-      window.removeEventListener("storage", sync);
-    };
-  }, [configured]);
 
   const counts = useMemo(() => {
     const base = { active: 0, scheduled: 0, expired: 0, off: 0 };
@@ -113,19 +97,8 @@ export function AdminOffersManager() {
   return (
     <div className="grid gap-4">
       {!configured ? (
-        <div className="rounded-[16px] border border-[#d9dde3] bg-[#f6f6f6] p-4 text-[10px] leading-5 text-[#555d67]">
-          <div className="flex flex-wrap items-center gap-2">
-            <strong className="text-[11px] text-[#17191d]">Demo offer data</strong>
-            <span
-              className="rounded-full bg-[#111111] px-2.5 py-1 text-[8px] font-bold !text-white"
-              style={{ color: "#fff" }}
-            >
-              FAKE DATA
-            </span>
-          </div>
-          <p className="mt-1.5">
-            Offer states are shown from realistic demo products. Connect Supabase for persistent offer editing.
-          </p>
+        <div className="rounded-[16px] border border-[#e0c2c2] bg-[#fff6f6] p-4 text-[10px] leading-5 text-[#8a3636]">
+          Supabase is required for offer management.
         </div>
       ) : null}
 
