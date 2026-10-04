@@ -6,7 +6,7 @@ import {
   isProductDatabaseConfigured,
   updateProduct,
   type ProductWriteInput,
-} from "@/lib/supabase-products";
+} from "@/lib/mongodb-products";
 import type { ProductColorVariant, ProductOfferType, ProductStatus } from "@/types/product";
 
 export const dynamic = "force-dynamic";
@@ -140,7 +140,7 @@ export async function GET(
 
   if (!isProductDatabaseConfigured()) {
     return NextResponse.json(
-      { error: "Supabase is not configured." },
+      { error: "MongoDB Atlas is not configured." },
       { status: 503 },
     );
   }
@@ -170,7 +170,7 @@ export async function PATCH(
 
   if (!isProductDatabaseConfigured()) {
     return NextResponse.json(
-      { error: "Supabase product database is not configured." },
+      { error: "MongoDB Atlas product database is not configured." },
       { status: 503 },
     );
   }
@@ -207,7 +207,7 @@ export async function DELETE(
 
   if (!isProductDatabaseConfigured()) {
     return NextResponse.json(
-      { error: "Supabase product database is not configured." },
+      { error: "MongoDB Atlas product database is not configured." },
       { status: 503 },
     );
   }
