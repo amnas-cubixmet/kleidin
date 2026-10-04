@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Product } from "@/types/product";
 import type { StoreSettings } from "@/types/commerce";
+import type { Announcement } from "@/types/announcement";
+import { AnnouncementBar } from "@/components/AnnouncementBar";
 
 const nav = [
   { href: "/", label: "Home" },
@@ -51,16 +53,17 @@ function MenuIcon({ open }: { open: boolean }) {
 export function Header({
   products,
   settings,
+  announcements,
 }: {
   products: Product[];
   settings: StoreSettings;
+  announcements: Announcement[];
 }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuMounted, setMenuMounted] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [announcementVisible, setAnnouncementVisible] = useState(true);
   const searchRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -140,15 +143,6 @@ export function Header({
   }, [query, products]);
 
   useEffect(() => {
-    try {
-      const dismissed = window.localStorage.getItem(
-        "kleidin-announcement-dismissed",
-      );
-      if (dismissed === "true") setAnnouncementVisible(false);
-    } catch {}
-  }, []);
-
-  useEffect(() => {
     if (searchOpen) {
       window.setTimeout(() => searchRef.current?.focus(), 50);
     }
@@ -177,48 +171,9 @@ export function Header({
     return pathname === href;
   }
 
-  function dismissAnnouncement() {
-    setAnnouncementVisible(false);
-
-    try {
-      window.localStorage.setItem("kleidin-announcement-dismissed", "true");
-    } catch {}
-  }
-
-  const announcementHref = settings.whatsappNumber
-    ? `https://wa.me/${settings.whatsappNumber}`
-    : "/contact";
-
   return (
     <>
-      {announcementVisible && settings.announcementText.trim() ? (
-        <div className="announcement">
-          <div className="announcement-copy">
-            <span>{settings.announcementText}</span>
-            {settings.announcementLinkLabel.trim() ? (
-              <>
-                <span className="announcement-dot">•</span>
-                <a
-                  href={announcementHref}
-                  target={settings.whatsappNumber ? "_blank" : undefined}
-                  rel={settings.whatsappNumber ? "noreferrer" : undefined}
-                >
-                  {settings.announcementLinkLabel}
-                </a>
-              </>
-            ) : null}
-          </div>
-
-          <button
-            type="button"
-            className="announcement-close"
-            aria-label="Close announcement"
-            onClick={dismissAnnouncement}
-          >
-            ×
-          </button>
-        </div>
-      ) : null}
+      <AnnouncementBar announcements={announcements} />
 
       <header className="site-header">
         <Link
@@ -322,12 +277,7 @@ export function Header({
       ) : null}
 
       {searchOpen ? (
-        <div
-          className={`search-panel ${
-            announcementVisible ? "" : "announcement-hidden"
-          }`}
-          role="search"
-        >
+        <div className="search-panel" role="search">
           <div className="search-panel-inner">
             <div className="search-input-row">
               <SearchIcon />
