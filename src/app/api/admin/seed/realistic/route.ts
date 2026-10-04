@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { seedRealisticInternalData } from "@/lib/realistic-seed";
+import {
+  clearRealisticInternalData,
+  seedRealisticInternalData,
+} from "@/lib/realistic-seed";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -17,18 +20,40 @@ export async function POST() {
     const message =
       error instanceof Error ? error.message : "Could not seed internal data.";
 
-    const schemaMissing =
-      message.includes("PGRST205") ||
-      message.includes("schema cache") ||
-      message.includes("Could not find the table");
+    const mongoSetupIssue =
+      message.includes("MongoDB Atlas is not configured") ||
+      message.includes("server selection") ||
+      message.includes("ENOTFOUND") ||
+      message.includes("authentication failed");
 
     return NextResponse.json(
       {
-        error: schemaMissing
-          ? "Supabase tables are not ready. Run supabase/schema.sql in the Supabase SQL Editor first."
+        error: mongoSetupIssue
+          ? "MongoDB Atlas is not ready. Add MONGODB_URI and MONGODB_DB, allow network access, then run npm run db:setup."
           : message,
       },
-      { status: schemaMissing ? 409 : 500 },
+      { status: mongoSetupIssue ? 409 : 500 },
+    );
+  }
+}
+
+export async function DELETE() {
+  if (!(await isAdminAuthenticated())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const removed = await clearRealisticInternalData();
+    return NextResponse.json({ ok: true, removed });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Could not clear internal demo data.",
+      },
+      { status: 500 },
     );
   }
 }
