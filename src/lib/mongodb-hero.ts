@@ -6,6 +6,7 @@ import {
   getMongoDatabase,
   isMongoDatabaseConfigured,
 } from "@/lib/mongodb";
+import { getDemoModeEnabled } from "@/lib/demo-mode";
 
 export type HeroSlideWriteInput = Omit<HeroSlideConfig, "id"> & {
   isDemo?: boolean;
@@ -52,7 +53,19 @@ export async function listHeroSlides(options?: {
   if (!isHeroDatabaseConfigured()) return [];
 
   const db = await getMongoDatabase();
-  const filter = options?.enabledOnly ? { enabled: true } : {};
+  const demoModeEnabled = await getDemoModeEnabled();
+  const filter = options?.enabledOnly
+    ? demoModeEnabled
+      ? {
+          $or: [
+            { isDemo: true },
+            { isDemo: { $ne: true }, enabled: true },
+          ],
+        }
+      : { isDemo: { $ne: true }, enabled: true }
+    : demoModeEnabled
+      ? {}
+      : { isDemo: { $ne: true } };
 
   const rows = await db
     .collection<HeroSlideDocument>("heroSlides")
