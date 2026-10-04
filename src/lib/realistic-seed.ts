@@ -1,9 +1,30 @@
 import { isCloudinaryConfigured, uploadCloudinaryImage } from "@/lib/cloudinary";
-import { createAnnouncement, listAnnouncements } from "@/lib/mongodb-announcements";
-import { createHeroSlide, listHeroSlides } from "@/lib/mongodb-hero";
-import { createOrder, listOrders } from "@/lib/mongodb-orders";
-import { createProduct, listProducts, type ProductWriteInput } from "@/lib/mongodb-products";
-import { createTestimonial, listAllTestimonials } from "@/lib/mongodb-testimonials";
+import {
+  createAnnouncement,
+  deleteDemoAnnouncements,
+  listAnnouncements,
+} from "@/lib/mongodb-announcements";
+import {
+  createHeroSlide,
+  deleteDemoHeroSlides,
+  listHeroSlides,
+} from "@/lib/mongodb-hero";
+import {
+  createOrder,
+  deleteDemoOrders,
+  listOrders,
+} from "@/lib/mongodb-orders";
+import {
+  createProduct,
+  deleteDemoProducts,
+  listProducts,
+  type ProductWriteInput,
+} from "@/lib/mongodb-products";
+import {
+  createTestimonial,
+  deleteDemoTestimonials,
+  listAllTestimonials,
+} from "@/lib/mongodb-testimonials";
 import type { Product } from "@/types/product";
 
 const SEED_TAG = "[KLEID_INTERNAL_SEED_V1]";
@@ -578,5 +599,25 @@ export async function seedRealisticInternalData() {
       skipped: announcements.skippedCount,
     },
     warnings: productResult.warnings,
+  };
+}
+
+
+export async function clearRealisticInternalData() {
+  const [products, orders, testimonials, hero, announcements] =
+    await Promise.all([
+      deleteDemoProducts(),
+      deleteDemoOrders(),
+      deleteDemoTestimonials(),
+      deleteDemoHeroSlides(),
+      deleteDemoAnnouncements(),
+    ]);
+
+  return {
+    products: products.deletedCount,
+    orders: orders.deletedCount,
+    testimonials: testimonials.deletedCount,
+    hero: hero.deletedCount,
+    announcements: announcements.deletedCount,
   };
 }
