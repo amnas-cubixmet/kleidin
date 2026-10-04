@@ -125,9 +125,10 @@ export function AdminDataSetupManager() {
             Before running
           </strong>
           <p className="mt-1.5 text-[9px] leading-5 text-[#7b6328]">
-            Run <code>supabase/schema.sql</code> in MongoDB Atlas SQL Editor and add
+            Add <code>MONGODB_URI</code> and <code>MONGODB_DB</code> to
+            <code> .env.local</code>, run <code>npm run db:setup</code>, and add
             all three Cloudinary environment variables. Running this again is
-            safe — known seed records are skipped instead of duplicated.
+            safe — known demo records are skipped instead of duplicated.
           </p>
         </div>
 
