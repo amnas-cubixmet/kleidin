@@ -1,9 +1,9 @@
 import { isCloudinaryConfigured, uploadCloudinaryImage } from "@/lib/cloudinary";
-import { createAnnouncement, listAnnouncements } from "@/lib/supabase-announcements";
-import { createHeroSlide, listHeroSlides } from "@/lib/supabase-hero";
-import { createOrder, listOrders } from "@/lib/supabase-orders";
-import { createProduct, listProducts, type ProductWriteInput } from "@/lib/supabase-products";
-import { createTestimonial, listAllTestimonials } from "@/lib/supabase-testimonials";
+import { createAnnouncement, listAnnouncements } from "@/lib/mongodb-announcements";
+import { createHeroSlide, listHeroSlides } from "@/lib/mongodb-hero";
+import { createOrder, listOrders } from "@/lib/mongodb-orders";
+import { createProduct, listProducts, type ProductWriteInput } from "@/lib/mongodb-products";
+import { createTestimonial, listAllTestimonials } from "@/lib/mongodb-testimonials";
 import type { Product } from "@/types/product";
 
 const SEED_TAG = "[KLEID_INTERNAL_SEED_V1]";
@@ -228,7 +228,7 @@ async function uploadSeedImage(seed: SeedProduct) {
     bytes: await response.arrayBuffer(),
     contentType: response.headers.get("content-type") || "image/jpeg",
     filename: seed.slug + ".jpg",
-    folder: "kleidin/internal-seed/" + seed.slug,
+    folder: "kleidin/demo/products/" + seed.slug,
   });
 }
 
@@ -320,6 +320,7 @@ async function seedProducts() {
       offerStartsAt: null,
       offerEndsAt: null,
       offerCountdown: false,
+      isDemo: true,
     };
 
     const product = await createProduct(input);
@@ -412,6 +413,7 @@ async function seedOrders(products: Product[]) {
       paymentStatus: payments[index],
       status: statuses[index],
       notes: `${SEED_TAG} Internal test order for admin workflow verification.`,
+      isDemo: true,
     });
   }
 
@@ -439,6 +441,7 @@ async function seedTestimonials(products: Product[]) {
       enabled: false,
       pending: true,
       submittedByCustomer: false,
+      isDemo: true,
     });
     createdCount += 1;
   }
@@ -472,6 +475,7 @@ async function seedHero(products: Product[]) {
       imagePosition: "center" as const,
       enabled: false,
       order: 100 + index * 10,
+      isDemo: true,
     },
   }));
 
@@ -494,6 +498,7 @@ async function seedAnnouncements() {
       linkHref: "/products",
       enabled: false,
       sortOrder: 100,
+      isDemo: true,
     },
     {
       text: "New essentials are being prepared for the next drop",
@@ -501,6 +506,7 @@ async function seedAnnouncements() {
       linkHref: "/products",
       enabled: false,
       sortOrder: 110,
+      isDemo: true,
     },
     {
       text: "Dealer ordering available for selected styles",
@@ -508,6 +514,7 @@ async function seedAnnouncements() {
       linkHref: "/wholesale",
       enabled: false,
       sortOrder: 120,
+      isDemo: true,
     },
   ];
 
