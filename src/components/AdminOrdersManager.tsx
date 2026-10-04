@@ -8,11 +8,8 @@ import {
   type AdminOrderItem,
   type AdminOrderStatus,
   type AdminPaymentStatus,
-  readAdminOrders,
-  writeAdminOrders,
   getOrderTotal,
   getOrderProfit,
-  ADMIN_ORDERS_UPDATED_EVENT,
 } from "@/lib/admin-orders";
 
 type ProductOption = {
@@ -108,15 +105,34 @@ export function AdminOrdersManager({
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const sync = () => setOrders(readAdminOrders());
-    sync();
-    window.addEventListener(ADMIN_ORDERS_UPDATED_EVENT, sync);
-    window.addEventListener("storage", sync);
+    let active = true;
+
+    fetch("/api/admin/orders", { cache: "no-store" })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Could not load orders.");
+        return (data.orders ?? []) as AdminOrder[];
+      })
+      .then((nextOrders) => {
+        if (active) setOrders(nextOrders);
+      })
+      .catch((loadError) => {
+        if (active) {
+          setError(
+            loadError instanceof Error ? loadError.message : "Could not load orders.",
+          );
+        }
+      })
+      .finally(() => {
+        if (active) setLoadingOrders(false);
+      });
+
     return () => {
-      window.removeEventListener(ADMIN_ORDERS_UPDATED_EVENT, sync);
-      window.removeEventListener("storage", sync);
+      active = false;
     };
   }, []);
 
@@ -183,11 +199,6 @@ export function AdminOrdersManager({
     );
   }, [orders, search]);
 
-  function persist(next: AdminOrder[]) {
-    setOrders(next);
-    writeAdminOrders(next);
-  }
-
   function updateItem(id: string, patch: Partial<OrderItemDraft>) {
     setItems((current) =>
       current.map((item) => (item.id === id ? { ...item, ...patch } : item)),
@@ -233,7 +244,7 @@ export function AdminOrdersManager({
     setError("");
   }
 
-  function saveOrder(event: React.FormEvent<HTMLFormElement>) {
+  async function saveOrder(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!customerName.trim() || !phone.trim()) {
@@ -275,12 +286,7 @@ export function AdminOrdersManager({
       return;
     }
 
-    const now = new Date().toISOString();
-    const order: AdminOrder = {
-      id: "order-" + Date.now(),
-      orderNumber: makeOrderNumber(),
-      createdAt: now,
-      updatedAt: now,
+    const payload = {
       customerName: customerName.trim(),
       phone: phone.trim(),
       addressLine1: addressLine1.trim(),
@@ -298,30 +304,32 @@ export function AdminOrdersManager({
       notes: notes.trim() || undefined,
     };
 
-    if (view === "edit" && orderId) {
-      const existing = orders.find((item) => item.id === orderId);
-      if (!existing) {
-        setError("Order not found.");
-        return;
-      }
+    try {
+      setSaving(true);
+      setError("");
 
-      const updated: AdminOrder = {
-        ...existing,
-        ...order,
-        id: existing.id,
-        orderNumber: existing.orderNumber,
-        createdAt: existing.createdAt,
-        updatedAt: now,
-      };
+      const endpoint =
+        view === "edit" && orderId
+          ? "/api/admin/orders/" + orderId
+          : "/api/admin/orders";
+      const response = await fetch(endpoint, {
+        method: view === "edit" ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not save order.");
 
-      persist(orders.map((item) => (item.id === orderId ? updated : item)));
-      router.push("/admin/orders/" + orderId);
-      return;
+      const saved = data.order as AdminOrder;
+      router.push("/admin/orders/" + saved.id);
+      router.refresh();
+    } catch (saveError) {
+      setError(
+        saveError instanceof Error ? saveError.message : "Could not save order.",
+      );
+    } finally {
+      setSaving(false);
     }
-
-    persist([order, ...orders]);
-    resetForm();
-    router.push("/admin/orders/" + order.id);
   }
 
   const inputClass =
@@ -551,7 +559,11 @@ export function AdminOrdersManager({
           />
         </div>
 
-        {filteredOrders.length ? (
+        {loadingOrders ? (
+          <div className="mt-5 grid min-h-[220px] place-items-center rounded-[16px] bg-[#f5f5f5] text-[11px] font-semibold text-[#68717b]">
+            Loading orders…
+          </div>
+        ) : filteredOrders.length ? (
           <div className="mt-4 grid gap-3">
             {filteredOrders.map((order) => (
               <article
