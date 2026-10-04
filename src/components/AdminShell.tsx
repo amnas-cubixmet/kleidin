@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { AdminNavigation } from "@/components/AdminNavigation";
 import { AdminGlobalSearch } from "@/components/AdminGlobalSearch";
-import { logoutAdmin } from "@/app/admin/actions";
 import { AdminViewportStyle } from "@/components/AdminViewportStyle";
 
 export function AdminShell({
@@ -58,7 +57,8 @@ export function AdminShell({
                       >
                         Store
                       </Link>
-                      <form action={logoutAdmin} className="shrink-0">
+                      <form action="/api/admin/session" method="post" className="shrink-0">
+                        <input type="hidden" name="intent" value="logout" />
                         <button
                           type="submit"
                           className="min-h-[44px] rounded-full border border-[#111827] bg-[#111827] px-4 text-[10px] font-bold !text-white transition hover:bg-[#202938]"
