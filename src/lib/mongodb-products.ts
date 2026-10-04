@@ -4,6 +4,7 @@ import type {
   ProductOfferType,
   ProductStatus,
 } from "@/types/product";
+import type { Filter } from "mongodb";
 import { deleteCloudinaryImages } from "@/lib/cloudinary";
 import {
   getMongoDatabase,
@@ -151,8 +152,8 @@ export function isProductDatabaseConfigured() {
 
 export async function listProducts(options?: { activeOnly?: boolean }) {
   const db = await getMongoDatabase();
-  const filter = options?.activeOnly
-    ? { status: { $ne: "draft" } }
+  const filter: Filter<ProductDocument> = options?.activeOnly
+    ? { status: { $ne: "draft" as const } }
     : {};
 
   const rows = await db
