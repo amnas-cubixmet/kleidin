@@ -4,7 +4,7 @@ import {
   getWholesaleProductBySlugFromDb,
   isProductDatabaseConfigured,
   listProducts,
-} from "@/lib/supabase-products";
+} from "@/lib/mongodb-products";
 
 export const getCatalogProducts = cache(async () => {
   if (!isProductDatabaseConfigured()) return [];
