@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Product } from "@/types/product";
 import { getProductOfferPrice, getProductOfferStatus } from "@/lib/product-offers";
-import { deleteDemoAdminProduct, readDemoAdminProducts } from "@/lib/demo-admin-products-client";
 
 function money(value?: number) {
   if (typeof value !== "number") return "—";
@@ -21,7 +20,6 @@ export function AdminProductDetail({ productId }: { productId: string }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
-  const [demoMode, setDemoMode] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -31,20 +29,10 @@ export function AdminProductDetail({ productId }: { productId: string }) {
       .then(async (response) => {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Could not load product.");
-        const apiProduct = data.product as Product;
-        if (data.demo) {
-          const localProduct =
-            readDemoAdminProducts().find((item) => item.id === productId) ??
-            apiProduct;
-          return { product: localProduct, demo: true };
-        }
-        return { product: apiProduct, demo: false };
+        return data.product as Product;
       })
       .then((value) => {
-        if (active) {
-          setProduct(value.product);
-          setDemoMode(value.demo);
-        }
+        if (active) setProduct(value);
       })
       .catch((error) => {
         if (active) setMessage(error instanceof Error ? error.message : "Could not load product.");
@@ -61,20 +49,13 @@ export function AdminProductDetail({ productId }: { productId: string }) {
   async function removeProduct() {
     if (!product) return;
     const confirmed = window.confirm(
-      "Delete this product? The database record and product images in storage will be removed.",
+      "Delete this product? The Supabase record and Cloudinary media will be removed.",
     );
     if (!confirmed) return;
 
     try {
       setDeleting(true);
       setMessage("");
-
-      if (demoMode) {
-        deleteDemoAdminProduct(product.id);
-        router.push("/admin/products");
-        router.refresh();
-        return;
-      }
 
       const response = await fetch("/api/admin/products/" + product.id, {
         method: "DELETE",
