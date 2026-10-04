@@ -2,25 +2,30 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import {
-  readTestimonials,
-  writeTestimonials,
-  TESTIMONIAL_UPDATED_EVENT,
-} from "@/lib/testimonials";
 import type { Testimonial } from "@/types/testimonial";
 
 export function AdminDashboardTestimonials() {
   const [items, setItems] = useState<Testimonial[]>([]);
+  const [busyId, setBusyId] = useState("");
 
   useEffect(() => {
-    const sync = () => setItems(readTestimonials());
-    sync();
-    window.addEventListener(TESTIMONIAL_UPDATED_EVENT, sync);
-    window.addEventListener("storage", sync);
+    let active = true;
+
+    fetch("/api/admin/testimonials", { cache: "no-store" })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Could not load reviews.");
+        return (data.testimonials ?? []) as Testimonial[];
+      })
+      .then((reviews) => {
+        if (active) setItems(reviews);
+      })
+      .catch(() => {
+        if (active) setItems([]);
+      });
 
     return () => {
-      window.removeEventListener(TESTIMONIAL_UPDATED_EVENT, sync);
-      window.removeEventListener("storage", sync);
+      active = false;
     };
   }, []);
 
@@ -32,12 +37,24 @@ export function AdminDashboardTestimonials() {
     [items],
   );
 
-  function approve(id: string) {
-    const next = items.map((item) =>
-      item.id === id ? { ...item, pending: false, enabled: true } : item,
-    );
-    setItems(next);
-    writeTestimonials(next);
+  async function approve(item: Testimonial) {
+    try {
+      setBusyId(item.id);
+      const response = await fetch("/api/admin/testimonials/" + item.id, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pending: false, enabled: true }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not approve review.");
+
+      const updated = data.testimonial as Testimonial;
+      setItems((current) =>
+        current.map((review) => (review.id === updated.id ? updated : review)),
+      );
+    } finally {
+      setBusyId("");
+    }
   }
 
   return (
@@ -47,11 +64,11 @@ export function AdminDashboardTestimonials() {
           <p className="text-[12px] font-semibold uppercase tracking-[.13em] text-[#7d8490]">
             Approval queue
           </p>
-          <h2 className="mt-1.5 text-[22px] sm:text-[24px] font-semibold tracking-[-.04em]">
+          <h2 className="mt-1.5 text-[22px] font-semibold tracking-[-.04em] sm:text-[24px]">
             Testimonials
           </h2>
         </div>
-        <div className="grid h-8 min-w-8 sm:h-9 sm:min-w-9 place-items-center rounded-full bg-[#eef2ff] px-2 text-[11px] font-bold text-[#001cac]">
+        <div className="grid h-9 min-w-9 place-items-center rounded-full bg-[#111111] px-2 text-[11px] font-bold text-white">
           {pending.length}
         </div>
       </div>
@@ -74,17 +91,18 @@ export function AdminDashboardTestimonials() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => approve(item.id)}
-                  className="shrink-0 rounded-full bg-[#001cac] min-h-[44px] px-4 py-2 text-[10px] font-bold text-white"
+                  disabled={busyId === item.id}
+                  onClick={() => void approve(item)}
+                  className="min-h-[44px] shrink-0 rounded-full bg-[#111111] px-4 py-2 text-[10px] font-bold text-white disabled:opacity-50"
                 >
-                  Approve
+                  {busyId === item.id ? "Saving…" : "Approve"}
                 </button>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="mt-3.5 rounded-[14px] bg-[#f7f8fb] px-4 py-4 sm:mt-4 sm:rounded-[15px] sm:py-5">
+        <div className="mt-4 rounded-[15px] bg-[#f7f8fb] px-4 py-5">
           <strong className="text-[10px] font-semibold">All caught up</strong>
           <p className="mt-1 text-[10px] leading-4 text-[#68717d]">
             New customer submissions will appear here for approval.
@@ -94,7 +112,7 @@ export function AdminDashboardTestimonials() {
 
       <Link
         href="/admin/testimonials"
-        className="mt-3.5 inline-flex min-h-[44px] items-center text-[10px] font-bold sm:mt-4 text-[#001cac]"
+        className="mt-4 inline-flex min-h-[44px] items-center text-[10px] font-bold text-[#111111]"
       >
         Manage testimonials
         <span className="ml-1.5" aria-hidden="true">→</span>
