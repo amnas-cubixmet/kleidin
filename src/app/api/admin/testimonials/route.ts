@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { listAllTestimonials } from "@/lib/supabase-testimonials";
+import { listAllTestimonials } from "@/lib/mongodb-testimonials";
 
 export const dynamic = "force-dynamic";
 
