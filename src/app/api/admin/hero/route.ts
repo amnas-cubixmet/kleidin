@@ -4,7 +4,7 @@ import {
   createHeroSlide,
   isHeroDatabaseConfigured,
   listHeroSlides,
-} from "@/lib/supabase-hero";
+} from "@/lib/mongodb-hero";
 import type {
   HeroCtaStyle,
   HeroImagePosition,
@@ -56,7 +56,7 @@ export async function GET() {
 
   if (!isHeroDatabaseConfigured()) {
     return NextResponse.json(
-      { configured: false, slides: [], error: "Supabase is not configured." },
+      { configured: false, slides: [], error: "MongoDB Atlas is not configured." },
       { status: 503 },
     );
   }
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
 
   if (!isHeroDatabaseConfigured()) {
     return NextResponse.json(
-      { error: "Supabase hero database is not configured." },
+      { error: "MongoDB Atlas hero database is not configured." },
       { status: 503 },
     );
   }
