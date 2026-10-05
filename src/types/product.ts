@@ -80,6 +80,9 @@ export type DbProduct = {
   stock: number;
   featured: boolean;
   featuredSortOrder?: number;
+  featuredAnimationEnabled?: boolean;
+  featuredImage?: string | null;
+  featuredImagePublicId?: string | null;
   status: ProductStatus;
   image_url: string | null;
   image_public_id?: string | null;
