@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Product } from "@/types/product";
 import { getProductWhatsappUrl } from "@/lib/format";
-import { localStoreSettings } from "@/data/store";
+import { useStoreSettings } from "@/components/StoreSettingsContext";
 
 type Props = {
   product: Product;
@@ -16,6 +16,7 @@ export function ProductActions({
   whatsappUrl,
   compact = false,
 }: Props) {
+  const settings = useStoreSettings();
   const [size, setSize] = useState(product.sizes[0] ?? "One size");
   const selectedColor = product.colors[0] ?? "Default";
   const disabled = product.status !== "active" || product.stock <= 0;
@@ -24,7 +25,7 @@ export function ProductActions({
     whatsappUrl ??
     getProductWhatsappUrl(
       product,
-      localStoreSettings.whatsappNumber,
+      settings.whatsappNumber,
       selectedColor,
       size,
     );
