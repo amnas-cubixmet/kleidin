@@ -39,6 +39,7 @@ export type Product = {
   wholesalePrice?: number;
   wholesaleMinOrder?: number;
   featured: boolean;
+  featuredSortOrder?: number;
   status: ProductStatus;
   image?: string;
   imagePublicId?: string;
@@ -75,6 +76,7 @@ export type DbProduct = {
   color_variants?: ProductColorVariant[] | null;
   stock: number;
   featured: boolean;
+  featuredSortOrder?: number;
   status: ProductStatus;
   image_url: string | null;
   image_public_id?: string | null;
