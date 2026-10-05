@@ -157,7 +157,7 @@ export function ProductDetailClient({
           </div>
 
           <div className="product-action-buttons product-detail-actions product-detail-whatsapp-actions">
-            {product.tryOnImage ? (
+            {product.featuredImage ? (
               <Link
                 href={"/try-on/" + product.slug}
                 className="button border border-black/10 bg-white !text-[#111111]"
@@ -186,7 +186,7 @@ export function ProductDetailClient({
           </div>
 
           <div className="product-notes">
-            {product.tryOnImage ? (
+            {product.featuredImage ? (
               <span>Live camera try-on available</span>
             ) : null}
             <span>Colour-specific product image</span>
