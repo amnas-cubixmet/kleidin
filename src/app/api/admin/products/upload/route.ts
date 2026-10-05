@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import {
   deleteCloudinaryImage,
+  getSignedCloudinaryUpload,
   isCloudinaryConfigured,
   uploadCloudinaryImage,
 } from "@/lib/cloudinary";
 import { isProductDatabaseConfigured } from "@/lib/mongodb-products";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 function slug(value: string) {
   return (
@@ -17,6 +19,38 @@ function slug(value: string) {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "") || "general"
   );
+}
+
+export async function GET(request: Request) {
+  if (!(await isAdminAuthenticated())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!isCloudinaryConfigured()) {
+    return NextResponse.json(
+      { error: "Cloudinary is not configured." },
+      { status: 503 },
+    );
+  }
+
+  const url = new URL(request.url);
+  const productId = url.searchParams.get("productId")?.trim() ?? "";
+  const group = url.searchParams.get("group")?.trim() || "general";
+
+  if (!productId || !/^[a-zA-Z0-9-]{8,100}$/.test(productId)) {
+    return NextResponse.json({ error: "Invalid product ID." }, { status: 400 });
+  }
+
+  const folder = `kleidin/products/${slug(productId)}/${slug(group)}`;
+
+  try {
+    return NextResponse.json(getSignedCloudinaryUpload(folder));
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Could not prepare image upload." },
+      { status: 500 },
+    );
+  }
 }
 
 export async function POST(request: Request) {
