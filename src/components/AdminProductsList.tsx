@@ -56,6 +56,9 @@ export function AdminProductsList() {
   }, [products, query]);
 
   const active = products.filter((item) => item.status === "active").length;
+  const featured = products.filter(
+    (item) => item.featured && item.status === "active",
+  ).length;
   const wholesale = products.filter((item) => item.wholesaleEnabled).length;
   const lowStock = products.filter((item) => item.stock <= 10).length;
 
@@ -67,10 +70,11 @@ export function AdminProductsList() {
         </div>
       ) : null}
 
-      <section className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <section className="grid grid-cols-2 gap-2 sm:grid-cols-5">
         {[
           ["Products", products.length],
           ["Active", active],
+          ["Featured", featured],
           ["Wholesale", wholesale],
           ["Low stock", lowStock],
         ].map(([label, value]) => (
@@ -147,6 +151,11 @@ export function AdminProductsList() {
                       <span className="rounded-full bg-[#111111] px-2.5 py-1.5 text-[8px] font-bold text-white">
                         {product.status}
                       </span>
+                      {product.featured && product.status === "active" ? (
+                        <span className="rounded-full bg-[#e9edff] px-2.5 py-1.5 text-[8px] font-bold text-[#001cac]">
+                          Featured
+                        </span>
+                      ) : null}
                       {product.wholesaleEnabled ? (
                         <span className="rounded-full bg-[#efefef] px-2.5 py-1.5 text-[8px] font-bold text-[#444b54]">
                           Wholesale
@@ -218,7 +227,7 @@ export function AdminProductsList() {
             <div>
               <strong className="text-[13px] font-semibold">No products found</strong>
               <p className="mt-2 text-[10px] leading-5 text-[#68717b]">
-                Create the first product manually or load realistic internal demo products into MongoDB Atlas.
+                Add the first real product. Product data is stored in MongoDB Atlas and uploaded media is stored in Cloudinary.
               </p>
               <div className="mt-4 flex flex-wrap justify-center gap-2">
                 <Link
@@ -226,12 +235,6 @@ export function AdminProductsList() {
                   className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-[#111111] px-5 text-[10px] font-bold text-white"
                 >
                   + Add product
-                </Link>
-                <Link
-                  href="/admin/data-setup"
-                  className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-[#cfd4da] bg-white px-5 text-[10px] font-bold text-[#111111]"
-                >
-                  Load demo products
                 </Link>
               </div>
             </div>
