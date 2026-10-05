@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/types/product";
 import { formatPrice, getProductWhatsappUrl } from "@/lib/format";
-import { localStoreSettings } from "@/data/store";
+import { useStoreSettings } from "@/components/StoreSettingsContext";
 import { getProductOfferPrice, isProductOfferActive } from "@/lib/product-offers";
 
 function getOfferTimer(endAt: string | undefined, now: number) {
@@ -29,6 +29,7 @@ function getOfferTimer(endAt: string | undefined, now: number) {
 }
 
 export function ProductCard({ product }: { product: Product }) {
+  const settings = useStoreSettings();
   const variants = product.colorVariants ?? [];
   const [now, setNow] = useState(() => Date.now());
   const needsOfferClock = Boolean(
@@ -106,7 +107,7 @@ export function ProductCard({ product }: { product: Product }) {
 
   const whatsappHref = getProductWhatsappUrl(
     product,
-    localStoreSettings.whatsappNumber,
+    settings.whatsappNumber,
     selectedColor,
   );
 
