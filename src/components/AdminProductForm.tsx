@@ -598,13 +598,13 @@ export function AdminProductForm({
       })
       .filter((color) => Boolean(color.name));
 
-    const featuredImage =
+    const storefrontImage =
       form.image ||
       colorVariants.find((color) => color.images?.length)?.images?.[0] ||
       colorVariants.find((color) => color.image)?.image ||
       "";
 
-    if (form.featured && !featuredImage) {
+    if (form.featured && !storefrontImage) {
       setMessage("Add a product image before publishing this item as Featured.");
       return;
     }
@@ -644,8 +644,12 @@ export function AdminProductForm({
       colorVariants,
       description: form.description.trim(),
       featured: form.featured,
+      featuredAnimationEnabled:
+        form.featured && form.featuredAnimationEnabled,
+      featuredImage: form.featuredImage || null,
+      featuredImagePublicId: form.featuredImagePublicId || null,
       status: form.featured ? "active" : form.status,
-      image: featuredImage || null,
+      image: storefrontImage || null,
       imagePublicId: form.imagePublicId || null,
       tryOnImage: form.tryOnImage || null,
       tryOnImagePublicId: form.tryOnImagePublicId || null,
@@ -1334,6 +1338,9 @@ export function AdminProductForm({
                 setForm((current) => ({
                   ...current,
                   featured: nextFeatured,
+                  featuredAnimationEnabled: nextFeatured
+                    ? current.featuredAnimationEnabled
+                    : false,
                   status: nextFeatured ? "active" : current.status,
                 }));
                 setMessage("");
@@ -1348,6 +1355,86 @@ export function AdminProductForm({
             </span>
           </label>
         </div>
+
+        {form.featured ? (
+          <div className="mt-4 rounded-[16px] border border-[#d9dde3] bg-[#f8f9fb] p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#001cac]">
+                  Featured animation
+                </p>
+                <strong className="mt-1 block text-[13px] font-semibold text-[#20242a]">
+                  Use this product in the animated Featured section
+                </strong>
+                <span className="mt-1 block text-[9px] leading-4 text-[#737b86]">
+                  This option is available only while Featured is ON.
+                </span>
+              </div>
+
+              <button
+                type="button"
+                role="switch"
+                aria-checked={form.featuredAnimationEnabled}
+                onClick={() =>
+                  update(
+                    "featuredAnimationEnabled",
+                    !form.featuredAnimationEnabled,
+                  )
+                }
+                className={
+                  "relative h-[34px] w-[62px] shrink-0 rounded-full transition " +
+                  (form.featuredAnimationEnabled
+                    ? "bg-[#111111]"
+                    : "bg-[#d8dce2]")
+                }
+              >
+                <span
+                  className={
+                    "absolute top-[4px] h-[26px] w-[26px] rounded-full bg-white shadow-sm transition " +
+                    (form.featuredAnimationEnabled
+                      ? "left-[32px]"
+                      : "left-[4px]")
+                  }
+                />
+              </button>
+            </div>
+
+            {form.featuredAnimationEnabled ? (
+              <div className="mt-4">
+                <span className={label}>Animation image</span>
+                <label className="flex min-h-[92px] cursor-pointer items-center justify-center rounded-[14px] border border-dashed border-[#bfc5cd] bg-white px-4 text-center text-[10px] font-semibold text-[#555e69]">
+                  {uploading === "featuredImage"
+                    ? "Uploading directly to Cloudinary…"
+                    : "Upload Featured animation image · product image is used if left empty"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    disabled={Boolean(uploading)}
+                    onChange={(event) => void uploadMain(event, "featuredImage")}
+                  />
+                </label>
+
+                {form.featuredImage ? (
+                  <div className="mt-2 overflow-hidden rounded-[12px] border border-[#d9dde3] bg-white">
+                    <img
+                      src={form.featuredImage}
+                      alt="Featured animation"
+                      className="aspect-[16/10] w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => void removeMainImage("featuredImage")}
+                      className="min-h-[42px] w-full border-t border-[#e2e5e9] bg-white text-[9px] font-bold text-[#a33d3d]"
+                    >
+                      Remove animation image
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </section>
 
       {message ? (
