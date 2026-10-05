@@ -65,15 +65,15 @@ export function TryOnCamera({ product }: { product: Product }) {
     return () => stopCamera();
   }, [stopCamera]);
 
-  if (!product.tryOnImage) {
+  if (!product.featuredImage) {
     return (
       <main className="mx-auto min-h-[70svh] max-w-[760px] px-4 py-10">
         <div className="rounded-[22px] border border-black/10 bg-white p-6 text-center">
           <h1 className="text-[28px] font-semibold tracking-[-.04em]">
-            Try-on image unavailable
+            Try-on unavailable
           </h1>
           <p className="mt-2 text-[12px] text-black/55">
-            This product does not have a transparent try-on mask yet.
+            This product does not have a transparent animation image available.
           </p>
           <Link
             href={"/products/" + product.slug}
@@ -141,7 +141,7 @@ export function TryOnCamera({ product }: { product: Product }) {
 
             {active ? (
               <img
-                src={product.tryOnImage}
+                src={product.featuredImage}
                 alt={product.name + " virtual try-on overlay"}
                 draggable={false}
                 className="pointer-events-none absolute left-1/2 top-1/2 max-h-none max-w-none select-none object-contain"
