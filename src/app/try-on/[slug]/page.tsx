@@ -16,7 +16,7 @@ export default async function TryOnPage({ params }: TryOnPageProps) {
   const { slug } = await params;
   const product = await getCatalogProductBySlug(slug);
 
-  if (!product || !product.tryOnImage || product.status === "draft") {
+  if (!product || !product.featuredImage || product.status === "draft") {
     notFound();
   }
 
