@@ -4,19 +4,13 @@ import { HomeProductCatalog } from "@/components/HomeProductCatalog";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { TopFashionHero } from "@/components/TopFashionHero";
 import { ProductActions } from "@/components/ProductActions";
-import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { formatPrice } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
-import { listHeroSlides } from "@/lib/mongodb-hero";
-import { getStoreSettings } from "@/lib/site-settings";
+import { localStoreSettings as settings } from "@/data/store";
+import { heroSlides } from "@/data/hero-slides";
 
-export const dynamic = "force-dynamic";
-export default async function Home() {
-  const [products, heroSlides, settings] = await Promise.all([
-    getCatalogProducts(),
-    listHeroSlides({ enabledOnly: true }).catch(() => []),
-    getStoreSettings(),
-  ]);
+export default function Home() {
+  const products = getCatalogProducts();
   const featured = products
     .filter(
       (product) => product.featured && product.status === "active",
@@ -149,11 +143,6 @@ export default async function Home() {
               </div>
             </section>
           ) : null}
-
-          <TestimonialsSection
-            eyebrow={settings.homeTestimonialsEyebrow}
-            title={settings.homeTestimonialsTitle}
-          />
         </>
       ) : (
         <>
@@ -187,11 +176,6 @@ export default async function Home() {
               ))}
             </div>
           </section>
-
-          <TestimonialsSection
-            eyebrow={settings.homeTestimonialsEyebrow}
-            title={settings.homeTestimonialsTitle}
-          />
         </>
       )}
 
