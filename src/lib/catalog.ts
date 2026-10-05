@@ -1,39 +1,24 @@
-import { cache } from "react";
-import {
-  getProductBySlugFromDb,
-  getWholesaleProductBySlugFromDb,
-  isProductDatabaseConfigured,
-  listProducts,
-} from "@/lib/mongodb-products";
+import { products } from "@/data/products";
 
-export const getCatalogProducts = cache(async () => {
-  if (!isProductDatabaseConfigured()) return [];
+export function getCatalogProducts() {
+  return products.filter((product) => product.status !== "draft");
+}
 
-  try {
-    return await listProducts({ activeOnly: true });
-  } catch {
-    // Public storefront must remain available even while the database schema
-    // is being created, migrated, or temporarily unavailable.
-    return [];
-  }
-});
+export function getCatalogProductBySlug(slug: string) {
+  return (
+    products.find(
+      (product) => product.slug === slug && product.status !== "draft",
+    ) ?? null
+  );
+}
 
-export const getCatalogProductBySlug = cache(async (slug: string) => {
-  if (!isProductDatabaseConfigured()) return null;
-
-  try {
-    return await getProductBySlugFromDb(slug);
-  } catch {
-    return null;
-  }
-});
-
-export const getWholesaleProductBySlug = cache(async (slug: string) => {
-  if (!isProductDatabaseConfigured()) return null;
-
-  try {
-    return await getWholesaleProductBySlugFromDb(slug);
-  } catch {
-    return null;
-  }
-});
+export function getWholesaleProductBySlug(slug: string) {
+  return (
+    products.find(
+      (product) =>
+        product.wholesaleEnabled &&
+        (product.wholesaleSlug ?? `${product.slug}-dealer`) === slug &&
+        product.status !== "draft",
+    ) ?? null
+  );
+}
