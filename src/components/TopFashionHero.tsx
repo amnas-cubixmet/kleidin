@@ -149,9 +149,11 @@ export function TopFashionHero({
   const current = slides[index] ?? slides[0];
 
   useEffect(() => {
-    // Resolve scheduled slides once after hydration. Avoid periodically changing
-    // the set of rendered slide children; countdown timing is handled separately.
-    setScheduleNow(Date.now());
+    const syncSchedule = () => setScheduleNow(Date.now());
+    syncSchedule();
+
+    const timer = window.setInterval(syncSchedule, 30000);
+    return () => window.clearInterval(timer);
   }, []);
 
   useEffect(() => {
