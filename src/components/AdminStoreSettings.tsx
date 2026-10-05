@@ -9,11 +9,19 @@ const emptySettings: StoreSettings = {
   facebookUrl: "",
   supportEmail: "",
   footerTagline: "",
+  homeCatalogEyebrow: "",
+  homeCatalogTitle: "",
   homeBrandEyebrow: "",
   homeBrandTitle: "",
+  homeAboutButtonLabel: "",
   homeDealersEyebrow: "",
   homeDealersTitle: "",
   homeDealersBody: "",
+  homeDealersButtonLabel: "",
+  homeDealerTags: [],
+  homeSpotlightBadge: "",
+  homeTestimonialsEyebrow: "",
+  homeTestimonialsTitle: "",
   aboutHeroEyebrow: "",
   aboutHeroTitle: "",
   aboutHeroLead: "",
@@ -31,6 +39,8 @@ const emptySettings: StoreSettings = {
   aboutFutureEyebrow: "",
   aboutFutureTitle: "",
   aboutFutureBody: "",
+  aboutShopButtonLabel: "",
+  aboutWhatsappButtonLabel: "",
 };
 
 export function AdminStoreSettings() {
@@ -164,12 +174,24 @@ export function AdminStoreSettings() {
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <label>
+            <span className={label}>Catalog eyebrow</span>
+            <input className={field} value={settings.homeCatalogEyebrow} onChange={(e) => update("homeCatalogEyebrow", e.target.value)} />
+          </label>
+          <label>
+            <span className={label}>Catalog title</span>
+            <input className={field} value={settings.homeCatalogTitle} onChange={(e) => update("homeCatalogTitle", e.target.value)} />
+          </label>
+          <label>
             <span className={label}>Brand eyebrow</span>
             <input className={field} value={settings.homeBrandEyebrow} onChange={(e) => update("homeBrandEyebrow", e.target.value)} />
           </label>
           <label>
             <span className={label}>Brand title</span>
             <textarea className={area} value={settings.homeBrandTitle} onChange={(e) => update("homeBrandTitle", e.target.value)} />
+          </label>
+          <label>
+            <span className={label}>About button label</span>
+            <input className={field} value={settings.homeAboutButtonLabel} onChange={(e) => update("homeAboutButtonLabel", e.target.value)} />
           </label>
           <label>
             <span className={label}>Dealer eyebrow</span>
@@ -182,6 +204,36 @@ export function AdminStoreSettings() {
           <label className="sm:col-span-2">
             <span className={label}>Dealer description</span>
             <textarea className={area} value={settings.homeDealersBody} onChange={(e) => update("homeDealersBody", e.target.value)} />
+          </label>
+          <label>
+            <span className={label}>Dealer button label</span>
+            <input className={field} value={settings.homeDealersButtonLabel} onChange={(e) => update("homeDealersButtonLabel", e.target.value)} />
+          </label>
+          <label>
+            <span className={label}>Dealer tags</span>
+            <input
+              className={field}
+              value={settings.homeDealerTags.join(", ")}
+              onChange={(e) =>
+                update(
+                  "homeDealerTags",
+                  e.target.value.split(",").map((item) => item.trim()).filter(Boolean),
+                )
+              }
+              placeholder="Retailers, Resellers, Repeat orders"
+            />
+          </label>
+          <label>
+            <span className={label}>Spotlight badge</span>
+            <input className={field} value={settings.homeSpotlightBadge} onChange={(e) => update("homeSpotlightBadge", e.target.value)} />
+          </label>
+          <label>
+            <span className={label}>Testimonials eyebrow</span>
+            <input className={field} value={settings.homeTestimonialsEyebrow} onChange={(e) => update("homeTestimonialsEyebrow", e.target.value)} />
+          </label>
+          <label className="sm:col-span-2">
+            <span className={label}>Testimonials title</span>
+            <input className={field} value={settings.homeTestimonialsTitle} onChange={(e) => update("homeTestimonialsTitle", e.target.value)} />
           </label>
         </div>
       </section>
@@ -237,6 +289,8 @@ export function AdminStoreSettings() {
           <label><span className={label}>Future eyebrow</span><input className={field} value={settings.aboutFutureEyebrow} onChange={(e) => update("aboutFutureEyebrow", e.target.value)} /></label>
           <label className="sm:col-span-2"><span className={label}>Future title</span><textarea className={area} value={settings.aboutFutureTitle} onChange={(e) => update("aboutFutureTitle", e.target.value)} /></label>
           <label className="sm:col-span-2"><span className={label}>Future body</span><textarea className={area} value={settings.aboutFutureBody} onChange={(e) => update("aboutFutureBody", e.target.value)} /></label>
+          <label><span className={label}>Shop button label</span><input className={field} value={settings.aboutShopButtonLabel} onChange={(e) => update("aboutShopButtonLabel", e.target.value)} /></label>
+          <label><span className={label}>WhatsApp button label</span><input className={field} value={settings.aboutWhatsappButtonLabel} onChange={(e) => update("aboutWhatsappButtonLabel", e.target.value)} /></label>
         </div>
       </section>
 
