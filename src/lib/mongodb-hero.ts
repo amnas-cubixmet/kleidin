@@ -1,5 +1,6 @@
 import "server-only";
 
+import { randomUUID } from "node:crypto";
 import { ObjectId, type Document } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import type {
@@ -120,6 +121,7 @@ export async function createHeroSlide(input: Record<string, unknown>) {
   const db = await getDb();
   const now = new Date();
   const result = await db.collection("heroSlides").insertOne({
+    id: randomUUID(),
     ...fields(input),
     createdAt: now,
     updatedAt: now,
