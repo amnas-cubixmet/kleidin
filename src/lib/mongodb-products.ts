@@ -273,6 +273,9 @@ export async function updateFeaturedProducts(
             update: {
               $set: {
                 featured: publishAsFeatured,
+                featuredAnimationEnabled: publishAsFeatured
+                  ? Boolean(product.featuredAnimationEnabled)
+                  : false,
                 status: publishAsFeatured ? "active" : product.status,
                 featuredSortOrder: Math.max(
                   1,
