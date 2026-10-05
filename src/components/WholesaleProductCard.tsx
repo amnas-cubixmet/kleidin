@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/types/product";
 import { getWholesaleProductWhatsappUrl } from "@/lib/format";
+import { getProductPrimaryImage } from "@/lib/product-images";
 
 export function WholesaleProductCard({
   product,
@@ -14,6 +15,7 @@ export function WholesaleProductCard({
   const minOrder = product.wholesaleMinOrder ?? 12;
   const enquiryHref = getWholesaleProductWhatsappUrl(product, whatsappNumber);
   const wholesaleSlug = product.wholesaleSlug ?? `${product.slug}-dealer`;
+  const productImage = getProductPrimaryImage(product);
 
   return (
     <article className="product-card product-card-refined dealer-unified-card">
@@ -23,9 +25,9 @@ export function WholesaleProductCard({
           className="product-card-image-link"
           aria-label={product.name}
         >
-          {product.image ? (
+          {productImage ? (
             <Image
-              src={product.image}
+              src={productImage}
               alt={product.name}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 980px) 33vw, 25vw"
