@@ -19,8 +19,6 @@ export const localStoreSettings: StoreSettings = {
   homeDealersButtonLabel: "Explore dealers",
   homeDealerTags: ["Retailers", "Resellers", "Repeat orders"],
   homeSpotlightBadge: "Most loved",
-  homeTestimonialsEyebrow: "CUSTOMER STORIES",
-  homeTestimonialsTitle: "Worn. Lived in. Repeated.",
   aboutHeroEyebrow: "KLEID.IN / ABOUT",
   aboutHeroTitle: "Clothes for real rotation.",
   aboutHeroLead:
