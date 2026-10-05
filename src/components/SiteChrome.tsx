@@ -1,31 +1,19 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { localStoreSettings } from "@/data/store";
 import type { Product } from "@/types/product";
-import type { StoreSettings } from "@/types/commerce";
-import type { Announcement } from "@/types/announcement";
-import { StoreSettingsProvider } from "@/components/StoreSettingsContext";
 
 export function SiteChrome({
   children,
   products,
-  settings,
-  announcements,
 }: {
   children: React.ReactNode;
   products: Product[];
-  settings: StoreSettings;
-  announcements: Announcement[];
 }) {
-  const pathname = usePathname();
-  const isAdmin = pathname.startsWith("/admin");
-
   useEffect(() => {
-    if (isAdmin) return;
-
     let frame = 0;
 
     const lockViewportX = () => {
@@ -46,15 +34,13 @@ export function SiteChrome({
       window.cancelAnimationFrame(frame);
       window.removeEventListener("scroll", lockViewportX);
     };
-  }, [isAdmin]);
-
-  if (isAdmin) return <>{children}</>;
+  }, []);
 
   return (
-    <StoreSettingsProvider settings={settings}>
-      <Header products={products} settings={settings} announcements={announcements} />
+    <>
+      <Header products={products} settings={localStoreSettings} />
       <main>{children}</main>
-      <Footer settings={settings} />
-    </StoreSettingsProvider>
+      <Footer settings={localStoreSettings} />
+    </>
   );
 }
