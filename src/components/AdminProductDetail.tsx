@@ -350,11 +350,19 @@ export function AdminProductDetail({ productId }: { productId: string }) {
     event.target.value = "";
     if (!file) return;
 
+    const previous = draft?.image;
+    const previewUrl = URL.createObjectURL(file);
+    patch({ image: previewUrl });
+
     try {
       const url = await uploadFile(file, "main");
       patch({ image: url });
+      setMessage("Main image uploaded. Save product to publish the change.");
     } catch (error) {
+      patch({ image: previous });
       setMessage(error instanceof Error ? error.message : "Image upload failed.");
+    } finally {
+      URL.revokeObjectURL(previewUrl);
     }
   }
 
@@ -363,11 +371,19 @@ export function AdminProductDetail({ productId }: { productId: string }) {
     event.target.value = "";
     if (!file) return;
 
+    const previous = draft?.featuredImage;
+    const previewUrl = URL.createObjectURL(file);
+    patch({ featuredImage: previewUrl });
+
     try {
       const url = await uploadFile(file, "animation");
       patch({ featuredImage: url });
+      setMessage("Animation image uploaded. Save product to publish the change.");
     } catch (error) {
+      patch({ featuredImage: previous });
       setMessage(error instanceof Error ? error.message : "Image upload failed.");
+    } finally {
+      URL.revokeObjectURL(previewUrl);
     }
   }
 
@@ -379,22 +395,50 @@ export function AdminProductDetail({ productId }: { productId: string }) {
     event.target.value = "";
     if (!files.length) return;
 
+    const previewUrls = files.map((file) => URL.createObjectURL(file));
+
+    updateVariant(index, (variant) => {
+      const images = [...(variant.images ?? []), ...previewUrls];
+      return {
+        ...variant,
+        image: images[0],
+        images,
+      };
+    });
+
     try {
-      const urls: string[] = [];
+      const uploadedUrls: string[] = [];
       for (const file of files) {
-        urls.push(await uploadFile(file, "variant-" + index));
+        uploadedUrls.push(await uploadFile(file, "variant-" + index));
       }
 
       updateVariant(index, (variant) => {
-        const images = [...(variant.images ?? []), ...urls];
+        const images = (variant.images ?? []).map((url) => {
+          const previewIndex = previewUrls.indexOf(url);
+          return previewIndex >= 0 ? uploadedUrls[previewIndex] : url;
+        });
+
         return {
           ...variant,
           image: images[0],
           images,
         };
       });
+      setMessage("Colour image uploaded. Save product to publish the change.");
     } catch (error) {
+      updateVariant(index, (variant) => {
+        const images = (variant.images ?? []).filter(
+          (url) => !previewUrls.includes(url),
+        );
+        return {
+          ...variant,
+          image: images[0],
+          images,
+        };
+      });
       setMessage(error instanceof Error ? error.message : "Image upload failed.");
+    } finally {
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
     }
   }
 
@@ -807,12 +851,10 @@ export function AdminProductDetail({ productId }: { productId: string }) {
                               key={url + imageIndex}
                               className="relative h-24 w-20 shrink-0 overflow-hidden rounded-xl bg-white ring-1 ring-black/5"
                             >
-                              <Image
+                              <img
                                 src={url}
                                 alt=""
-                                fill
-                                sizes="80px"
-                                className="object-cover"
+                                className="h-full w-full object-cover"
                               />
                               <button
                                 type="button"
@@ -1042,12 +1084,10 @@ export function AdminProductDetail({ productId }: { productId: string }) {
                   {draft.featuredImage ? (
                     <div className="mt-2 flex items-center gap-3">
                       <div className="relative h-24 w-24 overflow-hidden rounded-xl bg-[#f4f4f2]">
-                        <Image
+                        <img
                           src={draft.featuredImage}
                           alt=""
-                          fill
-                          sizes="96px"
-                          className="object-contain p-1"
+                          className="h-full w-full object-contain p-1"
                         />
                       </div>
                       <button
@@ -1095,12 +1135,10 @@ export function AdminProductDetail({ productId }: { productId: string }) {
           <section className="overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
             <div className="relative aspect-[4/5] bg-[#f1f1ef]">
               {draft.image ? (
-                <Image
+                <img
                   src={draft.image}
                   alt={draft.name}
-                  fill
-                  sizes="320px"
-                  className="object-cover"
+                  className="h-full w-full object-cover"
                 />
               ) : (
                 <div className="grid h-full place-items-center text-xs text-black/40">
