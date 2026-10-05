@@ -86,6 +86,10 @@ try {
       { key: { id: 1 }, unique: true, name: "announcements_id_unique" },
       { key: { enabled: 1, sortOrder: 1 }, name: "announcements_enabled_sort" },
     ]),
+    db.collection("siteSettings").createIndex(
+      { key: 1 },
+      { unique: true, name: "site_settings_key_unique" },
+    ),
   ]);
 
   await db.command({ ping: 1 });
