@@ -39,6 +39,9 @@ type ProductFormState = {
   sizes: string[];
   description: string;
   featured: boolean;
+  featuredAnimationEnabled: boolean;
+  featuredImage: string;
+  featuredImagePublicId: string;
   status: ProductStatus;
   image: string;
   imagePublicId: string;
@@ -92,6 +95,9 @@ function emptyForm(): ProductFormState {
     sizes: [...STANDARD_SIZE_OPTIONS],
     description: "",
     featured: false,
+    featuredAnimationEnabled: false,
+    featuredImage: "",
+    featuredImagePublicId: "",
     status: "draft",
     image: "",
     imagePublicId: "",
@@ -138,6 +144,9 @@ function fromProduct(product: Product): ProductFormState {
     sizes: [...product.sizes],
     description: product.description,
     featured: product.featured,
+    featuredAnimationEnabled: Boolean(product.featuredAnimationEnabled),
+    featuredImage: product.featuredImage ?? "",
+    featuredImagePublicId: product.featuredImagePublicId ?? "",
     status: product.status,
     image: product.image ?? "",
     imagePublicId: product.imagePublicId ?? "",
