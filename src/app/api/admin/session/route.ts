@@ -8,6 +8,7 @@ import {
 } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 function redirectTo(request: Request, path: string) {
   return NextResponse.redirect(new URL(path, request.url), 303);
