@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WholesaleProductCard } from "@/components/WholesaleProductCard";
 import { getCatalogProducts } from "@/lib/catalog";
-import { localStoreSettings as settings } from "@/data/store";
+import { getStoreSettings } from "@/lib/site-settings";
 import { getWholesaleWhatsappUrl } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -11,8 +11,13 @@ export const metadata: Metadata = {
     "Dealer enquiries for KLEID.IN products, minimum quantities and current availability.",
 };
 
-export default function WholesalePage() {
-  const products = getCatalogProducts();
+export const dynamic = "force-dynamic";
+
+export default async function WholesalePage() {
+  const [products, settings] = await Promise.all([
+    getCatalogProducts(),
+    getStoreSettings(),
+  ]);
 
   const activeProducts = products.filter((product) => product.status !== "draft");
   const whatsappHref = getWholesaleWhatsappUrl(settings.whatsappNumber);
