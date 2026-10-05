@@ -7,12 +7,20 @@ export const localStoreSettings: StoreSettings = {
   facebookUrl: publicEnv.facebookUrl,
   supportEmail: publicEnv.supportEmail,
   footerTagline: "Essentials without noise. Unisex clothing for everyday rotation.",
+  homeCatalogEyebrow: "CATALOG",
+  homeCatalogTitle: "Products",
   homeBrandEyebrow: "KLEID.IN",
   homeBrandTitle: "ONE WARDROBE.\nNO LABELS.",
+  homeAboutButtonLabel: "About us",
   homeDealersEyebrow: "DEALERS",
   homeDealersTitle: "Stock KLEID.IN.",
   homeDealersBody:
     "For retailers, resellers and independent stores. Ask for current availability, minimum quantities and dealer ordering.",
+  homeDealersButtonLabel: "Explore dealers",
+  homeDealerTags: ["Retailers", "Resellers", "Repeat orders"],
+  homeSpotlightBadge: "Most loved",
+  homeTestimonialsEyebrow: "CUSTOMER STORIES",
+  homeTestimonialsTitle: "Worn. Lived in. Repeated.",
   aboutHeroEyebrow: "KLEID.IN / ABOUT",
   aboutHeroTitle: "Clothes for real rotation.",
   aboutHeroLead:
@@ -53,4 +61,6 @@ export const localStoreSettings: StoreSettings = {
     "We are building KLEID.IN as a focused everyday clothing brand.",
   aboutFutureBody:
     "The direction is simple: stronger core products, better fit choices and a cleaner way to shop directly with us.",
+  aboutShopButtonLabel: "Shop the collection",
+  aboutWhatsappButtonLabel: "Order on WhatsApp",
 };
