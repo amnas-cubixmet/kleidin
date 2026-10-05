@@ -209,20 +209,25 @@ export function AdminStoreSettings() {
             <span className={label}>Dealer button label</span>
             <input className={field} value={settings.homeDealersButtonLabel} onChange={(e) => update("homeDealersButtonLabel", e.target.value)} />
           </label>
-          <label>
+          <div className="sm:col-span-2">
             <span className={label}>Dealer tags</span>
-            <input
-              className={field}
-              value={settings.homeDealerTags.join(", ")}
-              onChange={(e) =>
-                update(
-                  "homeDealerTags",
-                  e.target.value.split(",").map((item) => item.trim()).filter(Boolean),
-                )
-              }
-              placeholder="Retailers, Resellers, Repeat orders"
-            />
-          </label>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {[0, 1, 2].map((index) => (
+                <input
+                  key={index}
+                  className={field}
+                  value={settings.homeDealerTags[index] ?? ""}
+                  onChange={(event) => {
+                    const next = [...settings.homeDealerTags];
+                    while (next.length <= index) next.push("");
+                    next[index] = event.target.value;
+                    update("homeDealerTags", next);
+                  }}
+                  placeholder={`Tag ${index + 1}`}
+                />
+              ))}
+            </div>
+          </div>
           <label>
             <span className={label}>Spotlight badge</span>
             <input className={field} value={settings.homeSpotlightBadge} onChange={(e) => update("homeSpotlightBadge", e.target.value)} />
