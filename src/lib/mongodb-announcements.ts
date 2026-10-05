@@ -91,7 +91,7 @@ export async function updateAnnouncement(
 ) {
   const db = await getMongoDatabase();
   const collection = db.collection<AnnouncementDocument>("announcements");
-  const existing = await collection.findOne({ id });
+  const existing = await collection.findOne({ id, isDemo: { $ne: true } });
   if (!existing) return null;
 
   const document: AnnouncementDocument = {
@@ -108,12 +108,12 @@ export async function updateAnnouncement(
     updatedAt: new Date().toISOString(),
   };
 
-  await collection.replaceOne({ id }, document);
+  await collection.replaceOne({ id, isDemo: { $ne: true } }, document);
   return toAnnouncement(document);
 }
 
 export async function deleteAnnouncement(id: string) {
   const db = await getMongoDatabase();
-  await db.collection<AnnouncementDocument>("announcements").deleteOne({ id });
+  await db.collection<AnnouncementDocument>("announcements").deleteOne({ id, isDemo: { $ne: true } });
 }
 
