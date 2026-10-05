@@ -6,11 +6,9 @@ import { AdminDashboardOrderMetrics } from "@/components/AdminDashboardOrderMetr
 import { AdminDashboardOrderActivity } from "@/components/AdminDashboardOrderActivity";
 import { AdminDashboardBestSellers } from "@/components/AdminDashboardBestSellers";
 import { AdminDashboardSalesChart } from "@/components/AdminDashboardSalesChart";
-import { AdminDemoModeControl } from "@/components/AdminDemoModeControl";
 import { requireAdmin } from "@/lib/admin-auth";
 import { listProducts } from "@/lib/mongodb-products";
 import { localStoreSettings } from "@/data/store";
-import { getDemoModeEnabled } from "@/lib/demo-mode";
 
 export const dynamic = "force-dynamic";
 
@@ -22,10 +20,7 @@ export const metadata: Metadata = {
 export default async function AdminDashboardPage() {
   await requireAdmin();
 
-  const [products, demoModeEnabled] = await Promise.all([
-    listProducts().catch(() => []),
-    getDemoModeEnabled(),
-  ]);
+  const products = await listProducts().catch(() => []);
   const totalStock = products.reduce((sum, product) => sum + product.stock, 0);
   const lowStock = products
     .filter((product) => product.stock <= 10)
@@ -36,7 +31,6 @@ export default async function AdminDashboardPage() {
       title="Dashboard"
       description="Sales, profit, manual orders, customers, inventory and customer trust in one place."
     >
-      <AdminDemoModeControl initialEnabled={demoModeEnabled} />
       <AdminDashboardOrderMetrics />
       <AdminDashboardSalesChart />
 
