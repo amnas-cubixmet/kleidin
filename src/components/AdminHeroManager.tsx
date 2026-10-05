@@ -248,31 +248,65 @@ export function AdminHeroManager() {
       setUploadingMedia(true);
       setMessage("");
 
-      const body = new FormData();
-      body.set("file", file);
-      body.set("heroId", selected.id);
+      if (!file.type.startsWith("image/")) {
+        throw new Error("Only image files are allowed.");
+      }
+      if (file.size > 12 * 1024 * 1024) {
+        throw new Error("Image must be 12 MB or smaller.");
+      }
 
-      const response = await fetch("/api/admin/hero/upload", {
-        method: "POST",
-        body,
-      });
-      const data = (await response.json()) as {
-        url?: string;
-        publicId?: string;
+      const signatureResponse = await fetch(
+        "/api/admin/hero/upload?heroId=" + encodeURIComponent(selected.id),
+        { cache: "no-store" },
+      );
+      const signatureData = (await signatureResponse.json()) as {
+        cloudName?: string;
+        apiKey?: string;
+        timestamp?: number;
+        folder?: string;
+        signature?: string;
         error?: string;
       };
 
-      if (!response.ok || !data.url || !data.publicId) {
-        throw new Error(data.error || "Could not upload hero image.");
+      if (
+        !signatureResponse.ok ||
+        !signatureData.cloudName ||
+        !signatureData.apiKey ||
+        !signatureData.timestamp ||
+        !signatureData.folder ||
+        !signatureData.signature
+      ) {
+        throw new Error(signatureData.error || "Could not prepare hero upload.");
+      }
+
+      const body = new FormData();
+      body.set("file", file);
+      body.set("api_key", signatureData.apiKey);
+      body.set("timestamp", String(signatureData.timestamp));
+      body.set("folder", signatureData.folder);
+      body.set("signature", signatureData.signature);
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/image/upload`,
+        { method: "POST", body },
+      );
+      const data = (await response.json()) as {
+        secure_url?: string;
+        public_id?: string;
+        error?: { message?: string };
+      };
+
+      if (!response.ok || !data.secure_url || !data.public_id) {
+        throw new Error(data.error?.message || "Could not upload hero image.");
       }
 
       const previousPublicId = selected.imagePublicId ?? "";
       update({
-        imageUrl: data.url,
-        imagePublicId: data.publicId,
+        imageUrl: data.secure_url,
+        imagePublicId: data.public_id,
       });
 
-      if (previousPublicId && previousPublicId !== data.publicId) {
+      if (previousPublicId && previousPublicId !== data.public_id) {
         await fetch("/api/admin/hero/upload", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -358,7 +392,7 @@ export function AdminHeroManager() {
 
         {!configured ? (
           <div className="mt-3 rounded-[14px] border border-[#e0c2c2] bg-[#fff6f6] p-3 text-[9px] leading-5 text-[#8a3636]">
-            Supabase is required for hero management.
+            MongoDB Atlas is required for hero management.
           </div>
         ) : null}
 
