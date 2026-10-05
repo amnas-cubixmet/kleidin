@@ -11,7 +11,6 @@ const links = [
   ["/admin/testimonials", "Testimonials", "Review and approve feedback"],
   ["/admin/hero", "Hero", "Storefront hero content"],
   ["/admin/announcements", "Announcements", "Create and schedule storefront announcement bars"],
-  ["/admin/data-setup", "Data Setup", "Load the full internal demo store into MongoDB Atlas"],
 ];
 
 export default async function AdminMorePage() {
