@@ -18,7 +18,7 @@ export default async function AdminProductsPage() {
     <AdminShell
       tone="monochrome"
       title="Products"
-      description="Manage retail pricing, optional wholesale pricing, stock, colours, media and product visibility."
+      description="Manage products, pricing, stock and Cloudinary media. Mark products Featured to control the homepage featured section."
       action={
         <Link
           href="/admin/products/new"
