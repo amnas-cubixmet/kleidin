@@ -3,8 +3,10 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getWholesaleProductBySlug } from "@/lib/catalog";
-import { localStoreSettings as settings } from "@/data/store";
+import { getStoreSettings } from "@/lib/site-settings";
 import { getWholesaleProductWhatsappUrl } from "@/lib/format";
+
+export const dynamic = "force-dynamic";
 
 type WholesaleProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -14,7 +16,7 @@ export async function generateMetadata({
   params,
 }: WholesaleProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = getWholesaleProductBySlug(slug);
+  const product = await getWholesaleProductBySlug(slug);
 
   if (!product) return { title: "Dealer product not found" };
 
@@ -28,7 +30,10 @@ export default async function WholesaleProductPage({
   params,
 }: WholesaleProductPageProps) {
   const { slug } = await params;
-  const product = getWholesaleProductBySlug(slug);
+  const [product, settings] = await Promise.all([
+    getWholesaleProductBySlug(slug),
+    getStoreSettings(),
+  ]);
 
   if (!product) notFound();
 
