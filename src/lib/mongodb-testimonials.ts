@@ -112,7 +112,7 @@ export async function updateTestimonialModeration(
   const row = await db
     .collection<TestimonialDocument>("testimonials")
     .findOneAndUpdate(
-      { id },
+      { id, isDemo: { $ne: true } },
       {
         $set: {
           enabled: values.enabled,
@@ -129,9 +129,9 @@ export async function updateTestimonialModeration(
 export async function deleteTestimonial(id: string) {
   const db = await getMongoDatabase();
   const collection = db.collection<TestimonialDocument>("testimonials");
-  const row = await collection.findOne({ id });
+  const row = await collection.findOne({ id, isDemo: { $ne: true } });
 
-  await collection.deleteOne({ id });
+  await collection.deleteOne({ id, isDemo: { $ne: true } });
 
   if (row?.productImagePublicId) {
     try {
