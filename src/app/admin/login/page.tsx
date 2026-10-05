@@ -45,10 +45,11 @@ export default async function AdminLoginPage({
 
           {setupMissing ? (
             <div className="mb-5 border border-[#e0b35a] bg-[#fff9eb] px-4 py-3 text-[9px] leading-4 text-[#6c4a0b]">
-              Admin login is not configured yet. For local development add
-              ADMIN_EMAIL and ADMIN_PASSWORD to{" "}
-              <code className="mx-1">.env.local</code>, then restart the dev
-              server. For production also add a long ADMIN_SESSION_SECRET.
+              Admin login is not configured yet. Locally, set ADMIN_EMAIL and
+              ADMIN_PASSWORD in <code className="mx-1">.env.local</code>.
+              On Vercel, add ADMIN_EMAIL, ADMIN_PASSWORD (or the password hash
+              variables) and a long ADMIN_SESSION_SECRET in Project Environment
+              Variables, then redeploy.
             </div>
           ) : null}
 
