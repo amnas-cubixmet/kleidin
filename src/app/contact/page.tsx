@@ -3,15 +3,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getWhatsappUrl } from "@/lib/format";
-import { localStoreSettings as settings } from "@/data/store";
+import { getStoreSettings } from "@/lib/site-settings";
 
 export const metadata: Metadata = {
   title: "Contact",
   description: "KLEID.IN product, sizing, order and dealer support.",
 };
 
-export default function ContactPage() {
-  const products = getCatalogProducts();
+export const dynamic = "force-dynamic";
+
+export default async function ContactPage() {
+  const [products, settings] = await Promise.all([
+    getCatalogProducts(),
+    getStoreSettings(),
+  ]);
 
   const whatsappHref = getWhatsappUrl(undefined, settings.whatsappNumber);
   const productImages = products
