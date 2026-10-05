@@ -177,9 +177,8 @@ function toDocument(
     featuredAnimationEnabled: input.featured
       ? Boolean(input.featuredAnimationEnabled)
       : false,
-    featuredImage: input.featuredImage ?? existing?.featuredImage ?? undefined,
-    featuredImagePublicId:
-      input.featuredImagePublicId ?? existing?.featuredImagePublicId ?? undefined,
+    featuredImage: input.featuredImage ?? undefined,
+    featuredImagePublicId: input.featuredImagePublicId ?? undefined,
     status: input.status,
     image: input.image ?? undefined,
     imagePublicId: input.imagePublicId ?? undefined,
