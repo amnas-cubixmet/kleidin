@@ -196,6 +196,33 @@ export async function getWholesaleProductBySlugFromDb(slug: string) {
   return row ? toProduct(row) : null;
 }
 
+export async function updateFeaturedProducts(
+  items: Array<{ id: string; featured: boolean; sortOrder: number }>,
+) {
+  const db = await getMongoDatabase();
+  const collection = db.collection<ProductDocument>("products");
+
+  if (items.length) {
+    await collection.bulkWrite(
+      items.map((item) => ({
+        updateOne: {
+          filter: { id: item.id, isDemo: { $ne: true } },
+          update: {
+            $set: {
+              featured: item.featured,
+              sortOrder: Math.max(1, Math.floor(item.sortOrder)),
+              updatedAt: new Date().toISOString(),
+            },
+          },
+        },
+      })),
+      { ordered: false },
+    );
+  }
+
+  return listProducts();
+}
+
 export async function createProduct(input: ProductWriteInput) {
   const db = await getMongoDatabase();
   const document = toDocument(input);
