@@ -52,7 +52,7 @@ export async function PATCH(request: Request) {
       items?: Array<{
         id?: unknown;
         featured?: unknown;
-        sortOrder?: unknown;
+        featuredSortOrder?: unknown;
       }>;
     };
 
@@ -67,8 +67,8 @@ export async function PATCH(request: Request) {
       .map((item, index) => ({
         id: typeof item.id === "string" ? item.id.trim() : "",
         featured: item.featured === true,
-        sortOrder: Number.isFinite(Number(item.sortOrder))
-          ? Math.max(1, Math.floor(Number(item.sortOrder)))
+        featuredSortOrder: Number.isFinite(Number(item.featuredSortOrder))
+          ? Math.max(1, Math.floor(Number(item.featuredSortOrder)))
           : (index + 1) * 10,
       }))
       .filter((item) => Boolean(item.id));
