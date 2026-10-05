@@ -6,11 +6,17 @@ import { TopFashionHero } from "@/components/TopFashionHero";
 import { ProductActions } from "@/components/ProductActions";
 import { formatPrice } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
-import { localStoreSettings as settings } from "@/data/store";
-import { heroSlides } from "@/data/hero-slides";
+import { getStoreSettings } from "@/lib/site-settings";
+import { getActiveHeroSlides } from "@/lib/hero";
 
-export default function Home() {
-  const products = getCatalogProducts();
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const [products, heroSlides, settings] = await Promise.all([
+    getCatalogProducts(),
+    getActiveHeroSlides(),
+    getStoreSettings(),
+  ]);
   const featured = products
     .filter(
       (product) => product.featured && product.status === "active",
