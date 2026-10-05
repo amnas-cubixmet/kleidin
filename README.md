@@ -1,6 +1,15 @@
 # KLEID.IN
 
-KLEID.IN is a frontend-only Next.js storefront.
+KLEID.IN is a Next.js ecommerce storefront with a built-in Next.js API backend and admin control panel.
+
+## Stack
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS
+- MongoDB Atlas
+- Cloudinary
 
 ## Run locally
 
@@ -10,51 +19,80 @@ cp .env.example .env.local
 npm run dev
 ```
 
-On Windows:
+Windows:
 
 ```bash
 copy .env.example .env.local
 npm run dev
 ```
 
-Storefront: `http://localhost:3000`
+Storefront: `http://localhost:3000`  
+Admin: `http://localhost:3000/admin`  
+Health: `http://localhost:3000/api/health`
 
-## Frontend environment settings
+## Environment variables
 
 ```env
 NEXT_PUBLIC_WHATSAPP_NUMBER=
 NEXT_PUBLIC_SUPPORT_EMAIL=
 NEXT_PUBLIC_INSTAGRAM_URL=
 NEXT_PUBLIC_FACEBOOK_URL=
+
+MONGODB_URI=
+MONGODB_DB=kleidin
+
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
+ADMIN_SESSION_SECRET=
+
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 ```
 
-Use the WhatsApp number with country code and digits only.
+Never commit real secrets to GitHub. Configure the same private variables in Vercel Project Settings for Production.
 
-## Frontend data
+## Admin control
 
-Products are defined in:
+The admin panel includes:
+
+- Dashboard KPIs
+- Product create/edit/delete
+- Product images through signed Cloudinary uploads
+- Featured and featured-animation controls
+- Dealer/wholesale product fields
+- Inventory adjustments and stock history
+- Manual order creation
+- Order status, payment status, courier and tracking controls
+- Automatic stock deduction and restore on cancellation/return/refund
+- Customer list, notes and block/active control
+- Homepage hero management
+- Storefront/Home/About/social settings
+
+## Backend API
+
+Admin APIs live under `/api/admin/*` and require the secure HttpOnly admin session cookie.
+
+Main routes:
 
 ```text
-src/data/products.ts
+/api/admin/session
+/api/admin/dashboard
+/api/admin/products
+/api/admin/products/:id
+/api/admin/inventory
+/api/admin/orders
+/api/admin/orders/:id
+/api/admin/customers
+/api/admin/customers/:id
+/api/admin/hero
+/api/admin/hero/:id
+/api/admin/settings
+/api/admin/uploads/signature
 ```
 
-Hero content is defined in:
+MongoDB indexes are created automatically when the backend connects.
 
-```text
-src/data/hero-slides.ts
-```
+## Frontend fallback
 
-Storefront copy and public contact settings are defined in:
-
-```text
-src/data/store.ts
-```
-
-The project contains no admin panel, API routes, database client, authentication backend, Cloudinary server integration, or database setup scripts.
-
-## Stack
-
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
+If MongoDB is not configured or temporarily unavailable, the public storefront falls back to the local data/config in `src/data` so the site can still render.
