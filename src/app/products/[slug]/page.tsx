@@ -2,11 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ProductDetailClient } from "@/components/ProductDetailClient";
-import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { getCatalogProductBySlug } from "@/lib/catalog";
-import { getStoreSettings } from "@/lib/site-settings";
-
-export const dynamic = "force-dynamic";
+import { localStoreSettings as settings } from "@/data/store";
 
 type ProductPageProps = { params: Promise<{ slug: string }> };
 
@@ -14,7 +11,7 @@ export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getCatalogProductBySlug(slug);
+  const product = getCatalogProductBySlug(slug);
 
   if (!product) return { title: "Product not found" };
 
@@ -26,10 +23,7 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const [product, settings] = await Promise.all([
-    getCatalogProductBySlug(slug),
-    getStoreSettings(),
-  ]);
+  const product = getCatalogProductBySlug(slug);
 
   if (!product || product.status === "draft") notFound();
 
@@ -51,12 +45,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
           whatsappNumber={settings.whatsappNumber}
         />
       </section>
-
-      <TestimonialsSection
-        productSlug={product.slug}
-        eyebrow="CUSTOMER STORIES"
-        title=""
-      />
     </>
   );
 }
