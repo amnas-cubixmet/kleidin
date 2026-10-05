@@ -5,6 +5,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getWholesaleProductBySlug } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 import { getWholesaleProductWhatsappUrl } from "@/lib/format";
+import { getProductPrimaryImage } from "@/lib/product-images";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,7 @@ export default async function WholesaleProductPage({
     product,
     settings.whatsappNumber,
   );
+  const productImage = getProductPrimaryImage(product);
 
   return (
     <main className="dealer-detail-page">
@@ -56,9 +58,9 @@ export default async function WholesaleProductPage({
 
         <section className="dealer-detail-grid">
           <div className="dealer-detail-media">
-            {product.image ? (
+            {productImage ? (
               <Image
-                src={product.image}
+                src={productImage}
                 alt={product.name}
                 fill
                 priority
