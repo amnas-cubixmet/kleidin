@@ -5,7 +5,15 @@ import { useMemo, useState } from "react";
 import { ProductCard } from "@/components/ProductCard";
 import type { Product } from "@/types/product";
 
-export function HomeProductCatalog({ products }: { products: Product[] }) {
+export function HomeProductCatalog({
+  products,
+  eyebrow,
+  title,
+}: {
+  products: Product[];
+  eyebrow: string;
+  title: string;
+}) {
   const [query, setQuery] = useState("");
 
   const activeProducts = useMemo(
@@ -35,8 +43,8 @@ export function HomeProductCatalog({ products }: { products: Product[] }) {
     <section className="ref-shell ref-arrivals" aria-label="Product catalog">
       <div className="ref-arrivals-head">
         <div>
-          <p className="ref-kicker">CATALOG</p>
-          <h2>Products</h2>
+          <p className="ref-kicker">{eyebrow}</p>
+          <h2>{title}</h2>
         </div>
 
         <Link href="/products" className="ref-outline-pill">
