@@ -84,51 +84,22 @@ export function TopFashionHero({
   });
 
   const slides = useMemo<ResolvedHeroSlide[]>(() => {
-    const fallbackSlide: ResolvedHeroSlide = {
-      id: "kleidin-default-hero",
-      label: "KLEID.IN / ESSENTIALS",
-      title: "ESSENTIALS WITHOUT NOISE.",
-      subtitle:
-        "Clean everyday pieces, considered proportions and a wardrobe built to be repeated.",
-      button: "Shop collection",
-      href: "/products",
-      image:
-        "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=2000&q=88",
-      badge: "KLEID.IN",
-      ctaStyle: "light",
-      imagePosition: "center",
-    };
-
-    if (!products.length) {
-      return heroSlides.length
-        ? heroSlides
-            .filter((slide) => slide.enabled && (!scheduleNow || isScheduledNow(slide, scheduleNow)))
-            .sort((a, b) => a.order - b.order)
-            .map((slide) => ({
-              id: slide.id,
-              label: slide.label || "KLEID.IN",
-              title: slide.title || fallbackSlide.title,
-              subtitle: slide.subtitle || fallbackSlide.subtitle,
-              button: slide.button || "Explore",
-              href: slide.href || "/products",
-              image: slide.imageUrl || fallbackSlide.image,
-              badge: slide.badge || slide.label || "KLEID.IN",
-              discountText: slide.discountText,
-              showCountdown: Boolean(slide.showCountdown && slide.endsAt),
-              endsAt: slide.endsAt,
-              ctaStyle: slide.ctaStyle ?? "light",
-              imagePosition: slide.imagePosition ?? "center",
-            }))
-        : [fallbackSlide];
-    }
-
     const featured =
-      products.find((product) => product.featured && product.stock > 0) ??
-      products.find((product) => product.stock > 0) ??
-      products[0];
+      products.find(
+        (product) =>
+          product.featured && product.status === "active" && product.stock > 0,
+      ) ??
+      products.find(
+        (product) => product.status === "active" && product.stock > 0,
+      ) ??
+      products.find((product) => product.status === "active");
 
-    const resolved = [...heroSlides]
-      .filter((slide) => slide.enabled && (!scheduleNow || isScheduledNow(slide, scheduleNow)))
+    return [...heroSlides]
+      .filter(
+        (slide) =>
+          slide.enabled &&
+          (!scheduleNow || isScheduledNow(slide, scheduleNow)),
+      )
       .sort((a, b) => a.order - b.order)
       .map((slide) => {
         const selectedProduct = slide.productId
@@ -139,54 +110,43 @@ export function TopFashionHero({
           selectedProduct ??
           (slide.kind === "product" ? featured : undefined);
 
-        const image =
-          slide.imageUrl ||
-          product?.image ||
-          product?.colorVariants?.[0]?.images?.[0] ||
-          featured.image;
+        const variantImage =
+          product?.colorVariants?.find((variant) => variant.images?.length)
+            ?.images?.[0] ??
+          product?.colorVariants?.find((variant) => variant.image)?.image;
 
-        const href =
-          slide.href ||
-          (product ? `/products/${product.slug}` : "/products");
+        const image = slide.imageUrl || product?.image || variantImage;
+        const title = slide.title || product?.name || "";
 
-        const meta = product
-          ? `${product.name} · ${money(product.price)}`
-          : undefined;
+        if (!title) return null;
 
         return {
           id: slide.id,
-          label: slide.label,
-          title: slide.title || product?.name || "KLEID.IN",
-          subtitle:
-            slide.subtitle ||
-            product?.description ||
-            "Everyday clothing without unnecessary noise.",
-          button: slide.button || (product ? "View product" : "Shop now"),
-          href,
+          label: slide.label || product?.category || "KLEID.IN",
+          title,
+          subtitle: slide.subtitle || product?.description || "",
+          button: slide.button || (product ? "View product" : "Explore"),
+          href:
+            slide.href ||
+            (product ? `/products/${product.slug}` : "/products"),
           image,
-          badge: slide.badge || slide.discountText || slide.label,
-          meta,
+          badge:
+            slide.badge ||
+            slide.discountText ||
+            slide.label ||
+            product?.category ||
+            "KLEID.IN",
+          meta: product
+            ? `${product.name} · ${money(product.price)}`
+            : undefined,
           discountText: slide.discountText,
           showCountdown: Boolean(slide.showCountdown && slide.endsAt),
           endsAt: slide.endsAt,
           ctaStyle: slide.ctaStyle ?? "light",
           imagePosition: slide.imagePosition ?? "center",
-        };
-      });
-
-    if (resolved.length) return resolved;
-
-    return [
-      {
-        ...fallbackSlide,
-        image:
-          featured.image ||
-          featured.colorVariants?.[0]?.images?.[0] ||
-          featured.colorVariants?.[0]?.image ||
-          fallbackSlide.image,
-        meta: `${featured.name} · ${money(featured.price)}`,
-      },
-    ];
+        } satisfies ResolvedHeroSlide;
+      })
+      .filter((slide): slide is ResolvedHeroSlide => Boolean(slide));
   }, [heroSlides, products, scheduleNow]);
 
   const slideCount = slides.length;
