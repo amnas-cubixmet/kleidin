@@ -98,5 +98,9 @@ async function ensureMongoIndexes(db: Db) {
       { key: { enabled: 1, sortOrder: 1 }, name: "announcements_enabled_sort" },
       { key: { isDemo: 1 }, name: "announcements_demo" },
     ]),
+    db.collection("siteSettings").createIndex(
+      { key: 1 },
+      { unique: true, name: "site_settings_key_unique" },
+    ),
   ]);
 }
