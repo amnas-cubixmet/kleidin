@@ -133,7 +133,6 @@ function toProduct(doc: Document): Product {
     featuredImage: text(doc.featuredImage) || undefined,
     status: status(doc.status),
     image: text(doc.image) || undefined,
-    tryOnImage: text(doc.tryOnImage) || undefined,
     sortOrder:
       doc.sortOrder === null || doc.sortOrder === undefined
         ? undefined
@@ -237,7 +236,6 @@ function productFields(
       text(input.featuredImage, current?.featuredImage) || undefined,
     status: nextStatus,
     image: text(input.image, current?.image) || undefined,
-    tryOnImage: text(input.tryOnImage, current?.tryOnImage) || undefined,
     sortOrder:
       input.sortOrder === null
         ? undefined
