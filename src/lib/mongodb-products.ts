@@ -1,5 +1,6 @@
 import "server-only";
 
+import { randomUUID } from "node:crypto";
 import { ObjectId, type Document } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import type {
@@ -286,6 +287,7 @@ export async function createProduct(input: Record<string, unknown>) {
   const now = new Date();
   const product = productFields(input);
   const result = await db.collection("products").insertOne({
+    id: randomUUID(),
     ...product,
     createdAt: now,
     updatedAt: now,
