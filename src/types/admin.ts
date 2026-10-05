@@ -81,3 +81,16 @@ export type InventoryMovement = {
   reference?: string;
   createdAt: string;
 };
+
+
+export type InventoryStockAlert = {
+  id: string;
+  productId: string;
+  productName: string;
+  sku: string;
+  stock: number;
+  threshold: number;
+  status: "low" | "sold-out";
+  color?: string;
+  size?: string;
+};
