@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import type { Product } from "@/types/product";
 import { formatPrice, getProductWhatsappUrl } from "@/lib/format";
 import { getProductOfferPrice, isProductOfferActive } from "@/lib/product-offers";
+import { getProductGalleryForColor } from "@/lib/product-images";
 
 export function ProductDetailClient({
   product,
@@ -25,14 +26,7 @@ export function ProductDetailClient({
   const selectedVariant =
     variants.find((variant) => variant.name === selectedColor) ?? variants[0];
 
-  const variantImages =
-    selectedVariant?.images?.length
-      ? selectedVariant.images
-      : selectedVariant?.image
-        ? [selectedVariant.image]
-        : product.image
-          ? [product.image]
-          : [];
+  const variantImages = getProductGalleryForColor(product, selectedColor);
   const image = variantImages[activeImageIndex] ?? variantImages[0];
   const stock = selectedVariant?.stock ?? product.stock;
   const soldOut = product.status === "sold-out" || stock <= 0;
