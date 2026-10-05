@@ -1,9 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getStoreSettings } from "@/lib/site-settings";
+import { localStoreSettings as settings } from "@/data/store";
 import { getWhatsappUrl } from "@/lib/format";
-
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "About",
@@ -12,8 +10,7 @@ export const metadata: Metadata = {
 };
 
 
-export default async function AboutPage() {
-  const settings = await getStoreSettings();
+export default function AboutPage() {
   const whatsappHref = getWhatsappUrl(undefined, settings.whatsappNumber);
 
   return (
