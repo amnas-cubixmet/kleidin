@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
-import type { Product, ProductStatus } from "@/types/product";
+import { AdminDrawer } from "@/components/AdminDrawer";
+import type {
+  Product,
+  ProductOfferType,
+  ProductStatus,
+} from "@/types/product";
+import { getProductOfferStatus } from "@/lib/product-offers";
 
 type Draft = {
   name: string;
@@ -16,11 +22,21 @@ type Draft = {
   sizes: string;
   colors: string;
   status: ProductStatus;
+  sortOrder: string;
   featured: boolean;
+  featuredSortOrder: string;
   featuredAnimationEnabled: boolean;
   image: string;
   featuredImage: string;
   tryOnImage: string;
+  offerEnabled: boolean;
+  offerType: ProductOfferType;
+  offerValue: string;
+  offerLabel: string;
+  offerBadge: string;
+  offerStartsAt: string;
+  offerEndsAt: string;
+  offerCountdown: boolean;
   wholesaleEnabled: boolean;
   wholesalePrice: string;
   wholesaleMinOrder: string;
@@ -38,18 +54,35 @@ const emptyDraft: Draft = {
   sizes: "",
   colors: "",
   status: "active",
+  sortOrder: "",
   featured: false,
+  featuredSortOrder: "",
   featuredAnimationEnabled: false,
   image: "",
   featuredImage: "",
   tryOnImage: "",
+  offerEnabled: false,
+  offerType: "percentage",
+  offerValue: "",
+  offerLabel: "",
+  offerBadge: "",
+  offerStartsAt: "",
+  offerEndsAt: "",
+  offerCountdown: false,
   wholesaleEnabled: false,
   wholesalePrice: "",
   wholesaleMinOrder: "12",
 };
 
+const inputClass =
+  "mt-1.5 w-full rounded-xl border border-black/10 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-[#001cac] focus:ring-2 focus:ring-[#001cac]/10";
+const labelClass = "text-[10px] font-bold uppercase tracking-[.08em] text-black/50";
+
 function csv(value: string) {
-  return value.split(",").map((item) => item.trim()).filter(Boolean);
+  return value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
 function slugify(value: string) {
@@ -60,10 +93,66 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+function dateTimeInput(value?: string) {
+  if (!value) return "";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return value.slice(0, 16);
+  const local = new Date(parsed.getTime() - parsed.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 16);
+}
+
+function apiDate(value: string) {
+  if (!value) return "";
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? value : parsed.toISOString();
+}
+
+function Toggle({
+  checked,
+  onChange,
+  title,
+  description,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  title: string;
+  description: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!checked)}
+      className="flex w-full items-center justify-between gap-4 rounded-2xl border border-black/10 bg-white p-4 text-left"
+      aria-pressed={checked}
+    >
+      <span>
+        <strong className="block text-sm">{title}</strong>
+        <span className="mt-1 block text-[11px] leading-5 text-black/45">
+          {description}
+        </span>
+      </span>
+      <span
+        className={
+          "relative h-6 w-11 shrink-0 rounded-full transition " +
+          (checked ? "bg-[#001cac]" : "bg-black/15")
+        }
+      >
+        <span
+          className={
+            "absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition " +
+            (checked ? "left-6" : "left-1")
+          }
+        />
+      </span>
+    </button>
+  );
+}
+
 export function AdminProductsManager() {
   const [products, setProducts] = useState<Product[]>([]);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
@@ -78,13 +167,16 @@ export function AdminProductsManager() {
 
   useEffect(() => {
     void load().catch((error) =>
-      setMessage(error instanceof Error ? error.message : "Could not load products."),
+      setMessage(
+        error instanceof Error ? error.message : "Could not load products.",
+      ),
     );
   }, []);
 
   const filtered = useMemo(() => {
     const value = query.trim().toLowerCase();
     if (!value) return products;
+
     return products.filter((product) =>
       [product.name, product.sku, product.category, product.slug]
         .join(" ")
@@ -93,10 +185,35 @@ export function AdminProductsManager() {
     );
   }, [products, query]);
 
-  function reset() {
+  const stats = useMemo(
+    () => ({
+      active: products.filter((product) => product.status === "active").length,
+      offers: products.filter(
+        (product) => getProductOfferStatus(product) === "active",
+      ).length,
+      animations: products.filter(
+        (product) => product.featuredAnimationEnabled,
+      ).length,
+    }),
+    [products],
+  );
+
+  function clearDraft() {
     setEditingId(null);
     setDraft(emptyDraft);
+    setUploading("");
+  }
+
+  function openCreate() {
+    clearDraft();
     setMessage("");
+    setDrawerOpen(true);
+  }
+
+  function closeDrawer() {
+    if (busy || uploading) return;
+    setDrawerOpen(false);
+    clearDraft();
   }
 
   function edit(product: Product) {
@@ -107,25 +224,50 @@ export function AdminProductsManager() {
       slug: product.slug,
       category: product.category,
       price: String(product.price),
-      compareAtPrice: product.compareAtPrice ? String(product.compareAtPrice) : "",
+      compareAtPrice:
+        product.compareAtPrice !== undefined
+          ? String(product.compareAtPrice)
+          : "",
       stock: String(product.stock),
       description: product.description,
       sizes: product.sizes.join(", "),
       colors: product.colors.join(", "),
       status: product.status,
-      featured: product.featured,
+      sortOrder:
+        product.sortOrder !== undefined ? String(product.sortOrder) : "",
+      featured: Boolean(product.featured),
+      featuredSortOrder:
+        product.featuredSortOrder !== undefined
+          ? String(product.featuredSortOrder)
+          : "",
       featuredAnimationEnabled: Boolean(product.featuredAnimationEnabled),
       image: product.image || "",
       featuredImage: product.featuredImage || "",
       tryOnImage: product.tryOnImage || "",
+      offerEnabled: Boolean(product.offerEnabled),
+      offerType: product.offerType || "percentage",
+      offerValue:
+        product.offerValue !== undefined ? String(product.offerValue) : "",
+      offerLabel: product.offerLabel || "",
+      offerBadge: product.offerBadge || "",
+      offerStartsAt: dateTimeInput(product.offerStartsAt),
+      offerEndsAt: dateTimeInput(product.offerEndsAt),
+      offerCountdown: Boolean(product.offerCountdown),
       wholesaleEnabled: Boolean(product.wholesaleEnabled),
-      wholesalePrice: product.wholesalePrice ? String(product.wholesalePrice) : "",
+      wholesalePrice:
+        product.wholesalePrice !== undefined
+          ? String(product.wholesalePrice)
+          : "",
       wholesaleMinOrder: String(product.wholesaleMinOrder || 12),
     });
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setMessage("");
+    setDrawerOpen(true);
   }
 
-  async function upload(file: File, field: "image" | "featuredImage" | "tryOnImage") {
+  async function upload(
+    file: File,
+    field: "image" | "featuredImage" | "tryOnImage",
+  ) {
     setUploading(field);
     setMessage("");
 
@@ -136,7 +278,10 @@ export function AdminProductsManager() {
         body: JSON.stringify({ folder: "kleidin/products" }),
       });
       const signed = await signatureResponse.json();
-      if (!signatureResponse.ok) throw new Error(signed.error || "Upload setup failed.");
+
+      if (!signatureResponse.ok) {
+        throw new Error(signed.error || "Upload setup failed.");
+      }
 
       const body = new FormData();
       body.set("file", file);
@@ -146,17 +291,25 @@ export function AdminProductsManager() {
       body.set("signature", signed.signature);
 
       const uploadResponse = await fetch(
-        "https://api.cloudinary.com/v1_1/" + signed.cloudName + "/image/upload",
+        "https://api.cloudinary.com/v1_1/" +
+          signed.cloudName +
+          "/image/upload",
         { method: "POST", body },
       );
       const uploaded = await uploadResponse.json();
+
       if (!uploadResponse.ok || !uploaded.secure_url) {
         throw new Error(uploaded.error?.message || "Image upload failed.");
       }
 
-      setDraft((current) => ({ ...current, [field]: uploaded.secure_url }));
+      setDraft((current) => ({
+        ...current,
+        [field]: uploaded.secure_url,
+      }));
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Image upload failed.");
+      setMessage(
+        error instanceof Error ? error.message : "Image upload failed.",
+      );
     } finally {
       setUploading("");
     }
@@ -168,21 +321,54 @@ export function AdminProductsManager() {
     setMessage("");
 
     try {
+      if (draft.offerEnabled && Number(draft.offerValue) <= 0) {
+        throw new Error("Offer value must be greater than 0.");
+      }
+
       const payload = {
         ...draft,
         price: Number(draft.price || 0),
-        compareAtPrice: draft.compareAtPrice ? Number(draft.compareAtPrice) : null,
+        compareAtPrice: draft.compareAtPrice
+          ? Number(draft.compareAtPrice)
+          : null,
         stock: Number(draft.stock || 0),
         sizes: csv(draft.sizes),
         colors: csv(draft.colors),
-        wholesalePrice: draft.wholesalePrice ? Number(draft.wholesalePrice) : null,
-        wholesaleMinOrder: draft.wholesaleMinOrder ? Number(draft.wholesaleMinOrder) : null,
-        featuredAnimationEnabled:
-          draft.featured && draft.featuredAnimationEnabled,
+        sortOrder: draft.sortOrder ? Number(draft.sortOrder) : null,
+        featuredSortOrder: draft.featuredSortOrder
+          ? Number(draft.featuredSortOrder)
+          : null,
+        offerEnabled: draft.offerEnabled,
+        offerType: draft.offerEnabled ? draft.offerType : undefined,
+        offerValue:
+          draft.offerEnabled && draft.offerValue
+            ? Number(draft.offerValue)
+            : null,
+        offerLabel: draft.offerEnabled ? draft.offerLabel : "",
+        offerBadge: draft.offerEnabled ? draft.offerBadge : "",
+        offerStartsAt:
+          draft.offerEnabled && draft.offerStartsAt
+            ? apiDate(draft.offerStartsAt)
+            : "",
+        offerEndsAt:
+          draft.offerEnabled && draft.offerEndsAt
+            ? apiDate(draft.offerEndsAt)
+            : "",
+        offerCountdown:
+          draft.offerEnabled && draft.offerCountdown && Boolean(draft.offerEndsAt),
+        wholesalePrice: draft.wholesalePrice
+          ? Number(draft.wholesalePrice)
+          : null,
+        wholesaleMinOrder: draft.wholesaleMinOrder
+          ? Number(draft.wholesaleMinOrder)
+          : null,
       };
 
+      const wasEditing = Boolean(editingId);
       const response = await fetch(
-        editingId ? "/api/admin/products/" + editingId : "/api/admin/products",
+        editingId
+          ? "/api/admin/products/" + editingId
+          : "/api/admin/products",
         {
           method: editingId ? "PATCH" : "POST",
           headers: { "content-type": "application/json" },
@@ -190,13 +376,19 @@ export function AdminProductsManager() {
         },
       );
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Could not save product.");
+
+      if (!response.ok) {
+        throw new Error(data.error || "Could not save product.");
+      }
 
       await load();
-      reset();
-      setMessage(editingId ? "Product updated." : "Product created.");
+      setDrawerOpen(false);
+      clearDraft();
+      setMessage(wasEditing ? "Product updated." : "Product created.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Could not save product.");
+      setMessage(
+        error instanceof Error ? error.message : "Could not save product.",
+      );
     } finally {
       setBusy(false);
     }
@@ -204,185 +396,243 @@ export function AdminProductsManager() {
 
   async function remove(id: string) {
     if (!window.confirm("Delete this product?")) return;
-    const response = await fetch("/api/admin/products/" + id, { method: "DELETE" });
+
+    setMessage("");
+    const response = await fetch("/api/admin/products/" + id, {
+      method: "DELETE",
+    });
     const data = await response.json();
+
     if (!response.ok) {
       setMessage(data.error || "Could not delete product.");
       return;
     }
+
     await load();
-    if (editingId === id) reset();
+    setMessage("Product deleted.");
   }
 
   function fileInput(
     label: string,
     field: "image" | "featuredImage" | "tryOnImage",
+    helper: string,
   ) {
     const value = draft[field];
+    const contain = field === "featuredImage";
+
     return (
-      <label className="block rounded-xl border border-black/10 p-3">
-        <span className="text-[11px] font-semibold">{label}</span>
+      <div className="rounded-2xl border border-black/10 bg-white p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <span className="text-xs font-bold">{label}</span>
+            <p className="mt-1 text-[10px] leading-4 text-black/45">{helper}</p>
+          </div>
+          {uploading === field ? (
+            <span className="text-[9px] font-bold uppercase tracking-[.08em] text-[#001cac]">
+              Uploading…
+            </span>
+          ) : null}
+        </div>
+
         {value ? (
-          <div className="mt-2 flex items-center gap-3">
-            <Image
-              src={value}
-              alt=""
-              width={56}
-              height={56}
-              className="h-14 w-14 rounded-lg object-cover"
-            />
+          <div className="mt-3 flex items-center gap-3">
+            <div className="relative h-20 w-20 overflow-hidden rounded-xl bg-[#f1f1f1]">
+              <Image
+                src={value}
+                alt=""
+                fill
+                sizes="80px"
+                className={contain ? "object-contain p-1" : "object-cover"}
+              />
+            </div>
             <button
               type="button"
-              onClick={() => setDraft((current) => ({ ...current, [field]: "" }))}
-              className="text-xs font-semibold text-red-600"
+              onClick={() =>
+                setDraft((current) => ({ ...current, [field]: "" }))
+              }
+              className="rounded-lg border border-red-200 px-3 py-2 text-[10px] font-bold text-red-600"
             >
               Remove
             </button>
           </div>
         ) : null}
-        <input
-          type="file"
-          accept="image/*"
-          disabled={Boolean(uploading)}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            const file = event.target.files?.[0];
-            if (file) void upload(file, field);
-            event.target.value = "";
-          }}
-          className="mt-2 block w-full text-xs"
-        />
-        {uploading === field ? <small>Uploading…</small> : null}
-      </label>
+
+        <label className="mt-3 flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-dashed border-black/20 bg-black/[.015] px-3 text-[10px] font-bold transition hover:border-[#001cac]/40 hover:bg-[#001cac]/[.03]">
+          {value ? "Replace image" : "Choose image"}
+          <input
+            type="file"
+            accept="image/*"
+            disabled={Boolean(uploading)}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              const file = event.target.files?.[0];
+              if (file) void upload(file, field);
+              event.target.value = "";
+            }}
+            className="sr-only"
+          />
+        </label>
+      </div>
     );
   }
 
+  const field = (
+    title: string,
+    control: React.ReactNode,
+    wide = false,
+  ) => (
+    <label className={wide ? "block md:col-span-2" : "block"}>
+      <span className={labelClass}>{title}</span>
+      {control}
+    </label>
+  );
+
   return (
     <div>
-      <div>
-        <p className="text-[10px] font-bold tracking-[.16em] text-[#001cac]">CATALOG</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-[-.04em]">Products</h1>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-[10px] font-bold tracking-[.16em] text-[#001cac]">
+            CATALOG
+          </p>
+          <h1 className="mt-2 text-3xl font-bold tracking-[-.04em]">
+            Products
+          </h1>
+          <p className="mt-2 max-w-xl text-xs leading-5 text-black/45">
+            Product data stays clean on the page. Add and edit actions open in a
+            focused panel.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={openCreate}
+          className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#001cac] px-5 text-xs font-bold !text-white sm:w-auto"
+        >
+          + Add product
+        </button>
       </div>
 
-      <form onSubmit={submit} className="mt-6 rounded-2xl bg-white p-4 ring-1 ring-black/5 md:p-5">
-        <div className="flex items-center justify-between">
-          <h2 className="font-bold">{editingId ? "Edit product" : "Add product"}</h2>
-          {editingId ? (
-            <button type="button" onClick={reset} className="text-xs font-semibold text-black/45">
-              Cancel edit
-            </button>
-          ) : null}
-        </div>
+      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[
+          ["Products", products.length],
+          ["Active", stats.active],
+          ["Live offers", stats.offers],
+          ["Animations", stats.animations],
+        ].map(([label, value]) => (
+          <article
+            key={String(label)}
+            className="rounded-2xl bg-white p-4 ring-1 ring-black/5"
+          >
+            <p className="text-[9px] font-bold uppercase tracking-[.1em] text-black/40">
+              {label}
+            </p>
+            <strong className="mt-2 block text-2xl tracking-[-.04em]">
+              {value}
+            </strong>
+          </article>
+        ))}
+      </div>
 
-        <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          <label className="block">
-            <span className="text-[11px] font-semibold">Name</span>
-            <input
-              value={draft.name}
-              onChange={(event) =>
-                setDraft((current) => ({
-                  ...current,
-                  name: event.target.value,
-                  slug: current.slug || slugify(event.target.value),
-                }))
-              }
-              required
-              className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm"
-            />
-          </label>
-          <label className="block">
-            <span className="text-[11px] font-semibold">SKU</span>
-            <input value={draft.sku} onChange={(event) => setDraft((c) => ({ ...c, sku: event.target.value }))} required className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
-          </label>
-          <label className="block">
-            <span className="text-[11px] font-semibold">Slug</span>
-            <input value={draft.slug} onChange={(event) => setDraft((c) => ({ ...c, slug: event.target.value }))} required className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
-          </label>
-          <label className="block">
-            <span className="text-[11px] font-semibold">Category</span>
-            <input value={draft.category} onChange={(event) => setDraft((c) => ({ ...c, category: event.target.value }))} className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
-          </label>
-          <label className="block">
-            <span className="text-[11px] font-semibold">Price</span>
-            <input type="number" min="0" value={draft.price} onChange={(event) => setDraft((c) => ({ ...c, price: event.target.value }))} required className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
-          </label>
-          <label className="block">
-            <span className="text-[11px] font-semibold">Compare price</span>
-            <input type="number" min="0" value={draft.compareAtPrice} onChange={(event) => setDraft((c) => ({ ...c, compareAtPrice: event.target.value }))} className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
-          </label>
-          <label className="block">
-            <span className="text-[11px] font-semibold">Stock</span>
-            <input type="number" min="0" value={draft.stock} onChange={(event) => setDraft((c) => ({ ...c, stock: event.target.value }))} className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
-          </label>
-          <label className="block">
-            <span className="text-[11px] font-semibold">Status</span>
-            <select value={draft.status} onChange={(event) => setDraft((c) => ({ ...c, status: event.target.value as ProductStatus }))} className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm">
-              <option value="active">Active</option>
-              <option value="draft">Draft</option>
-              <option value="sold-out">Sold out</option>
-            </select>
-          </label>
-          <label className="block md:col-span-2">
-            <span className="text-[11px] font-semibold">Sizes — comma separated</span>
-            <input value={draft.sizes} onChange={(event) => setDraft((c) => ({ ...c, sizes: event.target.value }))} placeholder="S, M, L, XL" className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
-          </label>
-          <label className="block md:col-span-2">
-            <span className="text-[11px] font-semibold">Colours — comma separated</span>
-            <input value={draft.colors} onChange={(event) => setDraft((c) => ({ ...c, colors: event.target.value }))} placeholder="Black, White" className="mt-1 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
-          </label>
-          <label className="block md:col-span-2 lg:col-span-4">
-            <span className="text-[11px] font-semibold">Description</span>
-            <textarea value={draft.description} onChange={(event) => setDraft((c) => ({ ...c, description: event.target.value }))} className="mt-1 min-h-24 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
-          </label>
+      {message ? (
+        <div className="mt-4 rounded-xl border border-black/5 bg-white px-4 py-3 text-xs font-medium text-black/60">
+          {message}
         </div>
+      ) : null}
 
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
-          {fileInput("Product image", "image")}
-          {draft.featured ? fileInput("Featured animation image", "featuredImage") : null}
-          {fileInput("Try-on image", "tryOnImage")}
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-4 rounded-xl bg-black/[.025] p-3 text-xs">
-          <label className="flex items-center gap-2">
-            <input type="checkbox" checked={draft.featured} onChange={(event) => setDraft((c) => ({ ...c, featured: event.target.checked, featuredAnimationEnabled: event.target.checked ? c.featuredAnimationEnabled : false }))} />
-            Featured
-          </label>
-          {draft.featured ? (
-            <label className="flex items-center gap-2">
-              <input type="checkbox" checked={draft.featuredAnimationEnabled} onChange={(event) => setDraft((c) => ({ ...c, featuredAnimationEnabled: event.target.checked }))} />
-              Featured animation
-            </label>
-          ) : null}
-          <label className="flex items-center gap-2">
-            <input type="checkbox" checked={draft.wholesaleEnabled} onChange={(event) => setDraft((c) => ({ ...c, wholesaleEnabled: event.target.checked }))} />
-            Dealer / wholesale
-          </label>
-        </div>
-
-        {draft.wholesaleEnabled ? (
-          <div className="mt-3 grid gap-3 md:grid-cols-2">
-            <input type="number" min="0" placeholder="Wholesale price" value={draft.wholesalePrice} onChange={(event) => setDraft((c) => ({ ...c, wholesalePrice: event.target.value }))} className="rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
-            <input type="number" min="1" placeholder="Minimum order" value={draft.wholesaleMinOrder} onChange={(event) => setDraft((c) => ({ ...c, wholesaleMinOrder: event.target.value }))} className="rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
+      <section className="mt-4 rounded-2xl bg-white p-4 ring-1 ring-black/5 md:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="font-bold">Catalog</h2>
+            <p className="mt-1 text-[10px] text-black/40">
+              {filtered.length} of {products.length} products
+            </p>
           </div>
-        ) : null}
 
-        {message ? <p className="mt-3 text-xs font-medium text-black/60">{message}</p> : null}
-
-        <button disabled={busy || Boolean(uploading)} className="mt-4 rounded-xl bg-[#001cac] px-5 py-3 text-xs font-bold text-white disabled:opacity-50">
-          {busy ? "Saving…" : editingId ? "Update product" : "Create product"}
-        </button>
-      </form>
-
-      <section className="mt-6 rounded-2xl bg-white p-4 ring-1 ring-black/5 md:p-5">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <h2 className="font-bold">{products.length} products</h2>
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search product…" className="rounded-xl border border-black/10 px-3 py-2 text-sm md:w-72" />
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search name, SKU, category…"
+            className="w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm outline-none focus:border-[#001cac] sm:w-72"
+          />
         </div>
 
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left text-xs">
+        <div className="mt-4 grid gap-3 md:hidden">
+          {filtered.map((product) => {
+            const offerStatus = getProductOfferStatus(product);
+            return (
+              <article
+                key={product.id}
+                className="rounded-2xl border border-black/8 p-3"
+              >
+                <div className="flex gap-3">
+                  <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-black/[.04]">
+                    {product.image ? (
+                      <Image
+                        src={product.image}
+                        alt=""
+                        fill
+                        sizes="64px"
+                        className="object-cover"
+                      />
+                    ) : null}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-bold">{product.name}</p>
+                    <p className="mt-1 text-[10px] text-black/45">
+                      {product.sku} · ₹{product.price.toLocaleString("en-IN")}
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      <span className="rounded-full bg-black/[.05] px-2 py-1 text-[8px] font-bold uppercase">
+                        {product.status}
+                      </span>
+                      {offerStatus !== "off" ? (
+                        <span className="rounded-full bg-[#001cac]/10 px-2 py-1 text-[8px] font-bold uppercase text-[#001cac]">
+                          Offer {offerStatus}
+                        </span>
+                      ) : null}
+                      {product.featuredAnimationEnabled ? (
+                        <span className="rounded-full bg-black/[.05] px-2 py-1 text-[8px] font-bold uppercase">
+                          Animation
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => edit(product)}
+                    className="min-h-11 rounded-xl border border-black/10 text-xs font-bold"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void remove(product.id)}
+                    className="min-h-11 rounded-xl border border-red-200 text-xs font-bold text-red-600"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        <div className="mt-4 hidden overflow-x-auto md:block">
+          <table className="w-full min-w-[900px] text-left text-xs">
             <thead className="text-black/40">
               <tr>
-                <th className="py-3">Product</th><th>SKU</th><th>Status</th><th>Price</th><th>Stock</th><th>Featured</th><th />
+                <th className="py-3">Product</th>
+                <th>SKU</th>
+                <th>Status</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Offer</th>
+                <th>Animation</th>
+                <th>Order</th>
+                <th />
               </tr>
             </thead>
             <tbody>
@@ -393,11 +643,25 @@ export function AdminProductsManager() {
                   <td className="capitalize">{product.status}</td>
                   <td>₹{product.price.toLocaleString("en-IN")}</td>
                   <td>{product.stock}</td>
-                  <td>{product.featured ? "Yes" : "No"}</td>
+                  <td className="capitalize">{getProductOfferStatus(product)}</td>
+                  <td>{product.featuredAnimationEnabled ? "On" : "Off"}</td>
+                  <td>{product.sortOrder ?? "—"}</td>
                   <td>
                     <div className="flex justify-end gap-2">
-                      <button onClick={() => edit(product)} className="rounded-lg border border-black/10 px-3 py-1.5 font-semibold">Edit</button>
-                      <button onClick={() => void remove(product.id)} className="rounded-lg border border-red-200 px-3 py-1.5 font-semibold text-red-600">Delete</button>
+                      <button
+                        type="button"
+                        onClick={() => edit(product)}
+                        className="rounded-lg border border-black/10 px-3 py-2 font-semibold"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void remove(product.id)}
+                        className="rounded-lg border border-red-200 px-3 py-2 font-semibold text-red-600"
+                      >
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -406,6 +670,467 @@ export function AdminProductsManager() {
           </table>
         </div>
       </section>
+
+      <AdminDrawer
+        open={drawerOpen}
+        title={editingId ? "Edit product" : "Add product"}
+        description="Basic details, offer, animation image and storefront placement are controlled here."
+        onClose={closeDrawer}
+        footer={
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
+            <button
+              type="button"
+              onClick={closeDrawer}
+              disabled={busy || Boolean(uploading)}
+              className="min-h-11 rounded-xl border border-black/10 px-5 text-xs font-bold disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="admin-product-form"
+              disabled={busy || Boolean(uploading)}
+              className="min-h-11 rounded-xl bg-[#001cac] px-5 text-xs font-bold !text-white disabled:opacity-50"
+            >
+              {busy
+                ? "Saving…"
+                : editingId
+                  ? "Update product"
+                  : "Create product"}
+            </button>
+          </div>
+        }
+      >
+        <form id="admin-product-form" onSubmit={submit} className="space-y-5">
+          <section className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
+            <h3 className="text-sm font-bold">Product details</h3>
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              {field(
+                "Name",
+                <input
+                  value={draft.name}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      name: event.target.value,
+                      slug: current.slug || slugify(event.target.value),
+                    }))
+                  }
+                  required
+                  className={inputClass}
+                />,
+              )}
+              {field(
+                "SKU",
+                <input
+                  value={draft.sku}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      sku: event.target.value,
+                    }))
+                  }
+                  required
+                  className={inputClass}
+                />,
+              )}
+              {field(
+                "Slug",
+                <input
+                  value={draft.slug}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      slug: event.target.value,
+                    }))
+                  }
+                  required
+                  className={inputClass}
+                />,
+              )}
+              {field(
+                "Category",
+                <input
+                  value={draft.category}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      category: event.target.value,
+                    }))
+                  }
+                  className={inputClass}
+                />,
+              )}
+              {field(
+                "Price",
+                <input
+                  type="number"
+                  min="0"
+                  value={draft.price}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      price: event.target.value,
+                    }))
+                  }
+                  required
+                  className={inputClass}
+                />,
+              )}
+              {field(
+                "Compare price",
+                <input
+                  type="number"
+                  min="0"
+                  value={draft.compareAtPrice}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      compareAtPrice: event.target.value,
+                    }))
+                  }
+                  className={inputClass}
+                />,
+              )}
+              {field(
+                "Stock",
+                <input
+                  type="number"
+                  min="0"
+                  value={draft.stock}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      stock: event.target.value,
+                    }))
+                  }
+                  className={inputClass}
+                />,
+              )}
+              {field(
+                "Status",
+                <select
+                  value={draft.status}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      status: event.target.value as ProductStatus,
+                    }))
+                  }
+                  className={inputClass}
+                >
+                  <option value="active">Active</option>
+                  <option value="draft">Draft</option>
+                  <option value="sold-out">Sold out</option>
+                </select>,
+              )}
+              {field(
+                "Catalog position",
+                <input
+                  type="number"
+                  value={draft.sortOrder}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      sortOrder: event.target.value,
+                    }))
+                  }
+                  placeholder="1, 2, 3…"
+                  className={inputClass}
+                />,
+              )}
+              {field(
+                "Sizes",
+                <input
+                  value={draft.sizes}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      sizes: event.target.value,
+                    }))
+                  }
+                  placeholder="S, M, L, XL"
+                  className={inputClass}
+                />,
+              )}
+              {field(
+                "Colours",
+                <input
+                  value={draft.colors}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      colors: event.target.value,
+                    }))
+                  }
+                  placeholder="Black, White"
+                  className={inputClass}
+                />,
+                true,
+              )}
+              {field(
+                "Description",
+                <textarea
+                  value={draft.description}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      description: event.target.value,
+                    }))
+                  }
+                  className={inputClass + " min-h-28 resize-y"}
+                />,
+                true,
+              )}
+            </div>
+          </section>
+
+          <section className="space-y-3">
+            {fileInput(
+              "Product image",
+              "image",
+              "Main storefront image. JPG, PNG or WebP.",
+            )}
+            {fileInput(
+              "Try-on image",
+              "tryOnImage",
+              "Optional clean garment image for virtual try-on.",
+            )}
+          </section>
+
+          <section className="space-y-3">
+            <Toggle
+              checked={draft.offerEnabled}
+              onChange={(checked) =>
+                setDraft((current) => ({
+                  ...current,
+                  offerEnabled: checked,
+                }))
+              }
+              title="Product offer"
+              description="Only shows on the storefront while this offer is enabled and within its schedule."
+            />
+
+            {draft.offerEnabled ? (
+              <div className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
+                <div className="grid gap-3 md:grid-cols-2">
+                  {field(
+                    "Offer type",
+                    <select
+                      value={draft.offerType}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          offerType: event.target.value as ProductOfferType,
+                        }))
+                      }
+                      className={inputClass}
+                    >
+                      <option value="percentage">Percentage off</option>
+                      <option value="fixed">Fixed amount off</option>
+                      <option value="sale-price">Final sale price</option>
+                    </select>,
+                  )}
+                  {field(
+                    draft.offerType === "percentage"
+                      ? "Discount %"
+                      : draft.offerType === "fixed"
+                        ? "Discount amount"
+                        : "Sale price",
+                    <input
+                      type="number"
+                      min="0"
+                      value={draft.offerValue}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          offerValue: event.target.value,
+                        }))
+                      }
+                      required={draft.offerEnabled}
+                      className={inputClass}
+                    />,
+                  )}
+                  {field(
+                    "Offer label",
+                    <input
+                      value={draft.offerLabel}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          offerLabel: event.target.value,
+                        }))
+                      }
+                      placeholder="Festive offer"
+                      className={inputClass}
+                    />,
+                  )}
+                  {field(
+                    "Offer badge",
+                    <input
+                      value={draft.offerBadge}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          offerBadge: event.target.value,
+                        }))
+                      }
+                      placeholder="20% OFF"
+                      className={inputClass}
+                    />,
+                  )}
+                  {field(
+                    "Starts at",
+                    <input
+                      type="datetime-local"
+                      value={draft.offerStartsAt}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          offerStartsAt: event.target.value,
+                        }))
+                      }
+                      className={inputClass}
+                    />,
+                  )}
+                  {field(
+                    "Ends at",
+                    <input
+                      type="datetime-local"
+                      value={draft.offerEndsAt}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          offerEndsAt: event.target.value,
+                        }))
+                      }
+                      className={inputClass}
+                    />,
+                  )}
+                </div>
+
+                <label className="mt-4 flex min-h-11 items-center gap-3 rounded-xl border border-black/10 px-3 text-xs font-semibold">
+                  <input
+                    type="checkbox"
+                    checked={draft.offerCountdown}
+                    disabled={!draft.offerEndsAt}
+                    onChange={(event) =>
+                      setDraft((current) => ({
+                        ...current,
+                        offerCountdown: event.target.checked,
+                      }))
+                    }
+                  />
+                  Show countdown on product card
+                </label>
+              </div>
+            ) : null}
+          </section>
+
+          <section className="space-y-3">
+            <Toggle
+              checked={draft.featuredAnimationEnabled}
+              onChange={(checked) =>
+                setDraft((current) => ({
+                  ...current,
+                  featuredAnimationEnabled: checked,
+                }))
+              }
+              title="Homepage transparent animation"
+              description="This is the animated product showcase. It is independent from the Featured product flag."
+            />
+
+            {draft.featuredAnimationEnabled ? (
+              <div className="space-y-3 rounded-2xl bg-white p-4 ring-1 ring-black/5">
+                {fileInput(
+                  "Animation image",
+                  "featuredImage",
+                  "Best result: transparent PNG/WebP with the full garment visible.",
+                )}
+                {field(
+                  "Animation position",
+                  <input
+                    type="number"
+                    value={draft.featuredSortOrder}
+                    onChange={(event) =>
+                      setDraft((current) => ({
+                        ...current,
+                        featuredSortOrder: event.target.value,
+                      }))
+                    }
+                    placeholder="1, 2, 3, 4"
+                    className={inputClass}
+                  />,
+                )}
+              </div>
+            ) : null}
+          </section>
+
+          <section className="space-y-3">
+            <Toggle
+              checked={draft.featured}
+              onChange={(checked) =>
+                setDraft((current) => ({ ...current, featured: checked }))
+              }
+              title="Featured / spotlight product"
+              description="Marks the product for standard featured or spotlight placement. This does not control the animation."
+            />
+
+            <Toggle
+              checked={draft.wholesaleEnabled}
+              onChange={(checked) =>
+                setDraft((current) => ({
+                  ...current,
+                  wholesaleEnabled: checked,
+                }))
+              }
+              title="Dealer / wholesale"
+              description="Enable wholesale pricing and minimum order quantity for this product."
+            />
+
+            {draft.wholesaleEnabled ? (
+              <div className="grid gap-3 rounded-2xl bg-white p-4 ring-1 ring-black/5 md:grid-cols-2">
+                {field(
+                  "Wholesale price",
+                  <input
+                    type="number"
+                    min="0"
+                    value={draft.wholesalePrice}
+                    onChange={(event) =>
+                      setDraft((current) => ({
+                        ...current,
+                        wholesalePrice: event.target.value,
+                      }))
+                    }
+                    className={inputClass}
+                  />,
+                )}
+                {field(
+                  "Minimum order",
+                  <input
+                    type="number"
+                    min="1"
+                    value={draft.wholesaleMinOrder}
+                    onChange={(event) =>
+                      setDraft((current) => ({
+                        ...current,
+                        wholesaleMinOrder: event.target.value,
+                      }))
+                    }
+                    className={inputClass}
+                  />,
+                )}
+              </div>
+            ) : null}
+          </section>
+
+          {message ? (
+            <p className="rounded-xl bg-white px-4 py-3 text-xs font-medium text-black/60 ring-1 ring-black/5">
+              {message}
+            </p>
+          ) : null}
+        </form>
+      </AdminDrawer>
     </div>
   );
 }
