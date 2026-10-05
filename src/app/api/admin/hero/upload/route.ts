@@ -2,11 +2,41 @@ import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import {
   deleteCloudinaryImage,
+  getSignedCloudinaryUpload,
   isCloudinaryConfigured,
   uploadCloudinaryImage,
 } from "@/lib/cloudinary";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
+export async function GET(request: Request) {
+  if (!(await isAdminAuthenticated())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!isCloudinaryConfigured()) {
+    return NextResponse.json(
+      { error: "Cloudinary is not configured." },
+      { status: 503 },
+    );
+  }
+
+  const url = new URL(request.url);
+  const heroId = url.searchParams.get("heroId")?.trim() || "new-hero";
+  const safeHeroId = heroId.replace(/[^a-zA-Z0-9-]+/g, "-") || "new-hero";
+
+  try {
+    return NextResponse.json(
+      getSignedCloudinaryUpload(`kleidin/hero/${safeHeroId}`),
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Could not prepare hero upload." },
+      { status: 500 },
+    );
+  }
+}
 
 export async function POST(request: Request) {
   if (!(await isAdminAuthenticated())) {
