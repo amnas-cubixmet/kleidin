@@ -207,11 +207,11 @@ export async function createProduct(input: ProductWriteInput) {
 export async function updateProduct(id: string, input: ProductWriteInput) {
   const db = await getMongoDatabase();
   const collection = db.collection<ProductDocument>("products");
-  const existing = await collection.findOne({ id });
+  const existing = await collection.findOne({ id, isDemo: { $ne: true } });
   if (!existing) return null;
 
   const document = toDocument({ ...input, id }, existing);
-  await collection.replaceOne({ id }, document);
+  await collection.replaceOne({ id, isDemo: { $ne: true } }, document);
 
   return toProduct(document);
 }
@@ -230,7 +230,7 @@ export async function deleteProduct(id: string) {
     ),
   ];
 
-  await collection.deleteOne({ id });
+  await collection.deleteOne({ id, isDemo: { $ne: true } });
 
   try {
     await deleteCloudinaryImages(publicIds);
