@@ -15,6 +15,7 @@ function formatPrice(value: number) {
 
 function getProductImage(product: Product) {
   return (
+    product.featuredImage ||
     product.image ||
     product.colorVariants?.find((variant) => variant.images?.length)?.images?.[0] ||
     product.colorVariants?.find((variant) => variant.image)?.image ||
@@ -29,6 +30,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         .filter(
           (product) =>
             product.featured &&
+            product.featuredAnimationEnabled &&
             product.status === "active" &&
             Boolean(getProductImage(product)),
         )
