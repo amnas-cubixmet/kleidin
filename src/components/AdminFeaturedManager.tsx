@@ -13,8 +13,12 @@ function productImage(product: Product) {
   );
 }
 
+function hasFeatureImage(product: Product) {
+  return Boolean(productImage(product));
+}
+
 function isReady(product: Product) {
-  return product.status === "active" && Boolean(productImage(product));
+  return product.status === "active" && hasFeatureImage(product);
 }
 
 export function AdminFeaturedManager() {
@@ -98,6 +102,7 @@ export function AdminFeaturedManager() {
           ? {
               ...product,
               featured: nextFeatured,
+              status: nextFeatured ? "active" : product.status,
               featuredSortOrder: nextFeatured
                 ? maxOrder + 10
                 : product.featuredSortOrder ?? product.sortOrder ?? 100,
@@ -416,7 +421,7 @@ export function AdminFeaturedManager() {
 
                       <button
                         type="button"
-                        disabled={!product.featured && !ready}
+                        disabled={!product.featured && !hasFeatureImage(product)}
                         onClick={() =>
                           setFeatured(product.id, !product.featured)
                         }
@@ -434,9 +439,9 @@ export function AdminFeaturedManager() {
 
                   {!ready ? (
                     <div className="border-t border-[#eceef1] bg-[#fff8ef] px-3 py-2 text-[8px] font-semibold text-[#8b5a20]">
-                      {product.status !== "active"
-                        ? "Activate this product before featuring it."
-                        : "Upload a product image before featuring it."}
+                      {!hasFeatureImage(product)
+                        ? "Upload a product image before featuring it."
+                        : "Adding this item to Featured will publish it as Active."}
                     </div>
                   ) : null}
                 </article>
