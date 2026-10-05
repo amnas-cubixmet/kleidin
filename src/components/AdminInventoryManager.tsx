@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { AdminDrawer } from "@/components/AdminDrawer";
 import type { Product } from "@/types/product";
 import type { InventoryMovement } from "@/types/admin";
 
@@ -21,6 +22,7 @@ export function AdminInventoryManager() {
   const [size, setSize] = useState("");
   const [reason, setReason] = useState("Manual adjustment");
   const [message, setMessage] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   async function load() {
     const response = await fetch("/api/admin/inventory", { cache: "no-store" });
@@ -51,13 +53,21 @@ export function AdminInventoryManager() {
     }
     setDelta("");
     setMessage("Stock updated.");
+    setDrawerOpen(false);
     await load();
   }
 
   return (
     <div>
-      <p className="text-[10px] font-bold tracking-[.16em] text-[#001cac]">STOCK CONTROL</p>
-      <h1 className="mt-2 text-3xl font-bold tracking-[-.04em]">Inventory</h1>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-[10px] font-bold tracking-[.16em] text-[#001cac]">STOCK CONTROL</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-[-.04em]">Inventory</h1>
+        </div>
+        <button type="button" onClick={() => { setMessage(""); setDrawerOpen(true); }} className="min-h-11 w-full rounded-xl bg-[#001cac] px-5 text-xs font-bold !text-white sm:w-auto">
+          Adjust stock
+        </button>
+      </div>
 
       <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[["Products", summary.totalProducts], ["Stock units", summary.totalUnits], ["Low stock", summary.lowStock], ["Sold out", summary.soldOut]].map(([label, value]) => (
@@ -68,18 +78,25 @@ export function AdminInventoryManager() {
         ))}
       </div>
 
-      <form onSubmit={submit} className="mt-6 grid gap-3 rounded-2xl bg-white p-4 ring-1 ring-black/5 md:grid-cols-2 lg:grid-cols-6">
-        <select value={productId} onChange={(event) => setProductId(event.target.value)} required className="rounded-xl border border-black/10 px-3 py-2.5 text-sm lg:col-span-2">
+      <AdminDrawer
+        open={drawerOpen}
+        title="Adjust stock"
+        description="Increase or decrease base, colour or size stock without exposing the form on the page."
+        onClose={() => setDrawerOpen(false)}
+      >
+          <form onSubmit={submit} className="grid gap-3 rounded-2xl bg-white p-4 ring-1 ring-black/5 md:grid-cols-2">
+        <select value={productId} onChange={(event) => setProductId(event.target.value)} required className="rounded-xl border border-black/10 px-3 py-2.5 text-sm md:col-span-2">
           <option value="">Choose product</option>
           {products.map((product) => <option key={product.id} value={product.id}>{product.name} — {product.stock}</option>)}
         </select>
         <input value={color} onChange={(event) => setColor(event.target.value)} placeholder="Colour (optional)" className="rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
         <input value={size} onChange={(event) => setSize(event.target.value)} placeholder="Size (optional)" className="rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
         <input type="number" value={delta} onChange={(event) => setDelta(event.target.value)} placeholder="+10 or -2" required className="rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
-        <button className="rounded-xl bg-[#001cac] px-4 py-2.5 text-xs font-bold text-white">Update stock</button>
-        <input value={reason} onChange={(event) => setReason(event.target.value)} placeholder="Reason" className="rounded-xl border border-black/10 px-3 py-2.5 text-sm md:col-span-2 lg:col-span-6" />
-        {message ? <p className="text-xs font-medium text-black/55 lg:col-span-6">{message}</p> : null}
+        <button className="min-h-11 rounded-xl bg-[#001cac] px-4 py-2.5 text-xs font-bold !text-white">Update stock</button>
+        <input value={reason} onChange={(event) => setReason(event.target.value)} placeholder="Reason" className="rounded-xl border border-black/10 px-3 py-2.5 text-sm md:col-span-2 md:col-span-2" />
+        {message ? <p className="text-xs font-medium text-black/55 md:col-span-2">{message}</p> : null}
       </form>
+      </AdminDrawer>
 
       <section className="mt-6 rounded-2xl bg-white p-4 ring-1 ring-black/5">
         <h2 className="font-bold">Recent stock movements</h2>
