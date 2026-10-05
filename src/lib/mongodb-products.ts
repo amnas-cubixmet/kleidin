@@ -6,7 +6,6 @@ import type {
 } from "@/types/product";
 import type { Filter } from "mongodb";
 import { deleteCloudinaryImages } from "@/lib/cloudinary";
-import { getDemoModeEnabled } from "@/lib/demo-mode";
 import {
   getMongoDatabase,
   isMongoDatabaseConfigured,
@@ -44,7 +43,6 @@ export type ProductWriteInput = {
   tryOnImage?: string | null;
   tryOnImagePublicId?: string | null;
   sortOrder?: number;
-  isDemo?: boolean;
 };
 
 type ProductDocument = Product & {
@@ -143,7 +141,6 @@ function toDocument(
     sortOrder: input.sortOrder ?? 100,
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
-    isDemo: input.isDemo ?? existing?.isDemo ?? false,
   };
 }
 
@@ -153,20 +150,10 @@ export function isProductDatabaseConfigured() {
 
 export async function listProducts(options?: { activeOnly?: boolean }) {
   const db = await getMongoDatabase();
-  const demoModeEnabled = await getDemoModeEnabled();
 
   const filter: Filter<ProductDocument> = options?.activeOnly
-    ? demoModeEnabled
-      ? {
-          $or: [
-            { isDemo: true },
-            { isDemo: { $ne: true }, status: { $ne: "draft" as const } },
-          ],
-        }
-      : { isDemo: { $ne: true }, status: { $ne: "draft" as const } }
-    : demoModeEnabled
-      ? {}
-      : { isDemo: { $ne: true } };
+    ? { isDemo: { $ne: true }, status: { $ne: "draft" as const } }
+    : { isDemo: { $ne: true } };
 
   const rows = await db
     .collection<ProductDocument>("products")
@@ -179,56 +166,32 @@ export async function listProducts(options?: { activeOnly?: boolean }) {
 
 export async function getProduct(id: string) {
   const db = await getMongoDatabase();
-  const demoModeEnabled = await getDemoModeEnabled();
   const row = await db
     .collection<ProductDocument>("products")
-    .findOne(demoModeEnabled ? { id } : { id, isDemo: { $ne: true } });
+    .findOne({ id, isDemo: { $ne: true } });
 
   return row ? toProduct(row) : null;
 }
 
 export async function getProductBySlugFromDb(slug: string) {
   const db = await getMongoDatabase();
-  const demoModeEnabled = await getDemoModeEnabled();
   const row = await db
     .collection<ProductDocument>("products")
-    .findOne(
-      demoModeEnabled
-        ? {
-            slug,
-            $or: [
-              { isDemo: true },
-              { isDemo: { $ne: true }, status: { $ne: "draft" } },
-            ],
-          }
-        : { slug, isDemo: { $ne: true }, status: { $ne: "draft" } },
-    );
+    .findOne({ slug, isDemo: { $ne: true }, status: { $ne: "draft" } });
 
   return row ? toProduct(row) : null;
 }
 
 export async function getWholesaleProductBySlugFromDb(slug: string) {
   const db = await getMongoDatabase();
-  const demoModeEnabled = await getDemoModeEnabled();
   const row = await db
     .collection<ProductDocument>("products")
-    .findOne(
-      demoModeEnabled
-        ? {
-            wholesaleSlug: slug,
-            wholesaleEnabled: true,
-            $or: [
-              { isDemo: true },
-              { isDemo: { $ne: true }, status: { $ne: "draft" } },
-            ],
-          }
-        : {
-            wholesaleSlug: slug,
-            wholesaleEnabled: true,
-            isDemo: { $ne: true },
-            status: { $ne: "draft" },
-          },
-    );
+    .findOne({
+      wholesaleSlug: slug,
+      wholesaleEnabled: true,
+      isDemo: { $ne: true },
+      status: { $ne: "draft" },
+    });
 
   return row ? toProduct(row) : null;
 }
@@ -278,7 +241,3 @@ export async function deleteProduct(id: string) {
   return true;
 }
 
-export async function deleteDemoProducts() {
-  const db = await getMongoDatabase();
-  return db.collection<ProductDocument>("products").deleteMany({ isDemo: true });
-}
