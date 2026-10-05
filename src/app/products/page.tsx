@@ -6,6 +6,7 @@ import { ProductSearchBar } from "@/components/ProductSearchBar";
 import { getCatalogProducts } from "@/lib/catalog";
 
 export const metadata: Metadata = { title: "Shop" };
+export const dynamic = "force-dynamic";
 
 type ProductsPageProps = {
   searchParams: Promise<{
