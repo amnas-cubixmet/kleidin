@@ -112,7 +112,7 @@ export async function updateHeroSlide(
     updatedAt: new Date().toISOString(),
   };
 
-  await collection.replaceOne({ id }, document);
+  await collection.replaceOne({ id, isDemo: { $ne: true } }, document);
   return toHero(document);
 }
 
