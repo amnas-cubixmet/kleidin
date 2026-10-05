@@ -9,11 +9,19 @@ export type StoreSettings = {
   facebookUrl: string;
   supportEmail: string;
   footerTagline: string;
+  homeCatalogEyebrow: string;
+  homeCatalogTitle: string;
   homeBrandEyebrow: string;
   homeBrandTitle: string;
+  homeAboutButtonLabel: string;
   homeDealersEyebrow: string;
   homeDealersTitle: string;
   homeDealersBody: string;
+  homeDealersButtonLabel: string;
+  homeDealerTags: string[];
+  homeSpotlightBadge: string;
+  homeTestimonialsEyebrow: string;
+  homeTestimonialsTitle: string;
   aboutHeroEyebrow: string;
   aboutHeroTitle: string;
   aboutHeroLead: string;
@@ -31,6 +39,8 @@ export type StoreSettings = {
   aboutFutureEyebrow: string;
   aboutFutureTitle: string;
   aboutFutureBody: string;
+  aboutShopButtonLabel: string;
+  aboutWhatsappButtonLabel: string;
 };
 
 export type Offer = {
