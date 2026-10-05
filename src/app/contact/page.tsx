@@ -42,6 +42,22 @@ export default async function ContactPage() {
           external: false,
         }
       : null,
+    settings.instagramUrl
+      ? {
+          label: "Instagram",
+          value: "Follow KLEID.IN",
+          href: settings.instagramUrl,
+          external: true,
+        }
+      : null,
+    settings.facebookUrl
+      ? {
+          label: "Facebook",
+          value: "KLEID.IN on Facebook",
+          href: settings.facebookUrl,
+          external: true,
+        }
+      : null,
     {
       label: "Dealers",
       value: "Wholesale and reseller enquiries",
