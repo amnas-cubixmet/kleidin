@@ -54,7 +54,7 @@ function variants(value: unknown): ProductColorVariant[] {
   if (!Array.isArray(value)) return [];
 
   return value
-    .map((entry) => {
+    .map<ProductColorVariant | null>((entry) => {
       if (!entry || typeof entry !== "object") return null;
       const source = entry as Record<string, unknown>;
       const name = text(source.name);
@@ -80,7 +80,7 @@ function variants(value: unknown): ProductColorVariant[] {
         sizeStocks,
       } satisfies ProductColorVariant;
     })
-    .filter((entry): entry is ProductColorVariant => Boolean(entry));
+    .filter((entry): entry is ProductColorVariant => entry !== null);
 }
 
 function toProduct(doc: Document): Product {
