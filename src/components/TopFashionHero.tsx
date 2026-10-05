@@ -84,16 +84,6 @@ export function TopFashionHero({
   });
 
   const slides = useMemo<ResolvedHeroSlide[]>(() => {
-    const featured =
-      products.find(
-        (product) =>
-          product.featured && product.status === "active" && product.stock > 0,
-      ) ??
-      products.find(
-        (product) => product.status === "active" && product.stock > 0,
-      ) ??
-      products.find((product) => product.status === "active");
-
     return [...heroSlides]
       .filter(
         (slide) =>
@@ -109,9 +99,12 @@ export function TopFashionHero({
             )
           : undefined;
 
-        const product =
-          selectedProduct ??
-          (slide.kind === "product" ? featured : undefined);
+        const product = selectedProduct;
+
+        // Product hero slides must always point to the exact real product
+        // selected in Admin. Never substitute another product when the
+        // selected product was deleted, drafted, or is otherwise unavailable.
+        if (slide.kind === "product" && !product) return null;
 
         const variantImage =
           product?.colorVariants?.find((variant) => variant.images?.length)
