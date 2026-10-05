@@ -252,8 +252,8 @@ export async function updateFeaturedProducts(
       const product = byId.get(item.id);
       if (!product) return [];
 
-      const ready =
-        product.status === "active" && hasStorefrontImage(product);
+      const hasImage = hasStorefrontImage(product);
+      const publishAsFeatured = Boolean(item.featured && hasImage);
 
       return [
         {
@@ -261,7 +261,8 @@ export async function updateFeaturedProducts(
             filter: { id: item.id, isDemo: { $ne: true } },
             update: {
               $set: {
-                featured: Boolean(item.featured && ready),
+                featured: publishAsFeatured,
+                status: publishAsFeatured ? "active" : product.status,
                 featuredSortOrder: Math.max(
                   1,
                   Math.floor(item.featuredSortOrder),
