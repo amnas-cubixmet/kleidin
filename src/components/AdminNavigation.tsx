@@ -11,6 +11,7 @@ type IconName =
   | "inventory"
   | "testimonials"
   | "hero"
+  | "featured"
   | "announcement"
   | "more";
 
@@ -34,6 +35,7 @@ const relationshipItems: NavItem[] = [
 
 const storefrontItems: NavItem[] = [
   { href: "/admin/hero", label: "Hero", icon: "hero" },
+  { href: "/admin/featured", label: "Featured", icon: "featured" },
   { href: "/admin/announcements", label: "Announcements", icon: "announcement" },
 ];
 
@@ -72,6 +74,8 @@ function Icon({ name, className = "h-[19px] w-[19px]" }: { name: IconName; class
       return <svg {...common}><path d="M6 17.5 3 20l.8-4A8.5 8.5 0 1 1 6 17.5Z" /><path d="m9 10 1 1 2-2" /><path d="M14 10h3M9 14h8" /></svg>;
     case "hero":
       return <svg {...common}><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8.5" cy="9" r="1.5" /><path d="m5 17 5-5 3 3 2-2 4 4" /></svg>;
+    case "featured":
+      return <svg {...common}><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z" /></svg>;
     case "announcement":
       return <svg {...common}><path d="M4 13V8.5l12-4v13l-12-4Z" /><path d="M16 8.5h2.5a2.5 2.5 0 0 1 0 5H16M7 14l1.5 5h3" /></svg>;
     default:
@@ -145,7 +149,7 @@ export function AdminNavigation() {
         {mobileItems.map((item) => {
           const active =
             item.icon === "more"
-              ? ["/admin/offers", "/admin/testimonials", "/admin/hero", "/admin/announcements", "/admin/more"].some((href) => isActive(pathname, href))
+              ? ["/admin/offers", "/admin/testimonials", "/admin/hero", "/admin/featured", "/admin/announcements", "/admin/more"].some((href) => isActive(pathname, href))
               : isActive(pathname, item.href);
 
           return (
