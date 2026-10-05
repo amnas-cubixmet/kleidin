@@ -129,7 +129,7 @@ export default async function AboutPage() {
               href="/products"
               className="inline-flex min-h-10 items-center justify-center rounded-full bg-[#111] px-5 text-[9px] font-semibold !text-white"
             >
-              Shop the collection
+              {settings.aboutShopButtonLabel}
             </Link>
 
             {whatsappHref !== "#" ? (
@@ -139,7 +139,7 @@ export default async function AboutPage() {
                 rel="noreferrer"
                 className="inline-flex min-h-10 items-center justify-center rounded-full border border-black/20 px-5 text-[9px] font-semibold !text-[#111]"
               >
-                Order on WhatsApp
+                {settings.aboutWhatsappButtonLabel}
               </a>
             ) : null}
           </div>
