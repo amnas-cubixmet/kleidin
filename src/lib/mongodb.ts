@@ -68,7 +68,7 @@ async function ensureMongoIndexes(db: Db) {
         name: "products_wholesale_slug_unique",
       },
       { key: { status: 1, sortOrder: 1 }, name: "products_status_sort" },
-      { key: { featured: 1, sortOrder: 1 }, name: "products_featured_sort" },
+      { key: { featured: 1, featuredSortOrder: 1 }, name: "products_featured_sort" },
       { key: { isDemo: 1 }, name: "products_demo" },
     ]),
     db.collection("orders").createIndexes([
