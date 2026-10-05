@@ -213,7 +213,7 @@ export function AdminProductDetail({ productId }: { productId: string }) {
     setDraft((current) => {
       if (!current) return current;
 
-      const name = "New colour";
+      const name = "Colour " + ((current.colorVariants?.length ?? 0) + 1);
       const sizeStocks = Object.fromEntries(
         current.sizes.map((size) => [size, 0]),
       );
@@ -423,6 +423,17 @@ export function AdminProductDetail({ productId }: { productId: string }) {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           ...draft,
+          compareAtPrice: draft.compareAtPrice ?? null,
+          sortOrder: draft.sortOrder ?? null,
+          featuredSortOrder: draft.featuredSortOrder ?? null,
+          featuredImage: draft.featuredImage ?? "",
+          offerValue: draft.offerEnabled ? draft.offerValue ?? null : null,
+          offerLabel: draft.offerEnabled ? draft.offerLabel ?? "" : "",
+          offerBadge: draft.offerEnabled ? draft.offerBadge ?? "" : "",
+          offerStartsAt: draft.offerEnabled ? draft.offerStartsAt ?? "" : "",
+          offerEndsAt: draft.offerEnabled ? draft.offerEndsAt ?? "" : "",
+          offerCountdown:
+            Boolean(draft.offerEnabled) && Boolean(draft.offerCountdown),
           stock,
           colors: normalizedVariants.length
             ? normalizedVariants.map((variant) => variant.name)
