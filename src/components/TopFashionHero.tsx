@@ -103,7 +103,10 @@ export function TopFashionHero({
       .sort((a, b) => a.order - b.order)
       .map((slide) => {
         const selectedProduct = slide.productId
-          ? products.find((product) => product.id === slide.productId)
+          ? products.find(
+              (product) =>
+                product.id === slide.productId && product.status === "active",
+            )
           : undefined;
 
         const product =
@@ -207,13 +210,6 @@ export function TopFashionHero({
     current.href.startsWith("mailto:");
 
   const titleIsLong = current.title.length > 20;
-
-  const imagePositionClass =
-    current.imagePosition === "left"
-      ? "object-left"
-      : current.imagePosition === "right"
-        ? "object-right"
-        : "object-center";
 
   const ctaClass =
     "inline-flex min-h-[44px] items-center justify-center rounded-full px-5 text-[10px] font-bold transition " +
