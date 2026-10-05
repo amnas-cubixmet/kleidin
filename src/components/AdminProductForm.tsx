@@ -314,26 +314,63 @@ export function AdminProductForm({
   }
 
   async function upload(file: File, group: string) {
-    const body = new FormData();
-    body.set("file", file);
-    body.set("productId", productId || uploadKey);
-    body.set("color", group);
+    if (!file.type.startsWith("image/")) {
+      throw new Error("Only image files are allowed.");
+    }
+    if (file.size > 12 * 1024 * 1024) {
+      throw new Error("Image must be 12 MB or smaller.");
+    }
 
-    const response = await fetch("/api/admin/products/upload", {
-      method: "POST",
-      body,
-    });
-    const data = (await response.json()) as {
-      url?: string;
-      publicId?: string;
+    const currentProductId = productId || uploadKey;
+    const signatureResponse = await fetch(
+      "/api/admin/products/upload?productId=" +
+        encodeURIComponent(currentProductId) +
+        "&group=" +
+        encodeURIComponent(group),
+      { cache: "no-store" },
+    );
+    const signatureData = (await signatureResponse.json()) as {
+      cloudName?: string;
+      apiKey?: string;
+      timestamp?: number;
+      folder?: string;
+      signature?: string;
       error?: string;
     };
 
-    if (!response.ok || !data.url || !data.publicId) {
-      throw new Error(data.error || "Image upload failed.");
+    if (
+      !signatureResponse.ok ||
+      !signatureData.cloudName ||
+      !signatureData.apiKey ||
+      !signatureData.timestamp ||
+      !signatureData.folder ||
+      !signatureData.signature
+    ) {
+      throw new Error(signatureData.error || "Could not prepare image upload.");
     }
 
-    return { url: data.url, publicId: data.publicId };
+    const body = new FormData();
+    body.set("file", file);
+    body.set("api_key", signatureData.apiKey);
+    body.set("timestamp", String(signatureData.timestamp));
+    body.set("folder", signatureData.folder);
+    body.set("signature", signatureData.signature);
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/image/upload`,
+      { method: "POST", body },
+    );
+    const data = (await response.json()) as {
+      secure_url?: string;
+      public_id?: string;
+      error?: { message?: string };
+    };
+
+    if (!response.ok || !data.secure_url || !data.public_id) {
+      throw new Error(data.error?.message || "Image upload failed.");
+    }
+
+    return { url: data.secure_url, publicId: data.public_id };
   }
 
   async function deleteCloudinaryAsset(publicId: string) {
@@ -354,7 +391,7 @@ export function AdminProductForm({
 
   async function uploadMain(
     event: React.ChangeEvent<HTMLInputElement>,
-    kind: "image" | "tryOnImage",
+    kind: "image" | "tryOnImage" | "featuredImage",
   ) {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -370,15 +407,26 @@ export function AdminProductForm({
       setMessage("");
 
       const previousPublicId =
-        kind === "image" ? form.imagePublicId : form.tryOnImagePublicId;
+        kind === "image"
+          ? form.imagePublicId
+          : kind === "featuredImage"
+            ? form.featuredImagePublicId
+            : form.tryOnImagePublicId;
       const uploaded = await upload(
         file,
-        kind === "image" ? "main" : "try-on-transparent",
+        kind === "image"
+          ? "main"
+          : kind === "featuredImage"
+            ? "featured-animation"
+            : "try-on-transparent",
       );
 
       if (kind === "image") {
         update("image", uploaded.url);
         update("imagePublicId", uploaded.publicId);
+      } else if (kind === "featuredImage") {
+        update("featuredImage", uploaded.url);
+        update("featuredImagePublicId", uploaded.publicId);
       } else {
         update("tryOnImage", uploaded.url);
         update("tryOnImagePublicId", uploaded.publicId);
@@ -449,13 +497,22 @@ export function AdminProductForm({
     }
   }
 
-  async function removeMainImage(kind: "image" | "tryOnImage") {
+  async function removeMainImage(
+    kind: "image" | "tryOnImage" | "featuredImage",
+  ) {
     const publicId =
-      kind === "image" ? form.imagePublicId : form.tryOnImagePublicId;
+      kind === "image"
+        ? form.imagePublicId
+        : kind === "featuredImage"
+          ? form.featuredImagePublicId
+          : form.tryOnImagePublicId;
 
     if (kind === "image") {
       update("image", "");
       update("imagePublicId", "");
+    } else if (kind === "featuredImage") {
+      update("featuredImage", "");
+      update("featuredImagePublicId", "");
     } else {
       update("tryOnImage", "");
       update("tryOnImagePublicId", "");
