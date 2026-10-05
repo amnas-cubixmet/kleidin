@@ -532,6 +532,17 @@ export function AdminProductForm({
       })
       .filter((color) => Boolean(color.name));
 
+    const featuredImage =
+      form.image ||
+      colorVariants.find((color) => color.images?.length)?.images?.[0] ||
+      colorVariants.find((color) => color.image)?.image ||
+      "";
+
+    if (form.featured && !featuredImage) {
+      setMessage("Add a product image before publishing this item as Featured.");
+      return;
+    }
+
     const payload = {
       name: form.name.trim(),
       slug: slugify(form.slug),
@@ -567,8 +578,8 @@ export function AdminProductForm({
       colorVariants,
       description: form.description.trim(),
       featured: form.featured,
-      status: form.status,
-      image: form.image || colorVariants[0]?.images?.[0] || null,
+      status: form.featured ? "active" : form.status,
+      image: featuredImage || null,
       imagePublicId: form.imagePublicId || null,
       tryOnImage: form.tryOnImage || null,
       tryOnImagePublicId: form.tryOnImagePublicId || null,
@@ -670,9 +681,15 @@ export function AdminProductForm({
             <select
               className={field}
               value={form.status}
-              onChange={(event) =>
-                update("status", event.target.value as ProductStatus)
-              }
+              onChange={(event) => {
+                const nextStatus = event.target.value as ProductStatus;
+                setForm((current) => ({
+                  ...current,
+                  status: nextStatus,
+                  featured: nextStatus === "active" ? current.featured : false,
+                }));
+                setMessage("");
+              }}
             >
               <option value="draft">Draft</option>
               <option value="active">Active</option>
@@ -1246,13 +1263,21 @@ export function AdminProductForm({
             <input
               type="checkbox"
               checked={form.featured}
-              onChange={(event) => update("featured", event.target.checked)}
+              onChange={(event) => {
+                const nextFeatured = event.target.checked;
+                setForm((current) => ({
+                  ...current,
+                  featured: nextFeatured,
+                  status: nextFeatured ? "active" : current.status,
+                }));
+                setMessage("");
+              }}
               className="h-4 w-4 accent-black"
             />
             <span className="text-[11px] font-semibold">
               Featured on storefront
               <small className="mt-0.5 block text-[9px] font-normal text-[#7a828d]">
-                Shows in featured homepage sections.
+                Featured products are automatically Active and need a product image.
               </small>
             </span>
           </label>
