@@ -5,6 +5,8 @@ import { getCatalogProducts } from "@/lib/catalog";
 import { getWhatsappUrl } from "@/lib/format";
 import { getStoreSettings } from "@/lib/site-settings";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Contact",
   description: "KLEID.IN product, sizing, order and dealer support.",
