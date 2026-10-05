@@ -14,6 +14,7 @@ import type {
   ProductStatus,
 } from "@/types/product";
 import { getProductOfferPrice, getProductOfferStatus } from "@/lib/product-offers";
+import { getProductPrimaryImage } from "@/lib/product-images";
 
 const commonSizes = ["XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "Free Size"];
 
@@ -510,6 +511,7 @@ export function AdminProductDetail({ productId }: { productId: string }) {
   }
 
   const variants = draft.colorVariants ?? [];
+  const primaryPreviewImage = getProductPrimaryImage(draft);
 
   return (
     <div className="pb-24">
@@ -1133,9 +1135,9 @@ export function AdminProductDetail({ productId }: { productId: string }) {
         <aside className="space-y-4 xl:sticky xl:top-5 xl:self-start">
           <section className="overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
             <div className="relative aspect-[4/5] bg-[#f1f1ef]">
-              {draft.image ? (
+              {primaryPreviewImage ? (
                 <img
-                  src={draft.image}
+                  src={primaryPreviewImage}
                   alt={draft.name}
                   className="h-full w-full object-cover"
                 />
