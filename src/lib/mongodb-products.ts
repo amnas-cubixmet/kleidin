@@ -230,10 +230,9 @@ function productFields(
           ? number(input.featuredSortOrder)
           : current?.featuredSortOrder,
     featuredAnimationEnabled:
-      featured &&
-      (typeof input.featuredAnimationEnabled === "boolean"
+      typeof input.featuredAnimationEnabled === "boolean"
         ? input.featuredAnimationEnabled
-        : current?.featuredAnimationEnabled ?? false),
+        : current?.featuredAnimationEnabled ?? false,
     featuredImage:
       text(input.featuredImage, current?.featuredImage) || undefined,
     status: nextStatus,
