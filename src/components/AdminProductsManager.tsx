@@ -28,7 +28,6 @@ type Draft = {
   featuredAnimationEnabled: boolean;
   image: string;
   featuredImage: string;
-  tryOnImage: string;
   offerEnabled: boolean;
   offerType: ProductOfferType;
   offerValue: string;
@@ -60,7 +59,6 @@ const emptyDraft: Draft = {
   featuredAnimationEnabled: false,
   image: "",
   featuredImage: "",
-  tryOnImage: "",
   offerEnabled: false,
   offerType: "percentage",
   offerValue: "",
@@ -243,7 +241,6 @@ export function AdminProductsManager() {
       featuredAnimationEnabled: Boolean(product.featuredAnimationEnabled),
       image: product.image || "",
       featuredImage: product.featuredImage || "",
-      tryOnImage: product.tryOnImage || "",
       offerEnabled: Boolean(product.offerEnabled),
       offerType: product.offerType || "percentage",
       offerValue:
@@ -266,7 +263,7 @@ export function AdminProductsManager() {
 
   async function upload(
     file: File,
-    field: "image" | "featuredImage" | "tryOnImage",
+    field: "image" | "featuredImage",
   ) {
     setUploading(field);
     setMessage("");
@@ -414,7 +411,7 @@ export function AdminProductsManager() {
 
   function fileInput(
     label: string,
-    field: "image" | "featuredImage" | "tryOnImage",
+    field: "image" | "featuredImage",
     helper: string,
   ) {
     const value = draft[field];
@@ -890,11 +887,6 @@ export function AdminProductsManager() {
               "Product image",
               "image",
               "Main storefront image. JPG, PNG or WebP.",
-            )}
-            {fileInput(
-              "Try-on image",
-              "tryOnImage",
-              "Optional clean garment image for virtual try-on.",
             )}
           </section>
 
