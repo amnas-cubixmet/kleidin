@@ -53,7 +53,7 @@ export function SiteChrome({
     <>
       <Header products={products} settings={settings} announcements={announcements} />
       <main>{children}</main>
-      <Footer />
+      <Footer settings={settings} />
     </>
   );
 }
