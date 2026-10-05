@@ -41,7 +41,11 @@ export default async function Home() {
             <AutoOutfitHero products={showcaseProducts} />
           ) : null}
 
-          <HomeProductCatalog products={products} />
+          <HomeProductCatalog
+            products={products}
+            eyebrow={settings.homeCatalogEyebrow}
+            title={settings.homeCatalogTitle}
+          />
 
           <section className="ref-brand-strip">
             <div className="ref-brand-strip-inner">
@@ -55,7 +59,7 @@ export default async function Home() {
                 ))}
               </h2>
               <Link href="/about" className="ref-pill ref-pill-light">
-                About us
+                {settings.homeAboutButtonLabel}
               </Link>
             </div>
           </section>
@@ -65,12 +69,12 @@ export default async function Home() {
               <p>{settings.homeDealersEyebrow}</p>
               <h2>{settings.homeDealersTitle}</h2>
               <span>{settings.homeDealersBody}</span>
-              <Link href="/wholesale">Explore dealers</Link>
+              <Link href="/wholesale">{settings.homeDealersButtonLabel}</Link>
             </div>
             <div className="home-dealers-copy">
-              <strong>Retailers</strong>
-              <strong>Resellers</strong>
-              <strong>Repeat orders</strong>
+              {settings.homeDealerTags.map((tag) => (
+                <strong key={tag}>{tag}</strong>
+              ))}
             </div>
           </section>
 
@@ -96,7 +100,7 @@ export default async function Home() {
 
                   <div className="home-spotlight-media-badge">
                     <span>01</span>
-                    <strong>Most loved</strong>
+                    <strong>{settings.homeSpotlightBadge}</strong>
                   </div>
                 </Link>
 
@@ -147,8 +151,8 @@ export default async function Home() {
           ) : null}
 
           <TestimonialsSection
-            eyebrow="CUSTOMER STORIES"
-            title="Worn. Lived in. Repeated."
+            eyebrow={settings.homeTestimonialsEyebrow}
+            title={settings.homeTestimonialsTitle}
           />
         </>
       ) : (
@@ -165,7 +169,7 @@ export default async function Home() {
                 ))}
               </h2>
               <Link href="/about" className="ref-pill ref-pill-light">
-                About us
+                {settings.homeAboutButtonLabel}
               </Link>
             </div>
           </section>
@@ -175,18 +179,18 @@ export default async function Home() {
               <p>{settings.homeDealersEyebrow}</p>
               <h2>{settings.homeDealersTitle}</h2>
               <span>{settings.homeDealersBody}</span>
-              <Link href="/contact">Contact KLEID.IN</Link>
+              <Link href="/contact">{settings.homeDealersButtonLabel}</Link>
             </div>
             <div className="home-dealers-copy">
-              <strong>Retailers</strong>
-              <strong>Resellers</strong>
-              <strong>Repeat orders</strong>
+              {settings.homeDealerTags.map((tag) => (
+                <strong key={tag}>{tag}</strong>
+              ))}
             </div>
           </section>
 
           <TestimonialsSection
-            eyebrow="CUSTOMER STORIES"
-            title="Worn. Lived in. Repeated."
+            eyebrow={settings.homeTestimonialsEyebrow}
+            title={settings.homeTestimonialsTitle}
           />
         </>
       )}
