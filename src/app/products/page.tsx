@@ -6,7 +6,6 @@ import { ProductSearchBar } from "@/components/ProductSearchBar";
 import { getCatalogProducts } from "@/lib/catalog";
 
 export const metadata: Metadata = { title: "Shop" };
-export const dynamic = "force-dynamic";
 
 type ProductsPageProps = {
   searchParams: Promise<{
@@ -39,7 +38,7 @@ function buildProductsHref(
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams;
-  const allProducts = await getCatalogProducts();
+  const allProducts = getCatalogProducts();
 
   const category = params.category;
   const showNew = params.new === "1";
