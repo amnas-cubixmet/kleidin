@@ -40,6 +40,9 @@ export type Product = {
   wholesaleMinOrder?: number;
   featured: boolean;
   featuredSortOrder?: number;
+  featuredAnimationEnabled?: boolean;
+  featuredImage?: string;
+  featuredImagePublicId?: string;
   status: ProductStatus;
   image?: string;
   imagePublicId?: string;
