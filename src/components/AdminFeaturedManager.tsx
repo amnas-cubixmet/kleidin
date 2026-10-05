@@ -136,27 +136,24 @@ export function AdminFeaturedManager() {
       setSaving(true);
       setMessage("");
 
-      const featuredIds = new Set(
+      const featuredOrder = new Map(
         [...featured]
           .sort(
             (a, b) =>
               (a.sortOrder ?? 100) - (b.sortOrder ?? 100) ||
               a.name.localeCompare(b.name),
           )
-          .map((product) => product.id),
+          .map((product, index) => [product.id, (index + 1) * 10]),
       );
 
-      let position = 0;
       const items = products.map((product) => {
-        const activeFeatured = featuredIds.has(product.id);
-        if (activeFeatured) position += 1;
+        const order = featuredOrder.get(product.id);
 
         return {
           id: product.id,
-          featured: activeFeatured,
-          sortOrder: activeFeatured
-            ? position * 10
-            : Math.max(100, product.sortOrder ?? 100),
+          featured: order !== undefined,
+          sortOrder:
+            order ?? Math.max(100, product.sortOrder ?? 100),
         };
       });
 
