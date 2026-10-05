@@ -120,7 +120,7 @@ export async function getHeroSlide(id: string) {
   const db = await getMongoDatabase();
   const row = await db
     .collection<HeroSlideDocument>("heroSlides")
-    .findOne({ id });
+    .findOne({ id, isDemo: { $ne: true } });
 
   return row ? toHero(row) : null;
 }
@@ -128,9 +128,9 @@ export async function getHeroSlide(id: string) {
 export async function deleteHeroSlide(id: string) {
   const db = await getMongoDatabase();
   const collection = db.collection<HeroSlideDocument>("heroSlides");
-  const row = await collection.findOne({ id });
+  const row = await collection.findOne({ id, isDemo: { $ne: true } });
 
-  await collection.deleteOne({ id });
+  await collection.deleteOne({ id, isDemo: { $ne: true } });
 
   if (row?.imagePublicId) {
     try {
