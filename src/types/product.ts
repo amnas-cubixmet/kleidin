@@ -43,7 +43,6 @@ export type Product = {
   featuredImage?: string;
   status: ProductStatus;
   image?: string;
-  tryOnImage?: string;
   sortOrder?: number;
 };
 
