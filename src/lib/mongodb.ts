@@ -98,7 +98,32 @@ async function ensureIndex(
     return existing.name as string | undefined;
   }
 
-  return collection.createIndex(key, options);
+  let createOptions = { ...options };
+
+  if (
+    createOptions.name &&
+    indexes.some((index) => index.name === createOptions.name)
+  ) {
+    const keySuffix = Object.entries(key)
+      .map(([field, direction]) => `${field}_${String(direction).replace(/[^a-zA-Z0-9-]/g, "")}`)
+      .join("_");
+
+    const baseName = `${createOptions.name}__${keySuffix}`.slice(0, 110);
+    let candidate = baseName;
+    let suffix = 2;
+
+    while (indexes.some((index) => index.name === candidate)) {
+      candidate = `${baseName}_${suffix}`.slice(0, 120);
+      suffix += 1;
+    }
+
+    createOptions = {
+      ...createOptions,
+      name: candidate,
+    };
+  }
+
+  return collection.createIndex(key, createOptions);
 }
 
 async function ensureIndexes(db: Db) {
