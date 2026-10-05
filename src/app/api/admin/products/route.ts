@@ -70,6 +70,10 @@ function parseProduct(body: Record<string, unknown>): ProductWriteInput {
   const offerEnabled = Boolean(body.offerEnabled);
   const offerType = text(body.offerType) as ProductOfferType;
   const status = text(body.status) as ProductStatus;
+  const featured = Boolean(body.featured);
+  const normalizedStatus: ProductStatus = ["active", "draft", "sold-out"].includes(status)
+    ? status
+    : "draft";
 
   return {
     id: text(body.id) || undefined,
@@ -105,8 +109,8 @@ function parseProduct(body: Record<string, unknown>): ProductWriteInput {
     colors: strings(body.colors),
     colorVariants: variants(body.colorVariants),
     stock: Math.max(0, Math.floor(number(body.stock))),
-    featured: Boolean(body.featured),
-    status: ["active", "draft", "sold-out"].includes(status) ? status : "draft",
+    featured,
+    status: featured ? "active" : normalizedStatus,
     image: text(body.image) || null,
     imagePublicId: text(body.imagePublicId) || null,
     tryOnImage: text(body.tryOnImage) || null,
@@ -120,6 +124,15 @@ function validate(input: ProductWriteInput) {
     return "Product name, slug and SKU are required.";
   }
   if (input.price < 0) return "Retail price must be valid.";
+  if (
+    input.featured &&
+    !input.image &&
+    !input.colorVariants.some(
+      (variant) => Boolean(variant.image || variant.images?.length),
+    )
+  ) {
+    return "Featured products need a product image.";
+  }
   if (input.offerEnabled) {
     if (!input.offerValue || input.offerValue <= 0) {
       return "Enter a valid offer value.";
