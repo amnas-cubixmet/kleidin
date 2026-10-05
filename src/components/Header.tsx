@@ -6,8 +6,6 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Product } from "@/types/product";
 import type { StoreSettings } from "@/types/commerce";
-import type { Announcement } from "@/types/announcement";
-import { AnnouncementBar } from "@/components/AnnouncementBar";
 
 const nav = [
   { href: "/", label: "Home" },
@@ -53,11 +51,9 @@ function MenuIcon({ open }: { open: boolean }) {
 export function Header({
   products,
   settings,
-  announcements,
 }: {
   products: Product[];
   settings: StoreSettings;
-  announcements: Announcement[];
 }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -173,8 +169,6 @@ export function Header({
 
   return (
     <>
-      <AnnouncementBar announcements={announcements} />
-
       <header className="site-header">
         <Link
           href="/"
