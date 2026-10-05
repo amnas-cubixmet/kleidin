@@ -19,6 +19,17 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const env = getAdminEnvironment();
+  if (!env) {
+    return NextResponse.json(
+      {
+        error:
+          "Admin authentication is not configured. Add ADMIN_EMAIL, ADMIN_PASSWORD and ADMIN_SESSION_SECRET to .env.local, then restart the dev server.",
+      },
+      { status: 503 },
+    );
+  }
+
   const body = (await request.json().catch(() => null)) as
     | { email?: string; password?: string }
     | null;
