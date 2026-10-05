@@ -38,6 +38,9 @@ export type ProductWriteInput = {
   stock: number;
   featured: boolean;
   featuredSortOrder?: number;
+  featuredAnimationEnabled?: boolean;
+  featuredImage?: string | null;
+  featuredImagePublicId?: string | null;
   status: ProductStatus;
   image?: string | null;
   imagePublicId?: string | null;
@@ -113,6 +116,9 @@ function toProduct(doc: ProductDocument): Product {
     stock: Number(doc.stock ?? 0),
     featured: Boolean(doc.featured),
     featuredSortOrder: doc.featuredSortOrder ?? doc.sortOrder ?? 100,
+    featuredAnimationEnabled: Boolean(doc.featuredAnimationEnabled),
+    featuredImage: doc.featuredImage,
+    featuredImagePublicId: doc.featuredImagePublicId,
     status: doc.status,
     image: doc.image,
     imagePublicId: doc.imagePublicId,
@@ -168,6 +174,15 @@ function toDocument(
     featured: input.featured,
     featuredSortOrder:
       input.featuredSortOrder ?? existing?.featuredSortOrder ?? existing?.sortOrder ?? 100,
+    featuredAnimationEnabled: input.featured
+      ? Boolean(input.featuredAnimationEnabled)
+      : false,
+    featuredImage: input.featured
+      ? input.featuredImage ?? existing?.featuredImage ?? undefined
+      : undefined,
+    featuredImagePublicId: input.featured
+      ? input.featuredImagePublicId ?? existing?.featuredImagePublicId ?? undefined
+      : undefined,
     status: input.status,
     image: input.image ?? undefined,
     imagePublicId: input.imagePublicId ?? undefined,
@@ -340,6 +355,7 @@ export async function deleteProduct(id: string) {
   const publicIds = [
     existing.imagePublicId,
     existing.tryOnImagePublicId,
+    existing.featuredImagePublicId,
     ...(existing.colorVariants ?? []).flatMap(
       (variant) => variant.imagePublicIds ?? [],
     ),
