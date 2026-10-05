@@ -63,7 +63,8 @@ export function AdminFeaturedManager() {
         .filter((product) => product.featured)
         .sort(
           (a, b) =>
-            (a.sortOrder ?? 100) - (b.sortOrder ?? 100) ||
+            (a.featuredSortOrder ?? a.sortOrder ?? 100) -
+              (b.featuredSortOrder ?? b.sortOrder ?? 100) ||
             a.name.localeCompare(b.name),
         ),
     [products],
@@ -86,7 +87,10 @@ export function AdminFeaturedManager() {
         0,
         ...current
           .filter((product) => product.featured)
-          .map((product) => product.sortOrder ?? 100),
+          .map(
+            (product) =>
+              product.featuredSortOrder ?? product.sortOrder ?? 100,
+          ),
       );
 
       return current.map((product) =>
@@ -94,9 +98,9 @@ export function AdminFeaturedManager() {
           ? {
               ...product,
               featured: nextFeatured,
-              sortOrder: nextFeatured
+              featuredSortOrder: nextFeatured
                 ? maxOrder + 10
-                : product.sortOrder ?? 100,
+                : product.featuredSortOrder ?? product.sortOrder ?? 100,
             }
           : product,
       );
@@ -112,17 +116,22 @@ export function AdminFeaturedManager() {
 
     if (index < 0 || nextIndex < 0 || nextIndex >= ordered.length) return;
 
-    const currentOrder = ordered[index].sortOrder ?? (index + 1) * 10;
+    const currentOrder =
+      ordered[index].featuredSortOrder ??
+      ordered[index].sortOrder ??
+      (index + 1) * 10;
     const targetOrder =
-      ordered[nextIndex].sortOrder ?? (nextIndex + 1) * 10;
+      ordered[nextIndex].featuredSortOrder ??
+      ordered[nextIndex].sortOrder ??
+      (nextIndex + 1) * 10;
 
     setProducts((current) =>
       current.map((product) => {
         if (product.id === ordered[index].id) {
-          return { ...product, sortOrder: targetOrder };
+          return { ...product, featuredSortOrder: targetOrder };
         }
         if (product.id === ordered[nextIndex].id) {
-          return { ...product, sortOrder: currentOrder };
+          return { ...product, featuredSortOrder: currentOrder };
         }
         return product;
       }),
@@ -140,7 +149,8 @@ export function AdminFeaturedManager() {
         [...featured]
           .sort(
             (a, b) =>
-              (a.sortOrder ?? 100) - (b.sortOrder ?? 100) ||
+              (a.featuredSortOrder ?? a.sortOrder ?? 100) -
+              (b.featuredSortOrder ?? b.sortOrder ?? 100) ||
               a.name.localeCompare(b.name),
           )
           .map((product, index) => [product.id, (index + 1) * 10]),
@@ -152,8 +162,11 @@ export function AdminFeaturedManager() {
         return {
           id: product.id,
           featured: order !== undefined,
-          sortOrder:
-            order ?? Math.max(100, product.sortOrder ?? 100),
+          featuredSortOrder:
+            order ??
+            product.featuredSortOrder ??
+            product.sortOrder ??
+            100,
         };
       });
 
