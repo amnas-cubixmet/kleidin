@@ -91,7 +91,7 @@ export function TopFashionHero({
           (!scheduleNow || isScheduledNow(slide, scheduleNow)),
       )
       .sort((a, b) => a.order - b.order)
-      .map((slide) => {
+      .map<ResolvedHeroSlide | null>((slide) => {
         const selectedProduct = slide.productId
           ? products.find(
               (product) =>
@@ -142,7 +142,7 @@ export function TopFashionHero({
           imagePosition: slide.imagePosition ?? "center",
         } satisfies ResolvedHeroSlide;
       })
-      .filter((slide): slide is ResolvedHeroSlide => Boolean(slide));
+      .filter((slide): slide is ResolvedHeroSlide => slide !== null);
   }, [heroSlides, products, scheduleNow]);
 
   const slideCount = slides.length;
