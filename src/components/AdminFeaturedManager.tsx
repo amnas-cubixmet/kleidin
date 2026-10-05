@@ -147,6 +147,7 @@ export function AdminFeaturedManager() {
 
       const featuredOrder = new Map(
         [...featured]
+          .filter(isReady)
           .sort(
             (a, b) =>
               (a.featuredSortOrder ?? a.sortOrder ?? 100) -
@@ -161,7 +162,7 @@ export function AdminFeaturedManager() {
 
         return {
           id: product.id,
-          featured: order !== undefined,
+          featured: order !== undefined && isReady(product),
           featuredSortOrder:
             order ??
             product.featuredSortOrder ??
