@@ -176,6 +176,25 @@ export function ProductCard({ product }: { product: Product }) {
           ) : null}
         </div>
 
+        {hasOffer ? (
+          <div className="mt-2 rounded-xl border border-[#001cac]/15 bg-[#001cac]/[.04] px-3 py-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="min-w-0 truncate text-[9px] font-bold uppercase tracking-[.08em] text-[#001cac]">
+                {activeProductOffer
+                  ? product.offerLabel || "Limited offer"
+                  : product.saleLabel || "Limited offer"}
+              </span>
+              {discount > 0 ? (
+                <strong className="shrink-0 text-[10px] font-bold text-[#001cac]">
+                  {activeProductOffer && product.offerBadge
+                    ? product.offerBadge
+                    : discount + "% OFF"}
+                </strong>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+
         <div className="product-card-stock-row">
           <span
             className={
