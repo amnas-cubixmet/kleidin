@@ -23,3 +23,23 @@ export type HeroSlideConfig = {
   enabled: boolean;
   order: number;
 };
+
+
+export const heroSlides: HeroSlideConfig[] = [
+  {
+    id: "kleid-main",
+    kind: "custom",
+    productId: null,
+    label: "KLEID.IN",
+    title: "ESSENTIALS WITHOUT NOISE",
+    subtitle: "Everyday clothing built for simple, repeat wear.",
+    button: "Shop collection",
+    href: "/products",
+    badge: "KLEID.IN",
+    imageUrl: "",
+    enabled: true,
+    order: 1,
+    ctaStyle: "light",
+    imagePosition: "center",
+  },
+];
