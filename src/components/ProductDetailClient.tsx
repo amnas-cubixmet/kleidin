@@ -20,11 +20,20 @@ export function ProductDetailClient({
     variants[0]?.name ?? product.colors[0] ?? "Default",
   );
   const [size, setSize] = useState(product.sizes[0] ?? "One size");
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const selectedVariant =
     variants.find((variant) => variant.name === selectedColor) ?? variants[0];
 
-  const image = selectedVariant?.image ?? product.image;
+  const variantImages =
+    selectedVariant?.images?.length
+      ? selectedVariant.images
+      : selectedVariant?.image
+        ? [selectedVariant.image]
+        : product.image
+          ? [product.image]
+          : [];
+  const image = variantImages[activeImageIndex] ?? variantImages[0];
   const stock = selectedVariant?.stock ?? product.stock;
   const soldOut = product.status === "sold-out" || stock <= 0;
   const offerActive = isProductOfferActive(product, now);
@@ -33,6 +42,10 @@ export function ProductDetailClient({
     const clock = window.setInterval(() => setNow(Date.now()), 30000);
     return () => window.clearInterval(clock);
   }, []);
+
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [selectedColor]);
 
   const whatsappUrl = getProductWhatsappUrl(
     product,
@@ -61,6 +74,33 @@ export function ProductDetailClient({
         <div className="product-detail-floating-tag">
           {soldOut ? "Sold out" : selectedColor}
         </div>
+
+        {variantImages.length > 1 ? (
+          <div className="absolute bottom-4 left-4 right-4 z-[3] flex gap-2 overflow-x-auto rounded-2xl bg-white/85 p-2 backdrop-blur-md">
+            {variantImages.map((url, index) => (
+              <button
+                key={url + index}
+                type="button"
+                onClick={() => setActiveImageIndex(index)}
+                className={
+                  "relative h-16 w-14 shrink-0 overflow-hidden rounded-xl border bg-white transition " +
+                  (index === activeImageIndex
+                    ? "border-[#001cac] ring-2 ring-[#001cac]/15"
+                    : "border-black/10")
+                }
+                aria-label={"Show image " + (index + 1)}
+              >
+                <Image
+                  src={url}
+                  alt={product.name + " image " + (index + 1)}
+                  fill
+                  sizes="56px"
+                  className="object-cover"
+                />
+              </button>
+            ))}
+          </div>
+        ) : null}
       </div>
 
       <div className="product-info">
