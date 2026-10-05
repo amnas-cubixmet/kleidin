@@ -1,11 +1,17 @@
 import "server-only";
 
-import { Db, MongoClient } from "mongodb";
+import {
+  type Collection,
+  type CreateIndexesOptions,
+  type Db,
+  type Document,
+  MongoClient,
+} from "mongodb";
 import { requireMongoEnvironment } from "@/lib/server-env";
 
 declare global {
   var __kleidinMongoClientPromise: Promise<MongoClient> | undefined;
-  var __kleidinIndexPromise: Promise<void> | undefined;
+  var __kleidinIndexPromiseV2: Promise<void> | undefined;
 }
 
 function getClientPromise() {
@@ -13,11 +19,18 @@ function getClientPromise() {
 
   if (!global.__kleidinMongoClientPromise) {
     const client = new MongoClient(uri, {
+      appName: "kleidin-nextjs",
       maxPoolSize: 10,
       minPoolSize: 0,
-      serverSelectionTimeoutMS: 10000,
+      maxIdleTimeMS: 30_000,
+      serverSelectionTimeoutMS: 10_000,
+      ignoreUndefined: true,
     });
-    global.__kleidinMongoClientPromise = client.connect();
+
+    global.__kleidinMongoClientPromise = client.connect().catch((error) => {
+      delete global.__kleidinMongoClientPromise;
+      throw error;
+    });
   }
 
   return global.__kleidinMongoClientPromise;
@@ -27,26 +40,122 @@ export async function getDb(): Promise<Db> {
   const client = await getClientPromise();
   const { dbName } = requireMongoEnvironment();
   const db = client.db(dbName);
-  await ensureIndexes(db);
+
+  if (!global.__kleidinIndexPromiseV2) {
+    global.__kleidinIndexPromiseV2 = ensureIndexes(db).catch((error) => {
+      delete global.__kleidinIndexPromiseV2;
+      throw error;
+    });
+  }
+
+  await global.__kleidinIndexPromiseV2;
   return db;
 }
 
-async function ensureIndexes(db: Db) {
-  if (!global.__kleidinIndexPromise) {
-    global.__kleidinIndexPromise = Promise.all([
-      db.collection("products").createIndex({ slug: 1 }, { unique: true }),
-      db.collection("products").createIndex({ sku: 1 }, { unique: true }),
-      db.collection("products").createIndex({ status: 1, sortOrder: 1 }),
-      db.collection("orders").createIndex({ orderNumber: 1 }, { unique: true }),
-      db.collection("orders").createIndex({ createdAt: -1 }),
-      db.collection("orders").createIndex({ status: 1, createdAt: -1 }),
-      db.collection("customers").createIndex({ phone: 1 }),
-      db.collection("customers").createIndex({ email: 1 }),
-      db.collection("inventoryMovements").createIndex({ productId: 1, createdAt: -1 }),
-      db.collection("siteSettings").createIndex({ key: 1 }, { unique: true }),
-      db.collection("heroSlides").createIndex({ enabled: 1, order: 1 }),
-    ]).then(() => undefined);
+function sameKey(left: Document, right: Document) {
+  const leftEntries = Object.entries(left);
+  const rightEntries = Object.entries(right);
+
+  return (
+    leftEntries.length === rightEntries.length &&
+    leftEntries.every(
+      ([key, value], index) =>
+        rightEntries[index]?.[0] === key && rightEntries[index]?.[1] === value,
+    )
+  );
+}
+
+async function ensureIndex(
+  collection: Collection,
+  key: Document,
+  options: CreateIndexesOptions = {},
+) {
+  let indexes: Document[] = [];
+
+  try {
+    indexes = await collection.listIndexes().toArray();
+  } catch (error) {
+    const code =
+      error && typeof error === "object" && "code" in error
+        ? Number((error as { code?: unknown }).code)
+        : null;
+
+    // NamespaceNotFound: the collection does not exist yet.
+    if (code !== 26) throw error;
   }
 
-  await global.__kleidinIndexPromise;
+  const existing = indexes.find(
+    (index) => index.key && sameKey(index.key as Document, key),
+  );
+
+  if (existing) {
+    if (options.unique === true && existing.unique !== true) {
+      throw new Error(
+        `MongoDB index ${existing.name ?? JSON.stringify(key)} exists but is not unique.`,
+      );
+    }
+
+    return existing.name as string | undefined;
+  }
+
+  return collection.createIndex(key, options);
+}
+
+async function ensureIndexes(db: Db) {
+  const products = db.collection("products");
+  const orders = db.collection("orders");
+  const customers = db.collection("customers");
+  const inventory = db.collection("inventoryMovements");
+  const settings = db.collection("siteSettings");
+  const hero = db.collection("heroSlides");
+
+  await Promise.all([
+    // Names match the legacy KLEID.IN backend where possible. ensureIndex also
+    // accepts an equivalent existing index with any other name.
+    ensureIndex(products, { id: 1 }, { unique: true, name: "products_id_unique" }),
+    ensureIndex(products, { sku: 1 }, { unique: true, name: "products_sku_unique" }),
+    ensureIndex(products, { slug: 1 }, { unique: true, name: "products_slug_unique" }),
+    ensureIndex(
+      products,
+      { wholesaleSlug: 1 },
+      { unique: true, sparse: true, name: "products_wholesale_slug_unique" },
+    ),
+    ensureIndex(products, { status: 1, sortOrder: 1 }, { name: "products_status_sort" }),
+    ensureIndex(
+      products,
+      { featured: 1, featuredSortOrder: 1 },
+      { name: "products_featured_sort" },
+    ),
+
+    ensureIndex(orders, { id: 1 }, { unique: true, name: "orders_id_unique" }),
+    ensureIndex(
+      orders,
+      { orderNumber: 1 },
+      { unique: true, name: "orders_number_unique" },
+    ),
+    ensureIndex(orders, { createdAt: -1 }, { name: "orders_created_desc" }),
+    ensureIndex(
+      orders,
+      { status: 1, createdAt: -1 },
+      { name: "orders_status_created" },
+    ),
+
+    ensureIndex(customers, { phone: 1 }, { name: "customers_phone" }),
+    ensureIndex(customers, { email: 1 }, { name: "customers_email" }),
+
+    ensureIndex(
+      inventory,
+      { productId: 1, createdAt: -1 },
+      { name: "inventory_product_created" },
+    ),
+
+    ensureIndex(
+      settings,
+      { key: 1 },
+      { unique: true, name: "site_settings_key_unique" },
+    ),
+
+    ensureIndex(hero, { id: 1 }, { unique: true, name: "hero_id_unique" }),
+    ensureIndex(hero, { enabled: 1, order: 1 }, { name: "hero_enabled_order" }),
+  ]);
 }
