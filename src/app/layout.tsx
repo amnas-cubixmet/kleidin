@@ -3,8 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { SiteChrome } from "@/components/SiteChrome";
 import { getCatalogProducts } from "@/lib/catalog";
-import { getStoreSettings } from "@/lib/site-settings";
-import { listActiveAnnouncements } from "@/lib/mongodb-announcements";
 import { store } from "@/config/store";
 
 const inter = Inter({
@@ -13,7 +11,6 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: {
@@ -28,22 +25,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [products, settings, announcements] = await Promise.all([
-    getCatalogProducts(),
-    getStoreSettings(),
-    listActiveAnnouncements().catch(() => []),
-  ]);
+  const products = getCatalogProducts();
 
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body
         className={`${inter.variable} min-h-screen bg-white text-kleid-ink antialiased`}
       >
-        <SiteChrome
-          products={products}
-          settings={settings}
-          announcements={announcements}
-        >
+        <SiteChrome products={products}>
           {children}
         </SiteChrome>
       </body>
