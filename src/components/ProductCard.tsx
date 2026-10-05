@@ -7,6 +7,7 @@ import type { Product } from "@/types/product";
 import { formatPrice, getProductWhatsappUrl } from "@/lib/format";
 import { useStoreSettings } from "@/components/StoreSettingsContext";
 import { getProductOfferPrice, isProductOfferActive } from "@/lib/product-offers";
+import { getProductImageForColor } from "@/lib/product-images";
 
 function getOfferTimer(endAt: string | undefined, now: number) {
   if (!endAt) return null;
@@ -44,7 +45,7 @@ export function ProductCard({ product }: { product: Product }) {
   const selectedVariant =
     variants.find((variant) => variant.name === selectedColor) ?? variants[0];
 
-  const currentImage = selectedVariant?.image ?? product.image;
+  const currentImage = getProductImageForColor(product, selectedColor);
   const currentStock = selectedVariant?.stock ?? product.stock;
   const soldOut = product.status === "sold-out" || currentStock <= 0;
   const limitedStock = !soldOut && currentStock <= 7;
