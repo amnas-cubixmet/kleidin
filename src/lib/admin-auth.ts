@@ -9,6 +9,33 @@ import { getAdminEnvironment } from "@/lib/server-env";
 export const ADMIN_COOKIE = "kleidin_admin_session";
 const SESSION_AGE_SECONDS = 60 * 60 * 12;
 
+export const ADMIN_ROLE = "super-admin" as const;
+
+export const ADMIN_PERMISSIONS = [
+  "dashboard.view",
+  "products.view",
+  "products.create",
+  "products.update",
+  "products.delete",
+  "inventory.view",
+  "inventory.adjust",
+  "orders.view",
+  "orders.create",
+  "orders.update",
+  "orders.delete",
+  "customers.view",
+  "customers.update",
+  "homepage.view",
+  "homepage.create",
+  "homepage.update",
+  "homepage.delete",
+  "settings.view",
+  "settings.update",
+  "uploads.create",
+] as const;
+
+export type AdminPermission = (typeof ADMIN_PERMISSIONS)[number];
+
 type SessionPayload = {
   email: string;
   exp: number;
@@ -76,6 +103,15 @@ export function verifyAdminSessionToken(token?: string | null) {
 
 export function isAdminApiRequest(request: NextRequest) {
   return verifyAdminSessionToken(request.cookies.get(ADMIN_COOKIE)?.value);
+}
+
+export function hasAdminPermission(
+  request: NextRequest,
+  permission?: AdminPermission,
+) {
+  if (!isAdminApiRequest(request)) return false;
+  if (!permission) return true;
+  return ADMIN_PERMISSIONS.includes(permission);
 }
 
 export async function requireAdminPage() {
