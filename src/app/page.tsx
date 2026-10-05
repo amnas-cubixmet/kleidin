@@ -13,10 +13,14 @@ export default async function Home() {
     getCatalogProducts(),
     listHeroSlides({ enabledOnly: true }).catch(() => []),
   ]);
-  const featured = products.filter((product) => product.featured);
-  const showcaseProducts = featured.slice(0, 3);
-  const arrivals = products.slice(0, 4);
-  const mostLoved = featured[0];
+  const featured = products.filter(
+    (product) => product.featured && product.status === "active",
+  );
+  const showcaseProducts = featured.slice(0, 4);
+  const arrivals = products
+    .filter((product) => product.status === "active")
+    .slice(0, 4);
+  const mostLoved = featured.find((product) => product.stock > 0) ?? featured[0];
 
   return (
     <div className="reference-home">
