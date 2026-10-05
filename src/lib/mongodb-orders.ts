@@ -138,11 +138,11 @@ export async function createOrder(input: AdminOrderWriteInput) {
 export async function updateOrder(id: string, input: AdminOrderWriteInput) {
   const db = await getMongoDatabase();
   const collection = db.collection<OrderDocument>("orders");
-  const existing = await collection.findOne({ id });
+  const existing = await collection.findOne({ id, isDemo: { $ne: true } });
   if (!existing) return null;
 
   const document = toDocument(input, existing);
-  await collection.replaceOne({ id }, document);
+  await collection.replaceOne({ id, isDemo: { $ne: true } }, document);
   return toOrder(document);
 }
 
@@ -152,7 +152,7 @@ export async function updateOrderStatus(
 ) {
   const db = await getMongoDatabase();
   const result = await db.collection<OrderDocument>("orders").findOneAndUpdate(
-    { id },
+    { id, isDemo: { $ne: true } },
     {
       $set: {
         status,
@@ -167,6 +167,6 @@ export async function updateOrderStatus(
 
 export async function deleteOrder(id: string) {
   const db = await getMongoDatabase();
-  await db.collection<OrderDocument>("orders").deleteOne({ id });
+  await db.collection<OrderDocument>("orders").deleteOne({ id, isDemo: { $ne: true } });
 }
 
