@@ -9,6 +9,7 @@ export function AdminLoginForm() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -57,14 +58,24 @@ export function AdminLoginForm() {
 
       <label className="mt-4 block">
         <span className="text-[11px] font-semibold text-black/55">Password</span>
-        <input
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          className="mt-2 w-full rounded-xl border border-black/10 px-4 py-3 text-sm outline-none focus:border-[#001cac]"
-          required
-        />
+        <div className="relative mt-2">
+          <input
+            type={showPassword ? "text" : "password"}
+            autoComplete="current-password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            className="w-full rounded-xl border border-black/10 px-4 py-3 pr-14 text-sm outline-none focus:border-[#001cac]"
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((current) => !current)}
+            className="absolute inset-y-0 right-3 my-auto h-fit text-[10px] font-bold uppercase tracking-[.08em] text-black/45"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
       </label>
 
       {message ? (
