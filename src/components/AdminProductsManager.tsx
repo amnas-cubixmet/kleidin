@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useMemo, useState, type ReactNode } from "react";
 import { AdminDrawer } from "@/components/AdminDrawer";
 import type {
   Product,
@@ -477,7 +477,7 @@ export function AdminProductsManager() {
 
   const field = (
     title: string,
-    control: React.ReactNode,
+    control: ReactNode,
     wide = false,
   ) => (
     <label className={wide ? "block md:col-span-2" : "block"}>
