@@ -49,7 +49,7 @@ export function AdminProductDetail({ productId }: { productId: string }) {
   async function removeProduct() {
     if (!product) return;
     const confirmed = window.confirm(
-      "Delete this product? The Supabase record and Cloudinary media will be removed.",
+      "Delete this product? The MongoDB record and Cloudinary media will be removed.",
     );
     if (!confirmed) return;
 
