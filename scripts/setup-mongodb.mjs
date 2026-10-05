@@ -48,6 +48,15 @@ try {
   await client.connect();
   const db = client.db(dbName);
 
+  const cleanupResults = await Promise.all([
+    db.collection("products").deleteMany({ isDemo: true }),
+    db.collection("orders").deleteMany({ isDemo: true }),
+    db.collection("testimonials").deleteMany({ isDemo: true }),
+    db.collection("heroSlides").deleteMany({ isDemo: true }),
+    db.collection("announcements").deleteMany({ isDemo: true }),
+  ]);
+  await db.collection("appSettings").deleteOne({ key: "demoMode" });
+
   await Promise.all([
     db.collection("products").createIndexes([
       { key: { id: 1 }, unique: true, name: "products_id_unique" },
@@ -56,31 +65,26 @@ try {
       { key: { wholesaleSlug: 1 }, unique: true, sparse: true, name: "products_wholesale_slug_unique" },
       { key: { status: 1, sortOrder: 1 }, name: "products_status_sort" },
       { key: { featured: 1, sortOrder: 1 }, name: "products_featured_sort" },
-      { key: { isDemo: 1 }, name: "products_demo" },
     ]),
     db.collection("orders").createIndexes([
       { key: { id: 1 }, unique: true, name: "orders_id_unique" },
       { key: { orderNumber: 1 }, unique: true, name: "orders_number_unique" },
       { key: { createdAt: -1 }, name: "orders_created_desc" },
       { key: { status: 1, createdAt: -1 }, name: "orders_status_created" },
-      { key: { isDemo: 1 }, name: "orders_demo" },
     ]),
     db.collection("testimonials").createIndexes([
       { key: { id: 1 }, unique: true, name: "testimonials_id_unique" },
       { key: { createdAt: -1 }, name: "testimonials_created_desc" },
       { key: { productSlug: 1 }, name: "testimonials_product_slug" },
       { key: { enabled: 1, pending: 1, showOnHome: 1 }, name: "testimonials_public_state" },
-      { key: { isDemo: 1 }, name: "testimonials_demo" },
     ]),
     db.collection("heroSlides").createIndexes([
       { key: { id: 1 }, unique: true, name: "hero_id_unique" },
       { key: { enabled: 1, order: 1 }, name: "hero_enabled_order" },
-      { key: { isDemo: 1 }, name: "hero_demo" },
     ]),
     db.collection("announcements").createIndexes([
       { key: { id: 1 }, unique: true, name: "announcements_id_unique" },
       { key: { enabled: 1, sortOrder: 1 }, name: "announcements_enabled_sort" },
-      { key: { isDemo: 1 }, name: "announcements_demo" },
     ]),
   ]);
 
@@ -88,6 +92,10 @@ try {
 
   console.log("\nMongoDB Atlas connected successfully.");
   console.log("Database:", dbName);
+  console.log(
+    "Removed legacy demo records:",
+    cleanupResults.reduce((sum, result) => sum + result.deletedCount, 0),
+  );
   console.log("Collections/indexes are ready.\n");
 } catch (error) {
   console.error("\nMongoDB Atlas setup failed.");
