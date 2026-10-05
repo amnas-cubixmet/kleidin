@@ -52,6 +52,37 @@ type ProductDocument = Product & {
   isDemo?: boolean;
 };
 
+function hasStorefrontImage(product: Pick<ProductDocument, "image" | "colorVariants">) {
+  return Boolean(
+    product.image ||
+      product.colorVariants?.some(
+        (variant) => Boolean(variant.image || variant.images?.length),
+      ),
+  );
+}
+
+async function getNextFeaturedSortOrder(
+  collection: ReturnType<Awaited<ReturnType<typeof getMongoDatabase>>["collection"]>,
+) {
+  const rows = await collection
+    .find(
+      { isDemo: { $ne: true }, featured: true },
+      { projection: { featuredSortOrder: 1, sortOrder: 1 } },
+    )
+    .toArray();
+
+  const max = rows.reduce(
+    (value, row) =>
+      Math.max(
+        value,
+        Number(row.featuredSortOrder ?? row.sortOrder ?? 0) || 0,
+      ),
+    0,
+  );
+
+  return max + 10;
+}
+
 function toProduct(doc: ProductDocument): Product {
   return {
     id: doc.id,
@@ -211,24 +242,41 @@ export async function updateFeaturedProducts(
   const collection = db.collection<ProductDocument>("products");
 
   if (items.length) {
-    await collection.bulkWrite(
-      items.map((item) => ({
-        updateOne: {
-          filter: { id: item.id, isDemo: { $ne: true } },
-          update: {
-            $set: {
-              featured: item.featured,
-              featuredSortOrder: Math.max(
-                1,
-                Math.floor(item.featuredSortOrder),
-              ),
-              updatedAt: new Date().toISOString(),
+    const ids = items.map((item) => item.id);
+    const products = await collection
+      .find({ id: { $in: ids }, isDemo: { $ne: true } })
+      .toArray();
+    const byId = new Map(products.map((product) => [product.id, product]));
+
+    const operations = items.flatMap((item) => {
+      const product = byId.get(item.id);
+      if (!product) return [];
+
+      const ready =
+        product.status === "active" && hasStorefrontImage(product);
+
+      return [
+        {
+          updateOne: {
+            filter: { id: item.id, isDemo: { $ne: true } },
+            update: {
+              $set: {
+                featured: Boolean(item.featured && ready),
+                featuredSortOrder: Math.max(
+                  1,
+                  Math.floor(item.featuredSortOrder),
+                ),
+                updatedAt: new Date().toISOString(),
+              },
             },
           },
         },
-      })),
-      { ordered: false },
-    );
+      ];
+    });
+
+    if (operations.length) {
+      await collection.bulkWrite(operations, { ordered: false });
+    }
   }
 
   return listProducts();
@@ -236,9 +284,20 @@ export async function updateFeaturedProducts(
 
 export async function createProduct(input: ProductWriteInput) {
   const db = await getMongoDatabase();
-  const document = toDocument(input);
+  const collection = db.collection<ProductDocument>("products");
 
-  await db.collection<ProductDocument>("products").insertOne(document);
+  const normalizedInput: ProductWriteInput = input.featured
+    ? {
+        ...input,
+        status: "active",
+        featuredSortOrder:
+          input.featuredSortOrder ?? (await getNextFeaturedSortOrder(collection)),
+      }
+    : input;
+
+  const document = toDocument(normalizedInput);
+
+  await collection.insertOne(document);
   return toProduct(document);
 }
 
@@ -248,7 +307,24 @@ export async function updateProduct(id: string, input: ProductWriteInput) {
   const existing = await collection.findOne({ id, isDemo: { $ne: true } });
   if (!existing) return null;
 
-  const document = toDocument({ ...input, id }, existing);
+  let featuredSortOrder = input.featuredSortOrder;
+
+  if (input.featured) {
+    featuredSortOrder =
+      existing.featured && existing.featuredSortOrder
+        ? existing.featuredSortOrder
+        : await getNextFeaturedSortOrder(collection);
+  }
+
+  const document = toDocument(
+    {
+      ...input,
+      id,
+      status: input.featured ? "active" : input.status,
+      featuredSortOrder,
+    },
+    existing,
+  );
   await collection.replaceOne({ id, isDemo: { $ne: true } }, document);
 
   return toProduct(document);
