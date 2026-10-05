@@ -37,6 +37,7 @@ export type ProductWriteInput = {
   colorVariants: ProductColorVariant[];
   stock: number;
   featured: boolean;
+  featuredSortOrder?: number;
   status: ProductStatus;
   image?: string | null;
   imagePublicId?: string | null;
@@ -80,6 +81,7 @@ function toProduct(doc: ProductDocument): Product {
     colorVariants: doc.colorVariants ?? [],
     stock: Number(doc.stock ?? 0),
     featured: Boolean(doc.featured),
+    featuredSortOrder: doc.featuredSortOrder ?? doc.sortOrder ?? 100,
     status: doc.status,
     image: doc.image,
     imagePublicId: doc.imagePublicId,
@@ -133,6 +135,8 @@ function toDocument(
     colorVariants: input.colorVariants,
     stock: input.stock,
     featured: input.featured,
+    featuredSortOrder:
+      input.featuredSortOrder ?? existing?.featuredSortOrder ?? existing?.sortOrder ?? 100,
     status: input.status,
     image: input.image ?? undefined,
     imagePublicId: input.imagePublicId ?? undefined,
@@ -197,7 +201,11 @@ export async function getWholesaleProductBySlugFromDb(slug: string) {
 }
 
 export async function updateFeaturedProducts(
-  items: Array<{ id: string; featured: boolean; sortOrder: number }>,
+  items: Array<{
+    id: string;
+    featured: boolean;
+    featuredSortOrder: number;
+  }>,
 ) {
   const db = await getMongoDatabase();
   const collection = db.collection<ProductDocument>("products");
@@ -210,7 +218,10 @@ export async function updateFeaturedProducts(
           update: {
             $set: {
               featured: item.featured,
-              sortOrder: Math.max(1, Math.floor(item.sortOrder)),
+              featuredSortOrder: Math.max(
+                1,
+                Math.floor(item.featuredSortOrder),
+              ),
               updatedAt: new Date().toISOString(),
             },
           },
