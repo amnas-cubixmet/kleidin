@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default async function TryOnPage({ params }: TryOnPageProps) {
   const { slug } = await params;
-  const product = await getCatalogProductBySlug(slug);
+  const product = getCatalogProductBySlug(slug);
 
   if (!product || !product.tryOnImage || product.status === "draft") {
     notFound();
