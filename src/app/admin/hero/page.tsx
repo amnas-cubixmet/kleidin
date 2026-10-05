@@ -13,7 +13,7 @@ export default async function AdminHeroPage() {
     <AdminShell
       tone="monochrome"
       title="Hero"
-      description="Build product heroes, timed offers, collection highlights and custom campaigns. Add only the slides you need."
+      description="Control homepage section 01: build product heroes, timed offers, collection highlights or custom campaigns using real product data and media."
     >
       <AdminHeroManager />
     </AdminShell>
