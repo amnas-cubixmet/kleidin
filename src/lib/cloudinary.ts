@@ -23,6 +23,22 @@ export function isCloudinaryConfigured() {
   return getCloudinaryServerEnvironment() !== null;
 }
 
+export function getSignedCloudinaryUpload(folder: string) {
+  const env = getCloudinaryServerEnvironment();
+  if (!env) throw new Error("Cloudinary is not configured.");
+
+  const timestamp = Math.floor(Date.now() / 1000);
+  const signedParams = { folder, timestamp };
+
+  return {
+    cloudName: env.cloudName,
+    apiKey: env.apiKey,
+    timestamp,
+    folder,
+    signature: signature(signedParams, env.apiSecret),
+  };
+}
+
 export async function uploadCloudinaryImage(options: {
   bytes: ArrayBuffer;
   contentType: string;
