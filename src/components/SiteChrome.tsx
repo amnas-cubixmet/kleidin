@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { StoreSettingsProvider } from "@/components/StoreSettingsContext";
@@ -16,9 +17,13 @@ export function SiteChrome({
   products: Product[];
   settings: StoreSettings;
 }) {
-  useEffect(() => {
-    let frame = 0;
+  const pathname = usePathname();
+  const isAdmin = pathname.startsWith("/admin");
 
+  useEffect(() => {
+    if (isAdmin) return;
+
+    let frame = 0;
     const lockViewportX = () => {
       if (window.scrollX === 0) return;
       window.cancelAnimationFrame(frame);
@@ -35,7 +40,9 @@ export function SiteChrome({
       window.cancelAnimationFrame(frame);
       window.removeEventListener("scroll", lockViewportX);
     };
-  }, []);
+  }, [isAdmin]);
+
+  if (isAdmin) return <>{children}</>;
 
   return (
     <StoreSettingsProvider settings={settings}>
