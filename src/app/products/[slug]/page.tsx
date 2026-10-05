@@ -6,6 +6,8 @@ import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { getCatalogProductBySlug } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 
+export const dynamic = "force-dynamic";
+
 type ProductPageProps = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({
