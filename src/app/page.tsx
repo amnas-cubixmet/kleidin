@@ -41,7 +41,9 @@ export default async function Home() {
 
   return (
     <div className="reference-home">
-      <TopFashionHero products={products} heroSlides={heroSlides} />
+      {heroSlides.length ? (
+        <TopFashionHero products={products} heroSlides={heroSlides} />
+      ) : null}
 
       {showcaseProducts.length ? (
         <AutoOutfitHero products={showcaseProducts} />
