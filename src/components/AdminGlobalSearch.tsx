@@ -21,6 +21,7 @@ const pages: SearchResult[] = [
   { key: "inventory", label: "Inventory", meta: "Stock and low-stock alerts", href: "/admin/inventory", type: "Page" },
   { key: "testimonials", label: "Testimonials", meta: "Review and approve feedback", href: "/admin/testimonials", type: "Page" },
   { key: "hero", label: "Hero", meta: "Storefront hero content", href: "/admin/hero", type: "Page" },
+  { key: "featured", label: "Featured", meta: "Homepage featured products", href: "/admin/featured", type: "Page" },
   { key: "announcements", label: "Announcements", meta: "Storefront announcement bars and schedules", href: "/admin/announcements", type: "Page" },
 ];
 
