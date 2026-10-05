@@ -1,7 +1,6 @@
 import type { Testimonial } from "@/types/testimonial";
 import { deleteCloudinaryImage } from "@/lib/cloudinary";
 import { getMongoDatabase } from "@/lib/mongodb";
-import { getDemoModeEnabled } from "@/lib/demo-mode";
 
 export type TestimonialCreateInput = {
   name: string;
@@ -15,7 +14,6 @@ export type TestimonialCreateInput = {
   enabled?: boolean;
   pending?: boolean;
   submittedByCustomer?: boolean;
-  isDemo?: boolean;
 };
 
 type TestimonialDocument = Testimonial & {
@@ -43,41 +41,20 @@ function toTestimonial(doc: TestimonialDocument): Testimonial {
 
 export async function listPublishedTestimonials(productSlug?: string) {
   const db = await getMongoDatabase();
-  const demoModeEnabled = await getDemoModeEnabled();
 
   const filter: Record<string, unknown> = productSlug
-    ? demoModeEnabled
-      ? {
-          productSlug,
-          $or: [
-            { isDemo: true },
-            { isDemo: { $ne: true }, enabled: true, pending: false },
-          ],
-        }
-      : {
-          productSlug,
-          isDemo: { $ne: true },
-          enabled: true,
-          pending: false,
-        }
-    : demoModeEnabled
-      ? {
-          $or: [
-            { isDemo: true },
-            {
-              isDemo: { $ne: true },
-              enabled: true,
-              pending: false,
-              showOnHome: true,
-            },
-          ],
-        }
-      : {
-          isDemo: { $ne: true },
-          enabled: true,
-          pending: false,
-          showOnHome: true,
-        };
+    ? {
+        productSlug,
+        isDemo: { $ne: true },
+        enabled: true,
+        pending: false,
+      }
+    : {
+        isDemo: { $ne: true },
+        enabled: true,
+        pending: false,
+        showOnHome: true,
+      };
 
   const rows = await db
     .collection<TestimonialDocument>("testimonials")
@@ -90,10 +67,9 @@ export async function listPublishedTestimonials(productSlug?: string) {
 
 export async function listAllTestimonials() {
   const db = await getMongoDatabase();
-  const demoModeEnabled = await getDemoModeEnabled();
   const rows = await db
     .collection<TestimonialDocument>("testimonials")
-    .find(demoModeEnabled ? {} : { isDemo: { $ne: true } })
+    .find({ isDemo: { $ne: true } })
     .sort({ createdAt: -1 })
     .toArray();
 
@@ -119,7 +95,6 @@ export async function createTestimonial(input: TestimonialCreateInput) {
     submittedByCustomer: input.submittedByCustomer ?? true,
     createdAt: now,
     updatedAt: now,
-    isDemo: input.isDemo ?? false,
   };
 
   await db
@@ -167,9 +142,3 @@ export async function deleteTestimonial(id: string) {
   }
 }
 
-export async function deleteDemoTestimonials() {
-  const db = await getMongoDatabase();
-  return db
-    .collection<TestimonialDocument>("testimonials")
-    .deleteMany({ isDemo: true });
-}
