@@ -13,6 +13,7 @@ type IconName =
   | "hero"
   | "featured"
   | "announcement"
+  | "settings"
   | "more";
 
 type NavItem = {
@@ -37,6 +38,7 @@ const storefrontItems: NavItem[] = [
   { href: "/admin/hero", label: "Hero", icon: "hero" },
   { href: "/admin/featured", label: "Featured", icon: "featured" },
   { href: "/admin/announcements", label: "Announcements", icon: "announcement" },
+  { href: "/admin/settings", label: "Store settings", icon: "settings" },
 ];
 
 const mobileItems: NavItem[] = [
@@ -78,6 +80,8 @@ function Icon({ name, className = "h-[19px] w-[19px]" }: { name: IconName; class
       return <svg {...common}><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z" /></svg>;
     case "announcement":
       return <svg {...common}><path d="M4 13V8.5l12-4v13l-12-4Z" /><path d="M16 8.5h2.5a2.5 2.5 0 0 1 0 5H16M7 14l1.5 5h3" /></svg>;
+    case "settings":
+      return <svg {...common}><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9A1.7 1.7 0 0 0 21 10h.2v4H21a1.7 1.7 0 0 0-1.6 1Z" /></svg>;
     default:
       return <svg {...common}><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" /><circle cx="19" cy="12" r="1" fill="currentColor" stroke="none" /></svg>;
   }
@@ -149,7 +153,7 @@ export function AdminNavigation() {
         {mobileItems.map((item) => {
           const active =
             item.icon === "more"
-              ? ["/admin/offers", "/admin/testimonials", "/admin/hero", "/admin/featured", "/admin/announcements", "/admin/more"].some((href) => isActive(pathname, href))
+              ? ["/admin/offers", "/admin/testimonials", "/admin/hero", "/admin/featured", "/admin/announcements", "/admin/settings", "/admin/more"].some((href) => isActive(pathname, href))
               : isActive(pathname, item.href);
 
           return (
