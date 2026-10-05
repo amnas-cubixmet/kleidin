@@ -4,7 +4,7 @@ import type {
   ProductOfferType,
   ProductStatus,
 } from "@/types/product";
-import type { Filter } from "mongodb";
+import type { Collection, Filter } from "mongodb";
 import { deleteCloudinaryImages } from "@/lib/cloudinary";
 import {
   getMongoDatabase,
@@ -62,7 +62,7 @@ function hasStorefrontImage(product: Pick<ProductDocument, "image" | "colorVaria
 }
 
 async function getNextFeaturedSortOrder(
-  collection: ReturnType<Awaited<ReturnType<typeof getMongoDatabase>>["collection"]>,
+  collection: Collection<ProductDocument>,
 ) {
   const rows = await collection
     .find(
