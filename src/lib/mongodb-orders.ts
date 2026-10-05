@@ -1,5 +1,6 @@
 import "server-only";
 
+import { randomUUID } from "node:crypto";
 import { ObjectId, type Document } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import { getProductById } from "@/lib/mongodb-products";
@@ -201,7 +202,7 @@ export async function createOrder(input: Record<string, unknown>) {
     "KLD-" +
     createdAt.toISOString().replace(/[-:TZ.]/g, "").slice(0, 14) +
     "-" +
-    Math.random().toString(36).slice(2, 6).toUpperCase();
+    randomUUID().slice(0, 6).toUpperCase();
 
   const deducted: OrderItem[] = [];
   try {
@@ -230,27 +231,43 @@ export async function createOrder(input: Record<string, unknown>) {
     throw error;
   }
 
-  const result = await db.collection("orders").insertOne({
-    orderNumber,
-    customer,
-    items,
-    subtotal,
-    discount,
-    shipping,
-    total,
-    status: orderStatus(input.status),
-    paymentStatus: paymentStatus(input.paymentStatus),
-    paymentMethod: paymentMethod(input.paymentMethod),
-    trackingId: text(input.trackingId) || undefined,
-    courier: text(input.courier) || undefined,
-    notes: text(input.notes) || undefined,
-    stockRestored: false,
-    createdAt,
-    updatedAt: createdAt,
-  });
+  let insertedId: ObjectId;
+  try {
+    const result = await db.collection("orders").insertOne({
+      orderNumber,
+      customer,
+      items,
+      subtotal,
+      discount,
+      shipping,
+      total,
+      status: orderStatus(input.status),
+      paymentStatus: paymentStatus(input.paymentStatus),
+      paymentMethod: paymentMethod(input.paymentMethod),
+      trackingId: text(input.trackingId) || undefined,
+      courier: text(input.courier) || undefined,
+      notes: text(input.notes) || undefined,
+      stockRestored: false,
+      createdAt,
+      updatedAt: createdAt,
+    });
+    insertedId = result.insertedId;
+  } catch (error) {
+    for (const item of deducted) {
+      await adjustInventory({
+        productId: item.productId,
+        delta: item.quantity,
+        color: item.color,
+        size: item.size,
+        reason: "Order insert rollback",
+        reference: orderNumber,
+      }).catch(() => undefined);
+    }
+    throw error;
+  }
 
   await upsertCustomer(customer, total, createdAt);
-  return getOrderById(result.insertedId.toHexString());
+  return getOrderById(insertedId.toHexString());
 }
 
 export async function listOrders() {
@@ -323,7 +340,11 @@ export async function updateOrder(id: string, input: Record<string, unknown>) {
 }
 
 export async function deleteOrder(id: string) {
-  if (!ObjectId.isValid(id)) return false;
+  const current = await getOrderById(id);
+  if (!current || !ObjectId.isValid(id)) return false;
+  if (!current.stockRestored) {
+    throw new Error("Cancel, return or refund the order before deleting it.");
+  }
   const db = await getDb();
   const result = await db.collection("orders").deleteOne({ _id: new ObjectId(id) });
   return result.deletedCount === 1;
