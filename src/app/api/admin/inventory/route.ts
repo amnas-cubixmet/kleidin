@@ -4,6 +4,7 @@ import {
   adjustInventory,
   getInventorySummary,
   listInventoryMovements,
+  listInventoryStockAlerts,
 } from "@/lib/mongodb-inventory";
 import { listProducts } from "@/lib/mongodb-products";
 
@@ -15,12 +16,28 @@ export async function GET(request: NextRequest) {
   if (denied) return denied;
   try {
     const productId = request.nextUrl.searchParams.get("productId") || undefined;
-    const [products, movements, summary] = await Promise.all([
+    const thresholdParam = Number(
+      request.nextUrl.searchParams.get("threshold") ?? "5",
+    );
+    const threshold =
+      Number.isFinite(thresholdParam) && thresholdParam >= 0
+        ? Math.floor(thresholdParam)
+        : 5;
+
+    const [products, movements, summary, alerts] = await Promise.all([
       listProducts(),
       listInventoryMovements(productId),
-      getInventorySummary(),
+      getInventorySummary(threshold),
+      listInventoryStockAlerts(threshold),
     ]);
-    return NextResponse.json({ products, movements, summary });
+
+    return NextResponse.json({
+      products,
+      movements,
+      summary,
+      alerts,
+      lowStockThreshold: threshold,
+    });
   } catch (error) {
     return apiError(error);
   }
