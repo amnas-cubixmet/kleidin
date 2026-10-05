@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ProductCard } from "@/components/ProductCard";
+import { HomeProductCatalog } from "@/components/HomeProductCatalog";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { TopFashionHero } from "@/components/TopFashionHero";
 import { ProductActions } from "@/components/ProductActions";
@@ -8,12 +8,14 @@ import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { formatPrice } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
 import { listHeroSlides } from "@/lib/mongodb-hero";
+import { getStoreSettings } from "@/lib/site-settings";
 
 export const dynamic = "force-dynamic";
 export default async function Home() {
-  const [products, heroSlides] = await Promise.all([
+  const [products, heroSlides, settings] = await Promise.all([
     getCatalogProducts(),
     listHeroSlides({ enabledOnly: true }).catch(() => []),
+    getStoreSettings(),
   ]);
   const featured = products
     .filter(
@@ -25,9 +27,6 @@ export default async function Home() {
         (b.featuredSortOrder ?? b.sortOrder ?? 100),
     );
   const showcaseProducts = featured.slice(0, 4);
-  const arrivals = products
-    .filter((product) => product.status === "active")
-    .slice(0, 4);
   const mostLoved = featured.find((product) => product.stock > 0) ?? featured[0];
 
   return (
@@ -40,28 +39,19 @@ export default async function Home() {
             <AutoOutfitHero products={showcaseProducts} />
           ) : null}
 
-          <section className="ref-shell ref-arrivals">
-            <div className="ref-arrivals-head">
-              <div>
-                <p className="ref-kicker">CATALOG</p>
-                <h2></h2>
-              </div>
-              <Link href="/products" className="ref-outline-pill">
-                View all
-              </Link>
-            </div>
-
-            <div className="ref-arrival-grid">
-              {arrivals.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          </section>
+          <HomeProductCatalog products={products} />
 
           <section className="ref-brand-strip">
             <div className="ref-brand-strip-inner">
-              <p>KLEID.IN</p>
-              <h2>ONE WARDROBE.<br />NO LABELS.</h2>
+              <p>{settings.homeBrandEyebrow}</p>
+              <h2>
+                {settings.homeBrandTitle.split("\n").map((line, index) => (
+                  <span key={line + index}>
+                    {line}
+                    {index < settings.homeBrandTitle.split("\n").length - 1 ? <br /> : null}
+                  </span>
+                ))}
+              </h2>
               <Link href="/about" className="ref-pill ref-pill-light">
                 About us
               </Link>
@@ -70,12 +60,9 @@ export default async function Home() {
 
           <section className="home-dealers-clean">
             <div>
-              <p>DEALERS</p>
-              <h2>Stock KLEID.IN.</h2>
-              <span>
-                For retailers, resellers and independent stores. Ask for current
-                availability, minimum quantities and dealer ordering.
-              </span>
+              <p>{settings.homeDealersEyebrow}</p>
+              <h2>{settings.homeDealersTitle}</h2>
+              <span>{settings.homeDealersBody}</span>
               <Link href="/wholesale">Explore dealers</Link>
             </div>
             <div className="home-dealers-copy">
@@ -166,8 +153,15 @@ export default async function Home() {
         <>
           <section className="ref-brand-strip">
             <div className="ref-brand-strip-inner">
-              <p>KLEID.IN</p>
-              <h2>ONE WARDROBE.<br />NO LABELS.</h2>
+              <p>{settings.homeBrandEyebrow}</p>
+              <h2>
+                {settings.homeBrandTitle.split("\n").map((line, index) => (
+                  <span key={line + index}>
+                    {line}
+                    {index < settings.homeBrandTitle.split("\n").length - 1 ? <br /> : null}
+                  </span>
+                ))}
+              </h2>
               <Link href="/about" className="ref-pill ref-pill-light">
                 About us
               </Link>
@@ -176,11 +170,9 @@ export default async function Home() {
 
           <section className="home-dealers-clean">
             <div>
-              <p>DEALERS</p>
-              <h2>Stock KLEID.IN.</h2>
-              <span>
-                For retailers, resellers and independent stores. Product availability will appear as the catalog is published.
-              </span>
+              <p>{settings.homeDealersEyebrow}</p>
+              <h2>{settings.homeDealersTitle}</h2>
+              <span>{settings.homeDealersBody}</span>
               <Link href="/contact">Contact KLEID.IN</Link>
             </div>
             <div className="home-dealers-copy">
