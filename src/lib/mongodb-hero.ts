@@ -6,11 +6,8 @@ import {
   getMongoDatabase,
   isMongoDatabaseConfigured,
 } from "@/lib/mongodb";
-import { getDemoModeEnabled } from "@/lib/demo-mode";
 
-export type HeroSlideWriteInput = Omit<HeroSlideConfig, "id"> & {
-  isDemo?: boolean;
-};
+export type HeroSlideWriteInput = Omit<HeroSlideConfig, "id">;
 
 type HeroSlideDocument = HeroSlideConfig & {
   createdAt: string;
@@ -53,19 +50,9 @@ export async function listHeroSlides(options?: {
   if (!isHeroDatabaseConfigured()) return [];
 
   const db = await getMongoDatabase();
-  const demoModeEnabled = await getDemoModeEnabled();
   const filter = options?.enabledOnly
-    ? demoModeEnabled
-      ? {
-          $or: [
-            { isDemo: true },
-            { isDemo: { $ne: true }, enabled: true },
-          ],
-        }
-      : { isDemo: { $ne: true }, enabled: true }
-    : demoModeEnabled
-      ? {}
-      : { isDemo: { $ne: true } };
+    ? { isDemo: { $ne: true }, enabled: true }
+    : { isDemo: { $ne: true } };
 
   const rows = await db
     .collection<HeroSlideDocument>("heroSlides")
@@ -102,7 +89,6 @@ export async function createHeroSlide(input: HeroSlideWriteInput) {
     order: input.order,
     createdAt: now,
     updatedAt: now,
-    isDemo: input.isDemo ?? false,
   };
 
   await db.collection<HeroSlideDocument>("heroSlides").insertOne(document);
@@ -115,7 +101,7 @@ export async function updateHeroSlide(
 ) {
   const db = await getMongoDatabase();
   const collection = db.collection<HeroSlideDocument>("heroSlides");
-  const existing = await collection.findOne({ id });
+  const existing = await collection.findOne({ id, isDemo: { $ne: true } });
   if (!existing) return null;
 
   const document: HeroSlideDocument = {
@@ -124,7 +110,6 @@ export async function updateHeroSlide(
     id,
     createdAt: existing.createdAt,
     updatedAt: new Date().toISOString(),
-    isDemo: input.isDemo ?? existing.isDemo ?? false,
   };
 
   await collection.replaceOne({ id }, document);
@@ -156,9 +141,3 @@ export async function deleteHeroSlide(id: string) {
   }
 }
 
-export async function deleteDemoHeroSlides() {
-  const db = await getMongoDatabase();
-  return db
-    .collection<HeroSlideDocument>("heroSlides")
-    .deleteMany({ isDemo: true });
-}
