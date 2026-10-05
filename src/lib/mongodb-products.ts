@@ -246,7 +246,7 @@ export async function updateProduct(id: string, input: ProductWriteInput) {
 export async function deleteProduct(id: string) {
   const db = await getMongoDatabase();
   const collection = db.collection<ProductDocument>("products");
-  const existing = await collection.findOne({ id });
+  const existing = await collection.findOne({ id, isDemo: { $ne: true } });
   if (!existing) return false;
 
   const publicIds = [
