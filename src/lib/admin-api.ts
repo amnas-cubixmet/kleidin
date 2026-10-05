@@ -1,10 +1,23 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { isAdminApiRequest } from "@/lib/admin-auth";
+import {
+  hasAdminPermission,
+  type AdminPermission,
+} from "@/lib/admin-auth";
 
-export function requireAdminRequest(request: NextRequest) {
-  if (isAdminApiRequest(request)) return null;
-  return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+export function requireAdminRequest(
+  request: NextRequest,
+  permission?: AdminPermission,
+) {
+  if (hasAdminPermission(request, permission)) return null;
+
+  return NextResponse.json(
+    {
+      error: permission ? "Forbidden." : "Unauthorized.",
+      ...(permission ? { permission } : {}),
+    },
+    { status: permission ? 403 : 401 },
+  );
 }
 
 export function apiError(error: unknown, fallback = "Request failed.") {
