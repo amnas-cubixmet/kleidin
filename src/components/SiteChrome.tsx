@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import type { Product } from "@/types/product";
 import type { StoreSettings } from "@/types/commerce";
 import type { Announcement } from "@/types/announcement";
+import { StoreSettingsProvider } from "@/components/StoreSettingsContext";
 
 export function SiteChrome({
   children,
@@ -50,10 +51,10 @@ export function SiteChrome({
   if (isAdmin) return <>{children}</>;
 
   return (
-    <>
+    <StoreSettingsProvider settings={settings}>
       <Header products={products} settings={settings} announcements={announcements} />
       <main>{children}</main>
       <Footer settings={settings} />
-    </>
+    </StoreSettingsProvider>
   );
 }
