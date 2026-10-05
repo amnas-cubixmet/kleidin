@@ -13,9 +13,15 @@ export default async function Home() {
     getCatalogProducts(),
     listHeroSlides({ enabledOnly: true }).catch(() => []),
   ]);
-  const featured = products.filter(
-    (product) => product.featured && product.status === "active",
-  );
+  const featured = products
+    .filter(
+      (product) => product.featured && product.status === "active",
+    )
+    .sort(
+      (a, b) =>
+        (a.featuredSortOrder ?? a.sortOrder ?? 100) -
+        (b.featuredSortOrder ?? b.sortOrder ?? 100),
+    );
   const showcaseProducts = featured.slice(0, 4);
   const arrivals = products
     .filter((product) => product.status === "active")
