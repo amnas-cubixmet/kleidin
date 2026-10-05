@@ -11,6 +11,7 @@ import type {
   ProductStatus,
 } from "@/types/product";
 import { getProductOfferStatus } from "@/lib/product-offers";
+import { getProductPrimaryImage } from "@/lib/product-images";
 
 type Draft = {
   name: string;
@@ -270,6 +271,14 @@ export function AdminProductsManager() {
     setUploading(field);
     setMessage("");
 
+    const previous = draft[field];
+    const previewUrl = URL.createObjectURL(file);
+
+    setDraft((current) => ({
+      ...current,
+      [field]: previewUrl,
+    }));
+
     try {
       const signatureResponse = await fetch("/api/admin/uploads/signature", {
         method: "POST",
@@ -305,11 +314,17 @@ export function AdminProductsManager() {
         ...current,
         [field]: uploaded.secure_url,
       }));
+      setMessage("Image uploaded. Save the product to publish it.");
     } catch (error) {
+      setDraft((current) => ({
+        ...current,
+        [field]: previous,
+      }));
       setMessage(
         error instanceof Error ? error.message : "Image upload failed.",
       );
     } finally {
+      URL.revokeObjectURL(previewUrl);
       setUploading("");
     }
   }
@@ -436,12 +451,13 @@ export function AdminProductsManager() {
         {value ? (
           <div className="mt-3 flex items-center gap-3">
             <div className="relative h-20 w-20 overflow-hidden rounded-xl bg-[#f1f1f1]">
-              <Image
+              <img
                 src={value}
                 alt=""
-                fill
-                sizes="80px"
-                className={contain ? "object-contain p-1" : "object-cover"}
+                className={
+                  "h-full w-full " +
+                  (contain ? "object-contain p-1" : "object-cover")
+                }
               />
             </div>
             <button
@@ -567,9 +583,9 @@ export function AdminProductsManager() {
               >
                 <div className="flex gap-3">
                   <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-black/[.04]">
-                    {product.image ? (
+                    {getProductPrimaryImage(product) ? (
                       <Image
-                        src={product.image}
+                        src={getProductPrimaryImage(product)}
                         alt=""
                         fill
                         sizes="64px"
