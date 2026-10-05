@@ -29,10 +29,14 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       products
         .filter(
           (product) =>
-            product.featured &&
             product.featuredAnimationEnabled &&
             product.status === "active" &&
             Boolean(getProductImage(product)),
+        )
+        .sort(
+          (a, b) =>
+            (a.featuredSortOrder ?? a.sortOrder ?? 100) -
+            (b.featuredSortOrder ?? b.sortOrder ?? 100),
         )
         .slice(0, 4),
     [products],
@@ -168,7 +172,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           ) : null}
         </div>
 
-        <div className="relative order-1 min-h-[58svh] overflow-hidden bg-[#ededeb] sm:min-h-[640px] lg:order-2 lg:min-h-[680px]">
+        <div className="relative order-1 min-h-[58svh] overflow-hidden bg-[radial-gradient(circle_at_center,#ffffff_0%,#f4f4f2_58%,#e9e9e6_100%)] sm:min-h-[640px] lg:order-2 lg:min-h-[680px]">
           {items.map((product, index) => (
             <div
               key={product.id}
@@ -180,14 +184,21 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
               }
               aria-hidden={index !== activeIndex}
             >
-              <Image
-                src={getProductImage(product)}
-                alt={product.name}
-                fill
-                priority={index === 0}
-                sizes="(max-width: 1023px) 100vw, 60vw"
-                className="object-cover object-center"
-              />
+              <div className="absolute inset-[5%] sm:inset-[7%] lg:inset-[8%]">
+                <Image
+                  src={getProductImage(product)}
+                  alt={product.name}
+                  fill
+                  priority={index === 0}
+                  sizes="(max-width: 1023px) 90vw, 54vw"
+                  className={
+                    "object-contain object-center drop-shadow-[0_28px_36px_rgba(0,0,0,.12)] " +
+                    (index === activeIndex && !reducedMotion
+                      ? "animate-[pulse_4.2s_ease-in-out_infinite]"
+                      : "")
+                  }
+                />
+              </div>
             </div>
           ))}
 
