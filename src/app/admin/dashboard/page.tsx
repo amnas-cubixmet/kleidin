@@ -8,7 +8,7 @@ import { AdminDashboardBestSellers } from "@/components/AdminDashboardBestSeller
 import { AdminDashboardSalesChart } from "@/components/AdminDashboardSalesChart";
 import { requireAdmin } from "@/lib/admin-auth";
 import { listProducts } from "@/lib/mongodb-products";
-import { localStoreSettings } from "@/data/store";
+import { getStoreSettings } from "@/lib/site-settings";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +20,10 @@ export const metadata: Metadata = {
 export default async function AdminDashboardPage() {
   await requireAdmin();
 
-  const products = await listProducts().catch(() => []);
+  const [products, storeSettings] = await Promise.all([
+    listProducts().catch(() => []),
+    getStoreSettings(),
+  ]);
   const totalStock = products.reduce((sum, product) => sum + product.stock, 0);
   const lowStock = products
     .filter((product) => product.stock <= 10)
@@ -53,7 +56,7 @@ export default async function AdminDashboardPage() {
                 ["Low stock", String(lowStock.length)],
                 [
                   "WhatsApp support",
-                  localStoreSettings.whatsappNumber ? "Connected" : "Not set",
+                  storeSettings.whatsappNumber ? "Connected" : "Not set",
                 ],
                               ].map(([label, value]) => (
                 <div
