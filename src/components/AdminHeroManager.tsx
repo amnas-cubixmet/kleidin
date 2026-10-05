@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { AdminDrawer } from "@/components/AdminDrawer";
 import type { HeroSlideConfig } from "@/data/hero-slides";
 
 type Draft = {
@@ -38,6 +39,7 @@ export function AdminHeroManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   async function load() {
     const response = await fetch("/api/admin/hero", { cache: "no-store" });
@@ -65,12 +67,19 @@ export function AdminHeroManager() {
       enabled: slide.enabled,
       order: String(slide.order),
     });
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setMessage("");
+    setDrawerOpen(true);
   }
 
   function reset() {
     setEditingId(null);
     setDraft(emptyDraft);
+  }
+
+  function closeDrawer() {
+    if (uploading) return;
+    setDrawerOpen(false);
+    reset();
   }
 
   async function upload(file: File) {
@@ -122,6 +131,7 @@ export function AdminHeroManager() {
       return;
     }
     reset();
+    setDrawerOpen(false);
     setMessage("Hero saved.");
     await load();
   }
@@ -139,10 +149,23 @@ export function AdminHeroManager() {
 
   return (
     <div>
-      <p className="text-[10px] font-bold tracking-[.16em] text-[#001cac]">HOMEPAGE</p>
-      <h1 className="mt-2 text-3xl font-bold tracking-[-.04em]">Hero control</h1>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-[10px] font-bold tracking-[.16em] text-[#001cac]">HOMEPAGE</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-[-.04em]">Hero control</h1>
+        </div>
+        <button type="button" onClick={() => { reset(); setMessage(""); setDrawerOpen(true); }} className="min-h-11 w-full rounded-xl bg-[#001cac] px-5 text-xs font-bold !text-white sm:w-auto">
+          + Add hero
+        </button>
+      </div>
 
-      <form onSubmit={save} className="mt-6 rounded-2xl bg-white p-4 ring-1 ring-black/5 md:p-5">
+      <AdminDrawer
+        open={drawerOpen}
+        title={editingId ? "Edit hero" : "Add hero"}
+        description="Hero forms stay out of the page until you choose Add or Edit."
+        onClose={closeDrawer}
+      >
+          <form onSubmit={save} className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
         <div className="grid gap-3 md:grid-cols-2">
           <input value={draft.title} onChange={(e) => setDraft((c) => ({ ...c, title: e.target.value }))} placeholder="Hero title" required className="rounded-xl border border-black/10 px-3 py-2.5 text-sm md:col-span-2" />
           <input value={draft.label} onChange={(e) => setDraft((c) => ({ ...c, label: e.target.value }))} placeholder="Label" className="rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
@@ -172,10 +195,11 @@ export function AdminHeroManager() {
 
         {message ? <p className="mt-3 text-xs text-black/55">{message}</p> : null}
         <div className="mt-4 flex gap-2">
-          <button className="rounded-xl bg-[#001cac] px-5 py-3 text-xs font-bold text-white">{editingId ? "Update hero" : "Add hero"}</button>
-          {editingId ? <button type="button" onClick={reset} className="rounded-xl border border-black/10 px-5 py-3 text-xs font-bold">Cancel</button> : null}
+          <button className="min-h-11 rounded-xl bg-[#001cac] px-5 py-3 text-xs font-bold !text-white">{editingId ? "Update hero" : "Add hero"}</button>
+          <button type="button" onClick={closeDrawer} className="min-h-11 rounded-xl border border-black/10 px-5 py-3 text-xs font-bold">Cancel</button>
         </div>
       </form>
+      </AdminDrawer>
 
       <section className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {slides.map((slide) => (
