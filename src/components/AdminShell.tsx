@@ -29,9 +29,14 @@ export function AdminShell({ children }: { children: ReactNode }) {
       <div className="mx-auto grid min-h-screen max-w-[1600px] md:grid-cols-[230px_1fr]">
         <aside className="border-b border-black/10 bg-white p-4 md:border-b-0 md:border-r md:p-5">
           <div className="flex items-center justify-between md:block">
-            <Link href="/admin" className="text-lg font-black tracking-[-.04em]">
-              KLEID.IN
-            </Link>
+            <div>
+              <Link href="/admin" className="text-lg font-black tracking-[-.04em]">
+                KLEID.IN
+              </Link>
+              <p className="mt-1 text-[9px] font-bold uppercase tracking-[.12em] text-[#001cac]">
+                Super Admin · Full Access
+              </p>
+            </div>
             <button
               onClick={logout}
               className="rounded-full border border-black/10 px-3 py-2 text-[11px] font-semibold md:hidden"
