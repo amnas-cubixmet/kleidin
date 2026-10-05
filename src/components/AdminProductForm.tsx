@@ -757,6 +757,10 @@ export function AdminProductForm({
                   ...current,
                   status: nextStatus,
                   featured: nextStatus === "active" ? current.featured : false,
+                  featuredAnimationEnabled:
+                    nextStatus === "active"
+                      ? current.featuredAnimationEnabled
+                      : false,
                 }));
                 setMessage("");
               }}
