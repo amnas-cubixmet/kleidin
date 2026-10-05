@@ -3,7 +3,7 @@ import "server-only";
 import { ObjectId, type Document } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import { getProductById, updateProduct } from "@/lib/mongodb-products";
-import type { InventoryMovement } from "@/types/admin";
+import type { InventoryMovement, InventoryStockAlert } from "@/types/admin";
 
 function toMovement(doc: Document): InventoryMovement {
   return {
@@ -144,4 +144,96 @@ export async function getInventorySummary(lowStockThreshold = 5) {
     ).length,
     soldOut: rows.filter((row) => Number(row.stock ?? 0) <= 0).length,
   };
+}
+
+
+export async function listInventoryStockAlerts(lowStockThreshold = 5) {
+  const db = await getDb();
+  const rows = await db
+    .collection("products")
+    .find({ status: { $ne: "draft" } })
+    .sort({ sortOrder: 1, createdAt: -1 })
+    .toArray();
+
+  const alerts: InventoryStockAlert[] = [];
+
+  for (const row of rows) {
+    const productId = String(row._id);
+    const productName = String(row.name ?? "");
+    const sku = String(row.sku ?? "");
+    const variants = Array.isArray(row.colorVariants) ? row.colorVariants : [];
+    const sizes = Array.isArray(row.sizes)
+      ? row.sizes.map((value) => String(value)).filter(Boolean)
+      : [];
+
+    if (variants.length) {
+      variants.forEach((rawVariant, variantIndex) => {
+        if (!rawVariant || typeof rawVariant !== "object") return;
+        const variant = rawVariant as Record<string, unknown>;
+        const color = String(variant.name ?? "").trim() || undefined;
+        const rawSizeStocks =
+          variant.sizeStocks && typeof variant.sizeStocks === "object"
+            ? (variant.sizeStocks as Record<string, unknown>)
+            : {};
+        const sizeKeys = Array.from(
+          new Set([...sizes, ...Object.keys(rawSizeStocks)]),
+        );
+
+        if (sizeKeys.length) {
+          for (const size of sizeKeys) {
+            const stock = Math.max(0, Number(rawSizeStocks[size] ?? 0));
+            if (stock > lowStockThreshold) continue;
+
+            alerts.push({
+              id: productId + ":" + variantIndex + ":" + size,
+              productId,
+              productName,
+              sku,
+              color,
+              size,
+              stock,
+              threshold: lowStockThreshold,
+              status: stock <= 0 ? "sold-out" : "low",
+            });
+          }
+          return;
+        }
+
+        const stock = Math.max(0, Number(variant.stock ?? 0));
+        if (stock <= lowStockThreshold) {
+          alerts.push({
+            id: productId + ":" + variantIndex,
+            productId,
+            productName,
+            sku,
+            color,
+            stock,
+            threshold: lowStockThreshold,
+            status: stock <= 0 ? "sold-out" : "low",
+          });
+        }
+      });
+
+      continue;
+    }
+
+    const stock = Math.max(0, Number(row.stock ?? 0));
+    if (stock <= lowStockThreshold) {
+      alerts.push({
+        id: productId + ":base",
+        productId,
+        productName,
+        sku,
+        stock,
+        threshold: lowStockThreshold,
+        status: stock <= 0 ? "sold-out" : "low",
+      });
+    }
+  }
+
+  return alerts.sort((a, b) => {
+    if (a.status !== b.status) return a.status === "sold-out" ? -1 : 1;
+    if (a.stock !== b.stock) return a.stock - b.stock;
+    return a.productName.localeCompare(b.productName);
+  });
 }
