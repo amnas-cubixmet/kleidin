@@ -1,6 +1,5 @@
 import type { Announcement } from "@/types/announcement";
 import { getMongoDatabase } from "@/lib/mongodb";
-import { getDemoModeEnabled } from "@/lib/demo-mode";
 
 export type AnnouncementInput = {
   text: string;
@@ -10,7 +9,6 @@ export type AnnouncementInput = {
   endsAt?: string | null;
   enabled?: boolean;
   sortOrder?: number;
-  isDemo?: boolean;
 };
 
 type AnnouncementDocument = Announcement & {
@@ -34,10 +32,9 @@ function toAnnouncement(doc: AnnouncementDocument): Announcement {
 
 export async function listAnnouncements() {
   const db = await getMongoDatabase();
-  const demoModeEnabled = await getDemoModeEnabled();
   const rows = await db
     .collection<AnnouncementDocument>("announcements")
-    .find(demoModeEnabled ? {} : { isDemo: { $ne: true } })
+    .find({ isDemo: { $ne: true } })
     .sort({ sortOrder: 1, createdAt: -1 })
     .toArray();
 
@@ -46,19 +43,9 @@ export async function listAnnouncements() {
 
 export async function listActiveAnnouncements() {
   const db = await getMongoDatabase();
-  const demoModeEnabled = await getDemoModeEnabled();
   const rows = await db
     .collection<AnnouncementDocument>("announcements")
-    .find(
-      demoModeEnabled
-        ? {
-            $or: [
-              { isDemo: true },
-              { isDemo: { $ne: true }, enabled: true },
-            ],
-          }
-        : { isDemo: { $ne: true }, enabled: true },
-    )
+    .find({ isDemo: { $ne: true }, enabled: true })
     .sort({ sortOrder: 1, createdAt: -1 })
     .toArray();
 
@@ -66,7 +53,7 @@ export async function listActiveAnnouncements() {
 
   return rows
     .filter((item) => {
-      if (!item.isDemo && !item.enabled) return false;
+      if (!item.enabled) return false;
       if (item.startsAt && new Date(item.startsAt).getTime() > now) return false;
       if (item.endsAt && new Date(item.endsAt).getTime() < now) return false;
       return true;
@@ -89,7 +76,6 @@ export async function createAnnouncement(input: AnnouncementInput) {
     sortOrder: Number.isFinite(input.sortOrder) ? input.sortOrder! : 100,
     createdAt: now,
     updatedAt: now,
-    isDemo: input.isDemo ?? false,
   };
 
   await db
@@ -120,7 +106,6 @@ export async function updateAnnouncement(
     sortOrder: Number.isFinite(input.sortOrder) ? input.sortOrder! : 100,
     createdAt: existing.createdAt,
     updatedAt: new Date().toISOString(),
-    isDemo: input.isDemo ?? existing.isDemo ?? false,
   };
 
   await collection.replaceOne({ id }, document);
@@ -132,9 +117,3 @@ export async function deleteAnnouncement(id: string) {
   await db.collection<AnnouncementDocument>("announcements").deleteOne({ id });
 }
 
-export async function deleteDemoAnnouncements() {
-  const db = await getMongoDatabase();
-  return db
-    .collection<AnnouncementDocument>("announcements")
-    .deleteMany({ isDemo: true });
-}
