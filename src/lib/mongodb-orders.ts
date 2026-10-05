@@ -5,7 +5,6 @@ import type {
   AdminPaymentStatus,
 } from "@/lib/admin-orders";
 import { getMongoDatabase } from "@/lib/mongodb";
-import { getDemoModeEnabled } from "@/lib/demo-mode";
 
 export type AdminOrderWriteInput = {
   customerName: string;
@@ -23,7 +22,6 @@ export type AdminOrderWriteInput = {
   paymentStatus: AdminPaymentStatus;
   status: AdminOrderStatus;
   notes?: string;
-  isDemo?: boolean;
   createdAt?: string;
 };
 
@@ -84,7 +82,6 @@ function toDocument(
     paymentStatus: input.paymentStatus,
     status: input.status,
     notes: input.notes,
-    isDemo: input.isDemo ?? existing?.isDemo ?? false,
   };
 }
 
@@ -114,10 +111,9 @@ function toOrder(doc: OrderDocument): AdminOrder {
 
 export async function listOrders() {
   const db = await getMongoDatabase();
-  const demoModeEnabled = await getDemoModeEnabled();
   const rows = await db
     .collection<OrderDocument>("orders")
-    .find(demoModeEnabled ? {} : { isDemo: { $ne: true } })
+    .find({ isDemo: { $ne: true } })
     .sort({ createdAt: -1 })
     .toArray();
 
@@ -126,10 +122,9 @@ export async function listOrders() {
 
 export async function getOrder(id: string) {
   const db = await getMongoDatabase();
-  const demoModeEnabled = await getDemoModeEnabled();
   const row = await db
     .collection<OrderDocument>("orders")
-    .findOne(demoModeEnabled ? { id } : { id, isDemo: { $ne: true } });
+    .findOne({ id, isDemo: { $ne: true } });
   return row ? toOrder(row) : null;
 }
 
@@ -175,7 +170,3 @@ export async function deleteOrder(id: string) {
   await db.collection<OrderDocument>("orders").deleteOne({ id });
 }
 
-export async function deleteDemoOrders() {
-  const db = await getMongoDatabase();
-  return db.collection<OrderDocument>("orders").deleteMany({ isDemo: true });
-}
