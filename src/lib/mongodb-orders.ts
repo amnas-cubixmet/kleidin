@@ -234,6 +234,7 @@ export async function createOrder(input: Record<string, unknown>) {
   let insertedId: ObjectId;
   try {
     const result = await db.collection("orders").insertOne({
+      id: randomUUID(),
       orderNumber,
       customer,
       items,
