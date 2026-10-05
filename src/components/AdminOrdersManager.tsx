@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { AdminDrawer } from "@/components/AdminDrawer";
 import type { Order, OrderStatus } from "@/types/admin";
 import type { Product } from "@/types/product";
 
@@ -29,6 +30,7 @@ export function AdminOrdersManager() {
   const [color, setColor] = useState("");
   const [size, setSize] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   async function load() {
     const [ordersResponse, productsResponse] = await Promise.all([
@@ -75,6 +77,7 @@ export function AdminOrdersManager() {
     setColor("");
     setSize("");
     setMessage("Order created and stock updated.");
+    setDrawerOpen(false);
     await load();
   }
 
@@ -95,10 +98,23 @@ export function AdminOrdersManager() {
 
   return (
     <div>
-      <p className="text-[10px] font-bold tracking-[.16em] text-[#001cac]">FULFILMENT</p>
-      <h1 className="mt-2 text-3xl font-bold tracking-[-.04em]">Orders</h1>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-[10px] font-bold tracking-[.16em] text-[#001cac]">FULFILMENT</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-[-.04em]">Orders</h1>
+        </div>
+        <button type="button" onClick={() => { setMessage(""); setDrawerOpen(true); }} className="min-h-11 w-full rounded-xl bg-[#001cac] px-5 text-xs font-bold !text-white sm:w-auto">
+          + New order
+        </button>
+      </div>
 
-      <form onSubmit={create} className="mt-6 rounded-2xl bg-white p-4 ring-1 ring-black/5 md:p-5">
+      <AdminDrawer
+        open={drawerOpen}
+        title="Create manual order"
+        description="Create an order, deduct stock and keep the main orders page focused on fulfilment."
+        onClose={() => setDrawerOpen(false)}
+      >
+          <form onSubmit={create} className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
         <h2 className="font-bold">Create manual order</h2>
         <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Customer name" required className="rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
@@ -121,11 +137,12 @@ export function AdminOrdersManager() {
           <input value={color} onChange={(e) => setColor(e.target.value)} placeholder="Colour (optional)" className="rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
           <input value={size} onChange={(e) => setSize(e.target.value)} placeholder="Size (optional)" className="rounded-xl border border-black/10 px-3 py-2.5 text-sm" />
         </div>
-        <button className="mt-4 rounded-xl bg-[#001cac] px-5 py-3 text-xs font-bold text-white">
+        <button className="mt-4 min-h-11 w-full rounded-xl bg-[#001cac] px-5 py-3 text-xs font-bold !text-white sm:w-auto">
           Create order
         </button>
         {message ? <p className="mt-3 text-xs font-medium text-black/55">{message}</p> : null}
       </form>
+      </AdminDrawer>
 
       <section className="mt-6 rounded-2xl bg-white p-4 ring-1 ring-black/5">
         <div className="flex items-center justify-between">
