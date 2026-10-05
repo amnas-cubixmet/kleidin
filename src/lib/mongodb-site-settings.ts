@@ -28,11 +28,22 @@ function normalize(input: Partial<StoreSettings>): StoreSettings {
     facebookUrl: clean(input.facebookUrl, localStoreSettings.facebookUrl),
     supportEmail: clean(input.supportEmail, localStoreSettings.supportEmail),
     footerTagline: clean(input.footerTagline, localStoreSettings.footerTagline),
+    homeCatalogEyebrow: clean(input.homeCatalogEyebrow, localStoreSettings.homeCatalogEyebrow),
+    homeCatalogTitle: clean(input.homeCatalogTitle, localStoreSettings.homeCatalogTitle),
     homeBrandEyebrow: clean(input.homeBrandEyebrow, localStoreSettings.homeBrandEyebrow),
     homeBrandTitle: clean(input.homeBrandTitle, localStoreSettings.homeBrandTitle),
+    homeAboutButtonLabel: clean(input.homeAboutButtonLabel, localStoreSettings.homeAboutButtonLabel),
     homeDealersEyebrow: clean(input.homeDealersEyebrow, localStoreSettings.homeDealersEyebrow),
     homeDealersTitle: clean(input.homeDealersTitle, localStoreSettings.homeDealersTitle),
     homeDealersBody: clean(input.homeDealersBody, localStoreSettings.homeDealersBody),
+    homeDealersButtonLabel: clean(input.homeDealersButtonLabel, localStoreSettings.homeDealersButtonLabel),
+    homeDealerTags:
+      Array.isArray(input.homeDealerTags) && input.homeDealerTags.length
+        ? input.homeDealerTags.map((item) => clean(item)).filter(Boolean).slice(0, 6)
+        : localStoreSettings.homeDealerTags,
+    homeSpotlightBadge: clean(input.homeSpotlightBadge, localStoreSettings.homeSpotlightBadge),
+    homeTestimonialsEyebrow: clean(input.homeTestimonialsEyebrow, localStoreSettings.homeTestimonialsEyebrow),
+    homeTestimonialsTitle: clean(input.homeTestimonialsTitle, localStoreSettings.homeTestimonialsTitle),
     aboutHeroEyebrow: clean(input.aboutHeroEyebrow, localStoreSettings.aboutHeroEyebrow),
     aboutHeroTitle: clean(input.aboutHeroTitle, localStoreSettings.aboutHeroTitle),
     aboutHeroLead: clean(input.aboutHeroLead, localStoreSettings.aboutHeroLead),
@@ -51,6 +62,8 @@ function normalize(input: Partial<StoreSettings>): StoreSettings {
     aboutFutureEyebrow: clean(input.aboutFutureEyebrow, localStoreSettings.aboutFutureEyebrow),
     aboutFutureTitle: clean(input.aboutFutureTitle, localStoreSettings.aboutFutureTitle),
     aboutFutureBody: clean(input.aboutFutureBody, localStoreSettings.aboutFutureBody),
+    aboutShopButtonLabel: clean(input.aboutShopButtonLabel, localStoreSettings.aboutShopButtonLabel),
+    aboutWhatsappButtonLabel: clean(input.aboutWhatsappButtonLabel, localStoreSettings.aboutWhatsappButtonLabel),
   };
 }
 
