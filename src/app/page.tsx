@@ -29,18 +29,18 @@ export default function Home() {
     <div className="reference-home">
       <TopFashionHero products={products} heroSlides={heroSlides} />
 
+      {showcaseProducts.length ? (
+        <AutoOutfitHero products={showcaseProducts} />
+      ) : null}
+
+      <HomeProductCatalog
+        products={products}
+        eyebrow={settings.homeCatalogEyebrow}
+        title={settings.homeCatalogTitle}
+      />
+
       {products.length ? (
         <>
-          {showcaseProducts.length ? (
-            <AutoOutfitHero products={showcaseProducts} />
-          ) : null}
-
-          <HomeProductCatalog
-            products={products}
-            eyebrow={settings.homeCatalogEyebrow}
-            title={settings.homeCatalogTitle}
-          />
-
           <section className="ref-brand-strip">
             <div className="ref-brand-strip-inner">
               <p>{settings.homeBrandEyebrow}</p>
@@ -72,7 +72,7 @@ export default function Home() {
             </div>
           </section>
 
-                    {mostLoved ? (
+          {mostLoved ? (
             <section className="home-spotlight">
               <div className="home-spotlight-grid">
                 <Link
