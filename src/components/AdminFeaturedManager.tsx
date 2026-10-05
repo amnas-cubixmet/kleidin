@@ -302,23 +302,34 @@ export function AdminFeaturedManager() {
                     <span className="mt-1 block truncate text-[9px] text-[#757d88]">
                       {product.sku} · {product.category}
                     </span>
-                    <span
-                      className={
-                        "mt-1.5 inline-flex rounded-full px-2 py-1 text-[8px] font-bold " +
-                        (ready
-                          ? "bg-[#eaf7ef] text-[#247a44]"
-                          : "bg-[#fff3e8] text-[#9a5a12]")
-                      }
-                    >
-                      {ready
-                        ? "Ready for homepage"
-                        : product.status !== "active"
-                          ? "Set product Active"
-                          : "Add product image"}
-                    </span>
+                    <div className="mt-1.5 flex flex-wrap gap-1">
+                      <span
+                        className={
+                          "inline-flex rounded-full px-2 py-1 text-[8px] font-bold " +
+                          (ready
+                            ? "bg-[#eaf7ef] text-[#247a44]"
+                            : "bg-[#fff3e8] text-[#9a5a12]")
+                        }
+                      >
+                        {ready
+                          ? "Ready for homepage"
+                          : product.status !== "active"
+                            ? "Set product Active"
+                            : "Add product image"}
+                      </span>
+                      <span className="inline-flex rounded-full bg-[#eef2ff] px-2 py-1 text-[8px] font-bold text-[#001cac]">
+                        Animation {product.featuredAnimationEnabled ? "ON" : "OFF"}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-1">
+                    <Link
+                      href={"/admin/products/" + product.id + "/edit"}
+                      className="grid h-10 min-w-10 place-items-center rounded-full border border-[#d7dbe1] bg-white px-3 text-[8px] font-bold text-[#444b55]"
+                    >
+                      Edit
+                    </Link>
                     <button
                       type="button"
                       disabled={index === 0}
