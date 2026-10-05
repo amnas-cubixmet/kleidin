@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState, type ReactNode } from "react";
 import { AdminDrawer } from "@/components/AdminDrawer";
+import { AdminProductImport } from "@/components/AdminProductImport";
 import type {
   Product,
   ProductOfferType,
@@ -499,13 +501,16 @@ export function AdminProductsManager() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={openCreate}
-          className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#001cac] px-5 text-xs font-bold !text-white sm:w-auto"
-        >
-          + Add product
-        </button>
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
+          <AdminProductImport onImported={load} />
+          <button
+            type="button"
+            onClick={openCreate}
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#001cac] px-5 text-xs font-bold !text-white sm:w-auto"
+          >
+            + Add product
+          </button>
+        </div>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -574,7 +579,12 @@ export function AdminProductsManager() {
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold">{product.name}</p>
+                    <Link
+                      href={"/admin/products/" + product.id}
+                      className="block truncate text-sm font-bold hover:text-[#001cac]"
+                    >
+                      {product.name}
+                    </Link>
                     <p className="mt-1 text-[10px] text-black/45">
                       {product.sku} · ₹{product.price.toLocaleString("en-IN")}
                     </p>
@@ -597,13 +607,12 @@ export function AdminProductsManager() {
                 </div>
 
                 <div className="mt-3 grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => edit(product)}
-                    className="min-h-11 rounded-xl border border-black/10 text-xs font-bold"
+                  <Link
+                    href={"/admin/products/" + product.id}
+                    className="inline-flex min-h-11 items-center justify-center rounded-xl border border-black/10 text-xs font-bold"
                   >
-                    Edit
-                  </button>
+                    Manage
+                  </Link>
                   <button
                     type="button"
                     onClick={() => void remove(product.id)}
@@ -635,7 +644,14 @@ export function AdminProductsManager() {
             <tbody>
               {filtered.map((product) => (
                 <tr key={product.id} className="border-t border-black/5">
-                  <td className="py-3 font-semibold">{product.name}</td>
+                  <td className="py-3 font-semibold">
+                    <Link
+                      href={"/admin/products/" + product.id}
+                      className="hover:text-[#001cac]"
+                    >
+                      {product.name}
+                    </Link>
+                  </td>
                   <td>{product.sku}</td>
                   <td className="capitalize">{product.status}</td>
                   <td>₹{product.price.toLocaleString("en-IN")}</td>
@@ -645,13 +661,12 @@ export function AdminProductsManager() {
                   <td>{product.sortOrder ?? "—"}</td>
                   <td>
                     <div className="flex justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => edit(product)}
+                      <Link
+                        href={"/admin/products/" + product.id}
                         className="rounded-lg border border-black/10 px-3 py-2 font-semibold"
                       >
-                        Edit
-                      </button>
+                        Manage
+                      </Link>
                       <button
                         type="button"
                         onClick={() => void remove(product.id)}
