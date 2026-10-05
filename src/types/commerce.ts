@@ -20,8 +20,6 @@ export type StoreSettings = {
   homeDealersButtonLabel: string;
   homeDealerTags: string[];
   homeSpotlightBadge: string;
-  homeTestimonialsEyebrow: string;
-  homeTestimonialsTitle: string;
   aboutHeroEyebrow: string;
   aboutHeroTitle: string;
   aboutHeroLead: string;
@@ -43,17 +41,3 @@ export type StoreSettings = {
   aboutWhatsappButtonLabel: string;
 };
 
-export type Offer = {
-  id: string;
-  title: string;
-  badge: string;
-  discountText: string;
-  description: string;
-  ctaLabel: string;
-  ctaHref: string;
-  imageUrl: string;
-  startsAt: string | null;
-  endsAt: string | null;
-  enabled: boolean;
-  priority: number;
-};
