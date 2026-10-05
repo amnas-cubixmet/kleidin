@@ -67,9 +67,9 @@ function variants(value: unknown): ProductColorVariant[] {
 
       const sizeStocks = Object.fromEntries(
         Object.entries(rawSizeStocks)
-          .map(([key, stock]) => [key, Math.max(0, number(stock))])
+          .map(([key, stock]) => [key, Math.max(0, number(stock))] as const)
           .filter(([key]) => Boolean(key)),
-      );
+      ) as Record<string, number>;
 
       return {
         name,
