@@ -26,7 +26,9 @@ export default async function Home() {
         (a.featuredSortOrder ?? a.sortOrder ?? 100) -
         (b.featuredSortOrder ?? b.sortOrder ?? 100),
     );
-  const showcaseProducts = featured.slice(0, 4);
+  const showcaseProducts = featured
+    .filter((product) => product.featuredAnimationEnabled)
+    .slice(0, 4);
   const mostLoved = featured.find((product) => product.stock > 0) ?? featured[0];
 
   return (
