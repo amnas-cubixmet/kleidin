@@ -8,6 +8,7 @@ import { formatPrice } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 import { getActiveHeroSlides } from "@/lib/hero";
+import { getProductPrimaryImage } from "@/lib/product-images";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,7 @@ export default async function Home() {
     )
     .slice(0, 4);
   const mostLoved = featured.find((product) => product.stock > 0) ?? featured[0];
+  const mostLovedImage = mostLoved ? getProductPrimaryImage(mostLoved) : "";
 
   return (
     <div className="reference-home">
@@ -96,9 +98,9 @@ export default async function Home() {
                   className="home-spotlight-media"
                   aria-label={`View ${mostLoved.name}`}
                 >
-                  {mostLoved.image ? (
+                  {mostLovedImage ? (
                     <Image
-                      src={mostLoved.image}
+                      src={mostLovedImage}
                       alt={mostLoved.name}
                       fill
                       sizes="(max-width: 900px) 100vw, 58vw"
