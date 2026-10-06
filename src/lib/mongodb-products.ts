@@ -93,6 +93,10 @@ function toProduct(doc: Document): Product {
     wholesaleSlug: text(doc.wholesaleSlug) || undefined,
     category: text(doc.category),
     price: number(doc.price),
+    costPrice:
+      doc.costPrice === null || doc.costPrice === undefined
+        ? undefined
+        : Math.max(0, number(doc.costPrice)),
     compareAtPrice:
       doc.compareAtPrice === null || doc.compareAtPrice === undefined
         ? undefined
@@ -170,6 +174,12 @@ function productFields(
       text(input.wholesaleSlug, current?.wholesaleSlug) || undefined,
     category: text(input.category, current?.category),
     price: Math.max(0, number(input.price, current?.price)),
+    costPrice:
+      input.costPrice === null
+        ? undefined
+        : input.costPrice !== undefined
+          ? Math.max(0, number(input.costPrice))
+          : current?.costPrice,
     compareAtPrice:
       input.compareAtPrice === null
         ? undefined
