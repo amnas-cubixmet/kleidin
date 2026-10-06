@@ -50,15 +50,7 @@ export default async function Home() {
           100),
     );
 
-  const defaultHeroFallbackProduct = products.find(
-    (product) =>
-      product.status === "active" && Boolean(getProductPrimaryImage(product)),
-  );
-  const defaultHeroImage =
-    settings.homeDefaultHeroImageUrl ||
-    (defaultHeroFallbackProduct
-      ? getProductPrimaryImage(defaultHeroFallbackProduct)
-      : "");
+  const defaultHeroImage = "/images/kleidin-white-shirt-model.png";
 
   const resolvedHeroSlides: HeroSlideConfig[] = [
     ...(settings.homeDefaultHeroEnabled
