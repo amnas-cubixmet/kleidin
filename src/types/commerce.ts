@@ -9,6 +9,10 @@ export type StoreSettings = {
   facebookUrl: string;
   supportEmail: string;
   footerTagline: string;
+  announcementEnabled: boolean;
+  announcementText: string;
+  announcementButtonLabel: string;
+  announcementButtonHref: string;
   homeDefaultHeroEnabled: boolean;
   homeDefaultHeroLabel: string;
   homeDefaultHeroTitle: string;
