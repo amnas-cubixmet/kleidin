@@ -15,7 +15,7 @@ import type {
 } from "@/types/product";
 import { getProductOfferPrice, getProductOfferStatus } from "@/lib/product-offers";
 import { getProductPrimaryImage } from "@/lib/product-images";
-import { uploadImageDirectToCloudinary } from "@/lib/cloudinary-direct-upload";
+import { uploadAdminImage } from "@/lib/admin-image-upload";
 
 const commonSizes = ["XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "Free Size"];
 
@@ -310,7 +310,7 @@ export function AdminProductDetail({ productId }: { productId: string }) {
     setMessage("");
 
     try {
-      const uploaded = await uploadImageDirectToCloudinary(file);
+      const uploaded = await uploadAdminImage(file, "kleidin/products");
       return uploaded.url;
     } finally {
       setUploading("");
