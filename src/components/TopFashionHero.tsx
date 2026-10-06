@@ -206,7 +206,7 @@ export function TopFashionHero({
         : "border border-black/10 bg-white !text-[#111111] hover:bg-[#f7f7f7]");
 
   return (
-    <section className="mx-auto w-full px-0 sm:w-[min(calc(100%-24px),1440px)]">
+    <section className="w-screen max-w-none px-0">
       <div className="relative overflow-hidden bg-[#efede8] text-[#111111] sm:rounded-[18px] md:aspect-[16/9] md:rounded-[22px]">
         <div className="relative h-[54svh] min-h-[350px] overflow-hidden bg-[#dedbd5] md:absolute md:inset-y-0 md:right-0 md:h-auto md:min-h-0 md:w-[57%]">
           {slides.map((slide, slideIndex) => (
