@@ -104,15 +104,16 @@ export function HomepageAnimationBars({
           "--animation-bar-gap": bar.gap + "px",
         } as CSSProperties;
 
-        const set = (
+        const renderSet = (hidden: boolean, copy: string) => (
           <div
+            key={copy}
             className="animation-bar-set"
             style={{ gap: bar.gap }}
-            aria-hidden={bar.autoScroll ? true : undefined}
+            aria-hidden={hidden || undefined}
           >
             {bar.items.map((item, index) => (
               <div
-                key={item.id}
+                key={copy + "-" + item.id}
                 className="flex shrink-0 items-center"
                 style={{ gap: bar.gap }}
               >
@@ -153,8 +154,8 @@ export function HomepageAnimationBars({
                     : "animation-bar-left")
                 }
               >
-                {set}
-                {set}
+                {renderSet(false, "primary")}
+                {renderSet(true, "duplicate")}
               </div>
             ) : (
               <div
