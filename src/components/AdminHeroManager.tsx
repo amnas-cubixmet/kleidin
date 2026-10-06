@@ -53,7 +53,7 @@ const emptyDraft: Draft = {
   startsAt: "",
   endsAt: "",
   showCountdown: false,
-  ctaStyle: "light",
+  ctaStyle: "dark",
   imagePosition: "center",
   enabled: true,
   order: "0",
@@ -188,7 +188,7 @@ export function AdminHeroManager() {
       startsAt: dateTimeInput(slide.startsAt),
       endsAt: dateTimeInput(slide.endsAt),
       showCountdown: Boolean(slide.showCountdown),
-      ctaStyle: slide.ctaStyle ?? "light",
+      ctaStyle: slide.ctaStyle ?? "dark",
       imagePosition: slide.imagePosition ?? "center",
       enabled: slide.enabled,
       order: String(slide.order),
@@ -262,7 +262,7 @@ export function AdminHeroManager() {
         ...current,
         imageUrl: uploaded.url,
       }));
-      setMessage("Hero image uploaded to Cloudinary.");
+      setMessage("Hero image uploaded and normalized to 1920 × 1080.");
     } catch (error) {
       setDraft((current) => ({ ...current, imageUrl: previous }));
       setMessage(error instanceof Error ? error.message : "Upload failed.");
@@ -367,7 +367,7 @@ export function AdminHeroManager() {
             Hero builder
           </h1>
           <p className="mt-2 max-w-xl text-xs leading-5 text-black/45">
-            Build product, offer, collection or completely custom hero slides.
+            Build light editorial hero slides. Default image format is 1920 × 1080 (16:9).
           </p>
         </div>
 
@@ -695,7 +695,7 @@ export function AdminHeroManager() {
               <div>
                 <p className={labelClass}>Hero image</p>
                 <p className="mt-1 text-[10px] text-black/45">
-                  Custom image overrides the linked product image.
+                  Custom image overrides the linked product image. Uploads are automatically normalized to 1920 × 1080 (16:9).
                 </p>
               </div>
               {uploading ? (
