@@ -47,12 +47,19 @@ export function SiteChrome({
 
   return (
     <StoreSettingsProvider settings={settings}>
-      <Link
-        href="/products"
-        className="flex min-h-9 w-full items-center justify-center bg-[#111111] px-4 py-2 text-center text-[9px] font-bold uppercase tracking-[.14em] !text-white"
-      >
-        5% OFF ON YOUR FIRST ORDER · SHOP NOW
-      </Link>
+      {settings.announcementEnabled ? (
+        <div className="flex min-h-9 w-full items-center justify-center gap-2 bg-[#111111] px-4 py-2 text-center text-[9px] font-bold uppercase tracking-[.14em] text-white">
+          <span>{settings.announcementText}</span>
+          {settings.announcementButtonLabel && settings.announcementButtonHref ? (
+            <Link
+              href={settings.announcementButtonHref}
+              className="border-b border-white/70 !text-white"
+            >
+              {settings.announcementButtonLabel}
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
       <Header products={products} settings={settings} />
       <main>{children}</main>
       <Footer settings={settings} />
