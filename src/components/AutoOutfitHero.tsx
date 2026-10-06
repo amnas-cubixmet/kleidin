@@ -41,19 +41,19 @@ type SliderItem = {
   demo: boolean;
 };
 
+const backgrounds = [
+  "#d7d0c3",
+  "#d6d8d2",
+  "#d8d1ca",
+  "#d2d7d5",
+  "#d9d3c7",
+  "#d3d6d9",
+  "#dad5cf",
+  "#d4d7cf",
+];
+
 export function AutoOutfitHero({ products }: { products: Product[] }) {
   const items = useMemo<SliderItem[]>(() => {
-    const backgrounds = [
-      "#e8e5df",
-      "#ece9e3",
-      "#e4e7e2",
-      "#e9e4df",
-      "#e3e5e8",
-      "#eee8df",
-      "#e6e3df",
-      "#e7e8e2",
-    ];
-
     const liveItems = products
       .filter(
         (product) =>
@@ -173,7 +173,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         pauseTimerRef.current = window.setTimeout(() => {
           setPaused(false);
           pauseTimerRef.current = null;
-        }, 4000);
+        }, 4200);
       }
     },
     [items.length, reducedMotion],
@@ -183,25 +183,11 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
     if (items.length <= 1 || reducedMotion || paused) return;
 
     const timer = window.setInterval(() => {
-      setActiveIndex((current) => {
-        const next = (current + 1) % items.length;
-        const rail = railRef.current;
-        const thumb = rail?.querySelector<HTMLElement>(
-          '[data-product-thumb="' + next + '"]',
-        );
-
-        if (rail && thumb) {
-          const left =
-            thumb.offsetLeft - (rail.clientWidth - thumb.offsetWidth) / 2;
-          rail.scrollTo({ left, behavior: "smooth" });
-        }
-
-        return next;
-      });
-    }, 3800);
+      selectProduct(activeIndex + 1);
+    }, 4200);
 
     return () => window.clearInterval(timer);
-  }, [items.length, paused, reducedMotion]);
+  }, [activeIndex, items.length, paused, reducedMotion, selectProduct]);
 
   if (!active) return null;
 
@@ -209,12 +195,11 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
   return (
     <section
-      className="w-full bg-[#f2f2f0] px-3 py-4 sm:px-5 sm:py-6 lg:px-7 lg:py-8"
+      className="w-full bg-[#efefed] px-2 py-3 sm:px-4 sm:py-5 lg:px-6 lg:py-7"
       aria-label="Product selector"
     >
       <div
-        className="relative mx-auto min-h-[690px] w-full max-w-[1440px] overflow-hidden transition-colors duration-700 sm:min-h-[760px] lg:min-h-[720px]"
-        style={{ backgroundColor: active.background }}
+        className="relative mx-auto min-h-[720px] w-full max-w-[1480px] overflow-hidden bg-[#cfc9bf] lg:min-h-[760px]"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
         onTouchStart={(event) => {
@@ -229,10 +214,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           if (start !== null && end !== undefined) {
             const delta = end - start;
             if (Math.abs(delta) > 55) {
-              selectProduct(
-                activeIndex + (delta < 0 ? 1 : -1),
-                true,
-              );
+              selectProduct(activeIndex + (delta < 0 ? 1 : -1), true);
             }
           }
 
@@ -243,64 +225,88 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           pauseTimerRef.current = window.setTimeout(() => {
             setPaused(false);
             pauseTimerRef.current = null;
-          }, 4000);
+          }, 4200);
         }}
       >
-        <div className="absolute left-5 top-5 z-20 sm:left-8 sm:top-8 lg:left-10 lg:top-10">
-          <p className="m-0 text-[10px] font-bold uppercase tracking-[.16em] text-black/45">
-            KLEID.IN / SELECT
-          </p>
-          <h2 className="mt-2 max-w-[220px] text-[28px] font-semibold leading-[.95] tracking-[-.055em] text-[#111] sm:text-[38px] lg:text-[46px]">
-            Find your everyday fit.
-          </h2>
-        </div>
+        <aside className="absolute left-0 top-0 z-20 flex h-[112px] w-full items-end bg-[#161514] px-5 pb-5 text-white sm:h-[128px] sm:px-7 sm:pb-6 lg:h-[calc(100%-122px)] lg:w-[25%] lg:items-start lg:px-9 lg:pt-10">
+          <div>
+            <p className="m-0 text-[9px] font-bold uppercase tracking-[.18em] text-white/45">
+              KLEID.IN / SELECT
+            </p>
+            <h2 className="mt-2 max-w-[240px] text-[30px] font-semibold leading-[.92] tracking-[-.055em] sm:text-[38px] lg:mt-5 lg:text-[52px]">
+              Find your match outfit.
+            </h2>
 
-        <div className="absolute inset-x-0 top-[112px] bottom-[178px] sm:top-[120px] sm:bottom-[190px] lg:inset-y-0 lg:left-[20%] lg:right-[29%]">
-          <div
-            key={active.id + "-" + activeIndex}
-            className="selected-product-stage absolute inset-0"
-          >
-            <Image
-              src={active.image}
-              alt={active.name}
-              fill
-              priority
-              sizes="(max-width: 1023px) 86vw, 52vw"
-              className="selected-product-image object-contain object-center p-4 sm:p-6 lg:p-8"
-            />
+            <div className="mt-6 hidden max-w-[220px] lg:block">
+              <p className="text-[11px] leading-5 text-white/50">
+                Select a product below and preview the fit, price and product details instantly.
+              </p>
+            </div>
           </div>
-        </div>
+        </aside>
 
-        <article
-          key={"details-" + active.id + "-" + activeIndex}
-          className="selected-product-details absolute left-4 right-4 bottom-[116px] z-20 bg-white/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,.12)] backdrop-blur-md sm:left-auto sm:right-6 sm:bottom-[132px] sm:w-[310px] sm:p-5 lg:right-10 lg:top-1/2 lg:bottom-auto lg:w-[320px] lg:-translate-y-1/2"
+        <div
+          className="absolute left-0 right-0 top-[112px] bottom-[122px] transition-colors duration-700 sm:top-[128px] lg:left-[25%] lg:top-0"
+          style={{ backgroundColor: active.background }}
         >
-          <p className="m-0 text-[8px] font-bold uppercase tracking-[.14em] text-black/40">
-            {active.category}
-          </p>
-
-          <h3 className="mt-2 text-[20px] font-semibold leading-tight tracking-[-.035em] text-[#111] sm:text-[24px]">
-            {active.name}
-          </h3>
-
-          <div className="mt-4 flex items-center justify-between gap-4">
-            <strong className="text-[16px] font-semibold text-[#111]">
-              {money(active.price)}
-            </strong>
-
-            <Link
-              href={activeHref}
-              className="selected-product-button inline-flex min-h-10 items-center justify-center bg-[#001cac] px-5 text-[9px] font-bold uppercase tracking-[.1em] !text-white transition hover:bg-[#00158a]"
+          <div className="absolute inset-x-0 top-0 bottom-[150px] lg:bottom-0 lg:right-[28%]">
+            <div
+              key={active.id + "-" + activeIndex}
+              className="selected-product-stage absolute inset-0"
             >
-              View product
-            </Link>
+              <Image
+                src={active.image}
+                alt={active.name}
+                fill
+                priority
+                sizes="(max-width: 1023px) 94vw, 48vw"
+                className="selected-product-image object-contain object-center p-5 sm:p-7 lg:p-10"
+              />
+            </div>
           </div>
-        </article>
 
-        <div className="absolute inset-x-0 bottom-0 z-30 border-t border-black/10 bg-white/92 p-2 backdrop-blur-md sm:p-3">
+          <div className="pointer-events-none absolute left-4 top-4 z-10 hidden items-center gap-2 sm:flex lg:left-7 lg:top-7">
+            <span className="border border-black/15 bg-white/65 px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-[.12em] text-black/55 backdrop-blur">
+              {String(activeIndex + 1).padStart(2, "0")}
+            </span>
+            <span className="text-[8px] font-semibold uppercase tracking-[.12em] text-black/35">
+              of {String(items.length).padStart(2, "0")}
+            </span>
+          </div>
+
+          <article
+            key={"details-" + active.id + "-" + activeIndex}
+            className="selected-product-details absolute bottom-4 left-4 right-4 z-20 border border-white/40 bg-black/15 p-4 text-white shadow-[0_18px_50px_rgba(0,0,0,.12)] backdrop-blur-xl sm:left-auto sm:w-[300px] lg:bottom-auto lg:right-8 lg:top-1/2 lg:w-[320px] lg:-translate-y-1/2 lg:p-5"
+          >
+            <p className="m-0 text-[8px] font-bold uppercase tracking-[.15em] text-white/60">
+              {active.category}
+            </p>
+
+            <h3 className="mt-2 text-[22px] font-semibold leading-[1] tracking-[-.04em] text-white sm:text-[26px]">
+              {active.name}
+            </h3>
+
+            <div className="mt-4 border-t border-white/20 pt-4">
+              <div className="flex items-center justify-between gap-4">
+                <strong className="text-[17px] font-semibold">
+                  {money(active.price)}
+                </strong>
+
+                <Link
+                  href={activeHref}
+                  className="selected-product-button inline-flex min-h-10 items-center justify-center bg-[#001cac] px-5 text-[9px] font-bold uppercase tracking-[.1em] !text-white transition hover:bg-[#00158a]"
+                >
+                  View product
+                </Link>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div className="absolute inset-x-0 bottom-0 z-30 h-[122px] border-t border-black/10 bg-[#f7f7f5]/95 backdrop-blur-md">
           <div
             ref={railRef}
-            className="flex w-full snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain px-[38vw] py-1 [scrollbar-width:none] sm:gap-3 sm:px-[42vw] lg:px-4 [&::-webkit-scrollbar]:hidden"
+            className="flex h-full w-full snap-x snap-mandatory items-center gap-2 overflow-x-auto px-[38vw] [scrollbar-width:none] sm:gap-3 sm:px-[42vw] lg:px-3 [&::-webkit-scrollbar]:hidden"
           >
             {items.map((product, index) => {
               const selected = index === activeIndex;
@@ -315,17 +321,17 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                   onClick={() => selectProduct(index, true)}
                   style={{ backgroundColor: product.background }}
                   className={
-                    "relative aspect-[4/5] w-[70px] shrink-0 snap-center overflow-hidden transition-[transform,border-color,opacity] duration-500 ease-[cubic-bezier(.16,1,.3,1)] sm:w-[82px] lg:w-[88px] " +
+                    "relative aspect-[4/5] h-[92px] shrink-0 snap-center overflow-hidden transition-[transform,border-color,opacity,box-shadow] duration-500 ease-[cubic-bezier(.16,1,.3,1)] sm:h-[98px] " +
                     (selected
-                      ? "scale-[1.06] border-2 border-[#001cac] opacity-100"
-                      : "border border-black/10 opacity-60 hover:opacity-100")
+                      ? "z-10 scale-[1.06] border-2 border-[#001cac] opacity-100 shadow-[0_8px_22px_rgba(0,0,0,.14)]"
+                      : "border border-black/10 opacity-65 hover:opacity-100")
                   }
                 >
                   <Image
                     src={product.image}
                     alt=""
                     fill
-                    sizes="88px"
+                    sizes="86px"
                     className="object-contain object-center p-1.5"
                   />
                 </button>
@@ -333,17 +339,11 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
             })}
           </div>
         </div>
-
-        <div className="pointer-events-none absolute bottom-[126px] left-5 z-20 hidden items-center gap-2 text-[8px] font-semibold uppercase tracking-[.12em] text-black/35 lg:flex">
-          <span>{String(activeIndex + 1).padStart(2, "0")}</span>
-          <span className="h-px w-8 bg-black/20" />
-          <span>{String(items.length).padStart(2, "0")}</span>
-        </div>
       </div>
 
       <style jsx>{`
         .selected-product-stage {
-          animation: selectedStageIn 780ms cubic-bezier(.16,1,.3,1) both;
+          animation: selectedStageIn 760ms cubic-bezier(.16,1,.3,1) both;
         }
 
         .selected-product-image {
@@ -352,7 +352,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         }
 
         .selected-product-details {
-          animation: selectedDetailsIn 720ms 110ms cubic-bezier(.16,1,.3,1) both;
+          animation: selectedDetailsIn 720ms 100ms cubic-bezier(.16,1,.3,1) both;
           will-change: transform, opacity, filter;
         }
 
@@ -361,22 +361,18 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         }
 
         @keyframes selectedStageIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
 
         @keyframes selectedImageIn {
           0% {
             opacity: 0;
-            transform: translateY(18px) scale(.92);
+            transform: translateY(20px) scale(.91);
           }
-          70% {
+          68% {
             opacity: 1;
-            transform: translateY(-3px) scale(1.025);
+            transform: translateY(-4px) scale(1.025);
           }
           100% {
             opacity: 1;
@@ -388,7 +384,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           from {
             opacity: 0;
             filter: blur(4px);
-            transform: translateY(12px) scale(.97);
+            transform: translateY(14px) scale(.97);
           }
           to {
             opacity: 1;
@@ -413,7 +409,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
             from {
               opacity: 0;
               filter: blur(4px);
-              transform: translateY(calc(-50% + 12px)) scale(.97);
+              transform: translateY(calc(-50% + 14px)) scale(.97);
             }
             to {
               opacity: 1;
