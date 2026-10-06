@@ -9,11 +9,6 @@ export type AdminEnvironment = {
   sessionSecret: string;
 };
 
-export type CloudinaryEnvironment = {
-  cloudName: string;
-  apiKey: string;
-  apiSecret: string;
-};
 
 export function getMongoEnvironment(): MongoEnvironment | null {
   const uri = process.env.MONGODB_URI?.trim();
@@ -45,11 +40,3 @@ export function getAdminEnvironment(): AdminEnvironment | null {
   return { email, password, sessionSecret };
 }
 
-export function getCloudinaryEnvironment(): CloudinaryEnvironment | null {
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME?.trim();
-  const apiKey = process.env.CLOUDINARY_API_KEY?.trim();
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
-
-  if (!cloudName || !apiKey || !apiSecret) return null;
-  return { cloudName, apiKey, apiSecret };
-}
