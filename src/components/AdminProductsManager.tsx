@@ -13,7 +13,7 @@ import type {
 } from "@/types/product";
 import { getProductOfferStatus } from "@/lib/product-offers";
 import { getProductPrimaryImage } from "@/lib/product-images";
-import { uploadImageDirectToCloudinary } from "@/lib/cloudinary-direct-upload";
+import { uploadAdminImage } from "@/lib/admin-image-upload";
 
 type Draft = {
   name: string;
@@ -291,7 +291,7 @@ export function AdminProductsManager() {
     }));
 
     try {
-      const uploaded = await uploadImageDirectToCloudinary(file);
+      const uploaded = await uploadAdminImage(file, "kleidin/products");
 
       setDraft((current) => ({
         ...current,
