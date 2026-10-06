@@ -42,44 +42,37 @@ type SliderItem = {
 
 export function AutoOutfitHero({ products }: { products: Product[] }) {
   const items = useMemo<SliderItem[]>(() => {
-    const liveItems = products
-      .filter(
-        (product) =>
-          product.status === "active" && Boolean(getProductImage(product)),
-      )
-      .slice(0, 4)
-      .map((product) => {
-        const foreground = getProductImage(product);
+    const imagePairs = [
+      {
+        foreground: "/images/product-1.png",
+        background: "/images/bg-1.png",
+      },
+      {
+        foreground: "/images/product-2.png",
+        background: "/images/bg-2.png",
+      },
+    ];
 
-        return {
-          id: product.id,
-          name: product.name,
-          slug: product.slug,
-          image: foreground,
-          backgroundImage: product.showcaseBackgroundImage || "",
-          category: product.category,
-          price: product.price,
-          demo: false,
-        };
-      });
+    const activeProducts = products
+      .filter((product) => product.status === "active")
+      .slice(0, imagePairs.length);
 
-    if (liveItems.length) return liveItems;
+    return imagePairs.map((pair, index) => {
+      const product = activeProducts[index];
 
-    return Array.from({ length: 4 }, (_, index) => ({
-      id: "demo-selector-" + index,
-      name: [
-        "Essential White Tee",
-        "Daily Oversized Tee",
-        "Everyday Relaxed Tee",
-        "Core Cotton Tee",
-      ][index],
-      slug: "",
-      image: "/images/kleidin-white-shirt-model.png",
-      backgroundImage: "",
-      category: "T-Shirts",
-      price: 799,
-      demo: true,
-    }));
+      return {
+        id: product?.id || "demo-selector-" + index,
+        name:
+          product?.name ||
+          (index === 0 ? "Essential White Tee" : "Daily White Tee"),
+        slug: product?.slug || "",
+        image: pair.foreground,
+        backgroundImage: pair.background,
+        category: product?.category || "T-Shirts",
+        price: product?.price ?? 799,
+        demo: !product,
+      };
+    });
   }, [products]);
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -236,16 +229,16 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
               className="h-full w-full object-cover object-center"
             />
           </div>
-          <div className="pointer-events-none absolute inset-0 bg-black/20" />
+          <div className="pointer-events-none absolute inset-0 bg-black/10" />
         </>
       ) : null}
 
-      <aside className="absolute left-0 top-0 z-20 flex h-[98px] w-full items-end bg-black/75 px-5 pb-4 text-white backdrop-blur-sm sm:h-[112px] sm:px-7 sm:pb-5 lg:h-[calc(100%-112px)] lg:w-[24%] lg:items-start lg:px-8 lg:pt-9">
+      <aside className="absolute left-0 top-0 z-20 flex h-[98px] w-full items-end px-5 pb-4 text-white sm:h-[112px] sm:px-7 sm:pb-5 lg:h-[calc(100%-112px)] lg:w-[24%] lg:items-start lg:px-8 lg:pt-9">
         <div>
-          <p className="m-0 text-[9px] font-bold uppercase tracking-[.18em] text-white/55">
+          <p className="m-0 text-[9px] font-bold uppercase tracking-[.18em] text-white/70 drop-shadow">
             KLEID.IN / SELECT
           </p>
-          <h2 className="mt-1.5 max-w-[240px] text-[27px] font-semibold leading-[.92] tracking-[-.055em] sm:text-[34px] lg:mt-5 lg:text-[50px]">
+          <h2 className="mt-1.5 max-w-[240px] text-[27px] font-semibold leading-[.92] tracking-[-.055em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,.45)] sm:text-[34px] lg:mt-5 lg:text-[50px]">
             Find your match outfit.
           </h2>
 
