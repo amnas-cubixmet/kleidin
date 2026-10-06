@@ -42,7 +42,7 @@ type SliderItem = {
 
 export function AutoOutfitHero({ products }: { products: Product[] }) {
   const items = useMemo<SliderItem[]>(() => {
-    const imagePairs = [
+    const localPairs = [
       {
         foreground: "/images/product-1.png",
         background: "/images/bg-1.png",
@@ -54,36 +54,53 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
     ];
 
     const activeProducts = products
-      .filter((product) => product.status === "active")
-      .slice(0, imagePairs.length);
+      .filter(
+        (product) =>
+          product.status === "active" && Boolean(getProductImage(product)),
+      )
+      .slice(0, 20);
 
-    return imagePairs.map((pair, index) => {
-      const product = activeProducts[index];
-
-      return {
-        id: product?.id || "demo-selector-" + index,
-        name:
-          product?.name ||
-          (index === 0 ? "Essential White Tee" : "Daily White Tee"),
-        slug: product?.slug || "",
+    if (!activeProducts.length) {
+      return localPairs.map((pair, index) => ({
+        id: "demo-selector-" + index,
+        name: index === 0 ? "Essential White Tee" : "Daily White Tee",
+        slug: "",
         image: pair.foreground,
         backgroundImage: pair.background,
-        category: product?.category || "T-Shirts",
-        price: product?.price ?? 799,
-        demo: !product,
+        category: "T-Shirts",
+        price: 799,
+        demo: true,
+      }));
+    }
+
+    return activeProducts.map((product, index) => {
+      const localPair = localPairs[index];
+
+      return {
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        image: localPair?.foreground || getProductImage(product),
+        backgroundImage:
+          localPair?.background || product.showcaseBackgroundImage || "",
+        category: product.category,
+        price: product.price,
+        demo: false,
       };
     });
   }, [products]);
 
   const railProducts = useMemo(
     () =>
-      items.slice(0, 7).map((product, index) => ({
+      items.slice(0, 20).map((product, index) => ({
         ...product,
         railId: "rail-" + index,
         baseIndex: index,
       })),
     [items],
   );
+
+  const heroShowcaseCount = Math.min(items.length, 8);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -150,14 +167,18 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
   );
 
   useEffect(() => {
-    if (items.length <= 1 || reducedMotion || paused) return;
+    if (heroShowcaseCount <= 1 || reducedMotion || paused) return;
 
     const timer = window.setInterval(() => {
-      setActiveIndex((current) => (current + 1) % items.length);
+      setActiveIndex((current) => {
+        const normalized =
+          current >= heroShowcaseCount ? 0 : current;
+        return (normalized + 1) % heroShowcaseCount;
+      });
     }, 4200);
 
     return () => window.clearInterval(timer);
-  }, [items.length, paused, reducedMotion]);
+  }, [heroShowcaseCount, paused, reducedMotion]);
 
   useEffect(() => {
     const rail = railRef.current;
