@@ -27,9 +27,23 @@ function normalize(value: unknown): StoreSettings {
       continue;
     }
 
+    if (typeof current === "boolean" && typeof next === "boolean") {
+      (output as Record<string, unknown>)[settingKey] = next;
+      continue;
+    }
+
     if (typeof current === "string" && typeof next === "string") {
       (output as Record<string, unknown>)[settingKey] = next.trim();
     }
+  }
+
+  if (
+    source.homeDefaultHeroImagePosition === "left" ||
+    source.homeDefaultHeroImagePosition === "center" ||
+    source.homeDefaultHeroImagePosition === "right"
+  ) {
+    output.homeDefaultHeroImagePosition =
+      source.homeDefaultHeroImagePosition;
   }
 
   if (Array.isArray(source.aboutPrinciples)) {
