@@ -13,6 +13,7 @@ import type {
 } from "@/types/product";
 import { getProductOfferStatus } from "@/lib/product-offers";
 import { getProductPrimaryImage } from "@/lib/product-images";
+import { uploadImageDirectToCloudinary } from "@/lib/cloudinary-direct-upload";
 
 type Draft = {
   name: string;
@@ -290,41 +291,13 @@ export function AdminProductsManager() {
     }));
 
     try {
-      const signatureResponse = await fetch("/api/admin/uploads/signature", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ folder: "kleidin/products" }),
-      });
-      const signed = await signatureResponse.json();
-
-      if (!signatureResponse.ok) {
-        throw new Error(signed.error || "Upload setup failed.");
-      }
-
-      const body = new FormData();
-      body.set("file", file);
-      body.set("api_key", signed.apiKey);
-      body.set("timestamp", String(signed.timestamp));
-      body.set("folder", signed.folder);
-      body.set("signature", signed.signature);
-
-      const uploadResponse = await fetch(
-        "https://api.cloudinary.com/v1_1/" +
-          signed.cloudName +
-          "/image/upload",
-        { method: "POST", body },
-      );
-      const uploaded = await uploadResponse.json();
-
-      if (!uploadResponse.ok || !uploaded.secure_url) {
-        throw new Error(uploaded.error?.message || "Image upload failed.");
-      }
+      const uploaded = await uploadImageDirectToCloudinary(file);
 
       setDraft((current) => ({
         ...current,
-        [field]: uploaded.secure_url,
+        [field]: uploaded.url,
       }));
-      setMessage("Image uploaded. Save the product to publish it.");
+      setMessage("Image uploaded to Cloudinary. Save the product to publish it.");
     } catch (error) {
       setDraft((current) => ({
         ...current,
