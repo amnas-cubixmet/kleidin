@@ -82,24 +82,12 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
     }));
   }, [products]);
 
-  const loopItems = useMemo(
-    () =>
-      items.length > 1
-        ? [...items, ...items, ...items]
-        : items,
-    [items],
-  );
-
-  const railRef = useRef<HTMLDivElement | null>(null);
-  const pauseTimerRef = useRef<number | null>(null);
-  const resetTimerRef = useRef<number | null>(null);
-  const scrollEndTimerRef = useRef<number | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [activeLoopIndex, setActiveLoopIndex] = useState(
-    items.length > 1 ? items.length : 0,
-  );
   const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const pauseTimerRef = useRef<number | null>(null);
+  const touchStartX = useRef<number | null>(null);
 
   const active = items[activeIndex] ?? items[0];
 
@@ -122,337 +110,294 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       if (pauseTimerRef.current !== null) {
         window.clearTimeout(pauseTimerRef.current);
       }
-      if (resetTimerRef.current !== null) {
-        window.clearTimeout(resetTimerRef.current);
-      }
-      if (scrollEndTimerRef.current !== null) {
-        window.clearTimeout(scrollEndTimerRef.current);
-      }
     };
   }, []);
 
-  const centerLoopIndex = useCallback(
-    (loopIndex: number, behavior: ScrollBehavior = "smooth") => {
+  const selectProduct = useCallback(
+    (index: number, manual = false) => {
+      if (!items.length) return;
+
+      const next = ((index % items.length) + items.length) % items.length;
+      setActiveIndex(next);
+
       const rail = railRef.current;
-      if (!rail || !loopItems.length) return;
-
-      const target = rail.querySelector<HTMLElement>(
-        '[data-loop-slide="' + loopIndex + '"]',
+      const thumb = rail?.querySelector<HTMLElement>(
+        '[data-product-thumb="' + next + '"]',
       );
-      if (!target) return;
 
-      const targetLeft =
-        target.offsetLeft - (rail.clientWidth - target.offsetWidth) / 2;
+      if (rail && thumb) {
+        const left =
+          thumb.offsetLeft - (rail.clientWidth - thumb.offsetWidth) / 2;
 
-      rail.scrollTo({ left: targetLeft, behavior });
+        rail.scrollTo({
+          left,
+          behavior: reducedMotion ? "auto" : "smooth",
+        });
+      }
 
-      const baseIndex = items.length ? loopIndex % items.length : 0;
-      setActiveLoopIndex(loopIndex);
-      setActiveIndex(baseIndex);
+      if (manual) {
+        setPaused(true);
+
+        if (pauseTimerRef.current !== null) {
+          window.clearTimeout(pauseTimerRef.current);
+        }
+
+        pauseTimerRef.current = window.setTimeout(() => {
+          setPaused(false);
+          pauseTimerRef.current = null;
+        }, 4000);
+      }
     },
-    [items.length, loopItems.length],
+    [items.length, reducedMotion],
   );
-
-  useEffect(() => {
-    if (!items.length) return;
-
-    const startIndex = items.length > 1 ? items.length : 0;
-    const frame = window.requestAnimationFrame(() => {
-      centerLoopIndex(startIndex, "auto");
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, [centerLoopIndex, items.length]);
 
   useEffect(() => {
     if (items.length <= 1 || reducedMotion || paused) return;
 
     const timer = window.setInterval(() => {
-      const next = activeLoopIndex + 1;
-      centerLoopIndex(next, "smooth");
+      setActiveIndex((current) => {
+        const next = (current + 1) % items.length;
+        const rail = railRef.current;
+        const thumb = rail?.querySelector<HTMLElement>(
+          '[data-product-thumb="' + next + '"]',
+        );
 
-      if (next >= items.length * 2) {
-        if (resetTimerRef.current !== null) {
-          window.clearTimeout(resetTimerRef.current);
+        if (rail && thumb) {
+          const left =
+            thumb.offsetLeft - (rail.clientWidth - thumb.offsetWidth) / 2;
+          rail.scrollTo({ left, behavior: "smooth" });
         }
 
-        resetTimerRef.current = window.setTimeout(() => {
-          centerLoopIndex(items.length, "auto");
-          resetTimerRef.current = null;
-        }, 720);
-      }
-    }, 3200);
+        return next;
+      });
+    }, 3800);
 
     return () => window.clearInterval(timer);
-  }, [
-    activeLoopIndex,
-    centerLoopIndex,
-    items.length,
-    paused,
-    reducedMotion,
-  ]);
-
-  function temporarilyPause() {
-    setPaused(true);
-
-    if (pauseTimerRef.current !== null) {
-      window.clearTimeout(pauseTimerRef.current);
-    }
-
-    pauseTimerRef.current = window.setTimeout(() => {
-      setPaused(false);
-      pauseTimerRef.current = null;
-    }, 3200);
-  }
-
-  function normalizeManualPosition(loopIndex: number) {
-    if (items.length <= 1) return;
-
-    let normalized = loopIndex;
-
-    if (loopIndex < items.length) {
-      normalized = loopIndex + items.length;
-    } else if (loopIndex >= items.length * 2) {
-      normalized = loopIndex - items.length;
-    }
-
-    if (normalized !== loopIndex) {
-      centerLoopIndex(normalized, "auto");
-    }
-  }
-
-  function syncActiveFromScroll() {
-    const rail = railRef.current;
-    if (!rail || !items.length) return;
-
-    const railRect = rail.getBoundingClientRect();
-    const railCenter = railRect.left + railRect.width / 2;
-    let closestLoopIndex = 0;
-    let closestDistance = Number.POSITIVE_INFINITY;
-
-    rail.querySelectorAll<HTMLElement>("[data-loop-slide]").forEach((node) => {
-      const loopIndex = Number(node.dataset.loopSlide ?? 0);
-      const rect = node.getBoundingClientRect();
-      const nodeCenter = rect.left + rect.width / 2;
-      const distance = Math.abs(nodeCenter - railCenter);
-
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestLoopIndex = loopIndex;
-      }
-    });
-
-    setActiveLoopIndex(closestLoopIndex);
-    setActiveIndex(closestLoopIndex % items.length);
-
-    if (scrollEndTimerRef.current !== null) {
-      window.clearTimeout(scrollEndTimerRef.current);
-    }
-
-    scrollEndTimerRef.current = window.setTimeout(() => {
-      normalizeManualPosition(closestLoopIndex);
-      scrollEndTimerRef.current = null;
-    }, 180);
-  }
+  }, [items.length, paused, reducedMotion]);
 
   if (!active) return null;
 
+  const activeHref = active.demo ? "/products" : "/products/" + active.slug;
+
   return (
     <section
-      className="w-full overflow-hidden bg-white py-5 sm:py-6 lg:py-7"
-      aria-label="All products"
+      className="w-full bg-[#f2f2f0] px-3 py-4 sm:px-5 sm:py-6 lg:px-7 lg:py-8"
+      aria-label="Product selector"
     >
       <div
-        ref={railRef}
-        onScroll={syncActiveFromScroll}
-        onPointerDown={temporarilyPause}
-        onTouchStart={temporarilyPause}
-        onWheel={temporarilyPause}
-        className="flex w-full snap-x snap-mandatory items-center gap-5 overflow-x-auto py-6 pl-[35vw] pr-[35vw] scroll-smooth overscroll-x-contain [scrollbar-width:none] sm:gap-7 sm:pl-[40vw] sm:pr-[40vw] md:pl-[42vw] md:pr-[42vw] lg:gap-9 lg:pl-[44vw] lg:pr-[44vw] xl:pl-[45vw] xl:pr-[45vw] [&::-webkit-scrollbar]:hidden"
+        className="relative mx-auto min-h-[690px] w-full max-w-[1440px] overflow-hidden bg-[#e9e7e2] sm:min-h-[760px] lg:min-h-[720px]"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onTouchStart={(event) => {
+          touchStartX.current = event.touches[0]?.clientX ?? null;
+          setPaused(true);
+        }}
+        onTouchEnd={(event) => {
+          const start = touchStartX.current;
+          const end = event.changedTouches[0]?.clientX;
+          touchStartX.current = null;
+
+          if (start !== null && end !== undefined) {
+            const delta = end - start;
+            if (Math.abs(delta) > 55) {
+              selectProduct(
+                activeIndex + (delta < 0 ? 1 : -1),
+                true,
+              );
+            }
+          }
+
+          if (pauseTimerRef.current !== null) {
+            window.clearTimeout(pauseTimerRef.current);
+          }
+
+          pauseTimerRef.current = window.setTimeout(() => {
+            setPaused(false);
+            pauseTimerRef.current = null;
+          }, 4000);
+        }}
       >
-        {loopItems.map((product, loopIndex) => {
-          const isActive = loopIndex === activeLoopIndex;
-          const productHref = product.demo
-            ? "/products"
-            : "/products/" + product.slug;
+        <div className="absolute left-5 top-5 z-20 sm:left-8 sm:top-8 lg:left-10 lg:top-10">
+          <p className="m-0 text-[10px] font-bold uppercase tracking-[.16em] text-black/45">
+            KLEID.IN / SELECT
+          </p>
+          <h2 className="mt-2 max-w-[220px] text-[28px] font-semibold leading-[.95] tracking-[-.055em] text-[#111] sm:text-[38px] lg:text-[46px]">
+            Find your everyday fit.
+          </h2>
+        </div>
 
-          return (
-            <div
-              key={product.id + "-" + loopIndex}
-              data-loop-slide={loopIndex}
-              className="relative h-[300px] w-[250px] shrink-0 snap-center sm:h-[330px] sm:w-[300px]"
+        <div className="absolute inset-x-0 top-[112px] bottom-[178px] sm:top-[120px] sm:bottom-[190px] lg:inset-y-0 lg:left-[20%] lg:right-[29%]">
+          <div
+            key={active.id + "-" + activeIndex}
+            className="selected-product-stage absolute inset-0"
+          >
+            <Image
+              src={active.image}
+              alt={active.name}
+              fill
+              priority
+              sizes="(max-width: 1023px) 86vw, 52vw"
+              className="selected-product-image object-contain object-center p-4 sm:p-6 lg:p-8"
+            />
+          </div>
+        </div>
+
+        <article
+          key={"details-" + active.id + "-" + activeIndex}
+          className="selected-product-details absolute left-4 right-4 bottom-[116px] z-20 bg-white/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,.12)] backdrop-blur-md sm:left-auto sm:right-6 sm:bottom-[132px] sm:w-[310px] sm:p-5 lg:right-10 lg:top-1/2 lg:bottom-auto lg:w-[320px] lg:-translate-y-1/2"
+        >
+          <p className="m-0 text-[8px] font-bold uppercase tracking-[.14em] text-black/40">
+            {active.category}
+          </p>
+
+          <h3 className="mt-2 text-[20px] font-semibold leading-tight tracking-[-.035em] text-[#111] sm:text-[24px]">
+            {active.name}
+          </h3>
+
+          <div className="mt-4 flex items-center justify-between gap-4">
+            <strong className="text-[16px] font-semibold text-[#111]">
+              {money(active.price)}
+            </strong>
+
+            <Link
+              href={activeHref}
+              className="selected-product-button inline-flex min-h-10 items-center justify-center bg-[#001cac] px-5 text-[9px] font-bold uppercase tracking-[.1em] !text-white transition hover:bg-[#00158a]"
             >
-              {isActive ? (
-                <article className="active-product-card absolute inset-0 flex flex-col overflow-hidden border border-black/10 bg-white shadow-[0_18px_46px_rgba(0,0,0,.1)]">
-                  <Link
-                    href={productHref}
-                    aria-label={"View " + product.name}
-                    className="relative min-h-0 flex-1 overflow-hidden bg-[#fafafa]"
-                  >
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      priority={
-                        loopIndex >= items.length &&
-                        loopIndex < items.length + 4
-                      }
-                      sizes="(max-width: 639px) 250px, 300px"
-                      className="object-contain object-center p-3 transition-transform duration-700 ease-[cubic-bezier(.22,.61,.36,1)] active-product-image"
-                    />
-                  </Link>
+              View product
+            </Link>
+          </div>
+        </article>
 
-                  <div className="active-product-details border-t border-black/10 bg-white p-3 sm:p-4">
-                    <p className="active-product-meta m-0 text-[8px] font-bold uppercase tracking-[.14em] text-black/40">
-                      {product.category}
-                    </p>
+        <div className="absolute inset-x-0 bottom-0 z-30 border-t border-black/10 bg-white/92 p-2 backdrop-blur-md sm:p-3">
+          <div
+            ref={railRef}
+            className="flex w-full snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain px-[38vw] py-1 [scrollbar-width:none] sm:gap-3 sm:px-[42vw] lg:px-4 [&::-webkit-scrollbar]:hidden"
+          >
+            {items.map((product, index) => {
+              const selected = index === activeIndex;
 
-                    <h3 className="active-product-title mt-1 truncate text-[15px] font-semibold tracking-[-.03em] text-[#111] sm:text-[17px]">
-                      {product.name}
-                    </h3>
-
-                    <div className="active-product-row mt-3 flex items-center justify-between gap-3">
-                      <span className="active-product-price text-[12px] font-semibold text-[#111]">
-                        {money(product.price)}
-                      </span>
-
-                      <Link
-                        href={productHref}
-                        className="active-product-button inline-flex min-h-9 shrink-0 items-center justify-center bg-[#001cac] px-3 text-[8px] font-bold uppercase tracking-[.08em] !text-white transition hover:bg-[#00158a]"
-                      >
-                        View product
-                      </Link>
-                    </div>
-                  </div>
-                </article>
-              ) : (
-                <Link
-                  href={productHref}
-                  aria-label={"View " + product.name}
-                  className="absolute inset-0"
+              return (
+                <button
+                  key={product.id}
+                  type="button"
+                  data-product-thumb={index}
+                  aria-label={"Select " + product.name}
+                  aria-current={selected ? "true" : undefined}
+                  onClick={() => selectProduct(index, true)}
+                  className={
+                    "relative aspect-[4/5] w-[70px] shrink-0 snap-center overflow-hidden bg-[#f5f4f1] transition-[transform,border-color,opacity] duration-500 ease-[cubic-bezier(.16,1,.3,1)] sm:w-[82px] lg:w-[88px] " +
+                    (selected
+                      ? "scale-[1.06] border-2 border-[#001cac] opacity-100"
+                      : "border border-black/10 opacity-60 hover:opacity-100")
+                  }
                 >
-                  <div className="absolute left-1/2 top-1/2 h-[58%] w-[45%] -translate-x-1/2 -translate-y-1/2 sm:h-[60%] sm:w-[44%]">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 639px) 112px, 132px"
-                      className="object-contain object-center opacity-55 transition-[transform,opacity,filter] duration-700 ease-[cubic-bezier(.16,1,.3,1)] hover:scale-[1.04] hover:opacity-80"
-                    />
-                  </div>
-                </Link>
-              )}
-            </div>
-          );
-        })}
+                  <Image
+                    src={product.image}
+                    alt=""
+                    fill
+                    sizes="88px"
+                    className="object-contain object-center p-1.5"
+                  />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="pointer-events-none absolute bottom-[126px] left-5 z-20 hidden items-center gap-2 text-[8px] font-semibold uppercase tracking-[.12em] text-black/35 lg:flex">
+          <span>{String(activeIndex + 1).padStart(2, "0")}</span>
+          <span className="h-px w-8 bg-black/20" />
+          <span>{String(items.length).padStart(2, "0")}</span>
+        </div>
       </div>
 
       <style jsx>{`
-        .active-product-card {
-          transform-origin: center center;
-          animation: activeProductCard 760ms cubic-bezier(.16,1,.3,1) both;
-          will-change: transform, opacity, filter;
+        .selected-product-stage {
+          animation: selectedStageIn 780ms cubic-bezier(.16,1,.3,1) both;
         }
 
-        .active-product-image {
-          animation: activeProductZoom 980ms cubic-bezier(.16,1,.3,1) both;
+        .selected-product-image {
+          animation: selectedImageIn 980ms cubic-bezier(.16,1,.3,1) both;
           will-change: transform, opacity;
         }
 
-        .active-product-details {
-          animation: activeDetailsReveal 620ms 120ms cubic-bezier(.16,1,.3,1) both;
+        .selected-product-details {
+          animation: selectedDetailsIn 720ms 110ms cubic-bezier(.16,1,.3,1) both;
+          will-change: transform, opacity, filter;
         }
 
-        .active-product-meta {
-          animation: activeDetailItem 520ms 180ms cubic-bezier(.16,1,.3,1) both;
+        .selected-product-button {
+          animation: selectedButtonIn 620ms 260ms cubic-bezier(.16,1,.3,1) both;
         }
 
-        .active-product-title {
-          animation: activeDetailItem 560ms 230ms cubic-bezier(.16,1,.3,1) both;
+        @keyframes selectedStageIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
         }
 
-        .active-product-row {
-          animation: activeDetailItem 600ms 290ms cubic-bezier(.16,1,.3,1) both;
-        }
-
-        .active-product-button {
-          animation: activeButtonIn 620ms 340ms cubic-bezier(.16,1,.3,1) both;
-        }
-
-        @keyframes activeProductCard {
+        @keyframes selectedImageIn {
           0% {
             opacity: 0;
-            filter: blur(4px);
-            transform: translateY(10px) scale(.94);
+            transform: translateY(18px) scale(.92);
           }
-          60% {
+          70% {
             opacity: 1;
-            filter: blur(0);
-            transform: translateY(-2px) scale(1.012);
+            transform: translateY(-3px) scale(1.025);
           }
           100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        @keyframes selectedDetailsIn {
+          from {
+            opacity: 0;
+            filter: blur(4px);
+            transform: translateY(12px) scale(.97);
+          }
+          to {
             opacity: 1;
             filter: blur(0);
             transform: translateY(0) scale(1);
           }
         }
 
-        @keyframes activeProductZoom {
-          0% {
-            opacity: .45;
-            transform: translateY(14px) scale(.88);
-          }
-          65% {
-            opacity: 1;
-            transform: translateY(-3px) scale(1.055);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1.025);
-          }
-        }
-
-        @keyframes activeDetailsReveal {
+        @keyframes selectedButtonIn {
           from {
             opacity: 0;
-            transform: translateY(8px);
+            transform: translateX(8px);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(0);
           }
         }
 
-        @keyframes activeDetailItem {
-          from {
-            opacity: 0;
-            transform: translateY(7px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes activeButtonIn {
-          from {
-            opacity: 0;
-            transform: translateX(8px) scale(.96);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0) scale(1);
+        @media (min-width: 1024px) {
+          @keyframes selectedDetailsIn {
+            from {
+              opacity: 0;
+              filter: blur(4px);
+              transform: translateY(calc(-50% + 12px)) scale(.97);
+            }
+            to {
+              opacity: 1;
+              filter: blur(0);
+              transform: translateY(-50%) scale(1);
+            }
           }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .active-product-card,
-          .active-product-image,
-          .active-product-details,
-          .active-product-meta,
-          .active-product-title,
-          .active-product-row,
-          .active-product-button {
+          .selected-product-stage,
+          .selected-product-image,
+          .selected-product-details,
+          .selected-product-button {
             animation: none !important;
           }
         }
