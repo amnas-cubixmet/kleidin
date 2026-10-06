@@ -178,11 +178,6 @@ export function AdminAnimationBarManager() {
     );
   }, []);
 
-  const duration = useMemo(
-    () => Math.max(7, Math.round(72 / Math.max(1, draft.speed))),
-    [draft.speed],
-  );
-
   const previewBar = useMemo<AnimationBarConfig>(
     () => ({
       id: "admin-preview",
@@ -733,7 +728,7 @@ export function AdminAnimationBarManager() {
                     <span>
                       <strong className="block text-xs">Scrolling speed</strong>
                       <span className="mt-1 block text-[10px] text-black/45">
-                        {speedLabel(draft.speed)} · approx. {duration}s loop
+                        {speedLabel(draft.speed)} · adaptive across screen sizes
                       </span>
                     </span>
                     <strong className="text-sm text-[#001cac]">
