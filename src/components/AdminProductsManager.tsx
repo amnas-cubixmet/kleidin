@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState, type ReactNode } from "react";
 import { AdminDrawer } from "@/components/AdminDrawer";
 import { AdminProductImport } from "@/components/AdminProductImport";
+import { AdminProductPlacementManager } from "@/components/AdminProductPlacementManager";
 import type {
   Product,
   ProductOfferType,
@@ -555,6 +556,11 @@ export function AdminProductsManager() {
           {message}
         </div>
       ) : null}
+
+      <AdminProductPlacementManager
+        products={products}
+        onChanged={load}
+      />
 
       <section className="mt-4 rounded-2xl bg-white p-4 ring-1 ring-black/5 md:p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
