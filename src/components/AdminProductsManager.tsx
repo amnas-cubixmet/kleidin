@@ -21,6 +21,7 @@ type Draft = {
   slug: string;
   category: string;
   price: string;
+  costPrice: string;
   compareAtPrice: string;
   stock: string;
   description: string;
@@ -54,6 +55,7 @@ const emptyDraft: Draft = {
   slug: "",
   category: "",
   price: "",
+  costPrice: "",
   compareAtPrice: "",
   stock: "0",
   description: "",
@@ -243,6 +245,8 @@ export function AdminProductsManager() {
       slug: product.slug,
       category: product.category,
       price: String(product.price),
+      costPrice:
+        product.costPrice !== undefined ? String(product.costPrice) : "",
       compareAtPrice:
         product.compareAtPrice !== undefined
           ? String(product.compareAtPrice)
@@ -337,6 +341,7 @@ export function AdminProductsManager() {
       const payload = {
         ...draft,
         price: Number(draft.price || 0),
+        costPrice: draft.costPrice ? Number(draft.costPrice) : null,
         compareAtPrice: draft.compareAtPrice
           ? Number(draft.compareAtPrice)
           : null,
@@ -806,6 +811,22 @@ export function AdminProductsManager() {
                     }))
                   }
                   required
+                  className={inputClass}
+                />,
+              )}
+              {field(
+                "Cost price",
+                <input
+                  type="number"
+                  min="0"
+                  value={draft.costPrice}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      costPrice: event.target.value,
+                    }))
+                  }
+                  placeholder="Purchase / landed cost"
                   className={inputClass}
                 />,
               )}
