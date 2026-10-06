@@ -275,7 +275,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
         <article
           key={"details-" + active.id + "-" + activeIndex}
-          className="selected-product-details absolute bottom-4 left-4 right-4 z-30 border border-white/35 bg-black/25 p-4 text-white shadow-[0_18px_50px_rgba(0,0,0,.18)] backdrop-blur-xl sm:left-auto sm:right-5 sm:w-[300px] lg:bottom-auto lg:right-8 lg:top-1/2 lg:w-[320px] lg:-translate-y-1/2 lg:p-5"
+          className="selected-product-details absolute bottom-4 left-4 right-4 z-30 border border-white/35 bg-black/25 p-4 text-white shadow-[0_18px_50px_rgba(0,0,0,.18)] backdrop-blur-xl sm:left-auto sm:right-5 sm:w-[280px] lg:bottom-auto lg:right-[14%] lg:top-[38%] lg:w-[270px] lg:-translate-y-1/2 lg:p-4 xl:right-[16%] xl:w-[285px]"
         >
           <p className="m-0 text-[8px] font-bold uppercase tracking-[.15em] text-white/65">
             {active.category}
