@@ -49,7 +49,22 @@ export function AdminOrdersManager() {
   }
 
   useEffect(() => {
-    void load().catch((error) => setMessage(error instanceof Error ? error.message : "Could not load orders."));
+    void load().catch((error) =>
+      setMessage(
+        error instanceof Error ? error.message : "Could not load orders.",
+      ),
+    );
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("new") === "1") {
+      setMessage("");
+      setDrawerOpen(true);
+      window.history.replaceState(
+        window.history.state,
+        "",
+        window.location.pathname,
+      );
+    }
   }, []);
 
   async function create(event: FormEvent) {
