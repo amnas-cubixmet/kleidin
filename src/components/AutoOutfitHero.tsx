@@ -42,17 +42,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         demo: false,
       }));
 
-    if (liveItems.length >= 6) return liveItems;
-
-    if (liveItems.length > 0) {
-      return Array.from({ length: 6 }, (_, index) => {
-        const product = liveItems[index % liveItems.length];
-        return {
-          ...product,
-          id: product.id + "-slider-" + index,
-        };
-      });
-    }
+    if (liveItems.length > 0) return liveItems;
 
     return Array.from({ length: 6 }, (_, index) => ({
       id: "demo-slider-" + index,
@@ -96,15 +86,18 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       const rail = railRef.current;
       if (!rail || !items.length) return;
 
-      const next = ((index % items.length) + items.length) % items.length;
+      const next = Math.max(0, Math.min(index, items.length - 1));
       const target = rail.querySelector<HTMLElement>(
         '[data-product-slide="' + next + '"]',
       );
 
       if (!target) return;
 
+      const targetLeft =
+        target.offsetLeft - (rail.clientWidth - target.offsetWidth) / 2;
+
       rail.scrollTo({
-        left: target.offsetLeft - rail.offsetLeft,
+        left: targetLeft,
         behavior: reducedMotion ? "auto" : "smooth",
       });
       setActiveIndex(next);
@@ -113,7 +106,14 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
   );
 
   useEffect(() => {
-    if (items.length <= 1 || reducedMotion || paused) return;
+    if (
+      items.length <= 1 ||
+      reducedMotion ||
+      paused ||
+      activeIndex >= items.length - 1
+    ) {
+      return;
+    }
 
     const timer = window.setInterval(() => {
       scrollToIndex(activeIndex + 1);
@@ -139,13 +139,16 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
     const rail = railRef.current;
     if (!rail || !items.length) return;
 
-    const railLeft = rail.getBoundingClientRect().left;
+    const railRect = rail.getBoundingClientRect();
+    const railCenter = railRect.left + railRect.width / 2;
     let closestIndex = 0;
     let closestDistance = Number.POSITIVE_INFINITY;
 
     rail.querySelectorAll<HTMLElement>("[data-product-slide]").forEach((node) => {
       const index = Number(node.dataset.productSlide ?? 0);
-      const distance = Math.abs(node.getBoundingClientRect().left - railLeft);
+      const rect = node.getBoundingClientRect();
+      const nodeCenter = rect.left + rect.width / 2;
+      const distance = Math.abs(nodeCenter - railCenter);
 
       if (distance < closestDistance) {
         closestDistance = distance;
@@ -169,7 +172,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         onWheel={temporarilyPause}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
-        className="flex w-full snap-x snap-mandatory items-center gap-5 overflow-x-auto px-4 py-4 pr-[24vw] scroll-smooth overscroll-x-contain [scrollbar-width:none] sm:gap-7 sm:px-6 sm:pr-[18vw] lg:gap-9 lg:px-8 lg:pr-[12vw] [&::-webkit-scrollbar]:hidden"
+        className="flex w-full snap-x snap-mandatory items-center gap-5 overflow-x-auto py-4 pl-[35vw] pr-[35vw] scroll-smooth overscroll-x-contain [scrollbar-width:none] sm:gap-7 sm:pl-[40vw] sm:pr-[40vw] md:pl-[42vw] md:pr-[42vw] lg:gap-9 lg:pl-[44vw] lg:pr-[44vw] xl:pl-[45vw] xl:pr-[45vw] [&::-webkit-scrollbar]:hidden"
       >
         {items.map((product, index) => {
           const isActive = index === activeIndex;
@@ -180,7 +183,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
               data-product-slide={index}
               href={product.demo ? "/products" : "/products/" + product.slug}
               aria-label={"View " + product.name}
-              className="group relative aspect-[3/4] w-[30vw] max-w-[150px] shrink-0 snap-start overflow-visible sm:w-[20vw] sm:max-w-[165px] md:w-[16vw] md:max-w-[175px] lg:w-[12vw] lg:max-w-[185px] xl:w-[10vw] xl:max-w-[195px]"
+              className="group relative aspect-[3/4] w-[30vw] max-w-[150px] shrink-0 snap-center overflow-visible sm:w-[20vw] sm:max-w-[165px] md:w-[16vw] md:max-w-[175px] lg:w-[12vw] lg:max-w-[185px] xl:w-[10vw] xl:max-w-[195px]"
             >
               <div className="absolute inset-0">
                 <Image
