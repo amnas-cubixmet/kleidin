@@ -2,24 +2,21 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { StoreSettingsProvider } from "@/components/StoreSettingsContext";
 import type { Product } from "@/types/product";
 import type { StoreSettings } from "@/types/commerce";
-import type { AnimationBarConfig } from "@/types/animation-bar";
-import { HomepageAnimationBars } from "@/components/HomepageAnimationBars";
 
 export function SiteChrome({
   children,
   products,
   settings,
-  animationBars,
 }: {
   children: React.ReactNode;
   products: Product[];
   settings: StoreSettings;
-  animationBars: AnimationBarConfig[];
 }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
@@ -50,12 +47,12 @@ export function SiteChrome({
 
   return (
     <StoreSettingsProvider settings={settings}>
-      {pathname === "/" ? (
-        <HomepageAnimationBars
-          bars={animationBars}
-          placement="before-hero"
-        />
-      ) : null}
+      <Link
+        href="/products"
+        className="flex min-h-9 w-full items-center justify-center bg-[#111111] px-4 py-2 text-center text-[9px] font-bold uppercase tracking-[.14em] !text-white"
+      >
+        5% OFF ON YOUR FIRST ORDER · SHOP NOW
+      </Link>
       <Header products={products} settings={settings} />
       <main>{children}</main>
       <Footer settings={settings} />
