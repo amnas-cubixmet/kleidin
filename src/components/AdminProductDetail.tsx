@@ -15,6 +15,7 @@ import type {
 } from "@/types/product";
 import { getProductOfferPrice, getProductOfferStatus } from "@/lib/product-offers";
 import { getProductPrimaryImage } from "@/lib/product-images";
+import { uploadImageDirectToCloudinary } from "@/lib/cloudinary-direct-upload";
 
 const commonSizes = ["XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "Free Size"];
 
@@ -309,37 +310,8 @@ export function AdminProductDetail({ productId }: { productId: string }) {
     setMessage("");
 
     try {
-      const signatureResponse = await fetch("/api/admin/uploads/signature", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ folder: "kleidin/products" }),
-      });
-      const signed = await signatureResponse.json();
-
-      if (!signatureResponse.ok) {
-        throw new Error(signed.error || "Upload setup failed.");
-      }
-
-      const body = new FormData();
-      body.set("file", file);
-      body.set("api_key", signed.apiKey);
-      body.set("timestamp", String(signed.timestamp));
-      body.set("folder", signed.folder);
-      body.set("signature", signed.signature);
-
-      const response = await fetch(
-        "https://api.cloudinary.com/v1_1/" +
-          signed.cloudName +
-          "/image/upload",
-        { method: "POST", body },
-      );
-      const uploaded = await response.json();
-
-      if (!response.ok || !uploaded.secure_url) {
-        throw new Error(uploaded.error?.message || "Image upload failed.");
-      }
-
-      return String(uploaded.secure_url);
+      const uploaded = await uploadImageDirectToCloudinary(file);
+      return uploaded.url;
     } finally {
       setUploading("");
     }
