@@ -70,6 +70,21 @@ export function AdminInventoryManager() {
         error instanceof Error ? error.message : "Could not load inventory.",
       ),
     );
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("adjust") === "1") {
+      setMessage("");
+      setColor("");
+      setSize("");
+      setDelta("");
+      setReason("Manual adjustment");
+      setDrawerOpen(true);
+      window.history.replaceState(
+        window.history.state,
+        "",
+        window.location.pathname,
+      );
+    }
   }, []);
 
   const selectedProduct = useMemo(
