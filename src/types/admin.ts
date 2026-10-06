@@ -21,6 +21,7 @@ export type OrderItem = {
   size?: string;
   quantity: number;
   unitPrice: number;
+  costPrice?: number;
   total: number;
 };
 
