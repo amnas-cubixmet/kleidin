@@ -39,20 +39,24 @@ function theme(value: unknown): AnimationBarTheme {
 function items(value: unknown): AnimationBarItem[] {
   if (!Array.isArray(value)) return [];
 
-  return value
-    .map((item, index) => {
-      if (!item || typeof item !== "object") return null;
-      const row = item as Record<string, unknown>;
-      const itemText = text(row.text);
-      if (!itemText) return null;
+  const parsed: AnimationBarItem[] = [];
 
-      return {
-        id: text(row.id) || randomUUID() || String(index),
-        text: itemText,
-        href: text(row.href) || undefined,
-      } satisfies AnimationBarItem;
-    })
-    .filter((item): item is AnimationBarItem => Boolean(item));
+  value.forEach((item, index) => {
+    if (!item || typeof item !== "object") return;
+
+    const row = item as Record<string, unknown>;
+    const itemText = text(row.text);
+    if (!itemText) return;
+
+    const href = text(row.href);
+    parsed.push({
+      id: text(row.id) || randomUUID() || String(index),
+      text: itemText,
+      ...(href ? { href } : {}),
+    });
+  });
+
+  return parsed;
 }
 
 function toBar(doc: Document): AnimationBarConfig {
