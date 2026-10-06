@@ -174,7 +174,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       const width = setWidth();
 
       if (!railInteractingRef.current && width > 0) {
-        rail.scrollLeft += 0.32;
+        rail.scrollLeft += 0.26;
 
         if (rail.scrollLeft >= width * 2) {
           rail.scrollLeft -= width;
@@ -295,7 +295,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-[82px] z-40 h-[88px] sm:bottom-[88px] sm:h-[94px] lg:bottom-[90px] lg:h-[98px]">
+      <div className="absolute inset-x-0 bottom-[76px] z-40 h-[108px] sm:bottom-[82px] sm:h-[116px] lg:bottom-[86px] lg:h-[124px]">
         <div
           ref={railRef}
           onPointerDown={(event) => {
@@ -332,19 +332,18 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           {[0, 1, 2].flatMap((setIndex) =>
             railProducts.map((product, index) => {
               const selected = product.baseIndex === activeIndex;
-              const shapeIndex =
-                (index + setIndex * railProducts.length) % 5;
+              const shapeIndex = index % 5;
 
               const shapeClass =
                 shapeIndex === 0
-                  ? "h-[72px] w-[58px] sm:h-[80px] sm:w-[64px] lg:h-[84px] lg:w-[68px]"
+                  ? "h-[88px] w-[70px] sm:h-[96px] sm:w-[76px] lg:h-[104px] lg:w-[82px]"
                   : shapeIndex === 1
-                    ? "h-[66px] w-[66px] sm:h-[74px] sm:w-[74px] lg:h-[78px] lg:w-[78px]"
+                    ? "h-[82px] w-[82px] sm:h-[90px] sm:w-[90px] lg:h-[96px] lg:w-[96px]"
                     : shapeIndex === 2
-                      ? "h-[62px] w-[82px] sm:h-[68px] sm:w-[92px] lg:h-[72px] lg:w-[98px]"
+                      ? "h-[78px] w-[104px] sm:h-[86px] sm:w-[114px] lg:h-[92px] lg:w-[124px]"
                       : shapeIndex === 3
-                        ? "h-[78px] w-[62px] sm:h-[86px] sm:w-[68px] lg:h-[90px] lg:w-[72px]"
-                        : "h-[64px] w-[74px] sm:h-[72px] sm:w-[84px] lg:h-[76px] lg:w-[90px]";
+                        ? "h-[96px] w-[76px] sm:h-[104px] sm:w-[82px] lg:h-[112px] lg:w-[88px]"
+                        : "h-[80px] w-[94px] sm:h-[88px] sm:w-[104px] lg:h-[94px] lg:w-[112px]";
 
               return (
                 <button
@@ -369,7 +368,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                     src={product.image}
                     alt=""
                     draggable={false}
-                    className="absolute inset-[3%] h-[94%] w-[94%] select-none object-contain object-center"
+                    className="absolute inset-[4%] h-[92%] w-[92%] select-none object-contain object-center"
                   />
                 </button>
               );
