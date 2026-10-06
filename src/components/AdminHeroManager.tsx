@@ -372,7 +372,7 @@ export function AdminHeroManager() {
         ...current,
         imageUrl: uploaded.url,
       }));
-      setMessage("Hero image uploaded and normalized to 1920 × 1080.");
+      setMessage("Hero image uploaded. Original composition is preserved for responsive cropping.");
     } catch (error) {
       setDraft((current) => ({ ...current, imageUrl: previous }));
       setMessage(error instanceof Error ? error.message : "Upload failed.");
