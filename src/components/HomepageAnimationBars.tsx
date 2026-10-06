@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import type {
   AnimationBarConfig,
   AnimationBarPlacement,
@@ -77,6 +83,165 @@ function Item({
   );
 }
 
+function AnimationBarRow({ bar }: { bar: AnimationBarConfig }) {
+  const shellRef = useRef<HTMLElement | null>(null);
+  const primaryRef = useRef<HTMLDivElement | null>(null);
+  const [metrics, setMetrics] = useState({
+    shellWidth: 0,
+    setWidth: 0,
+  });
+
+  useEffect(() => {
+    const shell = shellRef.current;
+    const primary = primaryRef.current;
+    if (!shell || !primary) return;
+
+    const measure = () => {
+      const shellWidth = Math.max(0, shell.getBoundingClientRect().width);
+      const setWidth = Math.max(0, primary.getBoundingClientRect().width);
+
+      setMetrics((current) => {
+        if (
+          Math.abs(current.shellWidth - shellWidth) < 0.5 &&
+          Math.abs(current.setWidth - setWidth) < 0.5
+        ) {
+          return current;
+        }
+
+        return { shellWidth, setWidth };
+      });
+    };
+
+    measure();
+
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", measure);
+      return () => window.removeEventListener("resize", measure);
+    }
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(shell);
+    observer.observe(primary);
+
+    return () => observer.disconnect();
+  }, [bar.items, bar.gap, bar.separator]);
+
+  const repeats =
+    metrics.setWidth > 0 && metrics.shellWidth > 0
+      ? Math.max(2, Math.ceil(metrics.shellWidth / metrics.setWidth) + 2)
+      : 2;
+
+  // Convert the 1-10 admin slider into a stable physical scroll velocity.
+  // Because duration is based on measured content width, speed does not change
+  // when the viewport/resolution or message length changes.
+  const pixelsPerSecond = 20 + Math.max(1, Math.min(10, bar.speed)) * 10;
+  const measuredDuration =
+    metrics.setWidth > 0 ? metrics.setWidth / pixelsPerSecond : 12;
+  const duration = Math.max(4, Math.min(90, measuredDuration));
+  const travel = metrics.setWidth > 0 ? metrics.setWidth : 1;
+
+  const style = {
+    "--animation-bar-duration": duration + "s",
+    "--animation-bar-gap": bar.gap + "px",
+    "--animation-bar-travel": travel + "px",
+  } as CSSProperties;
+
+  const renderSet = (
+    hidden: boolean,
+    copy: string,
+    primary = false,
+  ) => (
+    <div
+      key={copy}
+      ref={primary ? primaryRef : undefined}
+      className="animation-bar-set"
+      style={{ gap: bar.gap }}
+      aria-hidden={hidden || undefined}
+    >
+      {bar.items.map((item, index) => (
+        <div
+          key={copy + "-" + item.id}
+          className="flex shrink-0 items-center"
+          style={{ gap: bar.gap }}
+        >
+          <Item text={item.text} href={item.href} hidden={hidden} />
+          {bar.separator ? (
+            <span
+              aria-hidden="true"
+              className="shrink-0 text-[9px] opacity-50"
+            >
+              {bar.separator}
+            </span>
+          ) : null}
+          {index === bar.items.length - 1 ? (
+            <span className="w-1 shrink-0" aria-hidden="true" />
+          ) : null}
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <section
+      ref={shellRef}
+      aria-label={bar.name}
+      className={
+        "animation-bar-shell overflow-hidden " +
+        themeClasses(bar.theme) +
+        (bar.pauseOnHover ? " animation-bar-pause-hover" : "")
+      }
+      style={style}
+    >
+      {bar.autoScroll ? (
+        <div
+          className={
+            "animation-bar-track " +
+            (bar.direction === "right"
+              ? "animation-bar-right"
+              : "animation-bar-left")
+          }
+        >
+          {Array.from({ length: repeats }, (_, index) =>
+            renderSet(index > 0, "copy-" + index, index === 0),
+          )}
+        </div>
+      ) : (
+        <div
+          className={
+            "animation-bar-manual " +
+            (bar.allowManualScroll
+              ? "overflow-x-auto overscroll-x-contain"
+              : "overflow-hidden")
+          }
+        >
+          <div
+            className="flex min-w-max items-center"
+            style={{ gap: bar.gap }}
+          >
+            {bar.items.map((item, index) => (
+              <div
+                key={item.id}
+                className="flex shrink-0 items-center"
+                style={{ gap: bar.gap }}
+              >
+                <Item text={item.text} href={item.href} />
+                {bar.separator && index < bar.items.length - 1 ? (
+                  <span
+                    aria-hidden="true"
+                    className="shrink-0 text-[9px] opacity-50"
+                  >
+                    {bar.separator}
+                  </span>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
 export function HomepageAnimationBars({
   bars,
   placement,
@@ -103,103 +268,9 @@ export function HomepageAnimationBars({
 
   return (
     <div className="w-full">
-      {liveBars.map((bar) => {
-        const duration = Math.max(7, Math.round(72 / Math.max(1, bar.speed)));
-
-        const style = {
-          "--animation-bar-duration": duration + "s",
-          "--animation-bar-gap": bar.gap + "px",
-        } as CSSProperties;
-
-        const renderSet = (hidden: boolean, copy: string) => (
-          <div
-            key={copy}
-            className="animation-bar-set"
-            style={{ gap: bar.gap }}
-            aria-hidden={hidden || undefined}
-          >
-            {bar.items.map((item, index) => (
-              <div
-                key={copy + "-" + item.id}
-                className="flex shrink-0 items-center"
-                style={{ gap: bar.gap }}
-              >
-                <Item text={item.text} href={item.href} hidden={hidden} />
-                {bar.separator ? (
-                  <span
-                    aria-hidden="true"
-                    className="shrink-0 text-[9px] opacity-50"
-                  >
-                    {bar.separator}
-                  </span>
-                ) : null}
-                {index === bar.items.length - 1 ? (
-                  <span className="w-1 shrink-0" aria-hidden="true" />
-                ) : null}
-              </div>
-            ))}
-          </div>
-        );
-
-        return (
-          <section
-            key={bar.id}
-            aria-label={bar.name}
-            className={
-              "animation-bar-shell overflow-hidden " +
-              themeClasses(bar.theme) +
-              (bar.pauseOnHover ? " animation-bar-pause-hover" : "")
-            }
-            style={style}
-          >
-            {bar.autoScroll ? (
-              <div
-                className={
-                  "animation-bar-track " +
-                  (bar.direction === "right"
-                    ? "animation-bar-right"
-                    : "animation-bar-left")
-                }
-              >
-                {renderSet(false, "primary")}
-                {renderSet(true, "duplicate")}
-              </div>
-            ) : (
-              <div
-                className={
-                  "animation-bar-manual " +
-                  (bar.allowManualScroll
-                    ? "overflow-x-auto overscroll-x-contain"
-                    : "overflow-hidden")
-                }
-              >
-                <div
-                  className="flex min-w-max items-center"
-                  style={{ gap: bar.gap }}
-                >
-                  {bar.items.map((item, index) => (
-                    <div
-                      key={item.id}
-                      className="flex shrink-0 items-center"
-                      style={{ gap: bar.gap }}
-                    >
-                      <Item text={item.text} href={item.href} />
-                      {bar.separator && index < bar.items.length - 1 ? (
-                        <span
-                          aria-hidden="true"
-                          className="shrink-0 text-[9px] opacity-50"
-                        >
-                          {bar.separator}
-                        </span>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </section>
-        );
-      })}
+      {liveBars.map((bar) => (
+        <AnimationBarRow key={bar.id} bar={bar} />
+      ))}
     </div>
   );
 }
