@@ -290,7 +290,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                 className={
                   "object-contain object-center transition-[transform,filter,opacity] duration-700 ease-[cubic-bezier(.22,.61,.36,1)] " +
                   (isActive
-                    ? "z-10 scale-[1.24] opacity-100 drop-shadow-[0_18px_24px_rgba(0,0,0,.14)]"
+                    ? "z-10 scale-[1.12] opacity-35"
                     : "scale-100 opacity-55")
                 }
               />
@@ -299,27 +299,37 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         })}
       </div>
 
-      <div className="mx-auto mt-3 flex min-h-[132px] w-full max-w-[520px] items-start justify-center px-4">
+      <div className="mx-auto -mt-1 flex min-h-[220px] w-full max-w-[680px] items-start justify-center px-4">
         <article
           key={active.id + "-" + activeLoopIndex}
-          className="active-product-pop w-full border border-black/10 bg-white p-4 shadow-[0_14px_40px_rgba(0,0,0,.08)] sm:p-5"
+          className="active-product-pop grid w-full grid-cols-[112px_1fr] items-center gap-4 border border-black/10 bg-white p-4 shadow-[0_18px_46px_rgba(0,0,0,.1)] sm:grid-cols-[150px_1fr] sm:gap-6 sm:p-5"
         >
-          <div className="flex items-start justify-between gap-5">
-            <div className="min-w-0">
-              <p className="m-0 text-[9px] font-bold uppercase tracking-[.14em] text-black/40">
-                {active.category}
-              </p>
-              <h3 className="mt-1 truncate text-[18px] font-semibold tracking-[-.03em] text-[#111] sm:text-[20px]">
-                {active.name}
-              </h3>
-              <p className="mt-2 text-[13px] font-semibold text-[#111]">
-                {money(active.price)}
-              </p>
-            </div>
+          <div className="relative aspect-[3/4] w-full overflow-hidden">
+            <Image
+              src={active.image}
+              alt={active.name}
+              fill
+              sizes="150px"
+              className="object-contain object-center"
+            />
+          </div>
+
+          <div className="min-w-0">
+            <p className="m-0 text-[9px] font-bold uppercase tracking-[.14em] text-black/40">
+              {active.category}
+            </p>
+
+            <h3 className="mt-1 text-[20px] font-semibold leading-tight tracking-[-.035em] text-[#111] sm:text-[26px]">
+              {active.name}
+            </h3>
+
+            <p className="mt-2 text-[14px] font-semibold text-[#111]">
+              {money(active.price)}
+            </p>
 
             <Link
               href={active.demo ? "/products" : "/products/" + active.slug}
-              className="inline-flex min-h-10 shrink-0 items-center justify-center bg-[#001cac] px-4 text-[9px] font-bold uppercase tracking-[.1em] !text-white transition hover:bg-[#00158a]"
+              className="mt-4 inline-flex min-h-10 items-center justify-center bg-[#001cac] px-5 text-[9px] font-bold uppercase tracking-[.1em] !text-white transition hover:bg-[#00158a]"
             >
               View product
             </Link>
