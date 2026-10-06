@@ -9,19 +9,62 @@ import { getProductPrimaryImage } from "@/lib/product-images";
 
 export const dynamic = "force-dynamic";
 
+function productSlugFromUrl(value: string) {
+  const input = value.trim();
+  if (!input) return "";
+
+  try {
+    const url = new URL(input, "https://kleid.in");
+    const parts = url.pathname.split("/").filter(Boolean);
+    const productsIndex = parts.lastIndexOf("products");
+
+    if (productsIndex >= 0 && parts[productsIndex + 1]) {
+      return decodeURIComponent(parts[productsIndex + 1]).toLowerCase();
+    }
+
+    return decodeURIComponent(parts.at(-1) || "").toLowerCase();
+  } catch {
+    return input
+      .replace(/^\/+|\/+$/g, "")
+      .split("/")
+      .filter(Boolean)
+      .at(-1)
+      ?.toLowerCase() || "";
+  }
+}
+
 export default async function Home() {
   const [products, settings] = await Promise.all([
     getCatalogProducts(),
     getStoreSettings(),
   ]);
 
-  const showcaseProducts = products
+  const activeProducts = products
     .filter((product) => product.status === "active")
     .sort(
       (a, b) =>
         (a.sortOrder ?? a.featuredSortOrder ?? 100) -
         (b.sortOrder ?? b.featuredSortOrder ?? 100),
     );
+
+  const requestedShowcaseSlugs = settings.homeShowcaseProductUrls
+    .map(productSlugFromUrl)
+    .filter(Boolean)
+    .slice(0, 4);
+
+  const activeBySlug = new Map(
+    activeProducts.map((product) => [product.slug.toLowerCase(), product]),
+  );
+
+  const linkedShowcaseProducts = requestedShowcaseSlugs
+    .map((slug) => activeBySlug.get(slug))
+    .filter((product): product is (typeof activeProducts)[number] =>
+      Boolean(product),
+    );
+
+  const showcaseProducts = linkedShowcaseProducts.length
+    ? linkedShowcaseProducts
+    : activeProducts.slice(0, 4);
 
   const mostLoved = products.find(
     (product) => product.spotlight && product.status === "active",
