@@ -72,6 +72,20 @@ export async function POST(request: NextRequest) {
           {
             folder,
             resource_type: "image",
+            ...(folder === "kleidin/hero"
+              ? {
+                  transformation: [
+                    {
+                      width: 1920,
+                      height: 1080,
+                      crop: "fill",
+                      gravity: "auto",
+                      quality: "auto:good",
+                      fetch_format: "auto",
+                    },
+                  ],
+                }
+              : {}),
           },
           (error, result) => {
             if (error) {
