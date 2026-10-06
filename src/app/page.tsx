@@ -39,12 +39,19 @@ export default async function Home() {
     )
     .sort(
       (a, b) =>
-        (a.featuredSortOrder ?? a.sortOrder ?? 100) -
-        (b.featuredSortOrder ?? b.sortOrder ?? 100),
+        (a.animationSortOrder ??
+          a.featuredSortOrder ??
+          a.sortOrder ??
+          100) -
+        (b.animationSortOrder ??
+          b.featuredSortOrder ??
+          b.sortOrder ??
+          100),
     );
 
-  const mostLoved =
-    featured.find((product) => product.stock > 0) ?? featured[0];
+  const mostLoved = products.find(
+    (product) => product.spotlight && product.status === "active",
+  );
   const mostLovedImage = mostLoved
     ? getProductPrimaryImage(mostLoved)
     : "";
@@ -83,11 +90,13 @@ export default async function Home() {
         placement="after-hero"
       />
 
-      <HomeProductCatalog
-        products={products}
-        eyebrow={settings.homeCatalogEyebrow}
-        title={settings.homeCatalogTitle}
-      />
+      {featured.length ? (
+        <HomeProductCatalog
+          products={featured}
+          eyebrow={settings.homeCatalogEyebrow}
+          title={settings.homeCatalogTitle}
+        />
+      ) : null}
 
       <section className="home-dealers-clean">
         <div>
