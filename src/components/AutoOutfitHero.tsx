@@ -249,17 +249,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       </aside>
 
       <div className="absolute left-0 right-0 top-[98px] bottom-[112px] z-10 sm:top-[112px] lg:left-[24%] lg:top-0">
-        <div
-          key={active.id + "-" + activeIndex}
-          className="selected-product-stage absolute inset-x-0 inset-y-0 lg:right-[28%]"
-        >
-          <img
-            src={active.image}
-            alt={active.name}
-            className="selected-product-image h-full w-full object-contain object-center p-5 sm:p-7 lg:p-10"
-          />
-        </div>
-
         <div className="pointer-events-none absolute left-4 top-4 z-20 hidden items-center gap-2 sm:flex lg:left-7 lg:top-7">
           <span className="border border-white/35 bg-black/25 px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-[.12em] text-white backdrop-blur">
             {String(activeIndex + 1).padStart(2, "0")}
