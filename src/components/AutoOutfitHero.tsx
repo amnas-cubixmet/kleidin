@@ -158,7 +158,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
   return (
     <section
-      className="w-full overflow-hidden bg-white py-8 sm:py-10 lg:py-12"
+      className="w-full overflow-hidden bg-white py-5 sm:py-6 lg:py-7"
       aria-label="Featured products"
     >
       <div
@@ -169,7 +169,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         onWheel={temporarilyPause}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
-        className="flex w-full snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 pr-[18vw] scroll-smooth overscroll-x-contain [scrollbar-width:none] sm:gap-4 sm:px-6 sm:pr-[12vw] lg:gap-5 lg:px-8 lg:pr-[8vw] [&::-webkit-scrollbar]:hidden"
+        className="flex w-full snap-x snap-mandatory items-center gap-5 overflow-x-auto px-4 py-4 pr-[24vw] scroll-smooth overscroll-x-contain [scrollbar-width:none] sm:gap-7 sm:px-6 sm:pr-[18vw] lg:gap-9 lg:px-8 lg:pr-[12vw] [&::-webkit-scrollbar]:hidden"
       >
         {items.map((product, index) => {
           const isActive = index === activeIndex;
@@ -180,20 +180,18 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
               data-product-slide={index}
               href={product.demo ? "/products" : "/products/" + product.slug}
               aria-label={"View " + product.name}
-              className="group relative aspect-[4/5] w-[72vw] max-w-[360px] shrink-0 snap-start overflow-hidden bg-[#f2f2ef] sm:w-[42vw] md:w-[31vw] lg:w-[24vw] xl:w-[21vw]"
+              className="group relative aspect-[3/4] w-[30vw] max-w-[150px] shrink-0 snap-start overflow-visible sm:w-[20vw] sm:max-w-[165px] md:w-[16vw] md:max-w-[175px] lg:w-[12vw] lg:max-w-[185px] xl:w-[10vw] xl:max-w-[195px]"
             >
-              <div className="absolute inset-[5%] sm:inset-[6%]">
+              <div className="absolute inset-0">
                 <Image
                   src={product.image}
                   alt={product.name}
                   fill
                   priority={index < 4}
-                  sizes="(max-width: 639px) 72vw, (max-width: 767px) 42vw, (max-width: 1023px) 31vw, 24vw"
+                  sizes="(max-width: 639px) 30vw, (max-width: 767px) 20vw, (max-width: 1023px) 16vw, 12vw"
                   className={
                     "object-contain object-center transition-transform duration-500 ease-out " +
-                    (isActive
-                      ? "scale-[1.055]"
-                      : "scale-100 group-hover:scale-[1.04]")
+                    (isActive ? "scale-[1.2]" : "scale-100")
                   }
                 />
               </div>
