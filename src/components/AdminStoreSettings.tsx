@@ -118,7 +118,8 @@ export function AdminStoreSettings() {
   }
 
   const entries = Object.entries(settings).filter(
-    ([key]) => key !== "aboutPrinciples",
+    ([key]) =>
+      key !== "aboutPrinciples" && !key.startsWith("homeDefaultHero"),
   ) as Array<[keyof StoreSettings, StoreSettings[keyof StoreSettings]]>;
 
   return (
