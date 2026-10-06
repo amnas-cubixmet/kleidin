@@ -56,7 +56,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           name: product.name,
           slug: product.slug,
           image: foreground,
-          backgroundImage: product.showcaseBackgroundImage || foreground,
+          backgroundImage: product.showcaseBackgroundImage || "",
           category: product.category,
           price: product.price,
           demo: false,
@@ -75,7 +75,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       ][index],
       slug: "",
       image: "/images/kleidin-white-shirt-model.png",
-      backgroundImage: "/images/kleidin-white-shirt-model.png",
+      backgroundImage: "",
       category: "T-Shirts",
       price: 799,
       demo: true,
@@ -190,7 +190,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
   return (
     <section
-      className="relative h-[100svh] w-screen overflow-hidden bg-white md:h-[100dvh]"
+      className="relative h-[100svh] w-screen overflow-hidden md:h-[100dvh]"
       aria-label="Product selector"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -224,18 +224,21 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         }, 4200);
       }}
     >
-      <div
-        key={"background-" + active.id + "-" + activeIndex}
-        className="selected-background absolute inset-0"
-      >
-        <img
-          src={active.backgroundImage}
-          alt=""
-          className="h-full w-full object-cover object-center"
-        />
-      </div>
-
-      <div className="pointer-events-none absolute inset-0 bg-black/20" />
+      {active.backgroundImage ? (
+        <>
+          <div
+            key={"background-" + active.id + "-" + activeIndex}
+            className="selected-background absolute inset-0"
+          >
+            <img
+              src={active.backgroundImage}
+              alt=""
+              className="h-full w-full object-cover object-center"
+            />
+          </div>
+          <div className="pointer-events-none absolute inset-0 bg-black/20" />
+        </>
+      ) : null}
 
       <aside className="absolute left-0 top-0 z-20 flex h-[98px] w-full items-end bg-black/75 px-5 pb-4 text-white backdrop-blur-sm sm:h-[112px] sm:px-7 sm:pb-5 lg:h-[calc(100%-112px)] lg:w-[24%] lg:items-start lg:px-8 lg:pt-9">
         <div>
@@ -325,12 +328,16 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                     : "border border-white/20 opacity-70 hover:opacity-100")
                 }
               >
-                <img
-                  src={product.backgroundImage}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover object-center"
-                />
-                <span className="absolute inset-0 bg-black/20" />
+                {product.backgroundImage ? (
+                  <>
+                    <img
+                      src={product.backgroundImage}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover object-center"
+                    />
+                    <span className="absolute inset-0 bg-black/20" />
+                  </>
+                ) : null}
                 <img
                   src={product.image}
                   alt=""
