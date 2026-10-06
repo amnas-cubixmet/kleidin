@@ -8,7 +8,6 @@ export const localStoreSettings: StoreSettings = {
   supportEmail: publicEnv.supportEmail,
   footerTagline: "Essentials without noise. Unisex clothing for everyday rotation.",
   homeDefaultHeroEnabled: true,
-  homeDefaultHeroLabel: "KLEID.IN / DAILY",
   homeDefaultHeroTitle: "KLEID.IN",
   homeDefaultHeroSubtitle:
     "Premium everyday essentials designed for comfort, repeat wear and effortless style.",
