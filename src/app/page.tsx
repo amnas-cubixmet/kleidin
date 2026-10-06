@@ -81,7 +81,6 @@ export default async function Home() {
   const mostLovedImage = mostLoved
     ? getProductPrimaryImage(mostLoved)
     : "";
-  const dealerHref = products.length ? "/wholesale" : "/contact";
 
   return (
     <div className="reference-home">
@@ -105,20 +104,6 @@ export default async function Home() {
           title={settings.homeCatalogTitle}
         />
       ) : null}
-
-      <section className="home-dealers-clean">
-        <div>
-          <p>{settings.homeDealersEyebrow}</p>
-          <h2>{settings.homeDealersTitle}</h2>
-          <span>{settings.homeDealersBody}</span>
-          <Link href={dealerHref}>{settings.homeDealersButtonLabel}</Link>
-        </div>
-        <div className="home-dealers-copy">
-          {settings.homeDealerTags.map((tag) => (
-            <strong key={tag}>{tag}</strong>
-          ))}
-        </div>
-      </section>
 
       {mostLoved ? (
         <section className="home-spotlight">
