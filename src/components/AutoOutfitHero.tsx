@@ -38,6 +38,7 @@ type SliderItem = {
   category: string;
   price: number;
   background: string;
+  backgroundImage?: string;
   demo: boolean;
 };
 
@@ -73,6 +74,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         category: product.category,
         price: product.price,
         background: backgrounds[index % backgrounds.length],
+        backgroundImage: product.showcaseBackgroundImage,
         demo: false,
       }));
 
@@ -102,6 +104,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           category: "T-Shirts",
           price: 799,
           background: backgrounds[index % backgrounds.length],
+          backgroundImage: "/images/kleidin-white-shirt-model.png",
           demo: true,
         };
       },
@@ -264,9 +267,24 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </aside>
 
         <div
-          className="absolute left-0 right-0 top-[112px] bottom-[122px] transition-colors duration-700 sm:top-[128px] lg:left-[25%] lg:top-0"
+          className="absolute left-0 right-0 top-[112px] bottom-[122px] overflow-hidden transition-colors duration-700 sm:top-[128px] lg:left-[25%] lg:top-0"
           style={{ backgroundColor: active.background }}
         >
+          {active.backgroundImage ? (
+            <>
+              <Image
+                key={"background-" + active.id + "-" + activeIndex}
+                src={active.backgroundImage}
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 1023px) 100vw, 75vw"
+                className="selected-background-image object-cover object-center"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-black/20" />
+            </>
+          ) : null}
+
           <div className="absolute inset-x-0 top-0 bottom-[150px] lg:bottom-0 lg:right-[28%]">
             <div
               key={active.id + "-" + activeIndex}
@@ -360,6 +378,11 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       </div>
 
       <style jsx>{`
+        .selected-background-image {
+          animation: selectedBackgroundIn 900ms cubic-bezier(.16,1,.3,1) both;
+          will-change: transform, opacity;
+        }
+
         .selected-product-stage {
           animation: selectedStageIn 760ms cubic-bezier(.16,1,.3,1) both;
         }
@@ -376,6 +399,17 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
         .selected-product-button {
           animation: selectedButtonIn 620ms 260ms cubic-bezier(.16,1,.3,1) both;
+        }
+
+        @keyframes selectedBackgroundIn {
+          from {
+            opacity: 0;
+            transform: scale(1.035);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
         }
 
         @keyframes selectedStageIn {
@@ -438,6 +472,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         }
 
         @media (prefers-reduced-motion: reduce) {
+          .selected-background-image,
           .selected-product-stage,
           .selected-product-image,
           .selected-product-details,
