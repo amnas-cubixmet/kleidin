@@ -5,6 +5,7 @@ import { SiteChrome } from "@/components/SiteChrome";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 import { store } from "@/config/store";
+import { getActiveAnimationBars } from "@/lib/animation-bars";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,9 +29,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [products, settings] = await Promise.all([
+  const [products, settings, animationBars] = await Promise.all([
     getCatalogProducts(),
     getStoreSettings(),
+    getActiveAnimationBars(),
   ]);
 
   return (
@@ -38,7 +40,11 @@ export default async function RootLayout({
       <body
         className={`${inter.variable} min-h-screen bg-white text-kleid-ink antialiased`}
       >
-        <SiteChrome products={products} settings={settings}>
+        <SiteChrome
+          products={products}
+          settings={settings}
+          animationBars={animationBars}
+        >
           {children}
         </SiteChrome>
       </body>
