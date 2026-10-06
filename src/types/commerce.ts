@@ -32,6 +32,7 @@ export type StoreSettings = {
   homeDealersButtonLabel: string;
   homeDealerTags: string[];
   homeSpotlightBadge: string;
+  homeShowcaseProductUrls: string[];
   aboutHeroEyebrow: string;
   aboutHeroTitle: string;
   aboutHeroLead: string;
