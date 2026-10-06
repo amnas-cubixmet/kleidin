@@ -255,16 +255,6 @@ export function TopFashionHero({
         </div>
 
         <div className="relative z-10 flex flex-col px-5 pb-6 pt-5 md:h-full md:w-[52%] md:px-12 md:py-9 lg:px-16 lg:py-12">
-          <div className="flex items-center justify-between gap-4 md:justify-start md:gap-5">
-            <span className="text-[8px] font-bold uppercase tracking-[.14em] text-black/45 md:text-[9px]">
-              {current.label}
-            </span>
-
-            <span className="max-w-[58vw] truncate border border-black/10 bg-white/70 px-3 py-1.5 text-[8px] font-semibold uppercase tracking-[.08em] text-black/55 backdrop-blur-sm md:max-w-[220px]">
-              {current.badge ?? current.label}
-            </span>
-          </div>
-
           <div className="flex flex-1 items-center">
             <div className="w-full max-w-[560px] py-8 md:max-w-[560px] md:py-0">
               {current.discountText ? (
