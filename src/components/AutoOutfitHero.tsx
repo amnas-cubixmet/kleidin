@@ -332,6 +332,19 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           {[0, 1, 2].flatMap((setIndex) =>
             railProducts.map((product, index) => {
               const selected = product.baseIndex === activeIndex;
+              const shapeIndex =
+                (index + setIndex * railProducts.length) % 5;
+
+              const shapeClass =
+                shapeIndex === 0
+                  ? "h-[72px] w-[58px] sm:h-[80px] sm:w-[64px] lg:h-[84px] lg:w-[68px]"
+                  : shapeIndex === 1
+                    ? "h-[66px] w-[66px] sm:h-[74px] sm:w-[74px] lg:h-[78px] lg:w-[78px]"
+                    : shapeIndex === 2
+                      ? "h-[62px] w-[82px] sm:h-[68px] sm:w-[92px] lg:h-[72px] lg:w-[98px]"
+                      : shapeIndex === 3
+                        ? "h-[78px] w-[62px] sm:h-[86px] sm:w-[68px] lg:h-[90px] lg:w-[72px]"
+                        : "h-[64px] w-[74px] sm:h-[72px] sm:w-[84px] lg:h-[76px] lg:w-[90px]";
 
               return (
                 <button
@@ -344,17 +357,19 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                     selectProduct(product.baseIndex, true);
                   }}
                   className={
-                    "relative h-[64px] w-[56px] shrink-0 overflow-hidden border border-white/55 bg-white/55 shadow-[0_8px_24px_rgba(0,0,0,.10)] backdrop-blur-md transition-[transform,border-color,background-color,opacity] duration-300 sm:h-[72px] sm:w-[64px] lg:h-[76px] lg:w-[68px] " +
+                    "relative shrink-0 overflow-hidden border border-white/55 bg-white/55 shadow-[0_8px_24px_rgba(0,0,0,.10)] backdrop-blur-md transition-[transform,border-color,background-color,opacity] duration-300 " +
+                    shapeClass +
+                    " " +
                     (selected
-                      ? "scale-[1.06] border-2 border-[#b7ff35] bg-white/78 opacity-100 shadow-[0_10px_28px_rgba(0,0,0,.16)]"
-                      : "opacity-80 hover:bg-white/72 hover:opacity-100")
+                      ? "scale-[1.08] border-2 border-[#b7ff35] bg-white/82 opacity-100 shadow-[0_12px_30px_rgba(0,0,0,.17)]"
+                      : "opacity-84 hover:scale-[1.03] hover:bg-white/74 hover:opacity-100")
                   }
                 >
                   <img
                     src={product.image}
                     alt=""
                     draggable={false}
-                    className="absolute inset-[7%] h-[86%] w-[86%] select-none object-contain object-center"
+                    className="absolute inset-[3%] h-[94%] w-[94%] select-none object-contain object-center"
                   />
                 </button>
               );
