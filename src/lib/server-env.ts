@@ -9,6 +9,11 @@ export type AdminEnvironment = {
   sessionSecret: string;
 };
 
+export type CloudinaryDirectEnvironment = {
+  cloudName: string;
+  uploadPreset: string;
+};
+
 
 export function getMongoEnvironment(): MongoEnvironment | null {
   const uri = process.env.MONGODB_URI?.trim();
@@ -40,3 +45,17 @@ export function getAdminEnvironment(): AdminEnvironment | null {
   return { email, password, sessionSecret };
 }
 
+
+export function getCloudinaryDirectEnvironment(): CloudinaryDirectEnvironment | null {
+  const cloudName =
+    process.env.CLOUDINARY_CLOUD_NAME?.trim() ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME?.trim();
+
+  if (!cloudName) return null;
+
+  return {
+    cloudName,
+    uploadPreset:
+      process.env.CLOUDINARY_UPLOAD_PRESET?.trim() || "kleidin_unsigned",
+  };
+}
