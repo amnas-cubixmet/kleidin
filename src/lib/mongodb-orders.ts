@@ -144,6 +144,7 @@ async function resolveItems(value: unknown) {
       size: text(source.size) || undefined,
       quantity,
       unitPrice: product.price,
+      costPrice: product.costPrice ?? 0,
       total: product.price * quantity,
     });
   }
