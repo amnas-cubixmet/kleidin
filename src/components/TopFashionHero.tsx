@@ -227,12 +227,12 @@ export function TopFashionHero({
                   priority={slideIndex === 0}
                   sizes="(max-width: 767px) 100vw, 57vw"
                   quality={90}
-                  className={`object-cover ${
+                  className={`object-contain object-bottom ${
                     slide.imagePosition === "left"
-                      ? "object-left"
+                      ? "object-left-bottom"
                       : slide.imagePosition === "right"
-                        ? "object-right"
-                        : "object-center"
+                        ? "object-right-bottom"
+                        : "object-center-bottom"
                   }`}
                 />
               ) : (
