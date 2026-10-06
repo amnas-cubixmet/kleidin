@@ -77,10 +77,10 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
   const railProducts = useMemo(
     () =>
-      Array.from({ length: 20 }, (_, index) => ({
-        ...items[index % items.length],
+      items.slice(0, 7).map((product, index) => ({
+        ...product,
         railId: "rail-" + index,
-        baseIndex: index % items.length,
+        baseIndex: index,
       })),
     [items],
   );
@@ -174,7 +174,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       const width = setWidth();
 
       if (!railInteractingRef.current && width > 0) {
-        rail.scrollLeft += 0.42;
+        rail.scrollLeft += 0.32;
 
         if (rail.scrollLeft >= width * 2) {
           rail.scrollLeft -= width;
@@ -265,7 +265,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </div>
       </aside>
 
-      <div className="absolute left-0 right-0 top-[98px] bottom-[clamp(86px,10svh,112px)] z-10 sm:top-[112px] lg:left-[24%] lg:top-0">
+      <div className="absolute left-0 right-0 top-[98px] bottom-[clamp(68px,8svh,84px)] z-10 sm:top-[112px] lg:left-[24%] lg:top-0">
         <article
           key={"details-" + active.id + "-" + activeIndex}
           className="selected-product-details absolute bottom-4 left-4 right-4 z-30 border border-white/35 bg-black/25 p-4 text-white shadow-[0_18px_50px_rgba(0,0,0,.18)] backdrop-blur-xl sm:left-auto sm:right-5 sm:w-[280px] lg:bottom-auto lg:right-[14%] lg:top-[38%] lg:w-[270px] lg:-translate-y-1/2 lg:p-4 xl:right-[16%] xl:w-[285px]"
@@ -295,7 +295,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </article>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-40 h-[clamp(86px,10svh,112px)] border-t border-black/10 bg-white">
+      <div className="absolute inset-x-0 bottom-0 z-40 h-[clamp(68px,8svh,84px)] border-t border-black/10 bg-white">
         <div
           ref={railRef}
           onPointerDown={(event) => {
@@ -327,7 +327,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
               rail.scrollLeft -= width;
             }
           }}
-          className="flex h-full w-full cursor-grab items-center gap-2 overflow-x-auto px-2 [scrollbar-width:none] active:cursor-grabbing sm:gap-3 sm:px-3 [&::-webkit-scrollbar]:hidden"
+          className="flex h-full w-full cursor-grab items-center gap-3 overflow-x-auto px-3 [scrollbar-width:none] active:cursor-grabbing sm:gap-4 sm:px-4 lg:gap-5 lg:px-5 [&::-webkit-scrollbar]:hidden"
         >
           {[0, 1, 2].flatMap((setIndex) =>
             railProducts.map((product, index) => {
@@ -344,7 +344,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                     selectProduct(product.baseIndex, true);
                   }}
                   className={
-                    "relative h-[70px] w-[60px] shrink-0 overflow-hidden bg-white transition-[transform,border-color,opacity] duration-300 sm:h-[82px] sm:w-[70px] " +
+                    "relative h-[56px] w-[48px] shrink-0 overflow-hidden bg-white transition-[transform,border-color,opacity] duration-300 sm:h-[64px] sm:w-[56px] lg:h-[68px] lg:w-[60px] " +
                     (selected
                       ? "scale-[1.04] border-2 border-[#001cac] opacity-100"
                       : "border border-black/10 opacity-75 hover:opacity-100")
