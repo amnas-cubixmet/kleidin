@@ -183,7 +183,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
   return (
     <section
-      className="relative h-[calc(100svh-102px)] min-h-[520px] w-screen overflow-hidden md:h-[calc(100dvh-112px)] md:min-h-[560px]"
+      className="relative h-[100svh] min-h-[100svh] w-screen overflow-hidden md:h-[100dvh] md:min-h-[100dvh]"
       aria-label="Product selector"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
