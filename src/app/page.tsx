@@ -4,23 +4,20 @@ import { HomeProductCatalog } from "@/components/HomeProductCatalog";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { TopFashionHero } from "@/components/TopFashionHero";
 import { ProductActions } from "@/components/ProductActions";
-import { HomepageAnimationBars } from "@/components/HomepageAnimationBars";
 import { formatPrice } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 import { getActiveHeroSlides } from "@/lib/hero";
 import { getProductPrimaryImage } from "@/lib/product-images";
-import { getActiveAnimationBars } from "@/lib/animation-bars";
 import type { HeroSlideConfig } from "@/data/hero-slides";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [products, heroSlides, settings, animationBars] = await Promise.all([
+  const [products, heroSlides, settings] = await Promise.all([
     getCatalogProducts(),
     getActiveHeroSlides(),
     getStoreSettings(),
-    getActiveAnimationBars(),
   ]);
 
   const featured = products
@@ -91,11 +88,6 @@ export default async function Home() {
       {showcaseProducts.length ? (
         <AutoOutfitHero products={showcaseProducts} />
       ) : null}
-
-      <HomepageAnimationBars
-        bars={animationBars}
-        placement="after-hero"
-      />
 
       {featured.length ? (
         <HomeProductCatalog
