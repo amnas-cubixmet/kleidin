@@ -589,6 +589,23 @@ export function AdminProductDetail({ productId }: { productId: string }) {
                 />
               </label>
               <label>
+                <span className={labelClass}>Cost price</span>
+                <input
+                  type="number"
+                  min="0"
+                  value={draft.costPrice ?? ""}
+                  onChange={(event) =>
+                    patch({
+                      costPrice: event.target.value
+                        ? Math.max(0, Number(event.target.value))
+                        : undefined,
+                    })
+                  }
+                  placeholder="Purchase / landed cost"
+                  className={inputClass}
+                />
+              </label>
+              <label>
                 <span className={labelClass}>Compare price</span>
                 <input
                   type="number"
