@@ -31,20 +31,11 @@ export default async function Home() {
     );
 
   const showcaseProducts = products
-    .filter(
-      (product) =>
-        product.featuredAnimationEnabled && product.status === "active",
-    )
+    .filter((product) => product.status === "active")
     .sort(
       (a, b) =>
-        (a.animationSortOrder ??
-          a.featuredSortOrder ??
-          a.sortOrder ??
-          100) -
-        (b.animationSortOrder ??
-          b.featuredSortOrder ??
-          b.sortOrder ??
-          100),
+        (a.sortOrder ?? a.featuredSortOrder ?? 100) -
+        (b.sortOrder ?? b.featuredSortOrder ?? 100),
     );
 
   const defaultHeroImage = "/images/kleidin-white-shirt-model.png";
@@ -85,9 +76,7 @@ export default async function Home() {
         <TopFashionHero products={products} heroSlides={resolvedHeroSlides} />
       ) : null}
 
-      {showcaseProducts.length ? (
-        <AutoOutfitHero products={showcaseProducts} />
-      ) : null}
+      <AutoOutfitHero products={showcaseProducts} />
 
       {featured.length ? (
         <HomeProductCatalog
