@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { HomeProductCatalog } from "@/components/HomeProductCatalog";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { TopFashionHero } from "@/components/TopFashionHero";
 import { ProductActions } from "@/components/ProductActions";
@@ -19,16 +18,6 @@ export default async function Home() {
     getActiveHeroSlides(),
     getStoreSettings(),
   ]);
-
-  const featured = products
-    .filter(
-      (product) => product.featured && product.status === "active",
-    )
-    .sort(
-      (a, b) =>
-        (a.featuredSortOrder ?? a.sortOrder ?? 100) -
-        (b.featuredSortOrder ?? b.sortOrder ?? 100),
-    );
 
   const showcaseProducts = products
     .filter((product) => product.status === "active")
@@ -77,14 +66,6 @@ export default async function Home() {
       ) : null}
 
       <AutoOutfitHero products={showcaseProducts} />
-
-      {featured.length ? (
-        <HomeProductCatalog
-          products={featured}
-          eyebrow={settings.homeCatalogEyebrow}
-          title={settings.homeCatalogTitle}
-        />
-      ) : null}
 
       {mostLoved ? (
         <section className="home-spotlight">
