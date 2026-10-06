@@ -17,6 +17,7 @@ import type {
 } from "@/data/hero-slides";
 import type { Product } from "@/types/product";
 import { getProductPrimaryImage } from "@/lib/product-images";
+import { uploadImageDirectToCloudinary } from "@/lib/cloudinary-direct-upload";
 
 type Draft = {
   title: string;
@@ -255,41 +256,13 @@ export function AdminHeroManager() {
     setDraft((current) => ({ ...current, imageUrl: previewUrl }));
 
     try {
-      const signResponse = await fetch("/api/admin/uploads/signature", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ folder: "kleidin/hero" }),
-      });
-      const signed = await signResponse.json();
-
-      if (!signResponse.ok) {
-        throw new Error(signed.error || "Upload setup failed.");
-      }
-
-      const body = new FormData();
-      body.set("file", file);
-      body.set("api_key", signed.apiKey);
-      body.set("timestamp", String(signed.timestamp));
-      body.set("folder", signed.folder);
-      body.set("signature", signed.signature);
-
-      const response = await fetch(
-        "https://api.cloudinary.com/v1_1/" +
-          signed.cloudName +
-          "/image/upload",
-        { method: "POST", body },
-      );
-      const data = await response.json();
-
-      if (!response.ok || !data.secure_url) {
-        throw new Error(data.error?.message || "Upload failed.");
-      }
+      const uploaded = await uploadImageDirectToCloudinary(file);
 
       setDraft((current) => ({
         ...current,
-        imageUrl: data.secure_url,
+        imageUrl: uploaded.url,
       }));
-      setMessage("Hero image uploaded.");
+      setMessage("Hero image uploaded to Cloudinary.");
     } catch (error) {
       setDraft((current) => ({ ...current, imageUrl: previous }));
       setMessage(error instanceof Error ? error.message : "Upload failed.");
