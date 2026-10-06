@@ -206,9 +206,9 @@ export function TopFashionHero({
         : "border border-black/10 bg-white !text-[#111111] hover:bg-[#f7f7f7]");
 
   return (
-    <section className="w-screen max-w-none px-0">
-      <div className="relative overflow-hidden bg-[#efede8] text-[#111111] sm:rounded-[18px] md:aspect-[16/9] md:rounded-[22px]">
-        <div className="relative h-[54svh] min-h-[350px] overflow-hidden bg-[#dedbd5] md:absolute md:inset-y-0 md:right-0 md:h-auto md:min-h-0 md:w-[57%]">
+    <section className="h-[100svh] w-screen max-w-none overflow-hidden px-0 md:h-[100dvh]">
+      <div className="relative h-full w-full overflow-hidden rounded-none bg-[#efede8] text-[#111111]">
+        <div className="relative h-[52svh] w-full overflow-hidden bg-[#dedbd5] md:absolute md:inset-y-0 md:right-0 md:h-full md:w-[57%]">
           {slides.map((slide, slideIndex) => (
             <div
               key={slide.id}
@@ -247,7 +247,7 @@ export function TopFashionHero({
           <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[14%] bg-gradient-to-r from-[#efede8] to-transparent md:block" />
         </div>
 
-        <div className="relative z-10 flex flex-col px-5 pb-6 pt-5 md:h-full md:w-[52%] md:px-12 md:py-9 lg:px-16 lg:py-12">
+        <div className="relative z-10 flex h-[48svh] flex-col px-5 pb-6 pt-5 md:h-full md:w-[52%] md:px-12 md:py-9 lg:px-16 lg:py-12">
           <div className="flex flex-1 items-center">
             <div className="w-full max-w-[560px] py-8 md:max-w-[560px] md:py-0">
               {current.discountText ? (
