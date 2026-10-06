@@ -18,5 +18,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  return NextResponse.json(config);
+  return NextResponse.json({
+    cloudName: config.cloudName,
+    uploadPreset: config.uploadPreset,
+  });
 }

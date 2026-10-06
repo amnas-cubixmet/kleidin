@@ -46,8 +46,7 @@ ADMIN_PASSWORD=
 ADMIN_SESSION_SECRET=
 
 CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
+CLOUDINARY_UPLOAD_PRESET=kleidin_unsigned
 ```
 
 Never commit real secrets to GitHub. Configure the same private variables in Vercel Project Settings for Production.
@@ -58,7 +57,7 @@ The admin panel includes:
 
 - Dashboard KPIs
 - Product create/edit/delete
-- Product images through signed Cloudinary uploads
+- Product images through direct Cloudinary uploads
 - Featured and featured-animation controls
 - Dealer/wholesale product fields
 - Inventory adjustments and stock history

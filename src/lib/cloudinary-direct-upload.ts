@@ -74,9 +74,13 @@ export async function uploadImageDirectToCloudinary(file: File) {
   const data = (await response.json()) as CloudinaryUploadResponse;
 
   if (!response.ok || !data.secure_url) {
-    throw new Error(
-      data.error?.message || "Cloudinary image upload failed.",
-    );
+    const rawError = data.error?.message || "";
+    if (rawError.includes("Upload preset not found")) {
+      throw new Error(
+        `Cloudinary unsigned upload preset '${uploadPreset}' was not found. Create this preset in Cloudinary or update CLOUDINARY_UPLOAD_PRESET.`,
+      );
+    }
+    throw new Error(rawError || "Cloudinary image upload failed.");
   }
 
   return {
