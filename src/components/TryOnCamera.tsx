@@ -86,6 +86,35 @@ export function TryOnCamera({ product }: { product: Product }) {
   }, []);
 
   useEffect(() => {
+    const syncChrome = () => {
+      const requirement = requirementRef.current;
+      if (!requirement) return;
+
+      const hidden = requirement.getBoundingClientRect().bottom > 1;
+
+      window.dispatchEvent(
+        new CustomEvent("kleidin:tryon-chrome", {
+          detail: { hidden },
+        }),
+      );
+    };
+
+    syncChrome();
+    window.addEventListener("scroll", syncChrome, { passive: true });
+    window.addEventListener("resize", syncChrome);
+
+    return () => {
+      window.removeEventListener("scroll", syncChrome);
+      window.removeEventListener("resize", syncChrome);
+      window.dispatchEvent(
+        new CustomEvent("kleidin:tryon-chrome", {
+          detail: { hidden: false },
+        }),
+      );
+    };
+  }, []);
+
+  useEffect(() => {
     return () => stopCamera();
   }, [stopCamera]);
 
@@ -112,23 +141,6 @@ export function TryOnCamera({ product }: { product: Product }) {
 
   return (
     <main className="mx-auto w-full max-w-[1180px] px-3 py-4 sm:px-5 sm:py-6">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-[9px] font-bold uppercase tracking-[.14em] text-black/45">
-            TRY-ON ANYWHERE
-          </p>
-          <h1 className="mt-1 text-[26px] font-semibold tracking-[-.045em] sm:text-[34px]">
-            {product.name}
-          </h1>
-        </div>
-        <Link
-          href={"/products/" + product.slug}
-          className="inline-flex min-h-[44px] items-center rounded-full border border-black/10 bg-white px-5 text-[10px] font-bold"
-        >
-          Back to product
-        </Link>
-      </div>
-
       <section
         ref={requirementRef}
         className={
@@ -192,8 +204,26 @@ export function TryOnCamera({ product }: { product: Product }) {
 
       <div
         ref={cameraSectionRef}
-        className="grid scroll-mt-4 gap-4 lg:grid-cols-[minmax(0,1fr)_320px]"
+        className="scroll-mt-4"
       >
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-[9px] font-bold uppercase tracking-[.14em] text-black/45">
+              TRY-ON ANYWHERE
+            </p>
+            <h1 className="mt-1 text-[26px] font-semibold tracking-[-.045em] sm:text-[34px]">
+              {product.name}
+            </h1>
+          </div>
+          <Link
+            href={"/products/" + product.slug}
+            className="inline-flex min-h-[44px] items-center rounded-full border border-black/10 bg-white px-5 text-[10px] font-bold"
+          >
+            Back to product
+          </Link>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
         <section className="relative overflow-hidden rounded-[22px] bg-[#111111]">
           <div className="relative aspect-[3/4] min-h-[520px] w-full overflow-hidden sm:aspect-square sm:min-h-0">
             <video
@@ -349,6 +379,7 @@ export function TryOnCamera({ product }: { product: Product }) {
             </button>
           </section>
         </aside>
+        </div>
       </div>
     </main>
   );
