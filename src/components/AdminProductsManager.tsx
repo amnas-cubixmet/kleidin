@@ -178,6 +178,18 @@ export function AdminProductsManager() {
         error instanceof Error ? error.message : "Could not load products.",
       ),
     );
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("new") === "1") {
+      setEditingId(null);
+      setDraft(emptyDraft);
+      setUploading("");
+      setMessage("");
+      setDrawerOpen(true);
+
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState(window.history.state, "", cleanUrl);
+    }
   }, []);
 
   const filtered = useMemo(() => {
