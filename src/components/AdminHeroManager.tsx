@@ -17,7 +17,7 @@ import type {
 } from "@/data/hero-slides";
 import type { Product } from "@/types/product";
 import { getProductPrimaryImage } from "@/lib/product-images";
-import { uploadImageDirectToCloudinary } from "@/lib/cloudinary-direct-upload";
+import { uploadAdminImage } from "@/lib/admin-image-upload";
 
 type Draft = {
   title: string;
@@ -256,7 +256,7 @@ export function AdminHeroManager() {
     setDraft((current) => ({ ...current, imageUrl: previewUrl }));
 
     try {
-      const uploaded = await uploadImageDirectToCloudinary(file);
+      const uploaded = await uploadAdminImage(file, "kleidin/hero");
 
       setDraft((current) => ({
         ...current,
