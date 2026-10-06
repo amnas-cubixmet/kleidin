@@ -9,14 +9,17 @@ import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 import { getActiveHeroSlides } from "@/lib/hero";
 import { getProductPrimaryImage } from "@/lib/product-images";
+import { getActiveAnimationBars } from "@/lib/animation-bars";
+import { HomepageAnimationBars } from "@/components/HomepageAnimationBars";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [products, heroSlides, settings] = await Promise.all([
+  const [products, heroSlides, settings, animationBars] = await Promise.all([
     getCatalogProducts(),
     getActiveHeroSlides(),
     getStoreSettings(),
+    getActiveAnimationBars(),
   ]);
   const featured = products
     .filter(
@@ -43,9 +46,19 @@ export default async function Home() {
 
   return (
     <div className="reference-home">
+      <HomepageAnimationBars
+        bars={animationBars}
+        placement="before-hero"
+      />
+
       {heroSlides.length ? (
         <TopFashionHero products={products} heroSlides={heroSlides} />
       ) : null}
+
+      <HomepageAnimationBars
+        bars={animationBars}
+        placement="after-hero"
+      />
 
       {showcaseProducts.length ? (
         <AutoOutfitHero products={showcaseProducts} />
