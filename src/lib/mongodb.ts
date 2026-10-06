@@ -152,6 +152,16 @@ async function ensureIndexes(db: Db) {
       { featured: 1, featuredSortOrder: 1 },
       { name: "products_featured_sort" },
     ),
+    ensureIndex(
+      products,
+      { featuredAnimationEnabled: 1, animationSortOrder: 1 },
+      { name: "products_animation_sort" },
+    ),
+    ensureIndex(
+      products,
+      { spotlight: 1 },
+      { name: "products_spotlight" },
+    ),
 
     ensureIndex(orders, { id: 1 }, { unique: true, name: "orders_id_unique" }),
     ensureIndex(
