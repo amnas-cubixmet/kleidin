@@ -32,6 +32,7 @@ export const localStoreSettings: StoreSettings = {
   homeDealersButtonLabel: "Explore dealers",
   homeDealerTags: ["Retailers", "Resellers", "Repeat orders"],
   homeSpotlightBadge: "Most loved",
+  homeShowcaseProductUrls: [],
   aboutHeroEyebrow: "KLEID.IN / ABOUT",
   aboutHeroTitle: "Clothes for real rotation.",
   aboutHeroLead:
