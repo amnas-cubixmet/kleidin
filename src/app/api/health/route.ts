@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
 import {
   getAdminEnvironment,
-  getCloudinaryDirectEnvironment,
+  getCloudinaryEnvironment,
   getMongoEnvironment,
 } from "@/lib/server-env";
 
@@ -27,6 +27,6 @@ export async function GET() {
     ok: database !== "error",
     database,
     adminConfigured: Boolean(getAdminEnvironment()),
-    cloudinaryConfigured: Boolean(getCloudinaryDirectEnvironment()),
+    cloudinaryConfigured: Boolean(getCloudinaryEnvironment()),
   });
 }
