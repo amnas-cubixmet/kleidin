@@ -140,6 +140,8 @@ function toProduct(doc: Document): Product {
         : number(doc.animationSortOrder),
     spotlight: bool(doc.spotlight),
     featuredImage: text(doc.featuredImage) || undefined,
+    showcaseBackgroundImage:
+      text(doc.showcaseBackgroundImage) || undefined,
     status: status(doc.status),
     image: text(doc.image) || undefined,
     sortOrder:
@@ -259,6 +261,11 @@ function productFields(
         : current?.spotlight ?? false,
     featuredImage:
       text(input.featuredImage, current?.featuredImage) || undefined,
+    showcaseBackgroundImage:
+      text(
+        input.showcaseBackgroundImage,
+        current?.showcaseBackgroundImage,
+      ) || undefined,
     status: nextStatus,
     image: text(input.image, current?.image) || undefined,
     sortOrder:
