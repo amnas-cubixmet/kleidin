@@ -11,6 +11,7 @@ import { getStoreSettings } from "@/lib/site-settings";
 import { getActiveHeroSlides } from "@/lib/hero";
 import { getProductPrimaryImage } from "@/lib/product-images";
 import { getActiveAnimationBars } from "@/lib/animation-bars";
+import type { HeroSlideConfig } from "@/data/hero-slides";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +50,39 @@ export default async function Home() {
           100),
     );
 
+  const defaultHeroFallbackProduct = products.find(
+    (product) =>
+      product.status === "active" && Boolean(getProductPrimaryImage(product)),
+  );
+  const defaultHeroImage =
+    settings.homeDefaultHeroImageUrl ||
+    (defaultHeroFallbackProduct
+      ? getProductPrimaryImage(defaultHeroFallbackProduct)
+      : "");
+
+  const resolvedHeroSlides: HeroSlideConfig[] = [
+    ...(settings.homeDefaultHeroEnabled
+      ? [
+          {
+            id: "default-home-hero",
+            kind: "custom" as const,
+            label: settings.homeDefaultHeroLabel,
+            title: settings.homeDefaultHeroTitle,
+            subtitle: settings.homeDefaultHeroSubtitle,
+            button: settings.homeDefaultHeroButtonLabel,
+            href: settings.homeDefaultHeroButtonHref || "/products",
+            badge: "KLEID.IN",
+            imageUrl: defaultHeroImage,
+            enabled: true,
+            order: -100000,
+            ctaStyle: "dark" as const,
+            imagePosition: settings.homeDefaultHeroImagePosition,
+          },
+        ]
+      : []),
+    ...heroSlides,
+  ];
+
   const mostLoved = products.find(
     (product) => product.spotlight && product.status === "active",
   );
@@ -60,8 +94,8 @@ export default async function Home() {
 
   return (
     <div className="reference-home">
-      {heroSlides.length ? (
-        <TopFashionHero products={products} heroSlides={heroSlides} />
+      {resolvedHeroSlides.length ? (
+        <TopFashionHero products={products} heroSlides={resolvedHeroSlides} />
       ) : null}
 
       {showcaseProducts.length ? (
