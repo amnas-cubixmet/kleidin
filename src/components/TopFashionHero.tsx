@@ -216,8 +216,8 @@ export function TopFashionHero({
 
   return (
     <section className="mx-auto w-full px-0 sm:w-[min(calc(100%-24px),1440px)]">
-      <div className="relative min-h-[620px] overflow-hidden bg-[#e9e7e2] text-[#111111] sm:rounded-[18px] md:aspect-[16/9] md:min-h-0 md:rounded-[22px]">
-        <div className="absolute inset-0">
+      <div className="relative overflow-hidden bg-[#efede8] text-[#111111] sm:rounded-[18px] md:aspect-[16/9] md:rounded-[22px]">
+        <div className="relative h-[54svh] min-h-[350px] overflow-hidden bg-[#dedbd5] md:absolute md:inset-y-0 md:right-0 md:h-auto md:min-h-0 md:w-[57%]">
           {slides.map((slide, slideIndex) => (
             <div
               key={slide.id}
@@ -234,39 +234,39 @@ export function TopFashionHero({
                   alt={slide.title}
                   fill
                   priority={slideIndex === 0}
-                  sizes="(max-width: 767px) 100vw, (max-width: 1440px) 100vw, 1440px"
+                  sizes="(max-width: 767px) 100vw, 57vw"
                   quality={90}
                   className={`object-cover ${
                     slide.imagePosition === "left"
-                      ? "object-[30%_center] md:object-left"
+                      ? "object-left"
                       : slide.imagePosition === "right"
-                        ? "object-[70%_center] md:object-right"
+                        ? "object-right"
                         : "object-center"
                   }`}
                 />
               ) : (
-                <div className="absolute inset-0 bg-[#e9e7e2]" />
+                <div className="absolute inset-0 bg-[#dedbd5]" />
               )}
             </div>
           ))}
+
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-t from-[#efede8] via-[#efede8]/35 to-transparent md:hidden" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[14%] bg-gradient-to-r from-[#efede8] to-transparent md:block" />
         </div>
 
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(239,237,232,.98)_0%,rgba(239,237,232,.94)_31%,rgba(239,237,232,.72)_48%,rgba(239,237,232,.18)_68%,rgba(239,237,232,0)_86%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(239,237,232,.08)_0%,rgba(239,237,232,.08)_58%,rgba(239,237,232,.62)_100%)] md:hidden" />
-
-        <div className="relative z-10 flex min-h-[620px] flex-col px-5 py-5 md:min-h-0 md:h-full md:px-12 md:py-9 lg:px-16 lg:py-12">
-          <div className="flex items-center justify-between gap-4">
+        <div className="relative z-10 flex flex-col px-5 pb-6 pt-5 md:h-full md:w-[52%] md:px-12 md:py-9 lg:px-16 lg:py-12">
+          <div className="flex items-center justify-between gap-4 md:justify-start md:gap-5">
             <span className="text-[8px] font-bold uppercase tracking-[.14em] text-black/45 md:text-[9px]">
               {current.label}
             </span>
 
-            <span className="max-w-[58vw] truncate border border-black/10 bg-white/65 px-3 py-1.5 text-[8px] font-semibold uppercase tracking-[.08em] text-black/55 backdrop-blur-sm">
+            <span className="max-w-[58vw] truncate border border-black/10 bg-white/70 px-3 py-1.5 text-[8px] font-semibold uppercase tracking-[.08em] text-black/55 backdrop-blur-sm md:max-w-[220px]">
               {current.badge ?? current.label}
             </span>
           </div>
 
           <div className="flex flex-1 items-center">
-            <div className="max-w-[560px] py-10 md:max-w-[620px] md:py-0">
+            <div className="w-full max-w-[560px] py-8 md:max-w-[560px] md:py-0">
               {current.discountText ? (
                 <strong className="mb-3 block text-[10px] font-bold uppercase tracking-[.12em] text-[#001cac] md:text-[11px]">
                   {current.discountText}
@@ -274,17 +274,17 @@ export function TopFashionHero({
               ) : null}
 
               <h1
-                className={`m-0 max-w-[650px] uppercase font-black leading-[0.86] tracking-[-0.06em] ${
+                className={`m-0 max-w-[560px] uppercase font-black leading-[0.88] tracking-[-0.06em] ${
                   titleIsLong
-                    ? "text-[clamp(42px,12vw,66px)] md:text-[clamp(58px,5.8vw,96px)]"
-                    : "text-[clamp(50px,14vw,78px)] md:text-[clamp(68px,6.7vw,112px)]"
+                    ? "text-[clamp(40px,11vw,62px)] md:text-[clamp(52px,5.1vw,82px)]"
+                    : "text-[clamp(48px,13vw,72px)] md:text-[clamp(60px,5.8vw,94px)]"
                 }`}
               >
                 {current.title}
               </h1>
 
               {current.subtitle ? (
-                <p className="mt-5 max-w-[390px] text-[10px] leading-[1.65] text-black/58 md:max-w-[430px] md:text-[11px] md:leading-[1.7]">
+                <p className="mt-5 max-w-[360px] text-[10px] leading-[1.65] text-black/58 md:max-w-[390px] md:text-[11px] md:leading-[1.7]">
                   {current.subtitle}
                 </p>
               ) : null}
@@ -305,7 +305,7 @@ export function TopFashionHero({
                   ].map(([label, value]) => (
                     <div
                       key={String(label)}
-                      className="min-w-[58px] border border-black/10 bg-white/60 px-3 py-2.5 backdrop-blur-sm"
+                      className="min-w-[58px] border border-black/10 bg-white/65 px-3 py-2.5 backdrop-blur-sm"
                     >
                       <strong className="block text-[17px] font-bold md:text-[20px]">
                         {pad(Number(value))}
@@ -370,7 +370,7 @@ export function TopFashionHero({
             </div>
 
             <span className="hidden text-[8px] font-bold uppercase tracking-[.12em] text-black/30 sm:block">
-              16:9 editorial hero
+              Daily essentials
             </span>
           </div>
         </div>
