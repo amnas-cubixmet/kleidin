@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { AdminDrawer } from "@/components/AdminDrawer";
 import type { Product } from "@/types/product";
+import { getProductPrimaryImage } from "@/lib/product-images";
 import type {
   InventoryMovement,
   InventoryStockAlert,
@@ -274,6 +276,152 @@ export function AdminInventoryManager() {
           </strong>
         </article>
       </div>
+
+      <section className="mt-5 rounded-[22px] bg-white p-4 ring-1 ring-black/[.06] md:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#001cac]">
+              Inventory overview
+            </p>
+            <h2 className="mt-1 text-lg font-bold tracking-[-.025em]">
+              Product stock
+            </h2>
+            <p className="mt-1 text-[10px] text-black/40">
+              Product image, total stock and quick restock in one view.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => openAdjustment()}
+            className="min-h-11 rounded-xl border border-black/10 bg-white px-4 text-[10px] font-bold transition hover:bg-black/[.025]"
+          >
+            + Adjust stock
+          </button>
+        </div>
+
+        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+          {products.map((product) => {
+            const image = getProductPrimaryImage(product);
+            const isSoldOut = product.stock <= 0;
+            const isLow = product.stock > 0 && product.stock <= threshold;
+
+            return (
+              <article
+                key={product.id}
+                className="overflow-hidden rounded-[20px] border border-black/[.07] bg-white transition hover:-translate-y-0.5 hover:shadow-[0_14px_36px_rgba(0,0,0,.06)]"
+              >
+                <Link
+                  href={"/admin/products/" + product.id}
+                  className="relative block aspect-[4/3.3] overflow-hidden bg-[#f4f4f5]"
+                >
+                  {image ? (
+                    <Image
+                      src={image}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 33vw, 25vw"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-black/25">
+                      <span className="grid h-10 w-10 place-items-center rounded-full bg-black/[.04]">
+                        ◻
+                      </span>
+                      <span className="text-[8px] font-bold uppercase tracking-[.1em]">
+                        No image
+                      </span>
+                    </div>
+                  )}
+
+                  <span
+                    className={
+                      "absolute left-3 top-3 rounded-full px-2.5 py-1 text-[8px] font-bold uppercase backdrop-blur-md " +
+                      (isSoldOut
+                        ? "bg-red-50/95 text-red-700"
+                        : isLow
+                          ? "bg-amber-50/95 text-amber-700"
+                          : "bg-white/90 text-emerald-700")
+                    }
+                  >
+                    {isSoldOut ? "Sold out" : isLow ? "Low stock" : "In stock"}
+                  </span>
+                </Link>
+
+                <div className="p-3.5">
+                  <div className="min-w-0">
+                    <Link
+                      href={"/admin/products/" + product.id}
+                      className="block truncate text-[12px] font-bold hover:text-[#001cac]"
+                    >
+                      {product.name}
+                    </Link>
+                    <p className="mt-1 truncate text-[8px] uppercase tracking-[.06em] text-black/35">
+                      {product.sku} · {product.category || "Uncategorized"}
+                    </p>
+                  </div>
+
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    <div className="rounded-xl bg-[#f7f7f8] p-2.5">
+                      <span className="block text-[7px] font-bold uppercase tracking-[.08em] text-black/30">
+                        Stock
+                      </span>
+                      <strong className="mt-1 block text-[15px] leading-none">
+                        {product.stock}
+                      </strong>
+                    </div>
+                    <div className="rounded-xl bg-[#f7f7f8] p-2.5">
+                      <span className="block text-[7px] font-bold uppercase tracking-[.08em] text-black/30">
+                        Colours
+                      </span>
+                      <strong className="mt-1 block text-[15px] leading-none">
+                        {product.colors.length}
+                      </strong>
+                    </div>
+                    <div className="rounded-xl bg-[#f7f7f8] p-2.5">
+                      <span className="block text-[7px] font-bold uppercase tracking-[.08em] text-black/30">
+                        Sizes
+                      </span>
+                      <strong className="mt-1 block text-[15px] leading-none">
+                        {product.sizes.length}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProductId(product.id);
+                        setColor("");
+                        setSize("");
+                        setDelta("");
+                        setReason(
+                          product.stock <= 0
+                            ? "Sold out restock"
+                            : product.stock <= threshold
+                              ? "Low stock restock"
+                              : "Manual adjustment",
+                        );
+                        setDrawerOpen(true);
+                      }}
+                      className="min-h-11 rounded-xl bg-[#111] px-3 text-[10px] font-bold !text-white"
+                    >
+                      Adjust stock
+                    </button>
+                    <Link
+                      href={"/admin/products/" + product.id}
+                      className="inline-flex min-h-11 items-center justify-center rounded-xl border border-black/10 px-3 text-[10px] font-bold"
+                    >
+                      Product
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
 
       {alerts.length ? (
         <section className="mt-5 overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
