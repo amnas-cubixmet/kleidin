@@ -50,7 +50,7 @@ export default async function Home() {
   const requestedShowcaseSlugs = settings.homeShowcaseProductUrls
     .map(productSlugFromUrl)
     .filter(Boolean)
-    .slice(0, 4);
+    .slice(0, 8);
 
   const activeBySlug = new Map(
     activeProducts.map((product) => [product.slug.toLowerCase(), product]),
@@ -62,9 +62,14 @@ export default async function Home() {
       Boolean(product),
     );
 
-  const showcaseProducts = linkedShowcaseProducts.length
-    ? linkedShowcaseProducts
-    : activeProducts.slice(0, 4);
+  const linkedIds = new Set(
+    linkedShowcaseProducts.map((product) => product.id),
+  );
+
+  const showcaseProducts = [
+    ...linkedShowcaseProducts,
+    ...activeProducts.filter((product) => !linkedIds.has(product.id)),
+  ].slice(0, 20);
 
   const mostLoved = products.find(
     (product) => product.spotlight && product.status === "active",
