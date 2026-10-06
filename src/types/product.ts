@@ -18,6 +18,7 @@ export type Product = {
   wholesaleSlug?: string;
   category: string;
   price: number;
+  costPrice?: number;
   compareAtPrice?: number;
   offerEnabled?: boolean;
   offerType?: ProductOfferType;
