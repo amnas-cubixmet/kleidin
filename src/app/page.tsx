@@ -81,7 +81,6 @@ export default async function Home() {
   const mostLovedImage = mostLoved
     ? getProductPrimaryImage(mostLoved)
     : "";
-  const brandTitleLines = settings.homeBrandTitle.split("\n");
   const dealerHref = products.length ? "/wholesale" : "/contact";
 
   return (
@@ -93,23 +92,6 @@ export default async function Home() {
       {showcaseProducts.length ? (
         <AutoOutfitHero products={showcaseProducts} />
       ) : null}
-
-      <section className="ref-brand-strip" aria-label="About KLEID.IN">
-        <div className="ref-brand-strip-inner">
-          <p>{settings.homeBrandEyebrow}</p>
-          <h2>
-            {brandTitleLines.map((line, index) => (
-              <span key={line + index}>
-                {line}
-                {index < brandTitleLines.length - 1 ? <br /> : null}
-              </span>
-            ))}
-          </h2>
-          <Link href="/about" className="ref-pill ref-pill-light">
-            {settings.homeAboutButtonLabel}
-          </Link>
-        </div>
-      </section>
 
       <HomepageAnimationBars
         bars={animationBars}
