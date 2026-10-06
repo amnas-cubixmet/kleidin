@@ -16,6 +16,7 @@ import type {
   HeroSlideKind,
 } from "@/data/hero-slides";
 import type { Product } from "@/types/product";
+import type { StoreSettings } from "@/types/commerce";
 import { getProductPrimaryImage } from "@/lib/product-images";
 import { uploadAdminImage } from "@/lib/admin-image-upload";
 
@@ -107,16 +108,22 @@ export function AdminHeroManager() {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [storeSettings, setStoreSettings] = useState<StoreSettings | null>(null);
+  const [defaultDrawerOpen, setDefaultDrawerOpen] = useState(false);
+  const [defaultSaving, setDefaultSaving] = useState(false);
+  const [defaultUploading, setDefaultUploading] = useState(false);
 
   async function load() {
-    const [heroResponse, productResponse] = await Promise.all([
+    const [heroResponse, productResponse, settingsResponse] = await Promise.all([
       fetch("/api/admin/hero", { cache: "no-store" }),
       fetch("/api/admin/products", { cache: "no-store" }),
+      fetch("/api/admin/settings", { cache: "no-store" }),
     ]);
 
-    const [heroData, productData] = await Promise.all([
+    const [heroData, productData, settingsData] = await Promise.all([
       heroResponse.json(),
       productResponse.json(),
+      settingsResponse.json(),
     ]);
 
     if (!heroResponse.ok) {
@@ -125,9 +132,13 @@ export function AdminHeroManager() {
     if (!productResponse.ok) {
       throw new Error(productData.error || "Could not load products.");
     }
+    if (!settingsResponse.ok) {
+      throw new Error(settingsData.error || "Could not load default hero.");
+    }
 
     setSlides(heroData.slides || []);
     setProducts(productData.products || []);
+    setStoreSettings(settingsData.settings || null);
   }
 
   useEffect(() => {
@@ -148,6 +159,105 @@ export function AdminHeroManager() {
     : "";
 
   const previewImage = draft.imageUrl || productImage;
+
+  const defaultFallbackProduct = products.find(
+    (product) =>
+      product.status === "active" && Boolean(getProductPrimaryImage(product)),
+  );
+  const defaultPreviewImage =
+    storeSettings?.homeDefaultHeroImageUrl ||
+    (defaultFallbackProduct
+      ? getProductPrimaryImage(defaultFallbackProduct)
+      : "");
+
+  function patchDefaultHero(patch: Partial<StoreSettings>) {
+    setStoreSettings((current) =>
+      current ? ({ ...current, ...patch } as StoreSettings) : current,
+    );
+  }
+
+  async function persistDefaultHero(settings: StoreSettings) {
+    const response = await fetch("/api/admin/settings", {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(settings),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Could not save default hero.");
+    }
+
+    setStoreSettings(data.settings);
+    return data.settings as StoreSettings;
+  }
+
+  async function toggleDefaultHero() {
+    if (!storeSettings || defaultSaving) return;
+    setDefaultSaving(true);
+    setMessage("");
+
+    try {
+      const next = {
+        ...storeSettings,
+        homeDefaultHeroEnabled: !storeSettings.homeDefaultHeroEnabled,
+      };
+      await persistDefaultHero(next);
+      setMessage(
+        next.homeDefaultHeroEnabled
+          ? "Default hero enabled."
+          : "Default hero disabled.",
+      );
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Could not update default hero.",
+      );
+    } finally {
+      setDefaultSaving(false);
+    }
+  }
+
+  async function uploadDefaultHero(file: File) {
+    if (!storeSettings) return;
+    setDefaultUploading(true);
+    setMessage("");
+
+    const previous = storeSettings.homeDefaultHeroImageUrl;
+    const previewUrl = URL.createObjectURL(file);
+    patchDefaultHero({ homeDefaultHeroImageUrl: previewUrl });
+
+    try {
+      const uploaded = await uploadAdminImage(file, "kleidin/hero");
+      patchDefaultHero({ homeDefaultHeroImageUrl: uploaded.url });
+      setMessage(
+        "Default hero image uploaded. Save default hero to publish the change.",
+      );
+    } catch (error) {
+      patchDefaultHero({ homeDefaultHeroImageUrl: previous });
+      setMessage(error instanceof Error ? error.message : "Upload failed.");
+    } finally {
+      URL.revokeObjectURL(previewUrl);
+      setDefaultUploading(false);
+    }
+  }
+
+  async function saveDefaultHero() {
+    if (!storeSettings || defaultSaving) return;
+    setDefaultSaving(true);
+    setMessage("");
+
+    try {
+      await persistDefaultHero(storeSettings);
+      setDefaultDrawerOpen(false);
+      setMessage("Default hero saved.");
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "Could not save default hero.",
+      );
+    } finally {
+      setDefaultSaving(false);
+    }
+  }
 
   function reset() {
     setEditingId(null);
@@ -380,7 +490,145 @@ export function AdminHeroManager() {
         </button>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-2 lg:grid-cols-4">
+      {storeSettings ? (
+        <section className="mt-5 overflow-hidden rounded-[22px] bg-white ring-1 ring-black/[.06]">
+          <div className="grid gap-0 lg:grid-cols-[minmax(0,1.25fr)_minmax(300px,.75fr)]">
+            <div className="relative aspect-[16/9] min-h-[220px] overflow-hidden bg-[#e9e7e2] lg:aspect-auto lg:min-h-[300px]">
+              {defaultPreviewImage ? (
+                storeSettings.homeDefaultHeroImageUrl.startsWith("blob:") ? (
+                  <img
+                    src={storeSettings.homeDefaultHeroImageUrl}
+                    alt=""
+                    className={
+                      "h-full w-full object-cover " +
+                      (storeSettings.homeDefaultHeroImagePosition === "left"
+                        ? "object-left"
+                        : storeSettings.homeDefaultHeroImagePosition === "right"
+                          ? "object-right"
+                          : "object-center")
+                    }
+                  />
+                ) : (
+                  <Image
+                    src={defaultPreviewImage}
+                    alt="Default hero preview"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 65vw"
+                    className={
+                      "object-cover " +
+                      (storeSettings.homeDefaultHeroImagePosition === "left"
+                        ? "object-left"
+                        : storeSettings.homeDefaultHeroImagePosition === "right"
+                          ? "object-right"
+                          : "object-center")
+                    }
+                  />
+                )
+              ) : null}
+
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(239,237,232,.98)_0%,rgba(239,237,232,.90)_38%,rgba(239,237,232,.18)_72%,rgba(239,237,232,0)_100%)]" />
+              <div className="absolute inset-0 flex max-w-[62%] flex-col justify-center p-5 sm:p-7">
+                <span className="text-[8px] font-bold uppercase tracking-[.14em] text-black/45">
+                  {storeSettings.homeDefaultHeroLabel}
+                </span>
+                <strong className="mt-2 text-[clamp(28px,5vw,56px)] font-black uppercase leading-[.88] tracking-[-.055em]">
+                  {storeSettings.homeDefaultHeroTitle}
+                </strong>
+                <p className="mt-3 line-clamp-2 max-w-sm text-[9px] leading-4 text-black/50">
+                  {storeSettings.homeDefaultHeroSubtitle}
+                </p>
+              </div>
+
+              <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[8px] font-bold uppercase text-black/55 backdrop-blur">
+                Default · First
+              </span>
+            </div>
+
+            <div className="flex flex-col justify-between p-4 sm:p-5">
+              <div>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className={labelClass}>Built-in hero</p>
+                    <h2 className="mt-1 text-lg font-bold tracking-[-.025em]">
+                      Default hero
+                    </h2>
+                  </div>
+                  <span
+                    className={
+                      "rounded-full px-2.5 py-1 text-[8px] font-bold uppercase " +
+                      (storeSettings.homeDefaultHeroEnabled
+                        ? "bg-emerald-50 text-emerald-700"
+                        : "bg-black/[.04] text-black/45")
+                    }
+                  >
+                    {storeSettings.homeDefaultHeroEnabled ? "Live" : "Off"}
+                  </span>
+                </div>
+
+                <p className="mt-3 text-[10px] leading-5 text-black/45">
+                  Always available as the first hero. Custom, product and offer
+                  heroes are shown after this slide.
+                </p>
+
+                <div className="mt-4 rounded-xl bg-[#f7f7f8] p-3">
+                  <span className="block text-[8px] font-bold uppercase tracking-[.08em] text-black/30">
+                    Image
+                  </span>
+                  <strong className="mt-1 block text-[10px]">
+                    {storeSettings.homeDefaultHeroImageUrl
+                      ? "Custom hero image"
+                      : defaultFallbackProduct
+                        ? "Using first available product image"
+                        : "No image · light background"}
+                  </strong>
+                  <span className="mt-1 block text-[8px] text-black/35">
+                    1920 × 1080 · 16:9
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-5 grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  disabled={defaultSaving}
+                  onClick={() => void toggleDefaultHero()}
+                  className={
+                    "min-h-11 rounded-xl px-3 text-[10px] font-bold disabled:opacity-50 " +
+                    (storeSettings.homeDefaultHeroEnabled
+                      ? "border border-black/10 bg-white"
+                      : "bg-[#001cac] !text-white")
+                  }
+                >
+                  {defaultSaving
+                    ? "Saving…"
+                    : storeSettings.homeDefaultHeroEnabled
+                      ? "Turn off"
+                      : "Turn on"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMessage("");
+                    setDefaultDrawerOpen(true);
+                  }}
+                  className="min-h-11 rounded-xl bg-[#111] px-3 text-[10px] font-bold !text-white"
+                >
+                  Edit default hero
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <div className="mt-5">
+        <div className="mb-3">
+          <p className={labelClass}>Additional hero slides</p>
+          <p className="mt-1 text-[10px] text-black/40">
+            These slides appear after the default hero when enabled.
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         {(
           [
             ["product", "Product hero"],
@@ -401,12 +649,252 @@ export function AdminHeroManager() {
             <strong className="mt-1 block text-xs">{text}</strong>
           </button>
         ))}
+        </div>
       </div>
 
       {message ? (
         <p className="mt-4 rounded-xl bg-white px-4 py-3 text-xs font-medium text-black/60 ring-1 ring-black/5">
           {message}
         </p>
+      ) : null}
+
+      {storeSettings ? (
+        <AdminDrawer
+          open={defaultDrawerOpen}
+          title="Edit default hero"
+          description="This built-in hero is always Hero 01 when enabled. Custom hero slides follow after it."
+          onClose={() => {
+            if (!defaultSaving && !defaultUploading) {
+              setDefaultDrawerOpen(false);
+              void load();
+            }
+          }}
+          footer={
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
+              <button
+                type="button"
+                disabled={defaultSaving || defaultUploading}
+                onClick={() => {
+                  setDefaultDrawerOpen(false);
+                  void load();
+                }}
+                className="min-h-11 rounded-xl border border-black/10 px-5 text-xs font-bold disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={defaultSaving || defaultUploading}
+                onClick={() => void saveDefaultHero()}
+                className="min-h-11 rounded-xl bg-[#001cac] px-5 text-xs font-bold !text-white disabled:opacity-50"
+              >
+                {defaultSaving ? "Saving…" : "Save default hero"}
+              </button>
+            </div>
+          }
+        >
+          <div className="space-y-4">
+            <section className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className={labelClass}>Default hero status</p>
+                  <p className="mt-1 text-[10px] text-black/45">
+                    When off, only your additional hero slides are shown.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    patchDefaultHero({
+                      homeDefaultHeroEnabled:
+                        !storeSettings.homeDefaultHeroEnabled,
+                    })
+                  }
+                  className={
+                    "min-h-10 rounded-full px-4 text-[9px] font-bold uppercase " +
+                    (storeSettings.homeDefaultHeroEnabled
+                      ? "bg-[#001cac] !text-white"
+                      : "bg-black/[.05] text-black/50")
+                  }
+                >
+                  {storeSettings.homeDefaultHeroEnabled ? "ON" : "OFF"}
+                </button>
+              </div>
+            </section>
+
+            <section className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
+              <p className={labelClass}>Content</p>
+              <div className="mt-3 grid gap-3">
+                <label>
+                  <span className={labelClass}>Label</span>
+                  <input
+                    value={storeSettings.homeDefaultHeroLabel}
+                    onChange={(event) =>
+                      patchDefaultHero({
+                        homeDefaultHeroLabel: event.target.value,
+                      })
+                    }
+                    className={inputClass}
+                  />
+                </label>
+                <label>
+                  <span className={labelClass}>Title</span>
+                  <input
+                    value={storeSettings.homeDefaultHeroTitle}
+                    onChange={(event) =>
+                      patchDefaultHero({
+                        homeDefaultHeroTitle: event.target.value,
+                      })
+                    }
+                    className={inputClass}
+                  />
+                </label>
+                <label>
+                  <span className={labelClass}>Subtitle</span>
+                  <textarea
+                    value={storeSettings.homeDefaultHeroSubtitle}
+                    onChange={(event) =>
+                      patchDefaultHero({
+                        homeDefaultHeroSubtitle: event.target.value,
+                      })
+                    }
+                    className={inputClass + " min-h-24 resize-y py-3"}
+                  />
+                </label>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <label>
+                    <span className={labelClass}>Button text</span>
+                    <input
+                      value={storeSettings.homeDefaultHeroButtonLabel}
+                      onChange={(event) =>
+                        patchDefaultHero({
+                          homeDefaultHeroButtonLabel: event.target.value,
+                        })
+                      }
+                      className={inputClass}
+                    />
+                  </label>
+                  <label>
+                    <span className={labelClass}>Button link</span>
+                    <input
+                      value={storeSettings.homeDefaultHeroButtonHref}
+                      onChange={(event) =>
+                        patchDefaultHero({
+                          homeDefaultHeroButtonHref: event.target.value,
+                        })
+                      }
+                      className={inputClass}
+                    />
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <section className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className={labelClass}>Default hero image</p>
+                  <p className="mt-1 text-[10px] text-black/45">
+                    Recommended 1920 × 1080. Uploads are normalized to 16:9.
+                  </p>
+                </div>
+                {defaultUploading ? (
+                  <span className="text-[9px] font-bold uppercase text-[#001cac]">
+                    Uploading…
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="relative mt-3 aspect-[16/9] overflow-hidden rounded-xl bg-[#e9e7e2]">
+                {defaultPreviewImage ? (
+                  storeSettings.homeDefaultHeroImageUrl.startsWith("blob:") ? (
+                    <img
+                      src={storeSettings.homeDefaultHeroImageUrl}
+                      alt=""
+                      className={
+                        "h-full w-full object-cover " +
+                        (storeSettings.homeDefaultHeroImagePosition === "left"
+                          ? "object-left"
+                          : storeSettings.homeDefaultHeroImagePosition === "right"
+                            ? "object-right"
+                            : "object-center")
+                      }
+                    />
+                  ) : (
+                    <Image
+                      src={defaultPreviewImage}
+                      alt=""
+                      fill
+                      sizes="640px"
+                      className={
+                        "object-cover " +
+                        (storeSettings.homeDefaultHeroImagePosition === "left"
+                          ? "object-left"
+                          : storeSettings.homeDefaultHeroImagePosition === "right"
+                            ? "object-right"
+                            : "object-center")
+                      }
+                    />
+                  )
+                ) : (
+                  <div className="grid h-full place-items-center text-[10px] text-black/35">
+                    Light default background
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <label className="flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-dashed border-black/20 px-3 text-center text-[10px] font-bold">
+                  {storeSettings.homeDefaultHeroImageUrl
+                    ? "Replace image"
+                    : "Upload image"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    disabled={defaultUploading}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                      const file = event.target.files?.[0];
+                      if (file) void uploadDefaultHero(file);
+                      event.target.value = "";
+                    }}
+                    className="sr-only"
+                  />
+                </label>
+
+                <button
+                  type="button"
+                  disabled={!storeSettings.homeDefaultHeroImageUrl}
+                  onClick={() =>
+                    patchDefaultHero({ homeDefaultHeroImageUrl: "" })
+                  }
+                  className="min-h-11 rounded-xl border border-black/10 px-3 text-[10px] font-bold disabled:opacity-35"
+                >
+                  Use product fallback
+                </button>
+              </div>
+
+              <label className="mt-3 block">
+                <span className={labelClass}>Image position</span>
+                <select
+                  value={storeSettings.homeDefaultHeroImagePosition}
+                  onChange={(event) =>
+                    patchDefaultHero({
+                      homeDefaultHeroImagePosition: event.target.value as
+                        | "left"
+                        | "center"
+                        | "right",
+                    })
+                  }
+                  className={inputClass}
+                >
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select>
+              </label>
+            </section>
+          </div>
+        </AdminDrawer>
       ) : null}
 
       <AdminDrawer
