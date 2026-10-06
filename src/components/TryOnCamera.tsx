@@ -8,6 +8,7 @@ export function TryOnCamera({ product }: { product: Product }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const requirementRef = useRef<HTMLElement | null>(null);
+  const cameraSectionRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(false);
   const [requirementVisible, setRequirementVisible] = useState(false);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
@@ -131,44 +132,68 @@ export function TryOnCamera({ product }: { product: Product }) {
       <section
         ref={requirementRef}
         className={
-          "mb-4 overflow-hidden rounded-[22px] border border-black/10 bg-[#f3efe7] transition-[opacity,transform] duration-700 ease-[cubic-bezier(.16,1,.3,1)] " +
+          "relative left-1/2 mb-4 min-h-[100svh] w-screen -translate-x-1/2 overflow-hidden border-y border-black/10 bg-[#f3efe7] transition-[opacity,transform] duration-700 ease-[cubic-bezier(.16,1,.3,1)] md:min-h-[100dvh] " +
           (requirementVisible
             ? "translate-y-0 opacity-100"
             : "translate-y-6 opacity-0")
         }
         aria-label="Try-on image requirements"
       >
-        <div className="grid min-h-[220px] gap-0 md:grid-cols-[1fr_auto]">
-          <div className="flex flex-col justify-center p-5 sm:p-7">
+        <div className="mx-auto flex min-h-[100svh] w-full max-w-[1180px] items-center px-5 py-14 sm:px-8 md:min-h-[100dvh] lg:px-10">
+          <div className="max-w-[760px]">
             <p className="text-[9px] font-bold uppercase tracking-[.14em] text-black/45">
               Image requirement
             </p>
 
-            <h2 className="mt-2 max-w-[520px] text-[28px] font-semibold leading-[.95] tracking-[-.045em] sm:text-[36px]">
+            <h2 className="mt-3 text-[42px] font-semibold leading-[.92] tracking-[-.055em] sm:text-[58px] lg:text-[76px]">
               Stand clear. Keep the full outfit visible.
             </h2>
 
-            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[9px] font-semibold text-black/55">
+            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-[10px] font-semibold text-black/55 sm:text-[11px]">
               <span>Full body</span>
               <span>Good lighting</span>
               <span>Face camera</span>
               <span>Clear background</span>
             </div>
           </div>
-
-          <div className="flex items-end p-5 pt-0 sm:p-7 sm:pt-0 md:items-center md:pt-7">
-            <button
-              type="button"
-              onClick={() => void startCamera()}
-              className="inline-flex min-h-[46px] items-center justify-center rounded-full bg-[#111111] px-6 text-[10px] font-bold text-white"
-            >
-              Start live camera
-            </button>
-          </div>
         </div>
+
+        <button
+          type="button"
+          aria-label="Continue to live camera"
+          onClick={() =>
+            cameraSectionRef.current?.scrollIntoView({
+              behavior: reducedMotion ? "auto" : "smooth",
+              block: "start",
+            })
+          }
+          className={
+            "absolute bottom-7 left-1/2 grid h-12 w-12 -translate-x-1/2 place-items-center rounded-full border border-black/15 bg-white/85 text-black shadow-[0_10px_30px_rgba(0,0,0,.08)] backdrop-blur transition-[opacity,transform] duration-500 sm:bottom-9 " +
+            (requirementVisible
+              ? "translate-y-0 opacity-100"
+              : "translate-y-3 opacity-0")
+          }
+        >
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            className="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 5v14" />
+            <path d="m6.5 13.5 5.5 5.5 5.5-5.5" />
+          </svg>
+        </button>
       </section>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div
+        ref={cameraSectionRef}
+        className="grid scroll-mt-4 gap-4 lg:grid-cols-[minmax(0,1fr)_320px]"
+      >
         <section className="relative overflow-hidden rounded-[22px] bg-[#111111]">
           <div className="relative aspect-[3/4] min-h-[520px] w-full overflow-hidden sm:aspect-square sm:min-h-0">
             <video
