@@ -9,6 +9,14 @@ export type StoreSettings = {
   facebookUrl: string;
   supportEmail: string;
   footerTagline: string;
+  homeDefaultHeroEnabled: boolean;
+  homeDefaultHeroLabel: string;
+  homeDefaultHeroTitle: string;
+  homeDefaultHeroSubtitle: string;
+  homeDefaultHeroButtonLabel: string;
+  homeDefaultHeroButtonHref: string;
+  homeDefaultHeroImageUrl: string;
+  homeDefaultHeroImagePosition: "left" | "center" | "right";
   homeCatalogEyebrow: string;
   homeCatalogTitle: string;
   homeBrandEyebrow: string;
