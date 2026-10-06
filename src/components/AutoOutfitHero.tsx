@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import {
   useCallback,
@@ -35,23 +34,11 @@ type SliderItem = {
   name: string;
   slug: string;
   image: string;
+  backgroundImage: string;
   category: string;
   price: number;
-  background: string;
-  backgroundImage?: string;
   demo: boolean;
 };
-
-const backgrounds = [
-  "#d7d0c3",
-  "#d6d8d2",
-  "#d8d1ca",
-  "#d2d7d5",
-  "#d9d3c7",
-  "#d3d6d9",
-  "#dad5cf",
-  "#d4d7cf",
-];
 
 export function AutoOutfitHero({ products }: { products: Product[] }) {
   const items = useMemo<SliderItem[]>(() => {
@@ -60,57 +47,39 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         (product) =>
           product.status === "active" && Boolean(getProductImage(product)),
       )
-      .sort(
-        (a, b) =>
-          (a.sortOrder ?? a.featuredSortOrder ?? 100) -
-          (b.sortOrder ?? b.featuredSortOrder ?? 100),
-      )
-      .slice(0, 8)
-      .map((product, index) => ({
-        id: product.id,
-        name: product.name,
-        slug: product.slug,
-        image: getProductImage(product),
-        category: product.category,
-        price: product.price,
-        background: backgrounds[index % backgrounds.length],
-        backgroundImage: product.showcaseBackgroundImage,
-        demo: false,
-      }));
-
-    const demoNames = [
-      "Essential White Tee",
-      "Daily Oversized Tee",
-      "Everyday Relaxed Tee",
-      "Core Cotton Tee",
-      "KLEID.IN Daily Tee",
-      "Classic Essential Tee",
-      "Relaxed Everyday Tee",
-      "Core Rotation Tee",
-    ];
-
-    if (liveItems.length >= 8) return liveItems;
-
-    const fillers = Array.from(
-      { length: Math.max(0, 8 - liveItems.length) },
-      (_, fillerIndex) => {
-        const index = liveItems.length + fillerIndex;
+      .slice(0, 4)
+      .map((product) => {
+        const foreground = getProductImage(product);
 
         return {
-          id: "demo-slider-" + index,
-          name: demoNames[index],
-          slug: "",
-          image: "/images/kleidin-white-shirt-model.png",
-          category: "T-Shirts",
-          price: 799,
-          background: backgrounds[index % backgrounds.length],
-          backgroundImage: "/images/kleidin-white-shirt-model.png",
-          demo: true,
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          image: foreground,
+          backgroundImage: product.showcaseBackgroundImage || foreground,
+          category: product.category,
+          price: product.price,
+          demo: false,
         };
-      },
-    );
+      });
 
-    return [...liveItems, ...fillers];
+    if (liveItems.length) return liveItems;
+
+    return Array.from({ length: 4 }, (_, index) => ({
+      id: "demo-selector-" + index,
+      name: [
+        "Essential White Tee",
+        "Daily Oversized Tee",
+        "Everyday Relaxed Tee",
+        "Core Cotton Tee",
+      ][index],
+      slug: "",
+      image: "/images/kleidin-white-shirt-model.png",
+      backgroundImage: "/images/kleidin-white-shirt-model.png",
+      category: "T-Shirts",
+      price: 799,
+      demo: true,
+    }));
   }, [products]);
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -137,6 +106,11 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
   }, []);
 
   useEffect(() => {
+    if (activeIndex < items.length) return;
+    setActiveIndex(0);
+  }, [activeIndex, items.length]);
+
+  useEffect(() => {
     return () => {
       if (pauseTimerRef.current !== null) {
         window.clearTimeout(pauseTimerRef.current);
@@ -157,27 +131,26 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       );
 
       if (rail && thumb) {
-        const left =
-          thumb.offsetLeft - (rail.clientWidth - thumb.offsetWidth) / 2;
-
         rail.scrollTo({
-          left,
+          left:
+            thumb.offsetLeft -
+            (rail.clientWidth - thumb.offsetWidth) / 2,
           behavior: reducedMotion ? "auto" : "smooth",
         });
       }
 
-      if (manual) {
-        setPaused(true);
+      if (!manual) return;
 
-        if (pauseTimerRef.current !== null) {
-          window.clearTimeout(pauseTimerRef.current);
-        }
+      setPaused(true);
 
-        pauseTimerRef.current = window.setTimeout(() => {
-          setPaused(false);
-          pauseTimerRef.current = null;
-        }, 4200);
+      if (pauseTimerRef.current !== null) {
+        window.clearTimeout(pauseTimerRef.current);
       }
+
+      pauseTimerRef.current = window.setTimeout(() => {
+        setPaused(false);
+        pauseTimerRef.current = null;
+      }, 4200);
     },
     [items.length, reducedMotion],
   );
@@ -194,12 +167,11 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         );
 
         if (rail && thumb) {
-          const left =
-            thumb.offsetLeft - (rail.clientWidth - thumb.offsetWidth) / 2;
-
           rail.scrollTo({
-            left,
-            behavior: reducedMotion ? "auto" : "smooth",
+            left:
+              thumb.offsetLeft -
+              (rail.clientWidth - thumb.offsetWidth) / 2,
+            behavior: "smooth",
           });
         }
 
@@ -208,202 +180,180 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
     }, 4200);
 
     return () => window.clearInterval(timer);
-  }, [items.length, reducedMotion, paused]);
+  }, [items.length, paused, reducedMotion]);
 
   if (!active) return null;
 
-  const activeHref = active.demo ? "/products" : "/products/" + active.slug;
+  const activeHref = active.demo
+    ? "/products"
+    : "/products/" + active.slug;
 
   return (
     <section
-      className="w-full bg-[#efefed] px-2 py-3 sm:px-4 sm:py-5 lg:px-6 lg:py-7"
+      className="relative h-[100svh] w-screen overflow-hidden bg-white md:h-[100dvh]"
       aria-label="Product selector"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={(event) => {
+        touchStartX.current = event.touches[0]?.clientX ?? null;
+        setPaused(true);
+      }}
+      onTouchEnd={(event) => {
+        const start = touchStartX.current;
+        const end = event.changedTouches[0]?.clientX;
+        touchStartX.current = null;
+
+        if (start !== null && end !== undefined) {
+          const delta = end - start;
+
+          if (Math.abs(delta) > 55) {
+            selectProduct(
+              activeIndex + (delta < 0 ? 1 : -1),
+              true,
+            );
+          }
+        }
+
+        if (pauseTimerRef.current !== null) {
+          window.clearTimeout(pauseTimerRef.current);
+        }
+
+        pauseTimerRef.current = window.setTimeout(() => {
+          setPaused(false);
+          pauseTimerRef.current = null;
+        }, 4200);
+      }}
     >
       <div
-        className="relative mx-auto min-h-[720px] w-full max-w-[1480px] overflow-hidden bg-[#cfc9bf] lg:min-h-[760px]"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onTouchStart={(event) => {
-          touchStartX.current = event.touches[0]?.clientX ?? null;
-          setPaused(true);
-        }}
-        onTouchEnd={(event) => {
-          const start = touchStartX.current;
-          const end = event.changedTouches[0]?.clientX;
-          touchStartX.current = null;
-
-          if (start !== null && end !== undefined) {
-            const delta = end - start;
-            if (Math.abs(delta) > 55) {
-              selectProduct(activeIndex + (delta < 0 ? 1 : -1), true);
-            }
-          }
-
-          if (pauseTimerRef.current !== null) {
-            window.clearTimeout(pauseTimerRef.current);
-          }
-
-          pauseTimerRef.current = window.setTimeout(() => {
-            setPaused(false);
-            pauseTimerRef.current = null;
-          }, 4200);
-        }}
+        key={"background-" + active.id + "-" + activeIndex}
+        className="selected-background absolute inset-0"
       >
-        <aside className="absolute left-0 top-0 z-20 flex h-[112px] w-full items-end bg-[#161514] px-5 pb-5 text-white sm:h-[128px] sm:px-7 sm:pb-6 lg:h-[calc(100%-122px)] lg:w-[25%] lg:items-start lg:px-9 lg:pt-10">
-          <div>
-            <p className="m-0 text-[9px] font-bold uppercase tracking-[.18em] text-white/45">
-              KLEID.IN / SELECT
-            </p>
-            <h2 className="mt-2 max-w-[240px] text-[30px] font-semibold leading-[.92] tracking-[-.055em] sm:text-[38px] lg:mt-5 lg:text-[52px]">
-              Find your match outfit.
-            </h2>
+        <img
+          src={active.backgroundImage}
+          alt=""
+          className="h-full w-full object-cover object-center"
+        />
+      </div>
 
-            <div className="mt-6 hidden max-w-[220px] lg:block">
-              <p className="text-[11px] leading-5 text-white/50">
-                Select a product below and preview the fit, price and product details instantly.
-              </p>
-            </div>
-          </div>
-        </aside>
+      <div className="pointer-events-none absolute inset-0 bg-black/20" />
 
+      <aside className="absolute left-0 top-0 z-20 flex h-[98px] w-full items-end bg-black/75 px-5 pb-4 text-white backdrop-blur-sm sm:h-[112px] sm:px-7 sm:pb-5 lg:h-[calc(100%-112px)] lg:w-[24%] lg:items-start lg:px-8 lg:pt-9">
+        <div>
+          <p className="m-0 text-[9px] font-bold uppercase tracking-[.18em] text-white/55">
+            KLEID.IN / SELECT
+          </p>
+          <h2 className="mt-1.5 max-w-[240px] text-[27px] font-semibold leading-[.92] tracking-[-.055em] sm:text-[34px] lg:mt-5 lg:text-[50px]">
+            Find your match outfit.
+          </h2>
+
+          <p className="mt-6 hidden max-w-[220px] text-[11px] leading-5 text-white/55 lg:block">
+            Select a product below to preview the product, price and details.
+          </p>
+        </div>
+      </aside>
+
+      <div className="absolute left-0 right-0 top-[98px] bottom-[112px] z-10 sm:top-[112px] lg:left-[24%] lg:top-0">
         <div
-          className="absolute left-0 right-0 top-[112px] bottom-[122px] overflow-hidden transition-colors duration-700 sm:top-[128px] lg:left-[25%] lg:top-0"
-          style={{ backgroundColor: active.background }}
+          key={active.id + "-" + activeIndex}
+          className="selected-product-stage absolute inset-x-0 inset-y-0 lg:right-[28%]"
         >
-          {active.backgroundImage ? (
-            <>
-              <Image
-                key={"background-" + active.id + "-" + activeIndex}
-                src={active.backgroundImage}
-                alt=""
-                fill
-                priority
-                sizes="(max-width: 1023px) 100vw, 75vw"
-                className="selected-background-image object-cover object-center"
-              />
-              <div className="pointer-events-none absolute inset-0 bg-black/20" />
-            </>
-          ) : null}
-
-          <div className="absolute inset-x-0 top-0 bottom-[150px] lg:bottom-0 lg:right-[28%]">
-            <div
-              key={active.id + "-" + activeIndex}
-              className="selected-product-stage absolute inset-0"
-            >
-              <Image
-                src={active.image}
-                alt={active.name}
-                fill
-                priority
-                sizes="(max-width: 1023px) 94vw, 48vw"
-                className="selected-product-image object-contain object-center p-5 sm:p-7 lg:p-10"
-              />
-            </div>
-          </div>
-
-          <div className="pointer-events-none absolute left-4 top-4 z-10 hidden items-center gap-2 sm:flex lg:left-7 lg:top-7">
-            <span className="border border-black/15 bg-white/65 px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-[.12em] text-black/55 backdrop-blur">
-              {String(activeIndex + 1).padStart(2, "0")}
-            </span>
-            <span className="text-[8px] font-semibold uppercase tracking-[.12em] text-black/35">
-              of {String(items.length).padStart(2, "0")}
-            </span>
-          </div>
-
-          <article
-            key={"details-" + active.id + "-" + activeIndex}
-            className="selected-product-details absolute bottom-4 left-4 right-4 z-20 border border-white/40 bg-black/15 p-4 text-white shadow-[0_18px_50px_rgba(0,0,0,.12)] backdrop-blur-xl sm:left-auto sm:w-[300px] lg:bottom-auto lg:right-8 lg:top-1/2 lg:w-[320px] lg:-translate-y-1/2 lg:p-5"
-          >
-            <p className="m-0 text-[8px] font-bold uppercase tracking-[.15em] text-white/60">
-              {active.category}
-            </p>
-
-            <h3 className="mt-2 text-[22px] font-semibold leading-[1] tracking-[-.04em] text-white sm:text-[26px]">
-              {active.name}
-            </h3>
-
-            <div className="mt-4 border-t border-white/20 pt-4">
-              <div className="flex items-center justify-between gap-4">
-                <strong className="text-[17px] font-semibold">
-                  {money(active.price)}
-                </strong>
-
-                <Link
-                  href={activeHref}
-                  className="selected-product-button inline-flex min-h-10 items-center justify-center bg-[#001cac] px-5 text-[9px] font-bold uppercase tracking-[.1em] !text-white transition hover:bg-[#00158a]"
-                >
-                  View product
-                </Link>
-              </div>
-            </div>
-          </article>
+          <img
+            src={active.image}
+            alt={active.name}
+            className="selected-product-image h-full w-full object-contain object-center p-5 sm:p-7 lg:p-10"
+          />
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 z-30 h-[122px] border-t border-black/10 bg-[#f7f7f5]/95 backdrop-blur-md">
-          <div
-            ref={railRef}
-            className="flex h-full w-full snap-x snap-mandatory items-center gap-2 overflow-x-auto px-[38vw] [scrollbar-width:none] sm:gap-3 sm:px-[42vw] lg:px-3 [&::-webkit-scrollbar]:hidden"
-          >
-            {items.map((product, index) => {
-              const selected = index === activeIndex;
+        <div className="pointer-events-none absolute left-4 top-4 z-20 hidden items-center gap-2 sm:flex lg:left-7 lg:top-7">
+          <span className="border border-white/35 bg-black/25 px-2.5 py-1.5 text-[8px] font-bold uppercase tracking-[.12em] text-white backdrop-blur">
+            {String(activeIndex + 1).padStart(2, "0")}
+          </span>
+          <span className="text-[8px] font-semibold uppercase tracking-[.12em] text-white/70">
+            of {String(items.length).padStart(2, "0")}
+          </span>
+        </div>
 
-              return (
-                <button
-                  key={product.id}
-                  type="button"
-                  data-product-thumb={index}
-                  aria-label={"Select " + product.name}
-                  aria-current={selected ? "true" : undefined}
-                  onClick={() => selectProduct(index, true)}
-                  style={{ backgroundColor: product.background }}
-                  className={
-                    "relative aspect-[4/5] h-[92px] shrink-0 snap-center overflow-hidden transition-[transform,border-color,opacity,box-shadow] duration-500 ease-[cubic-bezier(.16,1,.3,1)] sm:h-[98px] " +
-                    (selected
-                      ? "z-10 scale-[1.06] border-2 border-[#001cac] opacity-100 shadow-[0_8px_22px_rgba(0,0,0,.14)]"
-                      : "border border-black/10 opacity-65 hover:opacity-100")
-                  }
-                >
-                  {product.backgroundImage ? (
-                    <>
-                      <Image
-                        src={product.backgroundImage}
-                        alt=""
-                        fill
-                        sizes="86px"
-                        className="object-cover object-center"
-                      />
-                      <span className="absolute inset-0 bg-black/15" />
-                    </>
-                  ) : null}
+        <article
+          key={"details-" + active.id + "-" + activeIndex}
+          className="selected-product-details absolute bottom-4 left-4 right-4 z-30 border border-white/35 bg-black/25 p-4 text-white shadow-[0_18px_50px_rgba(0,0,0,.18)] backdrop-blur-xl sm:left-auto sm:right-5 sm:w-[300px] lg:bottom-auto lg:right-8 lg:top-1/2 lg:w-[320px] lg:-translate-y-1/2 lg:p-5"
+        >
+          <p className="m-0 text-[8px] font-bold uppercase tracking-[.15em] text-white/65">
+            {active.category}
+          </p>
 
-                  <div className="absolute inset-[8%] z-10">
-                    <Image
-                      src={product.image}
-                      alt=""
-                      fill
-                      sizes="86px"
-                      className="object-contain object-center"
-                    />
-                  </div>
-                </button>
-              );
-            })}
+          <h3 className="mt-2 text-[22px] font-semibold leading-[1] tracking-[-.04em] text-white sm:text-[26px]">
+            {active.name}
+          </h3>
+
+          <div className="mt-4 border-t border-white/20 pt-4">
+            <div className="flex items-center justify-between gap-4">
+              <strong className="text-[17px] font-semibold">
+                {money(active.price)}
+              </strong>
+
+              <Link
+                href={activeHref}
+                className="selected-product-button inline-flex min-h-10 items-center justify-center bg-[#001cac] px-5 text-[9px] font-bold uppercase tracking-[.1em] !text-white transition hover:bg-[#00158a]"
+              >
+                View product
+              </Link>
+            </div>
           </div>
+        </article>
+      </div>
+
+      <div className="absolute inset-x-0 bottom-0 z-40 h-[112px] border-t border-white/20 bg-black/30 backdrop-blur-xl">
+        <div
+          ref={railRef}
+          className="flex h-full w-full snap-x snap-mandatory items-center gap-2 overflow-x-auto px-[38vw] [scrollbar-width:none] sm:gap-3 sm:px-[42vw] lg:px-4 [&::-webkit-scrollbar]:hidden"
+        >
+          {items.map((product, index) => {
+            const selected = index === activeIndex;
+
+            return (
+              <button
+                key={product.id}
+                type="button"
+                data-product-thumb={index}
+                aria-label={"Select " + product.name}
+                aria-current={selected ? "true" : undefined}
+                onClick={() => selectProduct(index, true)}
+                className={
+                  "relative aspect-[4/5] h-[84px] shrink-0 snap-center overflow-hidden bg-black/20 transition-[transform,border-color,opacity,box-shadow] duration-500 ease-[cubic-bezier(.16,1,.3,1)] sm:h-[92px] " +
+                  (selected
+                    ? "z-10 scale-[1.06] border-2 border-[#001cac] opacity-100 shadow-[0_8px_22px_rgba(0,0,0,.18)]"
+                    : "border border-white/20 opacity-70 hover:opacity-100")
+                }
+              >
+                <img
+                  src={product.backgroundImage}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover object-center"
+                />
+                <span className="absolute inset-0 bg-black/20" />
+                <img
+                  src={product.image}
+                  alt=""
+                  className="absolute inset-[8%] z-10 h-[84%] w-[84%] object-contain object-center"
+                />
+              </button>
+            );
+          })}
         </div>
       </div>
 
       <style jsx>{`
-        .selected-background-image {
+        .selected-background {
           animation: selectedBackgroundIn 900ms cubic-bezier(.16,1,.3,1) both;
           will-change: transform, opacity;
         }
 
         .selected-product-stage {
-          animation: selectedStageIn 760ms cubic-bezier(.16,1,.3,1) both;
+          animation: selectedStageIn 700ms cubic-bezier(.16,1,.3,1) both;
         }
 
         .selected-product-image {
-          animation: selectedImageIn 980ms cubic-bezier(.16,1,.3,1) both;
+          animation: selectedImageIn 960ms cubic-bezier(.16,1,.3,1) both;
           will-change: transform, opacity;
         }
 
@@ -487,7 +437,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .selected-background-image,
+          .selected-background,
           .selected-product-stage,
           .selected-product-image,
           .selected-product-details,
