@@ -285,29 +285,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           </div>
         </aside>
 
-        <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-2 sm:bottom-5">
-          <div className="flex items-center gap-2 text-[8px] font-semibold leading-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,.65)]">
-            <span aria-hidden="true" className="text-[16px]">↔</span>
-            <span className="max-w-[110px] text-center">
-              Swipe to try on another outfit
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="min-h-7 border border-white/30 bg-white/90 px-3 text-[7px] font-bold text-[#111]"
-            >
-              Front
-            </button>
-            <button
-              type="button"
-              className="min-h-7 border border-white/30 bg-white/90 px-3 text-[7px] font-bold text-[#111]"
-            >
-              Back
-            </button>
-          </div>
-
+        <div className="absolute bottom-4 left-1/2 z-30 -translate-x-1/2 sm:bottom-5">
           <Link
             href={tryOnHref}
             className="inline-flex min-h-9 items-center justify-center bg-[#b7ff35] px-5 text-[9px] font-bold text-[#111] shadow-[0_8px_22px_rgba(0,0,0,.12)] transition hover:scale-[1.02]"
