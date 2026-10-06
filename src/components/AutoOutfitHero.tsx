@@ -183,11 +183,29 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
     if (items.length <= 1 || reducedMotion || paused) return;
 
     const timer = window.setInterval(() => {
-      selectProduct(activeIndex + 1);
+      setActiveIndex((current) => {
+        const next = (current + 1) % items.length;
+        const rail = railRef.current;
+        const thumb = rail?.querySelector<HTMLElement>(
+          '[data-product-thumb="' + next + '"]',
+        );
+
+        if (rail && thumb) {
+          const left =
+            thumb.offsetLeft - (rail.clientWidth - thumb.offsetWidth) / 2;
+
+          rail.scrollTo({
+            left,
+            behavior: reducedMotion ? "auto" : "smooth",
+          });
+        }
+
+        return next;
+      });
     }, 4200);
 
     return () => window.clearInterval(timer);
-  }, [activeIndex, items.length, paused, reducedMotion, selectProduct]);
+  }, [items.length, reducedMotion, paused]);
 
   if (!active) return null;
 
