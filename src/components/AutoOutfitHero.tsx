@@ -75,10 +75,22 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
     });
   }, [products]);
 
+  const railProducts = useMemo(
+    () =>
+      Array.from({ length: 20 }, (_, index) => ({
+        ...items[index % items.length],
+        railId: "rail-" + index,
+        baseIndex: index % items.length,
+      })),
+    [items],
+  );
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const railRef = useRef<HTMLDivElement | null>(null);
+  const railInteractingRef = useRef(false);
+  const railFrameRef = useRef<number | null>(null);
   const pauseTimerRef = useRef<number | null>(null);
   const touchStartX = useRef<number | null>(null);
 
@@ -108,6 +120,9 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       if (pauseTimerRef.current !== null) {
         window.clearTimeout(pauseTimerRef.current);
       }
+      if (railFrameRef.current !== null) {
+        window.cancelAnimationFrame(railFrameRef.current);
+      }
     };
   }, []);
 
@@ -117,20 +132,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
       const next = ((index % items.length) + items.length) % items.length;
       setActiveIndex(next);
-
-      const rail = railRef.current;
-      const thumb = rail?.querySelector<HTMLElement>(
-        '[data-product-thumb="' + next + '"]',
-      );
-
-      if (rail && thumb) {
-        rail.scrollTo({
-          left:
-            thumb.offsetLeft -
-            (rail.clientWidth - thumb.offsetWidth) / 2,
-          behavior: reducedMotion ? "auto" : "smooth",
-        });
-      }
 
       if (!manual) return;
 
@@ -145,35 +146,56 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         pauseTimerRef.current = null;
       }, 4200);
     },
-    [items.length, reducedMotion],
+    [items.length],
   );
 
   useEffect(() => {
     if (items.length <= 1 || reducedMotion || paused) return;
 
     const timer = window.setInterval(() => {
-      setActiveIndex((current) => {
-        const next = (current + 1) % items.length;
-        const rail = railRef.current;
-        const thumb = rail?.querySelector<HTMLElement>(
-          '[data-product-thumb="' + next + '"]',
-        );
-
-        if (rail && thumb) {
-          rail.scrollTo({
-            left:
-              thumb.offsetLeft -
-              (rail.clientWidth - thumb.offsetWidth) / 2,
-            behavior: "smooth",
-          });
-        }
-
-        return next;
-      });
+      setActiveIndex((current) => (current + 1) % items.length);
     }, 4200);
 
     return () => window.clearInterval(timer);
   }, [items.length, paused, reducedMotion]);
+
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail || reducedMotion || !railProducts.length) return;
+
+    const setWidth = () => rail.scrollWidth / 3;
+
+    const initialize = window.requestAnimationFrame(() => {
+      const width = setWidth();
+      if (width > 0) rail.scrollLeft = width;
+    });
+
+    const tick = () => {
+      const width = setWidth();
+
+      if (!railInteractingRef.current && width > 0) {
+        rail.scrollLeft += 0.42;
+
+        if (rail.scrollLeft >= width * 2) {
+          rail.scrollLeft -= width;
+        } else if (rail.scrollLeft <= 0) {
+          rail.scrollLeft += width;
+        }
+      }
+
+      railFrameRef.current = window.requestAnimationFrame(tick);
+    };
+
+    railFrameRef.current = window.requestAnimationFrame(tick);
+
+    return () => {
+      window.cancelAnimationFrame(initialize);
+      if (railFrameRef.current !== null) {
+        window.cancelAnimationFrame(railFrameRef.current);
+        railFrameRef.current = null;
+      }
+    };
+  }, [railProducts.length, reducedMotion]);
 
   if (!active) return null;
 
@@ -185,8 +207,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
     <section
       className="relative h-[100svh] min-h-[100svh] w-screen overflow-hidden md:h-[100dvh] md:min-h-[100dvh]"
       aria-label="Product selector"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
       onTouchStart={(event) => {
         touchStartX.current = event.touches[0]?.clientX ?? null;
         setPaused(true);
@@ -245,7 +265,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </div>
       </aside>
 
-      <div className="absolute left-0 right-0 top-[98px] bottom-[112px] z-10 sm:top-[112px] lg:left-[24%] lg:top-0">
+      <div className="absolute left-0 right-0 top-[98px] bottom-[clamp(86px,10svh,112px)] z-10 sm:top-[112px] lg:left-[24%] lg:top-0">
         <article
           key={"details-" + active.id + "-" + activeIndex}
           className="selected-product-details absolute bottom-4 left-4 right-4 z-30 border border-white/35 bg-black/25 p-4 text-white shadow-[0_18px_50px_rgba(0,0,0,.18)] backdrop-blur-xl sm:left-auto sm:right-5 sm:w-[280px] lg:bottom-auto lg:right-[14%] lg:top-[38%] lg:w-[270px] lg:-translate-y-1/2 lg:p-4 xl:right-[16%] xl:w-[285px]"
@@ -275,47 +295,71 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </article>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-40 h-[112px] border-t border-white/20 bg-black/30 backdrop-blur-xl">
+      <div className="absolute inset-x-0 bottom-0 z-40 h-[clamp(86px,10svh,112px)] border-t border-black/10 bg-white">
         <div
           ref={railRef}
-          className="flex h-full w-full snap-x snap-mandatory items-center gap-2 overflow-x-auto px-[38vw] [scrollbar-width:none] sm:gap-3 sm:px-[42vw] lg:px-4 [&::-webkit-scrollbar]:hidden"
-        >
-          {items.map((product, index) => {
-            const selected = index === activeIndex;
+          onPointerDown={(event) => {
+            event.stopPropagation();
+            railInteractingRef.current = true;
+          }}
+          onPointerUp={(event) => {
+            event.stopPropagation();
+            railInteractingRef.current = false;
+          }}
+          onPointerCancel={() => {
+            railInteractingRef.current = false;
+          }}
+          onPointerLeave={() => {
+            railInteractingRef.current = false;
+          }}
+          onTouchStart={(event) => event.stopPropagation()}
+          onTouchEnd={(event) => event.stopPropagation()}
+          onScroll={() => {
+            const rail = railRef.current;
+            if (!rail) return;
 
-            return (
-              <button
-                key={product.id}
-                type="button"
-                data-product-thumb={index}
-                aria-label={"Select " + product.name}
-                aria-current={selected ? "true" : undefined}
-                onClick={() => selectProduct(index, true)}
-                className={
-                  "relative aspect-[4/5] h-[84px] shrink-0 snap-center overflow-hidden bg-black/20 transition-[transform,border-color,opacity,box-shadow] duration-500 ease-[cubic-bezier(.16,1,.3,1)] sm:h-[92px] " +
-                  (selected
-                    ? "z-10 scale-[1.06] border-2 border-[#001cac] opacity-100 shadow-[0_8px_22px_rgba(0,0,0,.18)]"
-                    : "border border-white/20 opacity-70 hover:opacity-100")
-                }
-              >
-                {product.backgroundImage ? (
-                  <>
-                    <img
-                      src={product.backgroundImage}
-                      alt=""
-                      className="absolute inset-0 h-full w-full object-cover object-center"
-                    />
-                    <span className="absolute inset-0 bg-black/20" />
-                  </>
-                ) : null}
-                <img
-                  src={product.image}
-                  alt=""
-                  className="absolute inset-[8%] z-10 h-[84%] w-[84%] object-contain object-center"
-                />
-              </button>
-            );
-          })}
+            const width = rail.scrollWidth / 3;
+            if (!width) return;
+
+            if (rail.scrollLeft < width * 0.35) {
+              rail.scrollLeft += width;
+            } else if (rail.scrollLeft > width * 2.65) {
+              rail.scrollLeft -= width;
+            }
+          }}
+          className="flex h-full w-full cursor-grab items-center gap-2 overflow-x-auto px-2 [scrollbar-width:none] active:cursor-grabbing sm:gap-3 sm:px-3 [&::-webkit-scrollbar]:hidden"
+        >
+          {[0, 1, 2].flatMap((setIndex) =>
+            railProducts.map((product, index) => {
+              const selected = product.baseIndex === activeIndex;
+
+              return (
+                <button
+                  key={setIndex + "-" + product.railId}
+                  type="button"
+                  aria-label={"Select " + product.name}
+                  aria-current={selected ? "true" : undefined}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    selectProduct(product.baseIndex, true);
+                  }}
+                  className={
+                    "relative h-[70px] w-[60px] shrink-0 overflow-hidden bg-white transition-[transform,border-color,opacity] duration-300 sm:h-[82px] sm:w-[70px] " +
+                    (selected
+                      ? "scale-[1.04] border-2 border-[#001cac] opacity-100"
+                      : "border border-black/10 opacity-75 hover:opacity-100")
+                  }
+                >
+                  <img
+                    src={product.image}
+                    alt=""
+                    draggable={false}
+                    className="absolute inset-[7%] h-[86%] w-[86%] select-none object-contain object-center"
+                  />
+                </button>
+              );
+            }),
+          )}
         </div>
       </div>
 
