@@ -19,13 +19,11 @@ type TimeLeft = {
 
 type ResolvedHeroSlide = {
   id: string;
-  label: string;
   title: string;
   subtitle: string;
   button: string;
   href: string;
   image?: string;
-  badge?: string;
   meta?: string;
   discountText?: string;
   showCountdown?: boolean;
@@ -118,7 +116,6 @@ export function TopFashionHero({
 
         return {
           id: slide.id,
-          label: slide.label || product?.category || "KLEID.IN",
           title,
           subtitle: slide.subtitle || product?.description || "",
           button: slide.button || (product ? "View product" : "Explore"),
@@ -126,12 +123,6 @@ export function TopFashionHero({
             slide.href ||
             (product ? `/products/${product.slug}` : "/products"),
           image,
-          badge:
-            slide.badge ||
-            slide.discountText ||
-            slide.label ||
-            product?.category ||
-            "KLEID.IN",
           meta: product
             ? `${product.name} · ${money(product.price)}`
             : undefined,
@@ -347,7 +338,7 @@ export function TopFashionHero({
                   <button
                     key={slide.id}
                     type="button"
-                    aria-label={`Show ${slide.label || slide.title} slide`}
+                    aria-label={`Show ${slide.title} slide`}
                     onClick={() => setIndex(slideIndex)}
                     className={`h-[3px] shrink-0 transition-all duration-300 ${
                       slideIndex === index
