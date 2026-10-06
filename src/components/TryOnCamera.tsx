@@ -7,7 +7,9 @@ import type { Product } from "@/types/product";
 export function TryOnCamera({ product }: { product: Product }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const requirementRef = useRef<HTMLElement | null>(null);
   const [active, setActive] = useState(false);
+  const [requirementVisible, setRequirementVisible] = useState(false);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
   const [scale, setScale] = useState(100);
   const [x, setX] = useState(0);
@@ -62,6 +64,27 @@ export function TryOnCamera({ product }: { product: Product }) {
   );
 
   useEffect(() => {
+    const node = requirementRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setRequirementVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.32,
+        rootMargin: "0px 0px -8% 0px",
+      },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     return () => stopCamera();
   }, [stopCamera]);
 
@@ -104,6 +127,46 @@ export function TryOnCamera({ product }: { product: Product }) {
           Back to product
         </Link>
       </div>
+
+      <section
+        ref={requirementRef}
+        className={
+          "mb-4 overflow-hidden rounded-[22px] border border-black/10 bg-[#f3efe7] transition-[opacity,transform] duration-700 ease-[cubic-bezier(.16,1,.3,1)] " +
+          (requirementVisible
+            ? "translate-y-0 opacity-100"
+            : "translate-y-6 opacity-0")
+        }
+        aria-label="Try-on image requirements"
+      >
+        <div className="grid min-h-[220px] gap-0 md:grid-cols-[1fr_auto]">
+          <div className="flex flex-col justify-center p-5 sm:p-7">
+            <p className="text-[9px] font-bold uppercase tracking-[.14em] text-black/45">
+              Image requirement
+            </p>
+
+            <h2 className="mt-2 max-w-[520px] text-[28px] font-semibold leading-[.95] tracking-[-.045em] sm:text-[36px]">
+              Stand clear. Keep the full outfit visible.
+            </h2>
+
+            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[9px] font-semibold text-black/55">
+              <span>Full body</span>
+              <span>Good lighting</span>
+              <span>Face camera</span>
+              <span>Clear background</span>
+            </div>
+          </div>
+
+          <div className="flex items-end p-5 pt-0 sm:p-7 sm:pt-0 md:items-center md:pt-7">
+            <button
+              type="button"
+              onClick={() => void startCamera()}
+              className="inline-flex min-h-[46px] items-center justify-center rounded-full bg-[#111111] px-6 text-[10px] font-bold text-white"
+            >
+              Start live camera
+            </button>
+          </div>
+        </div>
+      </section>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
         <section className="relative overflow-hidden rounded-[22px] bg-[#111111]">
