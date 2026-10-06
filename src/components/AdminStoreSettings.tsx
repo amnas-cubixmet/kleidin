@@ -119,7 +119,9 @@ export function AdminStoreSettings() {
 
   const entries = Object.entries(settings).filter(
     ([key]) =>
-      key !== "aboutPrinciples" && !key.startsWith("homeDefaultHero"),
+      key !== "aboutPrinciples" &&
+      !key.startsWith("homeDefaultHero") &&
+      !key.startsWith("announcement"),
   ) as Array<[keyof StoreSettings, StoreSettings[keyof StoreSettings]]>;
 
   return (
@@ -232,6 +234,88 @@ export function AdminStoreSettings() {
           </div>
         }
       >
+        <div className="mb-4 rounded-2xl bg-white p-4 ring-1 ring-black/5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[.08em] text-black/50">
+                Announcement bar
+              </p>
+              <p className="mt-1 text-xs text-black/45">
+                Static offer bar. No scrolling or animation.
+              </p>
+            </div>
+
+            <label className="flex items-center gap-2 text-xs font-semibold">
+              <input
+                type="checkbox"
+                checked={settings.announcementEnabled}
+                onChange={(event) =>
+                  update("announcementEnabled", event.target.checked)
+                }
+              />
+              Enabled
+            </label>
+          </div>
+
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            <label className="block md:col-span-2">
+              <span className="text-[10px] font-bold uppercase tracking-[.08em] text-black/50">
+                Offer text
+              </span>
+              <input
+                value={settings.announcementText}
+                onChange={(event) =>
+                  update("announcementText", event.target.value)
+                }
+                className={controlClass}
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-[10px] font-bold uppercase tracking-[.08em] text-black/50">
+                Button label
+              </span>
+              <input
+                value={settings.announcementButtonLabel}
+                onChange={(event) =>
+                  update("announcementButtonLabel", event.target.value)
+                }
+                className={controlClass}
+                placeholder="SHOP NOW"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-[10px] font-bold uppercase tracking-[.08em] text-black/50">
+                Button link
+              </span>
+              <input
+                value={settings.announcementButtonHref}
+                onChange={(event) =>
+                  update("announcementButtonHref", event.target.value)
+                }
+                className={controlClass}
+                placeholder="/products"
+              />
+            </label>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              update("announcementButtonLabel", "");
+              update("announcementButtonHref", "");
+            }}
+            disabled={
+              !settings.announcementButtonLabel &&
+              !settings.announcementButtonHref
+            }
+            className="mt-4 min-h-10 rounded-xl border border-red-200 px-4 text-xs font-bold text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Remove announcement button
+          </button>
+        </div>
+
         <div className="grid gap-3 rounded-2xl bg-white p-4 ring-1 ring-black/5 md:grid-cols-2">
           {entries.map(([key, value]) => {
             if (Array.isArray(value)) {
