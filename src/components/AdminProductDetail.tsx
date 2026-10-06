@@ -359,6 +359,33 @@ export function AdminProductDetail({ productId }: { productId: string }) {
     }
   }
 
+  async function uploadShowcaseBackground(
+    event: ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    const previous = draft?.showcaseBackgroundImage;
+    const previewUrl = URL.createObjectURL(file);
+    patch({ showcaseBackgroundImage: previewUrl });
+
+    try {
+      const url = await uploadFile(file, "showcase-background");
+      patch({ showcaseBackgroundImage: url });
+      setMessage(
+        "Selector background uploaded. Save product to publish the change.",
+      );
+    } catch (error) {
+      patch({ showcaseBackgroundImage: previous });
+      setMessage(
+        error instanceof Error ? error.message : "Image upload failed.",
+      );
+    } finally {
+      URL.revokeObjectURL(previewUrl);
+    }
+  }
+
   async function uploadVariantImages(
     index: number,
     event: ChangeEvent<HTMLInputElement>,
@@ -445,6 +472,7 @@ export function AdminProductDetail({ productId }: { productId: string }) {
           animationSortOrder: draft.animationSortOrder ?? null,
           spotlight: Boolean(draft.spotlight),
           featuredImage: draft.featuredImage ?? "",
+          showcaseBackgroundImage: draft.showcaseBackgroundImage ?? "",
           offerValue: draft.offerEnabled ? draft.offerValue ?? null : null,
           offerLabel: draft.offerEnabled ? draft.offerLabel ?? "" : "",
           offerBadge: draft.offerEnabled ? draft.offerBadge ?? "" : "",
@@ -1095,74 +1123,98 @@ export function AdminProductDetail({ productId }: { productId: string }) {
                 </label>
               ) : null}
 
-              <Toggle
-                checked={Boolean(draft.featuredAnimationEnabled)}
-                onChange={(checked) =>
-                  patch({ featuredAnimationEnabled: checked })
-                }
-                label="Product animation"
-                help="Shows this product in the homepage Product Animation section."
-              />
-            </div>
+              <div className="mt-4 border-t border-black/10 pt-4">
+                <p className="text-[10px] font-bold uppercase tracking-[.12em] text-[#001cac]">
+                  Homepage selector
+                </p>
+                <p className="mt-1 text-[10px] leading-4 text-black/45">
+                  Upload one foreground product image and one separate background image.
+                </p>
 
-            {draft.featuredAnimationEnabled ? (
-              <div className="mt-4 grid gap-3 md:grid-cols-[1fr_180px]">
-                <div className="rounded-xl border border-black/10 p-3">
-                  <span className={labelClass}>Animation image</span>
-                  {draft.featuredImage ? (
-                    <div className="mt-2 flex items-center gap-3">
-                      <div className="relative h-24 w-24 overflow-hidden rounded-xl bg-[#f4f4f2]">
-                        <img
-                          src={draft.featuredImage}
-                          alt=""
-                          className="h-full w-full object-contain p-1"
-                        />
+                <div className="mt-3 grid gap-3 md:grid-cols-2">
+                  <div className="rounded-xl border border-black/10 p-3">
+                    <span className={labelClass}>Foreground product image</span>
+
+                    {draft.featuredImage ? (
+                      <div className="mt-2 flex items-center gap-3">
+                        <div className="relative h-28 w-24 overflow-hidden rounded-xl bg-[#f4f4f2]">
+                          <img
+                            src={draft.featuredImage}
+                            alt=""
+                            className="h-full w-full object-contain p-1"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => patch({ featuredImage: undefined })}
+                          className="text-xs font-bold text-red-600"
+                        >
+                          Remove
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => patch({ featuredImage: undefined })}
-                        className="text-xs font-bold text-red-600"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ) : null}
+                    ) : null}
 
-                  <label className="mt-3 flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-dashed border-black/20 text-[10px] font-bold">
-                    {uploading === "animation"
-                      ? "Uploading…"
-                      : "Choose transparent image"}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(event) => void uploadAnimation(event)}
-                      className="sr-only"
-                    />
-                  </label>
+                    <label className="mt-3 flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-dashed border-black/20 text-[10px] font-bold">
+                      {uploading === "animation"
+                        ? "Uploading…"
+                        : "Choose foreground image"}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(event) => void uploadAnimation(event)}
+                        className="sr-only"
+                      />
+                    </label>
+
+                    <span className="mt-2 block text-[9px] leading-4 text-black/40">
+                      Transparent PNG/WebP works best for the front product layer.
+                    </span>
+                  </div>
+
+                  <div className="rounded-xl border border-black/10 p-3">
+                    <span className={labelClass}>Background image</span>
+
+                    {draft.showcaseBackgroundImage ? (
+                      <div className="mt-2">
+                        <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-[#f4f4f2]">
+                          <img
+                            src={draft.showcaseBackgroundImage}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            patch({ showcaseBackgroundImage: undefined })
+                          }
+                          className="mt-2 text-xs font-bold text-red-600"
+                        >
+                          Remove background
+                        </button>
+                      </div>
+                    ) : null}
+
+                    <label className="mt-3 flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-dashed border-black/20 text-[10px] font-bold">
+                      {uploading === "showcase-background"
+                        ? "Uploading…"
+                        : "Choose background image"}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(event) =>
+                          void uploadShowcaseBackground(event)
+                        }
+                        className="sr-only"
+                      />
+                    </label>
+
+                    <span className="mt-2 block text-[9px] leading-4 text-black/40">
+                      Landscape lifestyle image recommended for the selector stage.
+                    </span>
+                  </div>
                 </div>
-
-                <label>
-                  <span className={labelClass}>Animation position</span>
-                  <input
-                    type="number"
-                    min="1"
-                    value={draft.animationSortOrder ?? ""}
-                    onChange={(event) =>
-                      patch({
-                        animationSortOrder: event.target.value
-                          ? Number(event.target.value)
-                          : undefined,
-                      })
-                    }
-                    placeholder="1"
-                    className={inputClass}
-                  />
-                  <span className="mt-1 block text-[9px] text-black/40">
-                    Independent from Featured Products order.
-                  </span>
-                </label>
               </div>
-            ) : null}
           </section>
         </div>
 
