@@ -77,7 +77,7 @@ export function SiteChrome({
                 "1",
               );
             }}
-            className="absolute right-3 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center text-[18px] font-normal leading-none text-white/80 transition hover:text-white"
+            className="absolute right-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center text-[24px] font-normal leading-none text-white/80 transition hover:text-white"
           >
             ×
           </button>
