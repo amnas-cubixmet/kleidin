@@ -181,7 +181,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           resetTimerRef.current = null;
         }, 720);
       }
-    }, 2600);
+    }, 3200);
 
     return () => window.clearInterval(timer);
   }, [
@@ -280,12 +280,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
             <div
               key={product.id + "-" + loopIndex}
               data-loop-slide={loopIndex}
-              className={
-                "relative h-[300px] shrink-0 snap-center transition-[width] duration-500 ease-[cubic-bezier(.22,.61,.36,1)] sm:h-[330px] " +
-                (isActive
-                  ? "w-[250px] sm:w-[300px]"
-                  : "w-[112px] sm:w-[130px] lg:w-[145px]")
-              }
+              className="relative h-[300px] w-[250px] shrink-0 snap-center sm:h-[330px] sm:w-[300px]"
             >
               {isActive ? (
                 <article className="active-product-card absolute inset-0 flex flex-col overflow-hidden border border-black/10 bg-white shadow-[0_18px_46px_rgba(0,0,0,.1)]">
@@ -336,13 +331,15 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                   aria-label={"View " + product.name}
                   className="absolute inset-0"
                 >
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    sizes="(max-width: 639px) 112px, 145px"
-                    className="object-contain object-center opacity-60 transition-[transform,opacity] duration-500 ease-out"
-                  />
+                  <div className="absolute left-1/2 top-1/2 h-[58%] w-[45%] -translate-x-1/2 -translate-y-1/2 sm:h-[60%] sm:w-[44%]">
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width: 639px) 112px, 132px"
+                      className="object-contain object-center opacity-60 transition-[transform,opacity] duration-700 ease-[cubic-bezier(.22,.61,.36,1)]"
+                    />
+                  </div>
                 </Link>
               )}
             </div>
@@ -352,17 +349,20 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
       <style jsx>{`
         .active-product-card {
-          animation: activeProductCard 520ms cubic-bezier(.22,.61,.36,1) both;
+          transform-origin: center center;
+          animation: activeProductCard 680ms cubic-bezier(.16,1,.3,1) both;
+          will-change: transform, opacity;
         }
 
         .active-product-image {
-          animation: activeProductZoom 680ms cubic-bezier(.22,.61,.36,1) both;
+          animation: activeProductZoom 820ms cubic-bezier(.16,1,.3,1) both;
+          will-change: transform;
         }
 
         @keyframes activeProductCard {
           from {
             opacity: 0;
-            transform: translateY(14px) scale(.94);
+            transform: translateY(6px) scale(.975);
           }
           to {
             opacity: 1;
@@ -372,10 +372,10 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
         @keyframes activeProductZoom {
           from {
-            transform: scale(.9);
+            transform: scale(.96);
           }
           to {
-            transform: scale(1.06);
+            transform: scale(1.035);
           }
         }
       `}</style>
