@@ -30,6 +30,8 @@ type Draft = {
   featured: boolean;
   featuredSortOrder: string;
   featuredAnimationEnabled: boolean;
+  animationSortOrder: string;
+  spotlight: boolean;
   image: string;
   featuredImage: string;
   offerEnabled: boolean;
@@ -61,6 +63,8 @@ const emptyDraft: Draft = {
   featured: false,
   featuredSortOrder: "",
   featuredAnimationEnabled: false,
+  animationSortOrder: "",
+  spotlight: false,
   image: "",
   featuredImage: "",
   offerEnabled: false,
@@ -243,6 +247,11 @@ export function AdminProductsManager() {
           ? String(product.featuredSortOrder)
           : "",
       featuredAnimationEnabled: Boolean(product.featuredAnimationEnabled),
+      animationSortOrder:
+        product.animationSortOrder !== undefined
+          ? String(product.animationSortOrder)
+          : "",
+      spotlight: Boolean(product.spotlight),
       image: product.image || "",
       featuredImage: product.featuredImage || "",
       offerEnabled: Boolean(product.offerEnabled),
@@ -353,6 +362,10 @@ export function AdminProductsManager() {
         featuredSortOrder: draft.featuredSortOrder
           ? Number(draft.featuredSortOrder)
           : null,
+        animationSortOrder: draft.animationSortOrder
+          ? Number(draft.animationSortOrder)
+          : null,
+        spotlight: draft.spotlight,
         offerEnabled: draft.offerEnabled,
         offerType: draft.offerEnabled ? draft.offerType : undefined,
         offerValue:
@@ -1080,11 +1093,12 @@ export function AdminProductsManager() {
                   "Animation position",
                   <input
                     type="number"
-                    value={draft.featuredSortOrder}
+                    min="1"
+                    value={draft.animationSortOrder}
                     onChange={(event) =>
                       setDraft((current) => ({
                         ...current,
-                        featuredSortOrder: event.target.value,
+                        animationSortOrder: event.target.value,
                       }))
                     }
                     placeholder="1, 2, 3, 4"
@@ -1101,8 +1115,38 @@ export function AdminProductsManager() {
               onChange={(checked) =>
                 setDraft((current) => ({ ...current, featured: checked }))
               }
-              title="Featured / spotlight product"
-              description="Marks the product for standard featured or spotlight placement. This does not control the animation."
+              title="Featured product"
+              description="Adds this product to the Featured Products section. Order can be changed with ↑ ↓ on the Products page."
+            />
+
+            {draft.featured ? (
+              <div className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
+                {field(
+                  "Featured position",
+                  <input
+                    type="number"
+                    min="1"
+                    value={draft.featuredSortOrder}
+                    onChange={(event) =>
+                      setDraft((current) => ({
+                        ...current,
+                        featuredSortOrder: event.target.value,
+                      }))
+                    }
+                    placeholder="1"
+                    className={inputClass}
+                  />,
+                )}
+              </div>
+            ) : null}
+
+            <Toggle
+              checked={draft.spotlight}
+              onChange={(checked) =>
+                setDraft((current) => ({ ...current, spotlight: checked }))
+              }
+              title="Single product spotlight"
+              description="Only one product can be selected at a time. Enabling this product automatically replaces the previous spotlight."
             />
 
             <Toggle
