@@ -234,12 +234,13 @@ export function TopFashionHero({
                   alt={slide.title}
                   fill
                   priority={slideIndex === 0}
-                  sizes="100vw"
+                  sizes="(max-width: 767px) 100vw, (max-width: 1440px) 100vw, 1440px"
+                  quality={90}
                   className={`object-cover ${
                     slide.imagePosition === "left"
-                      ? "object-left"
+                      ? "object-[30%_center] md:object-left"
                       : slide.imagePosition === "right"
-                        ? "object-right"
+                        ? "object-[70%_center] md:object-right"
                         : "object-center"
                   }`}
                 />
