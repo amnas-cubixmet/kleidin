@@ -46,8 +46,14 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         )
         .sort(
           (a, b) =>
-            (a.featuredSortOrder ?? a.sortOrder ?? 100) -
-            (b.featuredSortOrder ?? b.sortOrder ?? 100),
+            (a.animationSortOrder ??
+              a.featuredSortOrder ??
+              a.sortOrder ??
+              100) -
+            (b.animationSortOrder ??
+              b.featuredSortOrder ??
+              b.sortOrder ??
+              100),
         ),
     [products],
   );
