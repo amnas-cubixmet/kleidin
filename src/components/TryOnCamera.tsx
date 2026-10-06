@@ -208,9 +208,9 @@ export function TryOnCamera({ product }: { product: Product }) {
       >
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-[9px] font-bold uppercase tracking-[.14em] text-black/45">
+            <span className="inline-flex min-h-9 items-center justify-center rounded-full border border-black/10 bg-white px-4 text-[9px] font-bold uppercase tracking-[.14em] text-black shadow-sm">
               TRY-ON ANYWHERE
-            </p>
+            </span>
             <h1 className="mt-1 text-[26px] font-semibold tracking-[-.045em] sm:text-[34px]">
               {product.name}
             </h1>
