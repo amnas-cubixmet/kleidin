@@ -302,23 +302,23 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                     />
                   </Link>
 
-                  <div className="border-t border-black/10 bg-white p-3 sm:p-4">
-                    <p className="m-0 text-[8px] font-bold uppercase tracking-[.14em] text-black/40">
+                  <div className="active-product-details border-t border-black/10 bg-white p-3 sm:p-4">
+                    <p className="active-product-meta m-0 text-[8px] font-bold uppercase tracking-[.14em] text-black/40">
                       {product.category}
                     </p>
 
-                    <h3 className="mt-1 truncate text-[15px] font-semibold tracking-[-.03em] text-[#111] sm:text-[17px]">
+                    <h3 className="active-product-title mt-1 truncate text-[15px] font-semibold tracking-[-.03em] text-[#111] sm:text-[17px]">
                       {product.name}
                     </h3>
 
-                    <div className="mt-3 flex items-center justify-between gap-3">
-                      <span className="text-[12px] font-semibold text-[#111]">
+                    <div className="active-product-row mt-3 flex items-center justify-between gap-3">
+                      <span className="active-product-price text-[12px] font-semibold text-[#111]">
                         {money(product.price)}
                       </span>
 
                       <Link
                         href={productHref}
-                        className="inline-flex min-h-9 shrink-0 items-center justify-center bg-[#001cac] px-3 text-[8px] font-bold uppercase tracking-[.08em] !text-white transition hover:bg-[#00158a]"
+                        className="active-product-button inline-flex min-h-9 shrink-0 items-center justify-center bg-[#001cac] px-3 text-[8px] font-bold uppercase tracking-[.08em] !text-white transition hover:bg-[#00158a]"
                       >
                         View product
                       </Link>
@@ -337,7 +337,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                       alt={product.name}
                       fill
                       sizes="(max-width: 639px) 112px, 132px"
-                      className="object-contain object-center opacity-60 transition-[transform,opacity] duration-700 ease-[cubic-bezier(.22,.61,.36,1)]"
+                      className="object-contain object-center opacity-55 transition-[transform,opacity,filter] duration-700 ease-[cubic-bezier(.16,1,.3,1)] hover:scale-[1.04] hover:opacity-80"
                     />
                   </div>
                 </Link>
@@ -350,32 +350,110 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       <style jsx>{`
         .active-product-card {
           transform-origin: center center;
-          animation: activeProductCard 680ms cubic-bezier(.16,1,.3,1) both;
-          will-change: transform, opacity;
+          animation: activeProductCard 760ms cubic-bezier(.16,1,.3,1) both;
+          will-change: transform, opacity, filter;
         }
 
         .active-product-image {
-          animation: activeProductZoom 820ms cubic-bezier(.16,1,.3,1) both;
-          will-change: transform;
+          animation: activeProductZoom 980ms cubic-bezier(.16,1,.3,1) both;
+          will-change: transform, opacity;
+        }
+
+        .active-product-details {
+          animation: activeDetailsReveal 620ms 120ms cubic-bezier(.16,1,.3,1) both;
+        }
+
+        .active-product-meta {
+          animation: activeDetailItem 520ms 180ms cubic-bezier(.16,1,.3,1) both;
+        }
+
+        .active-product-title {
+          animation: activeDetailItem 560ms 230ms cubic-bezier(.16,1,.3,1) both;
+        }
+
+        .active-product-row {
+          animation: activeDetailItem 600ms 290ms cubic-bezier(.16,1,.3,1) both;
+        }
+
+        .active-product-button {
+          animation: activeButtonIn 620ms 340ms cubic-bezier(.16,1,.3,1) both;
         }
 
         @keyframes activeProductCard {
-          from {
+          0% {
             opacity: 0;
-            transform: translateY(6px) scale(.975);
+            filter: blur(4px);
+            transform: translateY(10px) scale(.94);
           }
-          to {
+          60% {
             opacity: 1;
+            filter: blur(0);
+            transform: translateY(-2px) scale(1.012);
+          }
+          100% {
+            opacity: 1;
+            filter: blur(0);
             transform: translateY(0) scale(1);
           }
         }
 
         @keyframes activeProductZoom {
+          0% {
+            opacity: .45;
+            transform: translateY(14px) scale(.88);
+          }
+          65% {
+            opacity: 1;
+            transform: translateY(-3px) scale(1.055);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1.025);
+          }
+        }
+
+        @keyframes activeDetailsReveal {
           from {
-            transform: scale(.96);
+            opacity: 0;
+            transform: translateY(8px);
           }
           to {
-            transform: scale(1.035);
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes activeDetailItem {
+          from {
+            opacity: 0;
+            transform: translateY(7px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes activeButtonIn {
+          from {
+            opacity: 0;
+            transform: translateX(8px) scale(.96);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .active-product-card,
+          .active-product-image,
+          .active-product-details,
+          .active-product-meta,
+          .active-product-title,
+          .active-product-row,
+          .active-product-button {
+            animation: none !important;
           }
         }
       `}</style>
