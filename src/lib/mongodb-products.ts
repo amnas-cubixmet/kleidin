@@ -130,6 +130,11 @@ function toProduct(doc: Document): Product {
         ? undefined
         : number(doc.featuredSortOrder),
     featuredAnimationEnabled: bool(doc.featuredAnimationEnabled),
+    animationSortOrder:
+      doc.animationSortOrder === null || doc.animationSortOrder === undefined
+        ? undefined
+        : number(doc.animationSortOrder),
+    spotlight: bool(doc.spotlight),
     featuredImage: text(doc.featuredImage) || undefined,
     status: status(doc.status),
     image: text(doc.image) || undefined,
@@ -232,6 +237,16 @@ function productFields(
       typeof input.featuredAnimationEnabled === "boolean"
         ? input.featuredAnimationEnabled
         : current?.featuredAnimationEnabled ?? false,
+    animationSortOrder:
+      input.animationSortOrder === null
+        ? undefined
+        : input.animationSortOrder !== undefined
+          ? number(input.animationSortOrder)
+          : current?.animationSortOrder,
+    spotlight:
+      typeof input.spotlight === "boolean"
+        ? input.spotlight
+        : current?.spotlight ?? false,
     featuredImage:
       text(input.featuredImage, current?.featuredImage) || undefined,
     status: nextStatus,
@@ -289,6 +304,14 @@ export async function createProduct(input: Record<string, unknown>) {
     createdAt: now,
     updatedAt: now,
   });
+
+  if (product.spotlight) {
+    await db.collection("products").updateMany(
+      { _id: { $ne: result.insertedId }, spotlight: true },
+      { $set: { spotlight: false, updatedAt: now } },
+    );
+  }
+
   return getProductById(result.insertedId.toHexString());
 }
 
@@ -304,10 +327,19 @@ export async function updateProduct(
   const db = await getDb();
   const product = productFields(input, current);
 
+  const now = new Date();
+
   await db.collection("products").updateOne(
     { _id },
-    { $set: { ...product, updatedAt: new Date() } },
+    { $set: { ...product, updatedAt: now } },
   );
+
+  if (product.spotlight) {
+    await db.collection("products").updateMany(
+      { _id: { $ne: _id }, spotlight: true },
+      { $set: { spotlight: false, updatedAt: now } },
+    );
+  }
 
   return getProductById(id);
 }
@@ -318,4 +350,42 @@ export async function deleteProduct(id: string) {
   const db = await getDb();
   const result = await db.collection("products").deleteOne({ _id });
   return result.deletedCount === 1;
+}
+
+
+export async function reorderProductGroup(
+  scope: "featured" | "animation",
+  productIds: string[],
+) {
+  const db = await getDb();
+  const field =
+    scope === "featured" ? "featuredSortOrder" : "animationSortOrder";
+  const now = new Date();
+
+  const operations = productIds
+    .map((id, index) => {
+      const _id = objectId(id);
+      if (!_id) return null;
+
+      return {
+        updateOne: {
+          filter: { _id },
+          update: {
+            $set: {
+              [field]: index + 1,
+              updatedAt: now,
+            },
+          },
+        },
+      };
+    })
+    .filter((operation): operation is NonNullable<typeof operation> =>
+      Boolean(operation),
+    );
+
+  if (operations.length) {
+    await db.collection("products").bulkWrite(operations);
+  }
+
+  return listProducts();
 }
