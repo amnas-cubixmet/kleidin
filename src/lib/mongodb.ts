@@ -133,6 +133,7 @@ async function ensureIndexes(db: Db) {
   const inventory = db.collection("inventoryMovements");
   const settings = db.collection("siteSettings");
   const hero = db.collection("heroSlides");
+  const animationBars = db.collection("animationBars");
 
   await Promise.all([
     // Names match the legacy KLEID.IN backend where possible. ensureIndex also
@@ -182,5 +183,16 @@ async function ensureIndexes(db: Db) {
 
     ensureIndex(hero, { id: 1 }, { unique: true, name: "hero_id_unique" }),
     ensureIndex(hero, { enabled: 1, order: 1 }, { name: "hero_enabled_order" }),
+
+    ensureIndex(
+      animationBars,
+      { id: 1 },
+      { unique: true, name: "animation_bars_id_unique" },
+    ),
+    ensureIndex(
+      animationBars,
+      { enabled: 1, placement: 1, order: 1 },
+      { name: "animation_bars_enabled_placement_order" },
+    ),
   ]);
 }
