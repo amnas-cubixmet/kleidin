@@ -34,9 +34,11 @@ function themeClasses(theme: AnimationBarConfig["theme"]) {
 function Item({
   text,
   href,
+  hidden = false,
 }: {
   text: string;
   href?: string;
+  hidden?: boolean;
 }) {
   const className =
     "inline-flex min-h-10 shrink-0 items-center whitespace-nowrap text-[10px] font-bold uppercase tracking-[.12em]";
@@ -57,6 +59,7 @@ function Item({
         target={href.startsWith("http") ? "_blank" : undefined}
         rel={href.startsWith("http") ? "noreferrer" : undefined}
         className={className}
+        tabIndex={hidden ? -1 : undefined}
       >
         {text}
       </a>
@@ -64,7 +67,11 @@ function Item({
   }
 
   return (
-    <Link href={href} className={className}>
+    <Link
+      href={href}
+      className={className}
+      tabIndex={hidden ? -1 : undefined}
+    >
       {text}
     </Link>
   );
@@ -117,7 +124,7 @@ export function HomepageAnimationBars({
                 className="flex shrink-0 items-center"
                 style={{ gap: bar.gap }}
               >
-                <Item text={item.text} href={item.href} />
+                <Item text={item.text} href={item.href} hidden={hidden} />
                 {bar.separator ? (
                   <span
                     aria-hidden="true"
