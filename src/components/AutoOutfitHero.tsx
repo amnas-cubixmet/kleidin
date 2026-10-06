@@ -202,6 +202,9 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
   const activeHref = active.demo
     ? "/products"
     : "/products/" + active.slug;
+  const tryOnHref = active.demo
+    ? "/products"
+    : "/try-on/" + active.slug;
 
   return (
     <section
@@ -253,49 +256,68 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </>
       ) : null}
 
-      <aside className="absolute left-0 top-0 z-20 flex h-[98px] w-full items-end px-5 pb-4 text-white sm:h-[112px] sm:px-7 sm:pb-5 lg:h-[calc(100%-112px)] lg:w-[24%] lg:items-start lg:px-8 lg:pt-9">
-        <div>
-          <h2 className="mt-1.5 max-w-[240px] text-[27px] font-semibold leading-[.92] tracking-[-.055em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,.45)] sm:text-[34px] lg:mt-5 lg:text-[50px]">
-            Find your match outfit.
-          </h2>
-
-          <p className="mt-6 hidden max-w-[220px] text-[11px] leading-5 text-white/55 lg:block">
-            Select a product below to preview the product, price and details.
-          </p>
-        </div>
-      </aside>
-
-      <div className="absolute left-0 right-0 top-[98px] bottom-[clamp(68px,8svh,84px)] z-10 sm:top-[112px] lg:left-[24%] lg:top-0">
-        <article
-          key={"details-" + active.id + "-" + activeIndex}
-          className="selected-product-details absolute bottom-4 left-4 right-4 z-30 border border-white/35 bg-black/25 p-4 text-white shadow-[0_18px_50px_rgba(0,0,0,.18)] backdrop-blur-xl sm:left-auto sm:right-5 sm:w-[280px] lg:bottom-auto lg:right-[14%] lg:top-[38%] lg:w-[270px] lg:-translate-y-1/2 lg:p-4 xl:right-[16%] xl:w-[285px]"
-        >
-          <p className="m-0 text-[8px] font-bold uppercase tracking-[.15em] text-white/65">
-            {active.category}
+      <div className="absolute inset-x-0 top-0 bottom-[clamp(68px,8svh,84px)] z-20">
+        <aside className="absolute right-4 top-4 z-30 w-[210px] border border-white/35 bg-black/25 p-3 text-white shadow-[0_14px_34px_rgba(0,0,0,.16)] backdrop-blur-xl sm:right-6 sm:top-6 sm:w-[238px] sm:p-4 lg:right-[8%] lg:top-[10%]">
+          <p className="m-0 text-[10px] font-semibold tracking-[-.01em]">
+            Image requirement
           </p>
 
-          <h3 className="mt-2 text-[22px] font-semibold leading-[1] tracking-[-.04em] text-white sm:text-[26px]">
-            {active.name}
-          </h3>
-
-          <div className="mt-4 border-t border-white/20 pt-4">
-            <div className="flex items-center justify-between gap-4">
-              <strong className="text-[17px] font-semibold">
-                {money(active.price)}
-              </strong>
-
-              <Link
-                href={activeHref}
-                className="selected-product-button inline-flex min-h-10 items-center justify-center bg-[#001cac] px-5 text-[9px] font-bold uppercase tracking-[.1em] !text-white transition hover:bg-[#00158a]"
-              >
-                View product
-              </Link>
-            </div>
+          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[7px] text-white/65">
+            <span>Full body</span>
+            <span>Good lighting</span>
+            <span>Face camera</span>
+            <span>Clear background</span>
           </div>
-        </article>
+
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <Link
+              href={tryOnHref}
+              className="inline-flex min-h-8 items-center justify-center border border-white/25 bg-white/10 px-2 text-[7px] font-bold !text-white transition hover:bg-white/20"
+            >
+              Live camera
+            </Link>
+            <Link
+              href={tryOnHref}
+              className="inline-flex min-h-8 items-center justify-center bg-white px-2 text-[7px] font-bold !text-[#111]"
+            >
+              Take photo
+            </Link>
+          </div>
+        </aside>
+
+        <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-2 sm:bottom-5">
+          <div className="flex items-center gap-2 text-[8px] font-semibold leading-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,.65)]">
+            <span aria-hidden="true" className="text-[16px]">↔</span>
+            <span className="max-w-[110px] text-center">
+              Swipe to try on another outfit
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="min-h-7 border border-white/30 bg-white/90 px-3 text-[7px] font-bold text-[#111]"
+            >
+              Front
+            </button>
+            <button
+              type="button"
+              className="min-h-7 border border-white/30 bg-white/90 px-3 text-[7px] font-bold text-[#111]"
+            >
+              Back
+            </button>
+          </div>
+
+          <Link
+            href={tryOnHref}
+            className="inline-flex min-h-9 items-center justify-center bg-[#b7ff35] px-5 text-[9px] font-bold text-[#111] shadow-[0_8px_22px_rgba(0,0,0,.12)] transition hover:scale-[1.02]"
+          >
+            Try with AI
+          </Link>
+        </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-40 h-[clamp(68px,8svh,84px)] border-t border-black/10 bg-white">
+      <div className="absolute inset-x-0 bottom-0 z-40 h-[clamp(78px,9svh,96px)] border-t border-white/30 bg-white/88 backdrop-blur-md">
         <div
           ref={railRef}
           onPointerDown={(event) => {
@@ -344,9 +366,9 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                     selectProduct(product.baseIndex, true);
                   }}
                   className={
-                    "relative h-[56px] w-[48px] shrink-0 overflow-hidden bg-white transition-[transform,border-color,opacity] duration-300 sm:h-[64px] sm:w-[56px] lg:h-[68px] lg:w-[60px] " +
+                    "relative h-[64px] w-[56px] shrink-0 overflow-hidden bg-white/95 transition-[transform,border-color,opacity] duration-300 sm:h-[72px] sm:w-[64px] lg:h-[76px] lg:w-[68px] " +
                     (selected
-                      ? "scale-[1.04] border-2 border-[#001cac] opacity-100"
+                      ? "scale-[1.05] border-2 border-[#b7ff35] opacity-100 shadow-[0_6px_18px_rgba(0,0,0,.14)]"
                       : "border border-black/10 opacity-75 hover:opacity-100")
                   }
                 >
