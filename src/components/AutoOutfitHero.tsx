@@ -37,11 +37,23 @@ type SliderItem = {
   image: string;
   category: string;
   price: number;
+  background: string;
   demo: boolean;
 };
 
 export function AutoOutfitHero({ products }: { products: Product[] }) {
   const items = useMemo<SliderItem[]>(() => {
+    const backgrounds = [
+      "#e8e5df",
+      "#ece9e3",
+      "#e4e7e2",
+      "#e9e4df",
+      "#e3e5e8",
+      "#eee8df",
+      "#e6e3df",
+      "#e7e8e2",
+    ];
+
     const liveItems = products
       .filter(
         (product) =>
@@ -52,34 +64,50 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           (a.sortOrder ?? a.featuredSortOrder ?? 100) -
           (b.sortOrder ?? b.featuredSortOrder ?? 100),
       )
-      .map((product) => ({
+      .slice(0, 8)
+      .map((product, index) => ({
         id: product.id,
         name: product.name,
         slug: product.slug,
         image: getProductImage(product),
         category: product.category,
         price: product.price,
+        background: backgrounds[index % backgrounds.length],
         demo: false,
       }));
 
-    if (liveItems.length) return liveItems;
-
-    return [
+    const demoNames = [
       "Essential White Tee",
       "Daily Oversized Tee",
       "Everyday Relaxed Tee",
       "Core Cotton Tee",
       "KLEID.IN Daily Tee",
       "Classic Essential Tee",
-    ].map((name, index) => ({
-      id: "demo-slider-" + index,
-      name,
-      slug: "",
-      image: "/images/kleidin-white-shirt-model.png",
-      category: "T-Shirts",
-      price: 799,
-      demo: true,
-    }));
+      "Relaxed Everyday Tee",
+      "Core Rotation Tee",
+    ];
+
+    if (liveItems.length >= 8) return liveItems;
+
+    const fillers = Array.from(
+      { length: Math.max(0, 8 - liveItems.length) },
+      (_, fillerIndex) => {
+        const index = liveItems.length + fillerIndex;
+
+        return {
+          id: "demo-slider-" + index,
+          name: demoNames[index],
+          slug: "",
+          image: "/images/kleidin-white-shirt-model.png",
+          category: "T-Shirts",
+          price: 799,
+          background: backgrounds[index % backgrounds.length],
+          demo: true,
+        };
+      },
+    );
+
+    return [...liveItems, ...fillers];
   }, [products]);
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -185,7 +213,8 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       aria-label="Product selector"
     >
       <div
-        className="relative mx-auto min-h-[690px] w-full max-w-[1440px] overflow-hidden bg-[#e9e7e2] sm:min-h-[760px] lg:min-h-[720px]"
+        className="relative mx-auto min-h-[690px] w-full max-w-[1440px] overflow-hidden transition-colors duration-700 sm:min-h-[760px] lg:min-h-[720px]"
+        style={{ backgroundColor: active.background }}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
         onTouchStart={(event) => {
@@ -284,8 +313,9 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                   aria-label={"Select " + product.name}
                   aria-current={selected ? "true" : undefined}
                   onClick={() => selectProduct(index, true)}
+                  style={{ backgroundColor: product.background }}
                   className={
-                    "relative aspect-[4/5] w-[70px] shrink-0 snap-center overflow-hidden bg-[#f5f4f1] transition-[transform,border-color,opacity] duration-500 ease-[cubic-bezier(.16,1,.3,1)] sm:w-[82px] lg:w-[88px] " +
+                    "relative aspect-[4/5] w-[70px] shrink-0 snap-center overflow-hidden transition-[transform,border-color,opacity] duration-500 ease-[cubic-bezier(.16,1,.3,1)] sm:w-[82px] lg:w-[88px] " +
                     (selected
                       ? "scale-[1.06] border-2 border-[#001cac] opacity-100"
                       : "border border-black/10 opacity-60 hover:opacity-100")
