@@ -363,13 +363,28 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                       : "border border-black/10 opacity-65 hover:opacity-100")
                   }
                 >
-                  <Image
-                    src={product.image}
-                    alt=""
-                    fill
-                    sizes="86px"
-                    className="object-contain object-center p-1.5"
-                  />
+                  {product.backgroundImage ? (
+                    <>
+                      <Image
+                        src={product.backgroundImage}
+                        alt=""
+                        fill
+                        sizes="86px"
+                        className="object-cover object-center"
+                      />
+                      <span className="absolute inset-0 bg-black/15" />
+                    </>
+                  ) : null}
+
+                  <div className="absolute inset-[8%] z-10">
+                    <Image
+                      src={product.image}
+                      alt=""
+                      fill
+                      sizes="86px"
+                      className="object-contain object-center"
+                    />
+                  </div>
                 </button>
               );
             })}
