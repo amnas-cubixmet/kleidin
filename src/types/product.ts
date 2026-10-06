@@ -44,6 +44,7 @@ export type Product = {
   animationSortOrder?: number;
   spotlight?: boolean;
   featuredImage?: string;
+  showcaseBackgroundImage?: string;
   status: ProductStatus;
   image?: string;
   sortOrder?: number;
