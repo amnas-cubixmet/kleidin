@@ -272,84 +272,110 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       >
         {loopItems.map((product, loopIndex) => {
           const isActive = loopIndex === activeLoopIndex;
+          const productHref = product.demo
+            ? "/products"
+            : "/products/" + product.slug;
 
           return (
-            <Link
+            <div
               key={product.id + "-" + loopIndex}
               data-loop-slide={loopIndex}
-              href={product.demo ? "/products" : "/products/" + product.slug}
-              aria-label={"View " + product.name}
-              className="group relative aspect-[3/4] w-[30vw] max-w-[150px] shrink-0 snap-center overflow-visible sm:w-[20vw] sm:max-w-[165px] md:w-[16vw] md:max-w-[175px] lg:w-[12vw] lg:max-w-[185px] xl:w-[10vw] xl:max-w-[195px]"
+              className={
+                "relative h-[300px] shrink-0 snap-center transition-[width] duration-500 ease-[cubic-bezier(.22,.61,.36,1)] sm:h-[330px] " +
+                (isActive
+                  ? "w-[250px] sm:w-[300px]"
+                  : "w-[112px] sm:w-[130px] lg:w-[145px]")
+              }
             >
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                priority={loopIndex >= items.length && loopIndex < items.length + 4}
-                sizes="(max-width: 639px) 30vw, (max-width: 767px) 20vw, (max-width: 1023px) 16vw, 12vw"
-                className={
-                  "object-contain object-center transition-[transform,filter,opacity] duration-700 ease-[cubic-bezier(.22,.61,.36,1)] " +
-                  (isActive
-                    ? "z-10 scale-[1.12] opacity-35"
-                    : "scale-100 opacity-55")
-                }
-              />
-            </Link>
+              {isActive ? (
+                <article className="active-product-card absolute inset-0 flex flex-col overflow-hidden border border-black/10 bg-white shadow-[0_18px_46px_rgba(0,0,0,.1)]">
+                  <Link
+                    href={productHref}
+                    aria-label={"View " + product.name}
+                    className="relative min-h-0 flex-1 overflow-hidden bg-[#fafafa]"
+                  >
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      priority={
+                        loopIndex >= items.length &&
+                        loopIndex < items.length + 4
+                      }
+                      sizes="(max-width: 639px) 250px, 300px"
+                      className="object-contain object-center p-3 transition-transform duration-700 ease-[cubic-bezier(.22,.61,.36,1)] active-product-image"
+                    />
+                  </Link>
+
+                  <div className="border-t border-black/10 bg-white p-3 sm:p-4">
+                    <p className="m-0 text-[8px] font-bold uppercase tracking-[.14em] text-black/40">
+                      {product.category}
+                    </p>
+
+                    <h3 className="mt-1 truncate text-[15px] font-semibold tracking-[-.03em] text-[#111] sm:text-[17px]">
+                      {product.name}
+                    </h3>
+
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <span className="text-[12px] font-semibold text-[#111]">
+                        {money(product.price)}
+                      </span>
+
+                      <Link
+                        href={productHref}
+                        className="inline-flex min-h-9 shrink-0 items-center justify-center bg-[#001cac] px-3 text-[8px] font-bold uppercase tracking-[.08em] !text-white transition hover:bg-[#00158a]"
+                      >
+                        View product
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              ) : (
+                <Link
+                  href={productHref}
+                  aria-label={"View " + product.name}
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    sizes="(max-width: 639px) 112px, 145px"
+                    className="object-contain object-center opacity-60 transition-[transform,opacity] duration-500 ease-out"
+                  />
+                </Link>
+              )}
+            </div>
           );
         })}
       </div>
 
-      <div className="mx-auto -mt-1 flex min-h-[220px] w-full max-w-[680px] items-start justify-center px-4">
-        <article
-          key={active.id + "-" + activeLoopIndex}
-          className="active-product-pop grid w-full grid-cols-[112px_1fr] items-center gap-4 border border-black/10 bg-white p-4 shadow-[0_18px_46px_rgba(0,0,0,.1)] sm:grid-cols-[150px_1fr] sm:gap-6 sm:p-5"
-        >
-          <div className="relative aspect-[3/4] w-full overflow-hidden">
-            <Image
-              src={active.image}
-              alt={active.name}
-              fill
-              sizes="150px"
-              className="object-contain object-center"
-            />
-          </div>
-
-          <div className="min-w-0">
-            <p className="m-0 text-[9px] font-bold uppercase tracking-[.14em] text-black/40">
-              {active.category}
-            </p>
-
-            <h3 className="mt-1 text-[20px] font-semibold leading-tight tracking-[-.035em] text-[#111] sm:text-[26px]">
-              {active.name}
-            </h3>
-
-            <p className="mt-2 text-[14px] font-semibold text-[#111]">
-              {money(active.price)}
-            </p>
-
-            <Link
-              href={active.demo ? "/products" : "/products/" + active.slug}
-              className="mt-4 inline-flex min-h-10 items-center justify-center bg-[#001cac] px-5 text-[9px] font-bold uppercase tracking-[.1em] !text-white transition hover:bg-[#00158a]"
-            >
-              View product
-            </Link>
-          </div>
-        </article>
-      </div>
-
       <style jsx>{`
-        .active-product-pop {
-          animation: activeProductPop 520ms cubic-bezier(.22,.61,.36,1) both;
+        .active-product-card {
+          animation: activeProductCard 520ms cubic-bezier(.22,.61,.36,1) both;
         }
 
-        @keyframes activeProductPop {
+        .active-product-image {
+          animation: activeProductZoom 680ms cubic-bezier(.22,.61,.36,1) both;
+        }
+
+        @keyframes activeProductCard {
           from {
             opacity: 0;
-            transform: translateY(14px) scale(.96);
+            transform: translateY(14px) scale(.94);
           }
           to {
             opacity: 1;
             transform: translateY(0) scale(1);
+          }
+        }
+
+        @keyframes activeProductZoom {
+          from {
+            transform: scale(.9);
+          }
+          to {
+            transform: scale(1.06);
           }
         }
       `}</style>
