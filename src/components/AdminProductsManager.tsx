@@ -565,147 +565,203 @@ export function AdminProductsManager() {
         onChanged={load}
       />
 
-      <section className="mt-4 rounded-2xl bg-white p-4 ring-1 ring-black/5 md:p-5">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <section className="mt-4 rounded-[22px] bg-white p-4 ring-1 ring-black/[.06] md:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="font-bold">Catalog</h2>
+            <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#001cac]">
+              Product catalog
+            </p>
+            <h2 className="mt-1 text-lg font-bold tracking-[-.025em]">
+              All products
+            </h2>
             <p className="mt-1 text-[10px] text-black/40">
               {filtered.length} of {products.length} products
             </p>
           </div>
 
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search name, SKU, category…"
-            className="w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm outline-none focus:border-[#001cac] sm:w-72"
-          />
+          <div className="w-full sm:w-auto">
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search name, SKU, category…"
+              className="min-h-11 w-full rounded-xl border border-black/10 bg-[#fafafa] px-3 text-sm outline-none transition focus:border-[#001cac] focus:bg-white focus:ring-2 focus:ring-[#001cac]/10 sm:w-72"
+            />
+          </div>
         </div>
 
-        <div className="mt-4 grid gap-3 md:hidden">
-          {filtered.map((product) => {
-            const offerStatus = getProductOfferStatus(product);
-            return (
-              <article
-                key={product.id}
-                className="rounded-2xl border border-black/8 p-3"
-              >
-                <div className="flex gap-3">
-                  <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-black/[.04]">
-                    {getProductPrimaryImage(product) ? (
-                      <Image
-                        src={getProductPrimaryImage(product)}
-                        alt=""
-                        fill
-                        sizes="64px"
-                        className="object-cover"
-                      />
-                    ) : null}
-                  </div>
+        {filtered.length ? (
+          <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+            {filtered.map((product) => {
+              const offerStatus = getProductOfferStatus(product);
+              const image = getProductPrimaryImage(product);
 
-                  <div className="min-w-0 flex-1">
-                    <Link
-                      href={"/admin/products/" + product.id}
-                      className="block truncate text-sm font-bold hover:text-[#001cac]"
-                    >
-                      {product.name}
-                    </Link>
-                    <p className="mt-1 text-[10px] text-black/45">
-                      {product.sku} · ₹{product.price.toLocaleString("en-IN")}
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-1.5">
-                      <span className="rounded-full bg-black/[.05] px-2 py-1 text-[8px] font-bold uppercase">
+              return (
+                <article
+                  key={product.id}
+                  className="group overflow-hidden rounded-[20px] border border-black/[.07] bg-white transition duration-200 hover:-translate-y-0.5 hover:border-black/[.12] hover:shadow-[0_14px_36px_rgba(0,0,0,.07)]"
+                >
+                  <Link
+                    href={"/admin/products/" + product.id}
+                    className="relative block aspect-[4/4.6] overflow-hidden bg-[#f4f4f5]"
+                  >
+                    {image ? (
+                      <Image
+                        src={image}
+                        alt={product.name}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 33vw, 25vw"
+                        className="object-cover transition duration-300 group-hover:scale-[1.02]"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-black/25">
+                        <span className="grid h-11 w-11 place-items-center rounded-full bg-black/[.04] text-lg">
+                          ◻
+                        </span>
+                        <span className="text-[9px] font-bold uppercase tracking-[.1em]">
+                          No image
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="absolute left-3 top-3 flex max-w-[calc(100%-24px)] flex-wrap gap-1.5">
+                      <span
+                        className={
+                          "rounded-full px-2.5 py-1 text-[8px] font-bold uppercase backdrop-blur-md " +
+                          (product.status === "active"
+                            ? "bg-white/90 text-emerald-700"
+                            : product.status === "sold-out"
+                              ? "bg-red-50/95 text-red-700"
+                              : "bg-white/90 text-black/55")
+                        }
+                      >
                         {product.status}
                       </span>
+
                       {offerStatus !== "off" ? (
-                        <span className="rounded-full bg-[#001cac]/10 px-2 py-1 text-[8px] font-bold uppercase text-[#001cac]">
+                        <span className="rounded-full bg-[#001cac]/90 px-2.5 py-1 text-[8px] font-bold uppercase text-white backdrop-blur-md">
                           Offer {offerStatus}
                         </span>
                       ) : null}
-                      {product.featuredAnimationEnabled ? (
-                        <span className="rounded-full bg-black/[.05] px-2 py-1 text-[8px] font-bold uppercase">
-                          Animation
+
+                      {product.featured ? (
+                        <span className="rounded-full bg-black/75 px-2.5 py-1 text-[8px] font-bold uppercase text-white backdrop-blur-md">
+                          Featured
                         </span>
                       ) : null}
                     </div>
-                  </div>
-                </div>
 
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  <Link
-                    href={"/admin/products/" + product.id}
-                    className="inline-flex min-h-11 items-center justify-center rounded-xl border border-black/10 text-xs font-bold"
-                  >
-                    Manage
+                    <div className="absolute bottom-3 right-3 rounded-full bg-white/90 px-2.5 py-1 text-[8px] font-bold uppercase text-black/55 backdrop-blur-md">
+                      Stock {product.stock}
+                    </div>
                   </Link>
-                  <button
-                    type="button"
-                    onClick={() => void remove(product.id)}
-                    className="min-h-11 rounded-xl border border-red-200 text-xs font-bold text-red-600"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </article>
-            );
-          })}
-        </div>
 
-        <div className="mt-4 hidden overflow-x-auto md:block">
-          <table className="w-full min-w-[900px] text-left text-xs">
-            <thead className="text-black/40">
-              <tr>
-                <th className="py-3">Product</th>
-                <th>SKU</th>
-                <th>Status</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Offer</th>
-                <th>Animation</th>
-                <th>Order</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((product) => (
-                <tr key={product.id} className="border-t border-black/5">
-                  <td className="py-3 font-semibold">
-                    <Link
-                      href={"/admin/products/" + product.id}
-                      className="hover:text-[#001cac]"
-                    >
-                      {product.name}
-                    </Link>
-                  </td>
-                  <td>{product.sku}</td>
-                  <td className="capitalize">{product.status}</td>
-                  <td>₹{product.price.toLocaleString("en-IN")}</td>
-                  <td>{product.stock}</td>
-                  <td className="capitalize">{getProductOfferStatus(product)}</td>
-                  <td>{product.featuredAnimationEnabled ? "On" : "Off"}</td>
-                  <td>{product.sortOrder ?? "—"}</td>
-                  <td>
-                    <div className="flex justify-end gap-2">
+                  <div className="p-3.5 sm:p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <Link
+                          href={"/admin/products/" + product.id}
+                          className="block truncate text-[13px] font-bold tracking-[-.02em] transition hover:text-[#001cac]"
+                        >
+                          {product.name}
+                        </Link>
+                        <p className="mt-1 truncate text-[9px] uppercase tracking-[.06em] text-black/35">
+                          {product.category || "Uncategorized"} · {product.sku}
+                        </p>
+                      </div>
+
+                      {product.featuredAnimationEnabled ? (
+                        <span
+                          title="Product animation enabled"
+                          className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-[#001cac]/[.07] text-[9px] font-black text-[#001cac]"
+                        >
+                          A
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <div className="mt-4 grid grid-cols-3 gap-2">
+                      <div className="rounded-xl bg-[#f7f7f8] p-2.5">
+                        <span className="block text-[7px] font-bold uppercase tracking-[.08em] text-black/30">
+                          Price
+                        </span>
+                        <strong className="mt-1 block truncate text-[11px]">
+                          ₹{product.price.toLocaleString("en-IN")}
+                        </strong>
+                      </div>
+                      <div className="rounded-xl bg-[#f7f7f8] p-2.5">
+                        <span className="block text-[7px] font-bold uppercase tracking-[.08em] text-black/30">
+                          Cost
+                        </span>
+                        <strong className="mt-1 block truncate text-[11px]">
+                          {product.costPrice !== undefined
+                            ? "₹" + product.costPrice.toLocaleString("en-IN")
+                            : "—"}
+                        </strong>
+                      </div>
+                      <div className="rounded-xl bg-[#f7f7f8] p-2.5">
+                        <span className="block text-[7px] font-bold uppercase tracking-[.08em] text-black/30">
+                          Order
+                        </span>
+                        <strong className="mt-1 block truncate text-[11px]">
+                          {product.sortOrder ?? "—"}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 grid grid-cols-[1fr_auto_auto] gap-2">
                       <Link
                         href={"/admin/products/" + product.id}
-                        className="rounded-lg border border-black/10 px-3 py-2 font-semibold"
+                        className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#111] px-3 text-[10px] font-bold !text-white transition hover:bg-black/85"
                       >
                         Manage
                       </Link>
+
+                      <button
+                        type="button"
+                        onClick={() => edit(product)}
+                        className="min-h-11 rounded-xl border border-black/10 bg-white px-3 text-[10px] font-bold transition hover:bg-black/[.025]"
+                      >
+                        Edit
+                      </button>
+
                       <button
                         type="button"
                         onClick={() => void remove(product.id)}
-                        className="rounded-lg border border-red-200 px-3 py-2 font-semibold text-red-600"
+                        aria-label={"Delete " + product.name}
+                        className="min-h-11 rounded-xl border border-red-100 bg-red-50 px-3 text-[10px] font-bold text-red-600 transition hover:bg-red-100"
                       >
                         Delete
                       </button>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="mt-5 flex min-h-[220px] flex-col items-center justify-center rounded-[18px] border border-dashed border-black/10 bg-[#fafafa] px-5 text-center">
+            <span className="grid h-11 w-11 place-items-center rounded-full bg-black/[.04] text-lg text-black/25">
+              ◻
+            </span>
+            <p className="mt-3 text-xs font-bold">
+              {products.length ? "No matching products" : "No products yet"}
+            </p>
+            <p className="mt-1 max-w-xs text-[9px] leading-4 text-black/35">
+              {products.length
+                ? "Try another product name, SKU or category."
+                : "Create your first product and its image will appear here."}
+            </p>
+            {!products.length ? (
+              <button
+                type="button"
+                onClick={openCreate}
+                className="mt-4 min-h-11 rounded-xl bg-[#001cac] px-4 text-[10px] font-bold !text-white"
+              >
+                + Add product
+              </button>
+            ) : null}
+          </div>
+        )}
       </section>
 
       <AdminDrawer
