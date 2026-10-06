@@ -207,16 +207,16 @@ export function TopFashionHero({
   const titleIsLong = current.title.length > 20;
 
   const ctaClass =
-    "inline-flex min-h-[44px] items-center justify-center rounded-full px-5 text-[10px] font-bold transition " +
+    "inline-flex min-h-[44px] items-center justify-center rounded-none px-5 text-[10px] font-bold uppercase tracking-[.08em] transition " +
     (current.ctaStyle === "dark"
       ? "bg-[#111111] !text-white hover:bg-black"
       : current.ctaStyle === "outline"
-        ? "border border-white/70 bg-transparent !text-white hover:bg-white/10"
-        : "bg-white !text-[#111111] hover:bg-[#f1f1f1]");
+        ? "border border-black/25 bg-transparent !text-[#111111] hover:bg-black/[.04]"
+        : "border border-black/10 bg-white !text-[#111111] hover:bg-[#f7f7f7]");
 
   return (
-    <section className="mx-auto mb-0 w-full px-0 sm:mb-3 sm:w-[min(calc(100%-24px),1440px)]">
-      <div className="relative h-[60svh] min-h-[500px] max-h-[620px] overflow-hidden rounded-none bg-[#071225] text-white sm:rounded-[20px] md:h-[68svh] md:min-h-[560px] md:max-h-[720px] md:rounded-[26px]">
+    <section className="mx-auto w-full px-0 sm:w-[min(calc(100%-24px),1440px)]">
+      <div className="relative min-h-[620px] overflow-hidden bg-[#e9e7e2] text-[#111111] sm:rounded-[18px] md:aspect-[16/9] md:min-h-0 md:rounded-[22px]">
         <div className="absolute inset-0">
           {slides.map((slide, slideIndex) => (
             <div
@@ -224,7 +224,7 @@ export function TopFashionHero({
               className={`absolute inset-0 transition-[opacity,transform] duration-700 ease-out ${
                 slideIndex === index
                   ? "scale-100 opacity-100"
-                  : "pointer-events-none scale-[1.02] opacity-0"
+                  : "pointer-events-none scale-[1.015] opacity-0"
               }`}
               aria-hidden={slideIndex !== index}
             >
@@ -235,98 +235,118 @@ export function TopFashionHero({
                   fill
                   priority={slideIndex === 0}
                   sizes="100vw"
-                  className={`object-cover ${slide.imagePosition === "left" ? "object-left" : slide.imagePosition === "right" ? "object-right" : "object-center"}`}
+                  className={`object-cover ${
+                    slide.imagePosition === "left"
+                      ? "object-left"
+                      : slide.imagePosition === "right"
+                        ? "object-right"
+                        : "object-center"
+                  }`}
                 />
-              ) : null}
+              ) : (
+                <div className="absolute inset-0 bg-[#e9e7e2]" />
+              )}
             </div>
           ))}
         </div>
 
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,10,24,.94)_0%,rgba(3,10,24,.74)_43%,rgba(3,10,24,.20)_72%,rgba(3,10,24,.04)_100%)] md:bg-[linear-gradient(90deg,rgba(3,10,24,.96)_0%,rgba(3,10,24,.84)_38%,rgba(3,10,24,.22)_69%,rgba(3,10,24,.03)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,24,.04)_22%,rgba(3,10,24,.10)_50%,rgba(3,10,24,.76)_100%)] md:hidden" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(239,237,232,.98)_0%,rgba(239,237,232,.94)_31%,rgba(239,237,232,.72)_48%,rgba(239,237,232,.18)_68%,rgba(239,237,232,0)_86%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(239,237,232,.08)_0%,rgba(239,237,232,.08)_58%,rgba(239,237,232,.62)_100%)] md:hidden" />
 
-        <div className="relative z-10 flex h-full flex-col justify-between px-5 py-5 md:px-12 md:py-9 lg:px-16 lg:py-10">
-          <div className="flex items-center justify-end">
-            <span className="max-w-[62vw] truncate rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-[8px] font-medium text-white/75 backdrop-blur-sm">
+        <div className="relative z-10 flex min-h-[620px] flex-col px-5 py-5 md:min-h-0 md:h-full md:px-12 md:py-9 lg:px-16 lg:py-12">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-[8px] font-bold uppercase tracking-[.14em] text-black/45 md:text-[9px]">
+              {current.label}
+            </span>
+
+            <span className="max-w-[58vw] truncate border border-black/10 bg-white/65 px-3 py-1.5 text-[8px] font-semibold uppercase tracking-[.08em] text-black/55 backdrop-blur-sm">
               {current.badge ?? current.label}
             </span>
           </div>
 
-          <div className="max-w-[860px] pb-1 md:pb-4">
-            <p className="mb-2.5 text-[8px] font-semibold tracking-[0.16em] text-white/65 md:mb-4 md:text-[10px]">
-              {current.label}
-            </p>
+          <div className="flex flex-1 items-center">
+            <div className="max-w-[560px] py-10 md:max-w-[620px] md:py-0">
+              {current.discountText ? (
+                <strong className="mb-3 block text-[10px] font-bold uppercase tracking-[.12em] text-[#001cac] md:text-[11px]">
+                  {current.discountText}
+                </strong>
+              ) : null}
 
-            {current.discountText ? (
-              <strong className="mb-3 block text-[13px] font-bold tracking-[.04em] text-white md:text-[15px]">
-                {current.discountText}
-              </strong>
-            ) : null}
+              <h1
+                className={`m-0 max-w-[650px] uppercase font-black leading-[0.86] tracking-[-0.06em] ${
+                  titleIsLong
+                    ? "text-[clamp(42px,12vw,66px)] md:text-[clamp(58px,5.8vw,96px)]"
+                    : "text-[clamp(50px,14vw,78px)] md:text-[clamp(68px,6.7vw,112px)]"
+                }`}
+              >
+                {current.title}
+              </h1>
 
-            <h1
-              className={`m-0 max-w-[900px] font-semibold leading-[0.84] tracking-[-0.065em] ${
-                titleIsLong
-                  ? "text-[clamp(40px,10.5vw,56px)] md:text-[clamp(68px,6.4vw,106px)]"
-                  : "text-[clamp(48px,12.5vw,66px)] md:text-[clamp(82px,8vw,132px)]"
-              }`}
-            >
-              {current.title}
-            </h1>
+              {current.subtitle ? (
+                <p className="mt-5 max-w-[390px] text-[10px] leading-[1.65] text-black/58 md:max-w-[430px] md:text-[11px] md:leading-[1.7]">
+                  {current.subtitle}
+                </p>
+              ) : null}
 
-            <p className="mt-4 max-w-[430px] text-[10px] leading-5 text-white/70 md:mt-5 md:max-w-[500px] md:text-[12px] md:leading-6">
-              {current.subtitle}
-            </p>
+              {current.meta ? (
+                <p className="mt-3 text-[8px] font-semibold uppercase tracking-[.06em] text-black/38 md:text-[9px]">
+                  {current.meta}
+                </p>
+              ) : null}
 
-            {current.meta ? (
-              <p className="mt-3 text-[8px] font-medium tracking-[0.03em] text-white/52 md:text-[9px]">
-                {current.meta}
-              </p>
-            ) : null}
+              {current.showCountdown ? (
+                <div className="mt-5 flex flex-wrap items-center gap-2">
+                  {[
+                    ["Days", timeLeft.days],
+                    ["Hrs", timeLeft.hours],
+                    ["Min", timeLeft.minutes],
+                    ["Sec", timeLeft.seconds],
+                  ].map(([label, value]) => (
+                    <div
+                      key={String(label)}
+                      className="min-w-[58px] border border-black/10 bg-white/60 px-3 py-2.5 backdrop-blur-sm"
+                    >
+                      <strong className="block text-[17px] font-bold md:text-[20px]">
+                        {pad(Number(value))}
+                      </strong>
+                      <span className="text-[6px] uppercase tracking-[0.1em] text-black/35">
+                        {label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
 
-            {current.showCountdown ? (
-              <div className="mt-5 flex flex-wrap items-center gap-2 text-white md:mt-6">
-                {[
-                  ["Days", timeLeft.days],
-                  ["Hrs", timeLeft.hours],
-                  ["Min", timeLeft.minutes],
-                  ["Sec", timeLeft.seconds],
-                ].map(([label, value]) => (
-                  <div
-                    key={String(label)}
-                    className="min-w-[64px] rounded-[10px] border border-white/15 bg-white/5 px-3 py-2.5 backdrop-blur-sm"
+              <div className="mt-6 flex flex-wrap items-center gap-2.5">
+                {isExternal ? (
+                  <a
+                    href={current.href}
+                    target={
+                      current.href.startsWith("https://")
+                        ? "_blank"
+                        : undefined
+                    }
+                    rel={
+                      current.href.startsWith("https://")
+                        ? "noreferrer"
+                        : undefined
+                    }
+                    className={ctaClass}
                   >
-                    <strong className="block text-[18px] font-semibold md:text-[22px]">
-                      {pad(Number(value))}
-                    </strong>
-                    <span className="text-[6px] uppercase tracking-[0.1em] text-white/45">
-                      {label}
-                    </span>
-                  </div>
-                ))}
+                    {current.button}
+                  </a>
+                ) : (
+                  <Link href={current.href} className={ctaClass}>
+                    {current.button}
+                  </Link>
+                )}
               </div>
-            ) : null}
-
-            <div className="mt-5 flex flex-wrap items-center gap-2.5 md:mt-6">
-              {isExternal ? (
-                <a
-                  href={current.href}
-                  target={current.href.startsWith("https://") ? "_blank" : undefined}
-                  rel={current.href.startsWith("https://") ? "noreferrer" : undefined}
-                  className={ctaClass}
-                >
-                  {current.button}
-                </a>
-              ) : (
-                <Link href={current.href} className={ctaClass}>
-                  {current.button}
-                </Link>
-              )}
             </div>
           </div>
 
-          <div className="flex items-center pt-1">
+          <div className="flex items-center justify-between gap-4 pt-2">
             <div className="flex min-w-0 items-center gap-2.5">
-              <span className="shrink-0 text-[8px] font-semibold text-white/70">
+              <span className="shrink-0 text-[8px] font-bold text-black/50">
                 {String(index + 1).padStart(2, "0")} /{" "}
                 {String(slideCount).padStart(2, "0")}
               </span>
@@ -338,15 +358,19 @@ export function TopFashionHero({
                     type="button"
                     aria-label={`Show ${slide.label || slide.title} slide`}
                     onClick={() => setIndex(slideIndex)}
-                    className={`h-[3px] shrink-0 rounded-full transition-all duration-300 ${
+                    className={`h-[3px] shrink-0 transition-all duration-300 ${
                       slideIndex === index
-                        ? "w-7 bg-white md:w-9"
-                        : "w-3 bg-white/25 hover:bg-white/50"
+                        ? "w-8 bg-black md:w-10"
+                        : "w-3 bg-black/20 hover:bg-black/40"
                     }`}
                   />
                 ))}
               </div>
             </div>
+
+            <span className="hidden text-[8px] font-bold uppercase tracking-[.12em] text-black/30 sm:block">
+              16:9 editorial hero
+            </span>
           </div>
         </div>
       </div>
