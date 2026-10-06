@@ -255,7 +255,7 @@ export function TopFashionHero({
               ) : null}
 
               <h1
-                className={`m-0 max-w-[560px] uppercase font-black leading-[0.88] tracking-[-0.06em] ${
+                className={`m-0 max-w-[560px] whitespace-pre-line uppercase font-black leading-[0.88] tracking-[-0.06em] ${
                   titleIsLong
                     ? "text-[clamp(40px,11vw,62px)] md:text-[clamp(52px,5.1vw,82px)]"
                     : "text-[clamp(48px,13vw,72px)] md:text-[clamp(60px,5.8vw,94px)]"
