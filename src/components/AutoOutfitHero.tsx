@@ -48,8 +48,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           (a, b) =>
             (a.featuredSortOrder ?? a.sortOrder ?? 100) -
             (b.featuredSortOrder ?? b.sortOrder ?? 100),
-        )
-        .slice(0, 8),
+        ),
     [products],
   );
 
@@ -141,7 +140,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
   return (
     <section
-      className="w-full overflow-hidden bg-[#fafafa]"
+      className="w-full touch-pan-y overflow-hidden bg-[#fafafa]"
       aria-label="Product animation showcase"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -230,7 +229,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                       {formatPrice(price)}
                     </strong>
 
-                    {offerActive && active.price > price ? (
+                    {offerActive && product.price > price ? (
                       <del className="text-[11px] text-black/35">
                         {formatPrice(product.price)}
                       </del>
@@ -263,7 +262,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           </div>
 
           <div className="mt-8 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
+            <div className="flex max-w-[60%] items-center gap-2 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {items.map((product, index) => (
                 <button
                   key={product.id}
