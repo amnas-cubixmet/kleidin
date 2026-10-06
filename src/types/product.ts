@@ -40,6 +40,8 @@ export type Product = {
   featured: boolean;
   featuredSortOrder?: number;
   featuredAnimationEnabled?: boolean;
+  animationSortOrder?: number;
+  spotlight?: boolean;
   featuredImage?: string;
   status: ProductStatus;
   image?: string;
