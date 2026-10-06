@@ -9,7 +9,7 @@ export const localStoreSettings: StoreSettings = {
   footerTagline: "Essentials without noise. Unisex clothing for everyday rotation.",
   homeDefaultHeroEnabled: true,
   homeDefaultHeroLabel: "KLEID.IN / DAILY",
-  homeDefaultHeroTitle: "WEAR IT. EVERY DAY.",
+  homeDefaultHeroTitle: "KLEID.IN",
   homeDefaultHeroSubtitle:
     "Premium everyday essentials designed for comfort, repeat wear and effortless style.",
   homeDefaultHeroButtonLabel: "Shop essentials",
