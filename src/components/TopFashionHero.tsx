@@ -220,21 +220,23 @@ export function TopFashionHero({
               aria-hidden={slideIndex !== index}
             >
               {slide.image ? (
-                <Image
-                  src={slide.image}
-                  alt={slide.title}
-                  fill
-                  priority={slideIndex === 0}
-                  sizes="(max-width: 767px) 100vw, 57vw"
-                  quality={90}
-                  className={`object-contain object-bottom ${
-                    slide.imagePosition === "left"
-                      ? "object-left-bottom"
-                      : slide.imagePosition === "right"
-                        ? "object-right-bottom"
-                        : "object-center-bottom"
-                  }`}
-                />
+                <div className="absolute bottom-0 right-0 h-full w-[90%] md:w-[92%]">
+                  <Image
+                    src={slide.image}
+                    alt={slide.title}
+                    fill
+                    priority={slideIndex === 0}
+                    sizes="(max-width: 767px) 90vw, 52vw"
+                    quality={90}
+                    className={`object-contain object-bottom ${
+                      slide.imagePosition === "left"
+                        ? "object-left-bottom"
+                        : slide.imagePosition === "right"
+                          ? "object-right-bottom"
+                          : "object-center-bottom"
+                    }`}
+                  />
+                </div>
               ) : (
                 <div className="absolute inset-0 bg-[#dedbd5]" />
               )}
