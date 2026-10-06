@@ -235,9 +235,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
       <aside className="absolute left-0 top-0 z-20 flex h-[98px] w-full items-end px-5 pb-4 text-white sm:h-[112px] sm:px-7 sm:pb-5 lg:h-[calc(100%-112px)] lg:w-[24%] lg:items-start lg:px-8 lg:pt-9">
         <div>
-          <p className="m-0 text-[9px] font-bold uppercase tracking-[.18em] text-white/70 drop-shadow">
-            KLEID.IN / SELECT
-          </p>
           <h2 className="mt-1.5 max-w-[240px] text-[27px] font-semibold leading-[.92] tracking-[-.055em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,.45)] sm:text-[34px] lg:mt-5 lg:text-[50px]">
             Find your match outfit.
           </h2>
