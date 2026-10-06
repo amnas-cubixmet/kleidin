@@ -23,28 +23,45 @@ function getProductImage(product: Product) {
 }
 
 export function AutoOutfitHero({ products }: { products: Product[] }) {
-  const items = useMemo(
-    () =>
-      products
-        .filter(
-          (product) =>
-            product.featuredAnimationEnabled &&
-            product.status === "active" &&
-            Boolean(getProductImage(product)),
-        )
-        .sort(
-          (a, b) =>
-            (a.animationSortOrder ??
-              a.featuredSortOrder ??
-              a.sortOrder ??
-              100) -
-            (b.animationSortOrder ??
-              b.featuredSortOrder ??
-              b.sortOrder ??
-              100),
-        ),
-    [products],
-  );
+  const items = useMemo(() => {
+    const liveItems = products
+      .filter(
+        (product) =>
+          product.status === "active" && Boolean(getProductImage(product)),
+      )
+      .sort(
+        (a, b) =>
+          (a.sortOrder ?? a.featuredSortOrder ?? 100) -
+          (b.sortOrder ?? b.featuredSortOrder ?? 100),
+      )
+      .map((product) => ({
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        image: getProductImage(product),
+        demo: false,
+      }));
+
+    if (liveItems.length >= 6) return liveItems;
+
+    if (liveItems.length > 0) {
+      return Array.from({ length: 6 }, (_, index) => {
+        const product = liveItems[index % liveItems.length];
+        return {
+          ...product,
+          id: product.id + "-slider-" + index,
+        };
+      });
+    }
+
+    return Array.from({ length: 6 }, (_, index) => ({
+      id: "demo-slider-" + index,
+      name: "KLEID.IN Essential",
+      slug: "",
+      image: "/images/kleidin-white-shirt-model.png",
+      demo: true,
+    }));
+  }, [products]);
 
   const railRef = useRef<HTMLDivElement | null>(null);
   const pauseTimerRef = useRef<number | null>(null);
@@ -139,8 +156,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
     setActiveIndex(closestIndex);
   }
 
-  if (!items.length) return null;
-
   return (
     <section
       className="w-full overflow-hidden bg-white py-8 sm:py-10 lg:py-12"
@@ -163,13 +178,13 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
             <Link
               key={product.id}
               data-product-slide={index}
-              href={"/products/" + product.slug}
+              href={product.demo ? "/products" : "/products/" + product.slug}
               aria-label={"View " + product.name}
               className="group relative aspect-[4/5] w-[72vw] max-w-[360px] shrink-0 snap-start overflow-hidden bg-[#f2f2ef] sm:w-[42vw] md:w-[31vw] lg:w-[24vw] xl:w-[21vw]"
             >
               <div className="absolute inset-[5%] sm:inset-[6%]">
                 <Image
-                  src={getProductImage(product)}
+                  src={product.image}
                   alt={product.name}
                   fill
                   priority={index < 4}
