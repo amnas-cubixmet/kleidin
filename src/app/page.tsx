@@ -1,21 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
-import { TopFashionHero } from "@/components/TopFashionHero";
 import { ProductActions } from "@/components/ProductActions";
 import { formatPrice } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
-import { getActiveHeroSlides } from "@/lib/hero";
 import { getProductPrimaryImage } from "@/lib/product-images";
-import type { HeroSlideConfig } from "@/data/hero-slides";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [products, heroSlides, settings] = await Promise.all([
+  const [products, settings] = await Promise.all([
     getCatalogProducts(),
-    getActiveHeroSlides(),
     getStoreSettings(),
   ]);
 
@@ -27,31 +23,6 @@ export default async function Home() {
         (b.sortOrder ?? b.featuredSortOrder ?? 100),
     );
 
-  const defaultHeroImage = "/images/kleidin-white-shirt-model.png";
-
-  const resolvedHeroSlides: HeroSlideConfig[] = [
-    ...(settings.homeDefaultHeroEnabled
-      ? [
-          {
-            id: "default-home-hero",
-            kind: "custom" as const,
-            label: "",
-            title: "WEAR IT\nEVERY DAY.",
-            subtitle: "Premium everyday T-shirts designed for comfort, fit, and effortless style.",
-            button: "SHOP T-SHIRTS",
-            href: "/products",
-            badge: "",
-            imageUrl: defaultHeroImage,
-            enabled: true,
-            order: -100000,
-            ctaStyle: "dark" as const,
-            imagePosition: settings.homeDefaultHeroImagePosition,
-          },
-        ]
-      : []),
-    ...heroSlides,
-  ];
-
   const mostLoved = products.find(
     (product) => product.spotlight && product.status === "active",
   );
@@ -61,10 +32,6 @@ export default async function Home() {
 
   return (
     <div className="reference-home">
-      {resolvedHeroSlides.length ? (
-        <TopFashionHero products={products} heroSlides={resolvedHeroSlides} />
-      ) : null}
-
       <AutoOutfitHero products={showcaseProducts} />
 
       {mostLoved ? (
