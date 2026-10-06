@@ -17114,3 +17114,20 @@ select,
     display: none;
   }
 }
+
+
+@keyframes productFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-[productFloat"] {
+    animation: none !important;
+  }
+}
