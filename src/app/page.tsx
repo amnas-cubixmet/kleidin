@@ -55,14 +55,14 @@ export default async function Home() {
         <TopFashionHero products={products} heroSlides={heroSlides} />
       ) : null}
 
+      {showcaseProducts.length ? (
+        <AutoOutfitHero products={showcaseProducts} />
+      ) : null}
+
       <HomepageAnimationBars
         bars={animationBars}
         placement="after-hero"
       />
-
-      {showcaseProducts.length ? (
-        <AutoOutfitHero products={showcaseProducts} />
-      ) : null}
 
       <HomeProductCatalog
         products={products}
