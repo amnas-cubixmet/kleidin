@@ -20,7 +20,9 @@ export function SiteChrome({
 }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
+  const isTryOn = pathname.startsWith("/try-on/");
   const [announcementDismissed, setAnnouncementDismissed] = useState(false);
+  const [tryOnChromeHidden, setTryOnChromeHidden] = useState(isTryOn);
 
   useEffect(() => {
     if (isAdmin) return;
@@ -28,6 +30,25 @@ export function SiteChrome({
       window.sessionStorage.getItem("kleidin-announcement-dismissed") === "1",
     );
   }, [isAdmin]);
+
+  useEffect(() => {
+    if (!isTryOn) {
+      setTryOnChromeHidden(false);
+      return;
+    }
+
+    setTryOnChromeHidden(true);
+
+    const handleTryOnChrome = (event: Event) => {
+      const customEvent = event as CustomEvent<{ hidden?: boolean }>;
+      setTryOnChromeHidden(Boolean(customEvent.detail?.hidden));
+    };
+
+    window.addEventListener("kleidin:tryon-chrome", handleTryOnChrome);
+    return () => {
+      window.removeEventListener("kleidin:tryon-chrome", handleTryOnChrome);
+    };
+  }, [isTryOn]);
 
   useEffect(() => {
     if (isAdmin) return;
@@ -55,7 +76,9 @@ export function SiteChrome({
 
   return (
     <StoreSettingsProvider settings={settings}>
-      {settings.announcementEnabled && !announcementDismissed ? (
+      {!tryOnChromeHidden &&
+      settings.announcementEnabled &&
+      !announcementDismissed ? (
         <div className="relative flex min-h-9 w-full items-center justify-center gap-2 bg-[#111111] px-10 py-2 text-center text-[9px] font-bold uppercase tracking-[.14em] text-white">
           <span>{settings.announcementText}</span>
           {settings.announcementButtonLabel && settings.announcementButtonHref ? (
@@ -83,8 +106,12 @@ export function SiteChrome({
           </button>
         </div>
       ) : null}
-      <Header products={products} settings={settings} />
-      <main>{children}</main>
+      {!tryOnChromeHidden ? (
+        <Header products={products} settings={settings} />
+      ) : null}
+      <main style={tryOnChromeHidden ? { paddingTop: 0 } : undefined}>
+        {children}
+      </main>
       <Footer settings={settings} />
     </StoreSettingsProvider>
   );
