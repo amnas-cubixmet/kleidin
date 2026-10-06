@@ -256,7 +256,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </>
       ) : null}
 
-      <div className="absolute inset-x-0 top-0 bottom-[clamp(68px,8svh,84px)] z-20">
+      <div className="absolute inset-x-0 top-0 bottom-0 z-20">
         <aside className="absolute right-4 top-4 z-30 w-[210px] border border-white/35 bg-black/25 p-3 text-white shadow-[0_14px_34px_rgba(0,0,0,.16)] backdrop-blur-xl sm:right-6 sm:top-6 sm:w-[238px] sm:p-4 lg:right-[8%] lg:top-[10%]">
           <p className="m-0 text-[10px] font-semibold tracking-[-.01em]">
             Image requirement
@@ -295,7 +295,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-40 h-[clamp(78px,9svh,96px)] border-t border-white/30 bg-white/88 backdrop-blur-md">
+      <div className="absolute inset-x-0 bottom-[82px] z-40 h-[88px] sm:bottom-[88px] sm:h-[94px] lg:bottom-[90px] lg:h-[98px]">
         <div
           ref={railRef}
           onPointerDown={(event) => {
@@ -327,7 +327,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
               rail.scrollLeft -= width;
             }
           }}
-          className="flex h-full w-full cursor-grab items-center gap-3 overflow-x-auto px-3 [scrollbar-width:none] active:cursor-grabbing sm:gap-4 sm:px-4 lg:gap-5 lg:px-5 [&::-webkit-scrollbar]:hidden"
+          className="flex h-full w-full cursor-grab items-center gap-3 overflow-x-auto px-4 [scrollbar-width:none] active:cursor-grabbing sm:gap-4 sm:px-6 lg:gap-5 lg:px-8 [&::-webkit-scrollbar]:hidden"
         >
           {[0, 1, 2].flatMap((setIndex) =>
             railProducts.map((product, index) => {
@@ -344,10 +344,10 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                     selectProduct(product.baseIndex, true);
                   }}
                   className={
-                    "relative h-[64px] w-[56px] shrink-0 overflow-hidden bg-white/95 transition-[transform,border-color,opacity] duration-300 sm:h-[72px] sm:w-[64px] lg:h-[76px] lg:w-[68px] " +
+                    "relative h-[64px] w-[56px] shrink-0 overflow-hidden border border-white/55 bg-white/55 shadow-[0_8px_24px_rgba(0,0,0,.10)] backdrop-blur-md transition-[transform,border-color,background-color,opacity] duration-300 sm:h-[72px] sm:w-[64px] lg:h-[76px] lg:w-[68px] " +
                     (selected
-                      ? "scale-[1.05] border-2 border-[#b7ff35] opacity-100 shadow-[0_6px_18px_rgba(0,0,0,.14)]"
-                      : "border border-black/10 opacity-75 hover:opacity-100")
+                      ? "scale-[1.06] border-2 border-[#b7ff35] bg-white/78 opacity-100 shadow-[0_10px_28px_rgba(0,0,0,.16)]"
+                      : "opacity-80 hover:bg-white/72 hover:opacity-100")
                   }
                 >
                   <img
