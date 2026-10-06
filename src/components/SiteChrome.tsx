@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Header } from "@/components/Header";
@@ -20,6 +20,14 @@ export function SiteChrome({
 }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
+  const [announcementDismissed, setAnnouncementDismissed] = useState(false);
+
+  useEffect(() => {
+    if (isAdmin) return;
+    setAnnouncementDismissed(
+      window.sessionStorage.getItem("kleidin-announcement-dismissed") === "1",
+    );
+  }, [isAdmin]);
 
   useEffect(() => {
     if (isAdmin) return;
@@ -47,8 +55,8 @@ export function SiteChrome({
 
   return (
     <StoreSettingsProvider settings={settings}>
-      {settings.announcementEnabled ? (
-        <div className="flex min-h-9 w-full items-center justify-center gap-2 bg-[#111111] px-4 py-2 text-center text-[9px] font-bold uppercase tracking-[.14em] text-white">
+      {settings.announcementEnabled && !announcementDismissed ? (
+        <div className="relative flex min-h-9 w-full items-center justify-center gap-2 bg-[#111111] px-10 py-2 text-center text-[9px] font-bold uppercase tracking-[.14em] text-white">
           <span>{settings.announcementText}</span>
           {settings.announcementButtonLabel && settings.announcementButtonHref ? (
             <Link
@@ -58,6 +66,21 @@ export function SiteChrome({
               {settings.announcementButtonLabel}
             </Link>
           ) : null}
+
+          <button
+            type="button"
+            aria-label="Close announcement"
+            onClick={() => {
+              setAnnouncementDismissed(true);
+              window.sessionStorage.setItem(
+                "kleidin-announcement-dismissed",
+                "1",
+              );
+            }}
+            className="absolute right-3 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center text-[18px] font-normal leading-none text-white/80 transition hover:text-white"
+          >
+            ×
+          </button>
         </div>
       ) : null}
       <Header products={products} settings={settings} />
