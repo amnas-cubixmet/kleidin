@@ -470,6 +470,8 @@ export function AdminProductDetail({ productId }: { productId: string }) {
           compareAtPrice: draft.compareAtPrice ?? null,
           sortOrder: draft.sortOrder ?? null,
           featuredSortOrder: draft.featuredSortOrder ?? null,
+          animationSortOrder: draft.animationSortOrder ?? null,
+          spotlight: Boolean(draft.spotlight),
           featuredImage: draft.featuredImage ?? "",
           offerValue: draft.offerEnabled ? draft.offerValue ?? null : null,
           offerLabel: draft.offerEnabled ? draft.offerLabel ?? "" : "",
@@ -1062,19 +1064,55 @@ export function AdminProductDetail({ productId }: { productId: string }) {
           </section>
 
           <section className="rounded-2xl bg-white p-4 ring-1 ring-black/5 sm:p-5">
-            <p className={labelClass}>Homepage</p>
-            <div className="mt-3 grid gap-3 md:grid-cols-2">
-              <Toggle
-                checked={Boolean(draft.featured)}
-                onChange={(checked) => patch({ featured: checked })}
-                label="Featured / spotlight"
-              />
+            <p className={labelClass}>Homepage placement</p>
+
+            <div className="mt-3 grid gap-3">
+              <div className="grid gap-3 md:grid-cols-2">
+                <Toggle
+                  checked={Boolean(draft.featured)}
+                  onChange={(checked) => patch({ featured: checked })}
+                  label="Featured product"
+                  help="Adds this item to the Featured Products section. Reorder it from the Products page."
+                />
+
+                <Toggle
+                  checked={Boolean(draft.spotlight)}
+                  onChange={(checked) => patch({ spotlight: checked })}
+                  label="Single product spotlight"
+                  help="Only one product can be selected. Turning this on replaces the previous spotlight product."
+                />
+              </div>
+
+              {draft.featured ? (
+                <label className="block max-w-[220px]">
+                  <span className={labelClass}>Featured position</span>
+                  <input
+                    type="number"
+                    min="1"
+                    value={draft.featuredSortOrder ?? ""}
+                    onChange={(event) =>
+                      patch({
+                        featuredSortOrder: event.target.value
+                          ? Number(event.target.value)
+                          : undefined,
+                      })
+                    }
+                    placeholder="1"
+                    className={inputClass}
+                  />
+                  <span className="mt-1 block text-[9px] text-black/40">
+                    You can also use ↑ ↓ reorder controls on the Products page.
+                  </span>
+                </label>
+              ) : null}
+
               <Toggle
                 checked={Boolean(draft.featuredAnimationEnabled)}
                 onChange={(checked) =>
                   patch({ featuredAnimationEnabled: checked })
                 }
-                label="Transparent animation"
+                label="Product animation"
+                help="Shows this product in the homepage Product Animation section."
               />
             </div>
 
@@ -1100,6 +1138,7 @@ export function AdminProductDetail({ productId }: { productId: string }) {
                       </button>
                     </div>
                   ) : null}
+
                   <label className="mt-3 flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-dashed border-black/20 text-[10px] font-bold">
                     {uploading === "animation"
                       ? "Uploading…"
@@ -1112,20 +1151,26 @@ export function AdminProductDetail({ productId }: { productId: string }) {
                     />
                   </label>
                 </div>
+
                 <label>
                   <span className={labelClass}>Animation position</span>
                   <input
                     type="number"
-                    value={draft.featuredSortOrder ?? ""}
+                    min="1"
+                    value={draft.animationSortOrder ?? ""}
                     onChange={(event) =>
                       patch({
-                        featuredSortOrder: event.target.value
+                        animationSortOrder: event.target.value
                           ? Number(event.target.value)
                           : undefined,
                       })
                     }
+                    placeholder="1"
                     className={inputClass}
                   />
+                  <span className="mt-1 block text-[9px] text-black/40">
+                    Independent from Featured Products order.
+                  </span>
                 </label>
               </div>
             ) : null}
