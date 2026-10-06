@@ -1215,6 +1215,7 @@ export function AdminProductDetail({ productId }: { productId: string }) {
                   </div>
                 </div>
               </div>
+            </div>
           </section>
         </div>
 
