@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { AdminDrawer } from "@/components/AdminDrawer";
+import { HomepageAnimationBars } from "@/components/HomepageAnimationBars";
 import type {
   AnimationBarConfig,
   AnimationBarDirection,
@@ -180,6 +181,31 @@ export function AdminAnimationBarManager() {
   const duration = useMemo(
     () => Math.max(7, Math.round(72 / Math.max(1, draft.speed))),
     [draft.speed],
+  );
+
+  const previewBar = useMemo<AnimationBarConfig>(
+    () => ({
+      id: "admin-preview",
+      name: draft.name || "Animation bar preview",
+      items: draft.items.map((item) => ({
+        ...item,
+        text: item.text || "Your message",
+      })),
+      enabled: true,
+      autoScroll: draft.autoScroll,
+      allowManualScroll: draft.allowManualScroll,
+      pauseOnHover: draft.pauseOnHover,
+      direction: draft.direction,
+      speed: draft.speed,
+      gap: draft.gap,
+      separator: draft.separator,
+      theme: draft.theme,
+      startsAt: null,
+      endsAt: null,
+      placement: "before-hero",
+      order: 0,
+    }),
+    [draft],
   );
 
   function reset() {
@@ -859,31 +885,11 @@ export function AdminAnimationBarManager() {
               </div>
             </div>
 
-            <div
-              className={
-                "mt-3 overflow-x-auto rounded-xl px-4 py-2 scrollbar-none " +
-                themeClass(draft.theme)
-              }
-            >
-              <div
-                className="flex min-w-max items-center"
-                style={{ gap: draft.gap }}
-              >
-                {draft.items.map((item, index) => (
-                  <div
-                    key={item.id}
-                    className="flex shrink-0 items-center"
-                    style={{ gap: draft.gap }}
-                  >
-                    <span className="whitespace-nowrap text-[9px] font-bold uppercase tracking-[.1em]">
-                      {item.text || "Your message"}
-                    </span>
-                    {draft.separator && index < draft.items.length - 1 ? (
-                      <span className="opacity-50">{draft.separator}</span>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
+            <div className="mt-3 overflow-hidden rounded-xl">
+              <HomepageAnimationBars
+                bars={[previewBar]}
+                placement="before-hero"
+              />
             </div>
           </section>
 
