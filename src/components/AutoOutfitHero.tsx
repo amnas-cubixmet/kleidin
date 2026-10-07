@@ -268,7 +268,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                 src={active.modelImage}
                 alt=""
                 draggable={false}
-                className="h-full w-full select-none object-cover object-top"
+                className="h-full w-full select-none object-contain object-bottom sm:object-cover sm:object-top"
               />
             </div>
           ) : null}
