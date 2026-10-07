@@ -14,7 +14,8 @@ export function HomeAllProductsSection({
 
   return (
     <section
-      className="bg-[#fafafa] px-4 py-16 text-[#111] sm:px-6 sm:py-20 lg:px-8 lg:py-24"
+      id="all-products"
+      className="scroll-mt-20 bg-[#fafafa] px-4 py-16 text-[#111] sm:px-6 sm:py-20 lg:px-8 lg:py-24"
       aria-label="All products"
     >
       <div className="mx-auto w-full max-w-[1440px]">
