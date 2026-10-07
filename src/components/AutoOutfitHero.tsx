@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -276,23 +277,32 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </>
       ) : null}
 
-      <div className="pointer-events-none absolute left-5 top-[18%] z-30 max-w-[520px] text-white sm:left-8 sm:top-[20%] lg:left-12 lg:top-1/2 lg:-translate-y-1/2">
-        <p className="m-0 text-[8px] font-semibold uppercase tracking-[.18em] text-white/55 sm:text-[9px]">
-          KLEID.IN / DAILY
-        </p>
-
-        <h1 className="mt-4 max-w-[460px] text-[clamp(42px,6.2vw,88px)] font-semibold leading-[.86] tracking-[-.065em]">
-          ESSENTIALS
-          <br />
-          WITHOUT NOISE
-        </h1>
-
-        <p
-          key={"hero-name-" + active.id + "-" + activeIndex}
-          className="hero-active-name mt-5 text-[10px] font-medium uppercase tracking-[.12em] text-white/68 sm:text-[11px]"
+      <div className="absolute left-5 top-[18%] z-30 max-w-[520px] text-white sm:left-8 sm:top-[20%] lg:left-12 lg:top-1/2 lg:-translate-y-1/2">
+        <div
+          key={"hero-info-" + active.id + "-" + activeIndex}
+          className="hero-product-info"
         >
-          {active.name}
-        </p>
+          <p className="m-0 text-[8px] font-semibold uppercase tracking-[.18em] text-white/55 sm:text-[9px]">
+            KLEID.IN / {active.category}
+          </p>
+
+          <h1 className="mt-4 max-w-[500px] text-[clamp(42px,6.2vw,88px)] font-semibold leading-[.86] tracking-[-.065em]">
+            {active.name}
+          </h1>
+
+          <div className="mt-5 flex items-center gap-4 text-[10px] font-medium uppercase tracking-[.1em] text-white/68 sm:text-[11px]">
+            <span>{active.category}</span>
+            <span className="h-px w-7 bg-white/30" />
+            <span>₹{active.price.toLocaleString("en-IN")}</span>
+          </div>
+
+          <Link
+            href={active.slug ? "/products/" + active.slug : "/#all-products"}
+            className="mt-7 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-[9px] font-semibold uppercase tracking-[.1em] !text-[#111] transition duration-300 hover:scale-[1.02] hover:bg-white/92"
+          >
+            View Product
+          </Link>
+        </div>
       </div>
 
       <div className="absolute inset-x-0 bottom-[76px] z-40 flex h-[112px] items-center sm:bottom-[82px] sm:h-[122px] lg:bottom-[86px] lg:h-[132px]">
@@ -369,8 +379,9 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           will-change: transform, opacity;
         }
 
-        .hero-active-name {
-          animation: heroActiveNameIn 620ms cubic-bezier(.16,1,.3,1) both;
+        .hero-product-info {
+          animation: heroProductInfoIn 720ms cubic-bezier(.16,1,.3,1) both;
+          will-change: transform, opacity, filter;
         }
 
         .selected-product-stage {
@@ -402,13 +413,15 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           }
         }
 
-        @keyframes heroActiveNameIn {
+        @keyframes heroProductInfoIn {
           from {
             opacity: 0;
-            transform: translateY(8px);
+            filter: blur(3px);
+            transform: translateY(16px);
           }
           to {
             opacity: 1;
+            filter: blur(0);
             transform: translateY(0);
           }
         }
