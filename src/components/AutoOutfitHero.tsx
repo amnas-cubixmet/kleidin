@@ -37,9 +37,6 @@ type SliderItem = {
   backgroundImage: string;
   category: string;
   price: number;
-  description: string;
-  colorValues: string[];
-  stock: number;
   demo: boolean;
 };
 
@@ -72,9 +69,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         backgroundImage: pair.background,
         category: "T-Shirts",
         price: 799,
-        description: "An everyday essential with a clean, easy fit.",
-        colorValues: ["#111111", "#e9e2d4", "#8d8d8d"],
-        stock: 1,
         demo: true,
       }));
     }
@@ -91,14 +85,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           localPair?.background || product.showcaseBackgroundImage || "",
         category: product.category,
         price: product.price,
-        description: product.description || "Designed for everyday wear.",
-        colorValues:
-          product.colorVariants
-            ?.map((variant) => variant.value)
-            .filter(Boolean)
-            .slice(0, 4) ||
-          ["#111111", "#e9e2d4", "#8d8d8d"],
-        stock: product.stock,
         demo: false,
       };
     });
@@ -127,7 +113,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [cartAddedId, setCartAddedId] = useState<string | null>(null);
   const railRef = useRef<HTMLDivElement | null>(null);
   const railInteractingRef = useRef(false);
   const railFrameRef = useRef<number | null>(null);
@@ -241,50 +226,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
     };
   }, [railProducts.length, reducedMotion]);
 
-  const addActiveToCart = useCallback(() => {
-    if (!active || active.demo || active.stock <= 0) return;
-
-    try {
-      const storageKey = "kleidin-cart";
-      const parsed = JSON.parse(window.localStorage.getItem(storageKey) || "[]");
-      const cart = Array.isArray(parsed) ? parsed : [];
-      const existingIndex = cart.findIndex(
-        (item: { id?: string }) => item.id === active.id,
-      );
-
-      const cartItem = {
-        id: active.id,
-        slug: active.slug,
-        name: active.name,
-        price: active.price,
-        image: active.image,
-        quantity: 1,
-      };
-
-      if (existingIndex >= 0) {
-        cart[existingIndex] = {
-          ...cart[existingIndex],
-          quantity: Number(cart[existingIndex]?.quantity || 0) + 1,
-        };
-      } else {
-        cart.push(cartItem);
-      }
-
-      window.localStorage.setItem(storageKey, JSON.stringify(cart));
-      window.dispatchEvent(
-        new CustomEvent("kleidin:cart-updated", {
-          detail: { cart },
-        }),
-      );
-      setCartAddedId(active.id);
-      window.setTimeout(() => {
-        setCartAddedId((current) => (current === active.id ? null : current));
-      }, 1600);
-    } catch {
-      setCartAddedId(null);
-    }
-  }, [active]);
-
   if (!active) return null;
 
   const activeHref = active.demo
@@ -345,61 +286,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       ) : null}
 
       <div className="absolute inset-x-0 top-0 bottom-0 z-20">
-        <article
-          key={"product-card-" + active.id + "-" + activeIndex}
-          className="selected-product-details absolute left-4 top-[18%] z-30 w-[214px] rounded-[10px] border border-white/20 bg-black/45 p-3.5 text-white shadow-[0_16px_38px_rgba(0,0,0,.2)] backdrop-blur-xl sm:left-6 sm:top-[20%] sm:w-[238px] sm:p-4 lg:left-[6%] lg:top-[24%] lg:w-[250px]"
-        >
-          <p className="m-0 text-[8px] font-semibold uppercase tracking-[.12em] text-white/55">
-            {active.category}
-          </p>
-
-          <h3 className="mt-1.5 text-[15px] font-semibold leading-[1.05] tracking-[-.025em] text-white sm:text-[17px]">
-            {active.name}
-          </h3>
-
-          <p className="mt-2 line-clamp-2 text-[8px] leading-[1.45] text-white/62">
-            {active.description}
-          </p>
-
-          <strong className="mt-2.5 block text-[15px] font-semibold leading-none text-white sm:text-[17px]">
-            {money(active.price)}
-          </strong>
-
-          <div className="mt-3 flex items-center gap-1.5" aria-label="Available colours">
-            {active.colorValues.slice(0, 4).map((color, index) => (
-              <span
-                key={color + "-" + index}
-                className="h-[13px] w-[13px] rounded-full border border-white/45 shadow-[0_1px_5px_rgba(0,0,0,.18)]"
-                style={{ backgroundColor: color }}
-                aria-hidden="true"
-              />
-            ))}
-          </div>
-
-          <div className="mt-3 grid grid-cols-[.88fr_1.12fr] gap-2">
-            <Link
-              href={activeHref}
-              className="inline-flex min-h-8 items-center justify-center rounded-[5px] border border-white/22 bg-black/20 px-2 text-[7px] font-semibold !text-white transition hover:bg-white/10"
-            >
-              View Details
-            </Link>
-
-            <button
-              type="button"
-              onClick={addActiveToCart}
-              disabled={active.demo || active.stock <= 0}
-              className="inline-flex min-h-8 items-center justify-center gap-1 rounded-[5px] bg-[#1677ff] px-2 text-[7px] font-semibold text-white shadow-[0_5px_14px_rgba(22,119,255,.25)] transition hover:bg-[#0f68e4] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <span aria-hidden="true">▣</span>
-              {active.stock <= 0
-                ? "Sold out"
-                : cartAddedId === active.id
-                  ? "Added ✓"
-                  : "Add to Cart"}
-            </button>
-          </div>
-        </article>
-
         <aside className="absolute right-4 top-4 z-30 w-[210px] border border-white/35 bg-black/25 p-3 text-white shadow-[0_14px_34px_rgba(0,0,0,.16)] backdrop-blur-xl sm:right-6 sm:top-6 sm:w-[238px] sm:p-4 lg:right-[8%] lg:top-[10%]">
           <p className="m-0 text-[10px] font-semibold tracking-[-.01em]">
             Image requirement
