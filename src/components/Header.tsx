@@ -366,17 +366,26 @@ export function Header({
             border-radius: 0 !important;
             background: linear-gradient(
               180deg,
-              rgba(255, 255, 255, .62) 0%,
-              rgba(255, 255, 255, .34) 100%
+              rgba(8, 8, 8, .42) 0%,
+              rgba(8, 8, 8, .20) 100%
             ) !important;
-            box-shadow: none !important;
-            backdrop-filter: blur(16px) saturate(130%) !important;
-            -webkit-backdrop-filter: blur(16px) saturate(130%) !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .08) !important;
+            backdrop-filter: blur(14px) saturate(120%) !important;
+            -webkit-backdrop-filter: blur(14px) saturate(120%) !important;
           }
 
           .site-header.site-header-home-overlay .brand {
+            color: #fff !important;
             font-size: 18px !important;
             line-height: 1 !important;
+          }
+
+          .site-header.site-header-home-overlay .icon-button {
+            color: #fff !important;
+          }
+
+          .site-header.site-header-home-overlay .menu-button {
+            color: #3f5cff !important;
           }
 
           .site-header.site-header-home-overlay .header-actions {
