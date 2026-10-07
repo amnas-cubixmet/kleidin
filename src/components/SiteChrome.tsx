@@ -121,15 +121,26 @@ export function SiteChrome({
         />
       ) : null}
       <main
-        style={
-          tryOnChromeHidden || overlayHomeHeader
-            ? { paddingTop: 0 }
-            : undefined
-        }
+        className={overlayHomeHeader ? "site-main-home-overlay" : undefined}
+        style={tryOnChromeHidden ? { paddingTop: 0 } : undefined}
       >
         {children}
       </main>
       <Footer settings={settings} />
+
+      <style jsx global>{`
+        @media (max-width: 640px) {
+          main.site-main-home-overlay {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+          }
+
+          main.site-main-home-overlay > .reference-home {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+          }
+        }
+      `}</style>
     </StoreSettingsProvider>
   );
 }
