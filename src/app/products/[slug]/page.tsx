@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ProductDetailClient } from "@/components/ProductDetailClient";
 import { getCatalogProductBySlug } from "@/lib/catalog";
+import { getHomeDemoProductBySlug } from "@/lib/home-demo-products";
 import { getStoreSettings } from "@/lib/site-settings";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +14,8 @@ export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getCatalogProductBySlug(slug);
+  const product =
+    (await getCatalogProductBySlug(slug)) ?? getHomeDemoProductBySlug(slug);
 
   if (!product) return { title: "Product not found" };
 
@@ -25,10 +27,11 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const [product, settings] = await Promise.all([
+  const [catalogProduct, settings] = await Promise.all([
     getCatalogProductBySlug(slug),
     getStoreSettings(),
   ]);
+  const product = catalogProduct ?? getHomeDemoProductBySlug(slug);
 
   if (!product || product.status === "draft") notFound();
 
@@ -38,7 +41,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
-            { label: "Shop", href: "/products" },
+            { label: "Shop", href: "/#all-products" },
             { label: product.name },
           ]}
         />
