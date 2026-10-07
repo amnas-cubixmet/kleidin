@@ -90,15 +90,23 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
     });
   }, [products]);
 
-  const railProducts = useMemo(
-    () =>
-      items.slice(0, 20).map((product, index) => ({
+  const railProducts = useMemo(() => {
+    const source = items.slice(0, 20);
+    if (!source.length) return [];
+
+    const slotCount = Math.max(8, source.length);
+
+    return Array.from({ length: slotCount }, (_, slotIndex) => {
+      const baseIndex = slotIndex % source.length;
+      const product = source[baseIndex];
+
+      return {
         ...product,
-        railId: "rail-" + index,
-        baseIndex: index,
-      })),
-    [items],
-  );
+        railId: "rail-" + slotIndex + "-" + product.id,
+        baseIndex,
+      };
+    });
+  }, [items]);
 
   const heroShowcaseCount = Math.min(items.length, 8);
 
@@ -316,7 +324,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-[76px] z-40 h-[108px] sm:bottom-[82px] sm:h-[116px] lg:bottom-[86px] lg:h-[124px]">
+      <div className="absolute inset-x-0 bottom-[76px] z-40 flex h-[112px] items-center sm:bottom-[82px] sm:h-[122px] lg:bottom-[86px] lg:h-[132px]">
         <div
           ref={railRef}
           onPointerDown={(event) => {
@@ -348,23 +356,11 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
               rail.scrollLeft -= width;
             }
           }}
-          className="flex h-full w-full cursor-grab items-center gap-3 overflow-x-auto px-4 [scrollbar-width:none] active:cursor-grabbing sm:gap-4 sm:px-6 lg:gap-5 lg:px-8 [&::-webkit-scrollbar]:hidden"
+          className="flex h-full w-full cursor-grab items-center gap-[1.5vw] overflow-x-auto px-[1.5vw] [scrollbar-width:none] active:cursor-grabbing sm:gap-[1.35vw] sm:px-[1.35vw] lg:gap-[1vw] lg:px-[1vw] [&::-webkit-scrollbar]:hidden"
         >
           {[0, 1, 2].flatMap((setIndex) =>
             railProducts.map((product, index) => {
               const selected = product.baseIndex === activeIndex;
-              const shapeIndex = index % 5;
-
-              const shapeClass =
-                shapeIndex === 0
-                  ? "h-[88px] w-[70px] sm:h-[96px] sm:w-[76px] lg:h-[104px] lg:w-[82px]"
-                  : shapeIndex === 1
-                    ? "h-[82px] w-[82px] sm:h-[90px] sm:w-[90px] lg:h-[96px] lg:w-[96px]"
-                    : shapeIndex === 2
-                      ? "h-[78px] w-[104px] sm:h-[86px] sm:w-[114px] lg:h-[92px] lg:w-[124px]"
-                      : shapeIndex === 3
-                        ? "h-[96px] w-[76px] sm:h-[104px] sm:w-[82px] lg:h-[112px] lg:w-[88px]"
-                        : "h-[80px] w-[94px] sm:h-[88px] sm:w-[104px] lg:h-[94px] lg:w-[112px]";
 
               return (
                 <button
@@ -377,9 +373,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                     selectProduct(product.baseIndex, true);
                   }}
                   className={
-                    "relative shrink-0 overflow-hidden border border-white/55 bg-white/55 shadow-[0_8px_24px_rgba(0,0,0,.10)] backdrop-blur-md transition-[transform,border-color,background-color,opacity] duration-300 " +
-                    shapeClass +
-                    " " +
+                    "relative h-[86px] w-[21.5vw] shrink-0 overflow-hidden border border-white/55 bg-white/55 shadow-[0_8px_24px_rgba(0,0,0,.10)] backdrop-blur-md transition-[transform,border-color,background-color,opacity] duration-300 sm:h-[96px] sm:w-[15.25vw] lg:h-[104px] lg:w-[11.625vw] xl:h-[110px] " +
                     (selected
                       ? "scale-[1.08] border-2 border-[#b7ff35] bg-white/82 opacity-100 shadow-[0_12px_30px_rgba(0,0,0,.17)]"
                       : "opacity-84 hover:scale-[1.03] hover:bg-white/74 hover:opacity-100")
