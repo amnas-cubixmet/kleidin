@@ -502,7 +502,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
         @media (max-width: 767px) {
           .hero-model-image {
-            transform: scale(1.16);
+            transform: scale(.85);
             transform-origin: center bottom;
           }
 
