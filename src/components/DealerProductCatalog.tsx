@@ -33,10 +33,11 @@ export function DealerProductCatalog({
 
   return (
     <>
-      <div className="dealer-filter-row">
-        <label className="dealer-filter-field">
-          <span>Category</span>
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <label className="flex w-full max-w-[360px] flex-col gap-2">
+          <span className="text-[9px] font-semibold uppercase tracking-[.12em] text-black/45">Category</span>
           <select
+            className="h-12 w-full rounded-full border border-black/12 bg-white px-5 text-[11px] font-semibold text-[#111] outline-none transition focus:border-black/30"
             value={category}
             onChange={(event) => setCategory(event.target.value)}
             aria-label="Filter dealer products by category"
@@ -49,7 +50,7 @@ export function DealerProductCatalog({
           </select>
         </label>
 
-        <span className="dealer-filter-count">
+        <span className="text-[9px] font-semibold uppercase tracking-[.1em] text-black/40">
           {visibleProducts.length} product{visibleProducts.length === 1 ? "" : "s"}
         </span>
       </div>
