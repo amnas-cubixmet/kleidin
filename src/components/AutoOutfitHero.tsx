@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -19,14 +18,6 @@ function getProductImage(product: Product) {
     product.colorVariants?.find((variant) => variant.image)?.image ||
     ""
   );
-}
-
-function money(value: number) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(value);
 }
 
 type SliderItem = {
@@ -228,13 +219,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
   if (!active) return null;
 
-  const activeHref = active.demo
-    ? "/products"
-    : "/products/" + active.slug;
-  const tryOnHref = active.demo
-    ? "/products"
-    : "/try-on/" + active.slug;
-
   return (
     <section
       className="relative h-[100svh] min-h-[100svh] w-screen overflow-hidden md:h-[100dvh] md:min-h-[100dvh]"
@@ -284,37 +268,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           <div className="pointer-events-none absolute inset-0 bg-black/10" />
         </>
       ) : null}
-
-      <div className="absolute inset-x-0 top-0 bottom-0 z-20">
-        <aside className="absolute right-4 top-4 z-30 w-[210px] border border-white/35 bg-black/25 p-3 text-white shadow-[0_14px_34px_rgba(0,0,0,.16)] backdrop-blur-xl sm:right-6 sm:top-6 sm:w-[238px] sm:p-4 lg:right-[8%] lg:top-[10%]">
-          <p className="m-0 text-[10px] font-semibold tracking-[-.01em]">
-            Image requirement
-          </p>
-
-          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[7px] text-white/65">
-            <span>Full body</span>
-            <span>Good lighting</span>
-            <span>Face camera</span>
-            <span>Clear background</span>
-          </div>
-
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <Link
-              href={tryOnHref}
-              className="inline-flex min-h-8 items-center justify-center border border-white/25 bg-white/10 px-2 text-[7px] font-bold !text-white transition hover:bg-white/20"
-            >
-              Live camera
-            </Link>
-            <Link
-              href={tryOnHref}
-              className="inline-flex min-h-8 items-center justify-center bg-white px-2 text-[7px] font-bold !text-[#111]"
-            >
-              Take photo
-            </Link>
-          </div>
-        </aside>
-
-      </div>
 
       <div className="absolute inset-x-0 bottom-[76px] z-40 flex h-[112px] items-center sm:bottom-[82px] sm:h-[122px] lg:bottom-[86px] lg:h-[132px]">
         <div
