@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { WholesaleProductCard } from "@/components/WholesaleProductCard";
+import { DealerProductCatalog } from "@/components/DealerProductCatalog";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 import { getWholesaleWhatsappUrl } from "@/lib/format";
@@ -26,7 +26,7 @@ export default async function WholesalePage() {
       ? whatsappHref
       : settings.supportEmail
         ? "mailto:" + settings.supportEmail
-        : "/contact";
+        : "/";
 
   return (
     <main className="dealer-page dealer-page-clean">
@@ -67,15 +67,10 @@ export default async function WholesalePage() {
           <p>{activeProducts.length} styles</p>
         </section>
 
-        <section className="dealer-product-grid dealer-product-grid-unified" aria-label="Dealer products">
-          {activeProducts.map((product) => (
-            <WholesaleProductCard
-              key={product.id}
-              product={product}
-              whatsappNumber={settings.whatsappNumber}
-            />
-          ))}
-        </section>
+        <DealerProductCatalog
+          products={activeProducts}
+          whatsappNumber={settings.whatsappNumber}
+        />
       </div>
     </main>
   );
