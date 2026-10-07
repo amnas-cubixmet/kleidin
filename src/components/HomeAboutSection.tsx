@@ -7,7 +7,7 @@ export function HomeAboutSection() {
   ];
 
   return (
-    <section className="bg-[#001cac] px-5 py-20 text-white sm:px-8 sm:py-24 lg:px-12 lg:py-28">
+    <section id="about" className="scroll-mt-20 bg-[#001cac] px-5 py-20 text-white sm:px-8 sm:py-24 lg:px-12 lg:py-28">
       <div className="mx-auto grid w-full max-w-[1280px] gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">
         <div>
           <p className="m-0 text-[9px] font-semibold uppercase tracking-[.16em] text-white/55">
