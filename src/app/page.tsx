@@ -2,7 +2,6 @@ import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { FeaturedProductMotion } from "@/components/FeaturedProductMotion";
 import { HomeAboutSection } from "@/components/HomeAboutSection";
 import { HomeAllProductsSection } from "@/components/HomeAllProductsSection";
-import { HomeCustomOrderSection } from "@/components/HomeCustomOrderSection";
 import { HomeSpotlightSection } from "@/components/HomeSpotlightSection";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
@@ -82,7 +81,6 @@ export default async function Home() {
 
       <HomeAboutSection />
 
-      <HomeCustomOrderSection />
 
       <HomeAllProductsSection whatsappNumber={settings.whatsappNumber} />
 
