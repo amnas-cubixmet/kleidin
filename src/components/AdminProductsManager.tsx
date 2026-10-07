@@ -65,7 +65,7 @@ const emptyDraft: Draft = {
   sortOrder: "",
   featured: false,
   featuredSortOrder: "",
-  featuredAnimationEnabled: false,
+  featuredAnimationEnabled: true,
   animationSortOrder: "",
   spotlight: false,
   image: "",
