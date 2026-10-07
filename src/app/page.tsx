@@ -76,7 +76,7 @@ export default async function Home() {
     <div className="reference-home">
       <AutoOutfitHero products={showcaseProducts} />
 
-      <FeaturedProductMotion products={activeProducts} />
+      <FeaturedProductMotion />
 
       <HomeAboutSection />
 
