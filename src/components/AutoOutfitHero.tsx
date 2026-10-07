@@ -280,11 +280,11 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
       {!active.modelImage ? <div key={"product-" + active.id} className="selected-product-image pointer-events-none absolute bottom-[210px] right-4 z-20 h-[30svh] w-[60%] sm:bottom-[220px] sm:right-10 sm:h-[55svh] sm:w-[44%]"><img src={active.image} alt={active.name} className="h-full w-full object-contain" /></div> : null}
 
-      <div key={"details-" + active.id} className="selected-product-details absolute left-5 right-5 top-[10%] z-30 max-w-[560px] rounded-sm bg-white/85 p-5 text-[#111] backdrop-blur-sm sm:left-10 sm:right-auto sm:top-[15%] sm:p-8 lg:left-16">
+      <div data-motion-owned key={"details-" + active.id} className="selected-product-details absolute left-5 right-5 top-[10%] z-30 max-w-[560px] rounded-sm bg-white/85 p-5 text-[#111] backdrop-blur-sm sm:left-10 sm:right-auto sm:top-[15%] sm:p-8 lg:left-16">
         <p className="mb-3 text-[10px] font-semibold uppercase tracking-[.14em]">KLEID.IN / {active.category}</p>
-        <h1 className="text-[clamp(32px,5vw,68px)] font-semibold leading-[.95] tracking-[-.05em]">{active.name}</h1>
+        <h1 className="selected-product-name text-[clamp(32px,5vw,68px)] font-semibold leading-[.95] tracking-[-.05em]">{active.name}</h1>
         <p className="mt-4 max-w-[420px] text-sm leading-6">{active.description}</p>
-        <p className="mt-4 text-lg font-semibold">₹{active.price.toLocaleString("en-IN")}</p>
+        <p className="selected-product-price mt-4 text-lg font-semibold">₹{active.price.toLocaleString("en-IN")}</p>
         <Link href={active.demo ? "/#all-products" : `/products/${active.slug}`} onTouchStart={(event) => event.stopPropagation()} onClick={(event) => event.stopPropagation()} className="selected-product-button mt-5 inline-flex min-h-11 items-center bg-[#111] px-6 text-xs font-semibold !text-white">{active.demo ? "Explore products" : "View product"} <span className="ml-4">↗</span></Link>
       </div>
 
@@ -372,12 +372,34 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         }
 
         .selected-product-details {
-          animation: selectedDetailsIn 720ms 100ms cubic-bezier(.16,1,.3,1) both;
-          will-change: transform, opacity, filter;
+          animation: selectedPanelIn 450ms ease-out backwards;
+        }
+
+        .selected-product-name {
+          animation: selectedCopyIn 650ms 80ms cubic-bezier(.22,1,.36,1) backwards;
+        }
+
+        .selected-product-price {
+          animation: selectedCopyIn 600ms 200ms cubic-bezier(.22,1,.36,1) backwards;
         }
 
         .selected-product-button {
-          animation: selectedButtonIn 620ms 260ms cubic-bezier(.16,1,.3,1) both;
+          animation: selectedCopyIn 600ms 320ms cubic-bezier(.22,1,.36,1) backwards;
+        }
+
+        .selected-product-button:focus-visible {
+          outline: 3px solid #001cac;
+          outline-offset: 4px;
+        }
+
+        @keyframes selectedPanelIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes selectedCopyIn {
+          from { opacity: 0; transform: translate3d(0, 18px, 0); }
+          to { opacity: 1; transform: translate3d(0, 0, 0); }
         }
 
         @keyframes selectedBackgroundIn {
