@@ -1791,18 +1791,6 @@ main {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .mobile-compact-card,
-  .mobile-card-link,
-  .menu-icon i {
-    animation: none !important;
-    transition: opacity 100ms linear !important;
-  }
-  .mobile-card-link {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-}
 
 @media (max-width: 640px) {
   .header-actions {
@@ -2253,17 +2241,6 @@ main {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .shop-motion-image {
-    animation: none;
-    opacity: 0;
-    transform: none;
-  }
-
-  .shop-motion-image:first-child {
-    opacity: 1;
-  }
-}
 
 
 /* Simplified navigation + active link */
@@ -2302,8 +2279,6 @@ main {
 @media (max-width: 640px) {
 }
 
-@media (prefers-reduced-motion: reduce) {
-}
 
 
 /* Reference-inspired premium editorial homepage */
@@ -3452,11 +3427,6 @@ main {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .offer-slide-nav button {
-    transition: none;
-  }
-}
 
 
 /* Admin — premium, responsive, database-first */
@@ -4920,14 +4890,6 @@ main {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .site-header,
-  .site-header .brand,
-  .site-header .icon-button,
-  .site-header .menu-button {
-    transition: none !important;
-  }
-}
 
 
 /* Mobile category slider — one full card per view */
@@ -5063,11 +5025,6 @@ body {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .site-header.scrolled {
-    transition: none !important;
-  }
-}
 
 
 /* Mobile viewport overflow lock — block horizontal page movement, keep vertical scroll */
@@ -5443,12 +5400,6 @@ body {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .showcase-slide {
-    transition: opacity 300ms ease !important;
-    transform: none !important;
-  }
-}
 
 
 
@@ -5898,14 +5849,6 @@ main {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .auto-outfit-copy-item,
-  .auto-garment-layer,
-  .auto-outfit-nav button span,
-  .auto-outfit-cta span {
-    transition-duration: 1ms !important;
-  }
-}
 
 
 /* AutoOutfitHero UI reset v2 */
@@ -6153,14 +6096,6 @@ main {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .auto-garment-layer,
-  .auto-garment-layer.active,
-  .auto-garment-layer.previous,
-  .auto-garment-layer.next {
-    transform: translate(-50%, -50%) !important;
-  }
-}
 
 
 /* Per-garment torso fit tuning */
@@ -6548,15 +6483,6 @@ main {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .auto-garment-layer,
-  .auto-garment-layer.active,
-  .auto-garment-layer.previous,
-  .auto-garment-layer.next {
-    transform: translate(-50%, -50%) !important;
-    transition: opacity 180ms linear !important;
-  }
-}
 
 
 /* Homepage most-loved product detail spotlight */
@@ -6888,15 +6814,6 @@ main {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .home-spotlight-track {
-    animation: none;
-  }
-
-  .home-spotlight-image {
-    transition: none;
-  }
-}
 
 
 /* Mobile edge-to-edge homepage sections */
@@ -8461,30 +8378,6 @@ main {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .mobile-compact-card,
-  .mobile-card-link,
-  .search-panel,
-  .top-fashion-slide,
-  .offer-hero-image,
-  .showcase-slide,
-  .auto-outfit-copy-item,
-  .auto-garment-layer {
-    animation: none !important;
-    transition: none !important;
-    transform: none !important;
-  }
-
-  .mobile-compact-card,
-  .mobile-card-link,
-  .search-panel,
-  .offer-hero-image,
-  .showcase-slide.slide-active,
-  .auto-outfit-copy-item.active,
-  .auto-garment-layer.active {
-    opacity: 1 !important;
-  }
-}
 
 
 /* Mobile outfit hero final proportion polish */
@@ -9395,13 +9288,6 @@ main,
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .product-scroll-main h2,
-  .product-scroll-image-layer {
-    transition: none;
-    transform: none !important;
-  }
-}
 
 
 /* Homepage second feature — offer poster */
@@ -9720,12 +9606,6 @@ main,
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .feature-story-slide {
-    transition: none;
-    transform: none !important;
-  }
-}
 
 
 /* FINAL header UI refinement */
@@ -13649,24 +13529,6 @@ main,
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .customer-stories-track {
-    animation: none !important;
-  }
-
-  .customer-stories-loop {
-    overflow-x: auto !important;
-    scrollbar-width: none !important;
-  }
-
-  .customer-stories-loop::-webkit-scrollbar {
-    display: none !important;
-  }
-
-  .customer-stories-set[aria-hidden="true"] {
-    display: none !important;
-  }
-}
 
 
 /* FINAL testimonial compact loop — no section lines, small round product photo */
@@ -17098,22 +16960,6 @@ select,
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .animation-bar-track {
-    animation: none !important;
-    transform: none !important;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .animation-bar-track::-webkit-scrollbar {
-    display: none;
-  }
-
-  .animation-bar-track > .animation-bar-set:last-child {
-    display: none;
-  }
-}
 
 
 @keyframes productFloat {
@@ -17126,11 +16972,6 @@ select,
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  [class*="animate-[productFloat"] {
-    animation: none !important;
-  }
-}
 
 
 /* Premium frosted glass header */

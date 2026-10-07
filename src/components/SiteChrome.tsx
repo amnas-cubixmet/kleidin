@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { HomeShoppingMotion } from "@/components/HomeShoppingMotion";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductImageTransition } from "@/components/ProductImageTransition";
@@ -107,6 +108,7 @@ export function SiteChrome({
           </button>
         </div>
       ) : null}
+      <HomeShoppingMotion />
       <ProductImageTransition />
       {!tryOnChromeHidden ? (
         <Header products={products} settings={settings} />

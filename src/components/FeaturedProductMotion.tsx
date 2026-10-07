@@ -46,17 +46,9 @@ export function FeaturedProductMotion() {
 
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const reducedMotion = false;
   const transitionTimerRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setReducedMotion(media.matches);
-    sync();
-
-    media.addEventListener?.("change", sync);
-    return () => media.removeEventListener?.("change", sync);
-  }, []);
 
   useEffect(() => {
     if (index < items.length) return;
@@ -199,15 +191,7 @@ export function FeaturedProductMotion() {
           }
         }
 
-        @media (prefers-reduced-motion: reduce) {
-          .featured-motion-copy,
-          .featured-motion-image {
-            transition: none !important;
-            opacity: 1 !important;
-            transform: none !important;
-            filter: none !important;
-          }
-        }
+
       `}</style>
     </section>
   );

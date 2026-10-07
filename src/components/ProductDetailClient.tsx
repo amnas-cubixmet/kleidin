@@ -47,7 +47,7 @@ export function ProductDetailClient({
   useEffect(() => {
     if (variantImages.length <= 1 || galleryPaused) return;
     const timer = window.setInterval(() => {
-      if (document.hidden || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (document.hidden) return;
       setActiveImageIndex((index) => (index + 1) % variantImages.length);
     }, 3800);
     return () => window.clearInterval(timer);
