@@ -36,23 +36,25 @@ export function HomeProductGridCard({
           {product.name}
         </h3>
 
-        <div className="mt-1 flex items-center justify-between gap-2">
-          <p className="m-0 text-[10px] font-medium text-black/52 sm:text-[11px]">
-            {formatPrice(product.price)}
-          </p>
+        <p className="mt-1 text-[10px] font-medium text-black/52 sm:text-[11px]">
+          {formatPrice(product.price)}
+        </p>
 
-          {whatsappHref !== "#" ? (
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noreferrer"
-              className="relative z-20 inline-flex min-h-8 items-center justify-center rounded-full bg-[#001cac] px-3 text-[8px] font-semibold uppercase tracking-[.06em] text-white transition hover:opacity-90 sm:text-[9px]"
-              aria-label={"Order " + product.name + " on WhatsApp"}
-            >
-              WhatsApp
-            </a>
-          ) : null}
-        </div>
+        <a
+          href={whatsappHref}
+          target={whatsappHref === "#" ? undefined : "_blank"}
+          rel={whatsappHref === "#" ? undefined : "noreferrer"}
+          aria-disabled={whatsappHref === "#" ? "true" : undefined}
+          className={
+            "relative z-20 mt-3 inline-flex min-h-9 w-full items-center justify-center rounded-full bg-[#001cac] px-3 text-[8px] font-semibold uppercase tracking-[.07em] text-white transition sm:min-h-10 sm:text-[9px] " +
+            (whatsappHref === "#"
+              ? "cursor-default opacity-70"
+              : "hover:opacity-90")
+          }
+          aria-label={"Order " + product.name + " on WhatsApp"}
+        >
+          WhatsApp
+        </a>
       </div>
     </article>
   );
