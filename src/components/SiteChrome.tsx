@@ -29,7 +29,7 @@ export function SiteChrome({
     !tryOnChromeHidden &&
     settings.announcementEnabled &&
     !announcementDismissed;
-  const overlayHomeHeader = pathname === "/" && !showAnnouncement;
+  const overlayHomeHeader = false;
 
   useEffect(() => {
     if (isAdmin) return;
