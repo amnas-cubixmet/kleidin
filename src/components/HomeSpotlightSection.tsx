@@ -17,8 +17,8 @@ export function HomeSpotlightSection({
   const image = getProductPrimaryImage(product);
 
   return (
-    <section className="home-spotlight">
-      <div className="home-spotlight-grid">
+    <section className="home-spotlight !border-0">
+      <div className="home-spotlight-grid !border-0">
         <Link
           href={"/products/" + product.slug}
           className="home-spotlight-media"
