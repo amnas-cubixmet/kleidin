@@ -338,10 +338,10 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                     selectProduct(product.baseIndex, true);
                   }}
                   className={
-                    "relative h-[86px] w-[21.5vw] shrink-0 overflow-hidden border border-white/55 bg-white/55 shadow-[0_8px_24px_rgba(0,0,0,.10)] backdrop-blur-md transition-[transform,border-color,background-color,opacity] duration-300 sm:h-[96px] sm:w-[15.25vw] lg:h-[104px] lg:w-[11.625vw] xl:h-[110px] " +
+                    "relative h-[86px] w-[21.5vw] shrink-0 overflow-hidden border border-white/30 bg-white/20 shadow-[0_8px_24px_rgba(0,0,0,.08)] backdrop-blur-md transition-[transform,border-color,background-color,opacity] duration-300 sm:h-[96px] sm:w-[15.25vw] lg:h-[104px] lg:w-[11.625vw] xl:h-[110px] " +
                     (selected
-                      ? "scale-[1.08] border-2 border-[#b7ff35] bg-white/82 opacity-100 shadow-[0_12px_30px_rgba(0,0,0,.17)]"
-                      : "opacity-84 hover:scale-[1.03] hover:bg-white/74 hover:opacity-100")
+                      ? "scale-[1.08] border-2 border-[#b7ff35] bg-white/32 opacity-100 shadow-[0_12px_30px_rgba(0,0,0,.14)]"
+                      : "opacity-88 hover:scale-[1.03] hover:bg-white/28 hover:opacity-100")
                   }
                 >
                   <img
