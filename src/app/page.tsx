@@ -81,7 +81,7 @@ export default async function Home() {
 
       <HomeAboutSection />
 
-      <HomeAllProductsSection />
+      <HomeAllProductsSection whatsappNumber={settings.whatsappNumber} />
 
       <HomeSpotlightSection
         product={mostLoved}
