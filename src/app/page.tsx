@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { ProductActions } from "@/components/ProductActions";
 import { formatPrice } from "@/lib/format";

@@ -106,18 +106,13 @@ export function SiteChrome({
           </button>
         </div>
       ) : null}
-<<<<<<< HEAD
+      <ProductImageTransition />
       {!tryOnChromeHidden ? (
         <Header products={products} settings={settings} />
       ) : null}
       <main style={tryOnChromeHidden ? { paddingTop: 0 } : undefined}>
         {children}
       </main>
-=======
-      <ProductImageTransition />
-      <Header products={products} settings={settings} />
-      <main>{children}</main>
->>>>>>> 37054d2c43e800dbf226eb219fdeaaeff3cb0ecb
       <Footer settings={settings} />
     </StoreSettingsProvider>
   );
