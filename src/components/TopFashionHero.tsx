@@ -24,6 +24,8 @@ type ResolvedHeroSlide = {
   button: string;
   href: string;
   image?: string;
+  label?: string;
+  brand?: string;
   meta?: string;
   discountText?: string;
   showCountdown?: boolean;
@@ -88,7 +90,7 @@ export function TopFashionHero({
           slide.enabled &&
           (!scheduleNow || isScheduledNow(slide, scheduleNow)),
       )
-      .sort((a, b) => a.order - b.order)
+      .sort((a, b) => a.id === "default-hero" ? -1 : b.id === "default-hero" ? 1 : a.order - b.order)
       .map<ResolvedHeroSlide | null>((slide) => {
         const selectedProduct = slide.productId
           ? products.find(
@@ -116,6 +118,8 @@ export function TopFashionHero({
 
         return {
           id: slide.id,
+          label: slide.label,
+          brand: slide.brand,
           title,
           subtitle: slide.subtitle || product?.description || "",
           button: slide.button || (product ? "View product" : "Explore"),
@@ -198,7 +202,7 @@ export function TopFashionHero({
   const titleIsLong = current.title.length > 20;
 
   const ctaClass =
-    "inline-flex min-h-[44px] items-center justify-center rounded-none px-5 text-[10px] font-bold uppercase tracking-[.08em] transition " +
+    "inline-flex min-h-[44px] items-center justify-center rounded-none px-5 text-[10px] font-bold tracking-[.08em] transition " +
     (current.ctaStyle === "dark"
       ? "bg-[#111111] !text-white hover:bg-black"
       : current.ctaStyle === "outline"
@@ -206,13 +210,13 @@ export function TopFashionHero({
         : "border border-black/10 bg-white !text-[#111111] hover:bg-[#f7f7f7]");
 
   return (
-    <section className="h-[100svh] w-screen max-w-none overflow-hidden px-0 md:h-[100dvh]">
-      <div className="relative h-full w-full overflow-hidden rounded-none bg-[#efede8] text-[#111111]">
-        <div className="relative h-[52svh] w-full overflow-hidden bg-[#dedbd5] md:absolute md:inset-y-0 md:right-0 md:h-full md:w-[57%]">
+    <section data-shop-reveal aria-label="Featured collections" aria-roledescription="carousel" className="w-full overflow-hidden">
+      <div className="relative flex w-full flex-col overflow-hidden bg-[#fafafa] md:aspect-[16/9] md:min-h-[580px] text-[#111111]">
+        <div className="relative order-2 aspect-[4/5] w-full overflow-hidden md:absolute md:inset-y-0 md:right-0 md:aspect-auto md:h-full md:w-1/2">
           {slides.map((slide, slideIndex) => (
             <div
               key={slide.id}
-              className={`absolute inset-0 transition-[opacity,transform] duration-700 ease-out ${
+              className={`absolute inset-0 transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none ${
                 slideIndex === index
                   ? "scale-100 opacity-100"
                   : "pointer-events-none scale-[1.015] opacity-0"
@@ -220,20 +224,19 @@ export function TopFashionHero({
               aria-hidden={slideIndex !== index}
             >
               {slide.image ? (
-                <div className="absolute bottom-0 right-0 h-full w-[90%] md:w-[92%]">
+                <div className="absolute inset-0">
                   <Image
                     src={slide.image}
                     alt={slide.title}
                     fill
-                    priority={slideIndex === 0}
-                    sizes="(max-width: 767px) 90vw, 52vw"
-                    quality={90}
-                    className={`object-contain object-bottom ${
+                    preload={slideIndex === 0}
+                    sizes="(max-width: 767px) 100vw, 50vw"
+                    className={`object-contain ${
                       slide.imagePosition === "left"
-                        ? "object-left-bottom"
+                        ? "object-left"
                         : slide.imagePosition === "right"
-                          ? "object-right-bottom"
-                          : "object-center-bottom"
+                          ? "object-right"
+                          : "object-center"
                     }`}
                   />
                 </div>
@@ -243,13 +246,15 @@ export function TopFashionHero({
             </div>
           ))}
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-t from-[#efede8] via-[#efede8]/35 to-transparent md:hidden" />
-          <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[14%] bg-gradient-to-r from-[#efede8] to-transparent md:block" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-t from-[#fafafa] via-[#fafafa]/35 to-transparent md:hidden" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[14%] bg-gradient-to-r from-[#fafafa] to-transparent md:block" />
         </div>
 
-        <div className="relative z-10 flex h-[48svh] flex-col px-5 pb-6 pt-5 md:h-full md:w-[52%] md:px-12 md:py-9 lg:px-16 lg:py-12">
+        <div className="relative z-10 order-1 flex min-w-0 flex-col px-5 pb-6 pt-8 md:h-full md:w-1/2 md:px-12 md:py-9 lg:px-16 lg:py-12">
           <div className="flex flex-1 items-center">
             <div className="w-full max-w-[560px] py-8 md:max-w-[560px] md:py-0">
+              {current.label ? <p className="mb-5 text-xs font-semibold tracking-[.12em]">{current.label}</p> : null}
+              {current.brand ? <p className="mb-4 text-lg font-bold">{current.brand}</p> : null}
               {current.discountText ? (
                 <strong className="mb-3 block text-[10px] font-bold uppercase tracking-[.12em] text-[#001cac] md:text-[11px]">
                   {current.discountText}
@@ -257,17 +262,17 @@ export function TopFashionHero({
               ) : null}
 
               <h1
-                className={`m-0 max-w-[560px] whitespace-pre-line uppercase font-black leading-[0.88] tracking-[-0.06em] ${
+                className={`m-0 max-w-[560px] whitespace-pre-line break-words font-black leading-[0.88] tracking-[-0.06em] ${
                   titleIsLong
-                    ? "text-[clamp(40px,11vw,62px)] md:text-[clamp(52px,5.1vw,82px)]"
-                    : "text-[clamp(48px,13vw,72px)] md:text-[clamp(60px,5.8vw,94px)]"
+                    ? "text-[clamp(32px,8vw,48px)] md:text-[clamp(40px,4vw,64px)]"
+                    : "text-[clamp(34px,9vw,52px)] md:text-[clamp(44px,4.5vw,72px)]"
                 }`}
               >
                 {current.title}
               </h1>
 
               {current.subtitle ? (
-                <p className="mt-5 max-w-[360px] text-[10px] leading-[1.65] text-black/58 md:max-w-[390px] md:text-[11px] md:leading-[1.7]">
+                <p className="mt-5 max-w-[360px] text-sm leading-[1.65] text-black/70 md:max-w-[390px] md:text-sm md:leading-[1.7]">
                   {current.subtitle}
                 </p>
               ) : null}
@@ -335,14 +340,15 @@ export function TopFashionHero({
                 {String(slideCount).padStart(2, "0")}
               </span>
 
-              <div className="flex max-w-[220px] items-center gap-1 overflow-hidden md:max-w-none">
+              <div className="flex max-w-[220px] flex-wrap items-center gap-1 md:max-w-none">
                 {slides.map((slide, slideIndex) => (
                   <button
                     key={slide.id}
                     type="button"
                     aria-label={`Show ${slide.title} slide`}
+                    aria-pressed={slideIndex === index}
                     onClick={() => setIndex(slideIndex)}
-                    className={`h-[3px] shrink-0 transition-all duration-300 ${
+                    className={`min-h-6 shrink-0 border-y-[10px] border-[#fafafa] transition-all duration-300 motion-reduce:transition-none ${
                       slideIndex === index
                         ? "w-8 bg-black md:w-10"
                         : "w-3 bg-black/20 hover:bg-black/40"

@@ -160,15 +160,7 @@ export function AdminHeroManager() {
 
   const previewImage = draft.imageUrl || productImage;
 
-  const defaultFallbackProduct = products.find(
-    (product) =>
-      product.status === "active" && Boolean(getProductPrimaryImage(product)),
-  );
-  const defaultPreviewImage =
-    storeSettings?.homeDefaultHeroImageUrl ||
-    (defaultFallbackProduct
-      ? getProductPrimaryImage(defaultFallbackProduct)
-      : "");
+  const defaultPreviewImage = storeSettings?.homeDefaultHeroImageUrl || "";
 
   function patchDefaultHero(patch: Partial<StoreSettings>) {
     setStoreSettings((current) =>
@@ -180,7 +172,7 @@ export function AdminHeroManager() {
     const response = await fetch("/api/admin/settings", {
       method: "PATCH",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(settings),
+      body: JSON.stringify(Object.fromEntries(Object.entries(settings).filter(([key]) => key.startsWith("homeDefaultHero")))),
     });
     const data = await response.json();
 
@@ -493,14 +485,14 @@ export function AdminHeroManager() {
       {storeSettings ? (
         <section className="mt-5 overflow-hidden rounded-[22px] bg-white ring-1 ring-black/[.06]">
           <div className="grid gap-0 lg:grid-cols-[minmax(0,1.25fr)_minmax(300px,.75fr)]">
-            <div className="relative aspect-[16/9] min-h-[220px] overflow-hidden bg-[#e9e7e2] lg:aspect-auto lg:min-h-[300px]">
+            <div className="relative aspect-[16/9] overflow-hidden bg-[#e9e7e2]">
               {defaultPreviewImage ? (
                 storeSettings.homeDefaultHeroImageUrl.startsWith("blob:") ? (
                   <img
                     src={storeSettings.homeDefaultHeroImageUrl}
                     alt=""
                     className={
-                      "h-full w-full object-cover " +
+                      "h-full w-full object-contain " +
                       (storeSettings.homeDefaultHeroImagePosition === "left"
                         ? "object-left"
                         : storeSettings.homeDefaultHeroImagePosition === "right"
@@ -515,7 +507,7 @@ export function AdminHeroManager() {
                     fill
                     sizes="(max-width: 1024px) 100vw, 65vw"
                     className={
-                      "object-cover " +
+                      "object-contain " +
                       (storeSettings.homeDefaultHeroImagePosition === "left"
                         ? "object-left"
                         : storeSettings.homeDefaultHeroImagePosition === "right"
@@ -531,7 +523,7 @@ export function AdminHeroManager() {
                 <span className="text-[8px] font-bold uppercase tracking-[.14em] text-black/45">
                   {storeSettings.homeDefaultHeroLabel}
                 </span>
-                <strong className="mt-2 text-[clamp(28px,5vw,56px)] font-black uppercase leading-[.88] tracking-[-.055em]">
+                <strong className="mt-2 text-[clamp(28px,5vw,56px)] font-black whitespace-pre-line leading-[.88] tracking-[-.055em]">
                   {storeSettings.homeDefaultHeroTitle}
                 </strong>
                 <p className="mt-3 line-clamp-2 max-w-sm text-[9px] leading-4 text-black/50">
@@ -548,7 +540,7 @@ export function AdminHeroManager() {
               <div>
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className={labelClass}>Built-in hero</p>
+                    <p className={labelClass}>System hero</p>
                     <h2 className="mt-1 text-lg font-bold tracking-[-.025em]">
                       Default hero
                     </h2>
@@ -561,7 +553,7 @@ export function AdminHeroManager() {
                         : "bg-black/[.04] text-black/45")
                     }
                   >
-                    {storeSettings.homeDefaultHeroEnabled ? "Live" : "Off"}
+                    {storeSettings.homeDefaultHeroEnabled ? "LIVE" : "HIDDEN"}
                   </span>
                 </div>
 
@@ -577,12 +569,10 @@ export function AdminHeroManager() {
                   <strong className="mt-1 block text-[10px]">
                     {storeSettings.homeDefaultHeroImageUrl
                       ? "Custom hero image"
-                      : defaultFallbackProduct
-                        ? "Using first available product image"
-                        : "No image · light background"}
+                      : "No image · light background"}
                   </strong>
                   <span className="mt-1 block text-[8px] text-black/35">
-                    1920 × 1080 · 16:9
+                    1920 × 1080 · 16:9 HERO IMAGE
                   </span>
                 </div>
               </div>
@@ -591,6 +581,9 @@ export function AdminHeroManager() {
                 <button
                   type="button"
                   disabled={defaultSaving}
+                  role="switch"
+                  aria-checked={storeSettings.homeDefaultHeroEnabled}
+                  aria-label="Default hero enabled"
                   onClick={() => void toggleDefaultHero()}
                   className={
                     "min-h-11 rounded-xl px-3 text-[10px] font-bold disabled:opacity-50 " +
@@ -623,7 +616,7 @@ export function AdminHeroManager() {
 
       <div className="mt-5">
         <div className="mb-3">
-          <p className={labelClass}>Additional hero slides</p>
+          <p className={labelClass}>Custom hero slides</p>
           <p className="mt-1 text-[10px] text-black/40">
             These slides appear after the default hero when enabled.
           </p>
@@ -738,8 +731,12 @@ export function AdminHeroManager() {
                   />
                 </label>
                 <label>
+                  <span className={labelClass}>Brand</span>
+                  <input value={storeSettings.homeDefaultHeroBrand} onChange={(event) => patchDefaultHero({ homeDefaultHeroBrand: event.target.value })} className={inputClass} />
+                </label>
+                <label>
                   <span className={labelClass}>Title</span>
-                  <input
+                  <textarea
                     value={storeSettings.homeDefaultHeroTitle}
                     onChange={(event) =>
                       patchDefaultHero({
@@ -795,7 +792,7 @@ export function AdminHeroManager() {
                 <div>
                   <p className={labelClass}>Default hero image</p>
                   <p className="mt-1 text-[10px] text-black/45">
-                    Recommended 1920 × 1080. Uploads are normalized to 16:9.
+                    Recommended: 1920 × 1080 (16:9). Uploads preserve subject framing.
                   </p>
                 </div>
                 {defaultUploading ? (
@@ -812,7 +809,7 @@ export function AdminHeroManager() {
                       src={storeSettings.homeDefaultHeroImageUrl}
                       alt=""
                       className={
-                        "h-full w-full object-cover " +
+                        "h-full w-full object-contain " +
                         (storeSettings.homeDefaultHeroImagePosition === "left"
                           ? "object-left"
                           : storeSettings.homeDefaultHeroImagePosition === "right"
@@ -827,7 +824,7 @@ export function AdminHeroManager() {
                       fill
                       sizes="640px"
                       className={
-                        "object-cover " +
+                        "object-contain " +
                         (storeSettings.homeDefaultHeroImagePosition === "left"
                           ? "object-left"
                           : storeSettings.homeDefaultHeroImagePosition === "right"
@@ -869,7 +866,7 @@ export function AdminHeroManager() {
                   }
                   className="min-h-11 rounded-xl border border-black/10 px-3 text-[10px] font-bold disabled:opacity-35"
                 >
-                  Use product fallback
+                  Remove image
                 </button>
               </div>
 
@@ -1200,7 +1197,7 @@ export function AdminHeroManager() {
                     src={draft.imageUrl}
                     alt=""
                     className={
-                      "h-full w-full object-cover " +
+                      "h-full w-full object-contain " +
                       (draft.imagePosition === "left"
                         ? "object-left"
                         : draft.imagePosition === "right"
@@ -1215,7 +1212,7 @@ export function AdminHeroManager() {
                     fill
                     sizes="640px"
                     className={
-                      "object-cover " +
+                      "object-contain " +
                       (draft.imagePosition === "left"
                         ? "object-left"
                         : draft.imagePosition === "right"
@@ -1388,7 +1385,7 @@ export function AdminHeroManager() {
                     fill
                     sizes="420px"
                     className={
-                      "object-cover " +
+                      "object-contain " +
                       (slide.imagePosition === "left"
                         ? "object-left"
                         : slide.imagePosition === "right"

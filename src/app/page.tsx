@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { ProductActions } from "@/components/ProductActions";

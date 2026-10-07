@@ -1,17 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { SiteChrome } from "@/components/SiteChrome";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 import { store } from "@/config/store";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
-
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +28,7 @@ export default async function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body
-        className={`${inter.variable} min-h-screen bg-white text-kleid-ink antialiased`}
+        className="min-h-screen bg-[#fafafa] text-kleid-ink antialiased"
       >
         <SiteChrome products={products} settings={settings}>
           {children}

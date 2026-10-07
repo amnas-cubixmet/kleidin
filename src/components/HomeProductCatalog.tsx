@@ -15,17 +15,18 @@ export function HomeProductCatalog({
   title: string;
 }) {
   const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("All");
 
   const activeProducts = useMemo(
-    () => products.filter((product) => product.status === "active"),
+    () => products.filter((product) => product.status !== "draft"),
     [products],
   );
 
   const filteredProducts = useMemo(() => {
     const term = query.trim().toLowerCase();
-    if (!term) return activeProducts;
-
     return activeProducts.filter((product) =>
+      (category === "All" || product.category === category) &&
+      (!term ||
       [
         product.name,
         product.sku,
@@ -35,12 +36,12 @@ export function HomeProductCatalog({
       ]
         .join(" ")
         .toLowerCase()
-        .includes(term),
+        .includes(term)),
     );
-  }, [activeProducts, query]);
+  }, [activeProducts, query, category]);
 
   return (
-    <section className="ref-shell ref-arrivals" aria-label="Product catalog">
+    <section id="shop-products" data-shop-reveal className="ref-shell ref-arrivals" aria-label="Product catalog">
       <div className="ref-arrivals-head">
         <div>
           <p className="ref-kicker">{eyebrow}</p>
@@ -79,6 +80,11 @@ export function HomeProductCatalog({
         </span>
       </div>
 
+      <div className="shop-category-filters" aria-label="Filter products by category">
+        {["All", ...Array.from(new Set(activeProducts.map((product) => product.category).filter(Boolean)))].map((item) => (
+          <button key={item} type="button" aria-pressed={category === item} onClick={() => setCategory(item)}>{item}</button>
+        ))}
+      </div>
       {filteredProducts.length ? (
         <div className="ref-arrival-grid mt-5">
           {filteredProducts.map((product) => (
@@ -87,9 +93,9 @@ export function HomeProductCatalog({
         </div>
       ) : (
         <div className="mt-5 rounded-[16px] bg-[#f5f5f5] px-5 py-10 text-center">
-          <strong className="text-[12px] font-semibold">No products found</strong>
+          <strong className="text-[12px] font-semibold">{activeProducts.length ? "No products found" : "The collection is coming soon"}</strong>
           <p className="mt-1.5 text-[10px] text-black/45">
-            Try another product name, category, colour or size.
+            {activeProducts.length ? "Try another product name, category, colour or size." : "Check back soon for our latest pieces."}
           </p>
         </div>
       )}

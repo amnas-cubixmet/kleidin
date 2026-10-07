@@ -15,6 +15,7 @@ export type StoreSettings = {
   announcementButtonHref: string;
   homeDefaultHeroEnabled: boolean;
   homeDefaultHeroLabel: string;
+  homeDefaultHeroBrand: string;
   homeDefaultHeroTitle: string;
   homeDefaultHeroSubtitle: string;
   homeDefaultHeroButtonLabel: string;

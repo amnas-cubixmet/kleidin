@@ -118,6 +118,7 @@ export function ProductCard({ product }: { product: Product }) {
         <Link
           href={`/products/${product.slug}`}
           className="product-card-image-link"
+          data-product-transition
           aria-label={product.name}
         >
           {currentImage ? (
@@ -166,7 +167,7 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
 
       <div className="product-card-info product-card-info-refined">
-        <Link href={`/products/${product.slug}`} className="product-name">
+        <Link href={`/products/${product.slug}`} className="product-name" data-product-transition>
           {product.name}
         </Link>
 

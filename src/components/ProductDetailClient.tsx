@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Product } from "@/types/product";
 import { formatPrice, getProductWhatsappUrl } from "@/lib/format";
 import { getProductOfferPrice, isProductOfferActive } from "@/lib/product-offers";
 import { getProductGalleryForColor } from "@/lib/product-images";
+import galleryStyles from "@/components/ProductGallery.module.css";
 
 export function ProductDetailClient({
   product,
@@ -22,6 +23,8 @@ export function ProductDetailClient({
   );
   const [size, setSize] = useState(product.sizes[0] ?? "One size");
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [galleryPaused, setGalleryPaused] = useState(false);
+  const touchStart = useRef<number | null>(null);
 
   const selectedVariant =
     variants.find((variant) => variant.name === selectedColor) ?? variants[0];
@@ -41,6 +44,19 @@ export function ProductDetailClient({
     setActiveImageIndex(0);
   }, [selectedColor]);
 
+  useEffect(() => {
+    if (variantImages.length <= 1 || galleryPaused) return;
+    const timer = window.setInterval(() => {
+      if (document.hidden || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      setActiveImageIndex((index) => (index + 1) % variantImages.length);
+    }, 3800);
+    return () => window.clearInterval(timer);
+  }, [variantImages.length, selectedColor, galleryPaused]);
+
+  function moveImage(direction: number) {
+    if (variantImages.length) setActiveImageIndex((index) => (index + direction + variantImages.length) % variantImages.length);
+  }
+
   const whatsappUrl = getProductWhatsappUrl(
     product,
     whatsappNumber,
@@ -50,16 +66,30 @@ export function ProductDetailClient({
 
   return (
     <>
-      <div className="product-detail-visual">
+      <div className={"product-detail-visual " + galleryStyles.gallery}
+        data-product-image-target
+        onPointerEnter={(event) => { if (event.pointerType === "mouse") setGalleryPaused(true); }}
+        onPointerLeave={() => setGalleryPaused(false)}
+        onFocusCapture={() => setGalleryPaused(true)}
+        onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setGalleryPaused(false); }}
+        onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; setGalleryPaused(true); }}
+        onTouchEnd={(event) => {
+          const end = event.changedTouches[0]?.clientX;
+          if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 40) moveImage(end < touchStart.current ? 1 : -1);
+          touchStart.current = null;
+          setGalleryPaused(false);
+        }}
+        onTouchCancel={() => { touchStart.current = null; setGalleryPaused(false); }}
+      >
         {image ? (
           <Image
             key={image}
             src={image}
             alt={`${product.name} — ${selectedColor}`}
             fill
-            priority
+            preload={activeImageIndex === 0}
             sizes="(max-width: 980px) 100vw, 58vw"
-            className="product-detail-image"
+            className={"product-detail-image " + galleryStyles.image}
           />
         ) : (
           <span className="product-detail-empty">No product image</span>
@@ -70,6 +100,12 @@ export function ProductDetailClient({
         </div>
 
         {variantImages.length > 1 ? (
+          <>
+          <div className={galleryStyles.controls}>
+            <button type="button" onClick={() => moveImage(-1)} aria-label="Previous product image">←</button>
+            <span>{activeImageIndex + 1} / {variantImages.length}</span>
+            <button type="button" onClick={() => moveImage(1)} aria-label="Next product image">→</button>
+          </div>
           <div className="absolute bottom-4 left-4 right-4 z-[3] flex gap-2 overflow-x-auto rounded-2xl bg-white/85 p-2 backdrop-blur-md">
             {variantImages.map((url, index) => (
               <button
@@ -83,6 +119,7 @@ export function ProductDetailClient({
                     : "border-black/10")
                 }
                 aria-label={"Show image " + (index + 1)}
+                aria-pressed={index === activeImageIndex}
               >
                 <Image
                   src={url}
@@ -94,10 +131,11 @@ export function ProductDetailClient({
               </button>
             ))}
           </div>
+          </>
         ) : null}
       </div>
 
-      <div className="product-info">
+      <div className={"product-info " + galleryStyles.info}>
         <div className="product-info-inner">
           <div className="product-detail-heading">
             <div>
@@ -223,9 +261,8 @@ export function ProductDetailClient({
             {product.featuredImage ? (
               <span>Live camera try-on available</span>
             ) : null}
-            <span>Colour-specific product image</span>
-            <span>Selected colour + size sent to WhatsApp</span>
-            <span>Variant stock supported</span>
+            <span>Your colour and size are included in your WhatsApp message.</span>
+            <span>Send the message to confirm availability and delivery with us.</span>
           </div>
         </div>
       </div>

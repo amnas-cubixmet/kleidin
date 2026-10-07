@@ -7,6 +7,7 @@ export type HeroSlideConfig = {
   kind: HeroSlideKind;
   productId?: string | null;
   label: string;
+  brand?: string;
   title: string;
   subtitle: string;
   button: string;
