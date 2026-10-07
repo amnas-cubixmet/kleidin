@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import Link from "next/link";
 import type { Product } from "@/types/product";
 
 function getProductImage(product: Product) {
@@ -28,6 +29,7 @@ type SliderItem = {
   backgroundImage: string;
   modelImage: string;
   category: string;
+  description: string;
   price: number;
   demo: boolean;
 };
@@ -63,23 +65,23 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         backgroundImage: pair.background,
         modelImage: pair.model,
         category: "T-Shirts",
+        description: "Comfortable everyday essentials, made for repeat wear.",
         price: 799,
         demo: true,
       }));
     }
 
-    return activeProducts.map((product, index) => {
-      const localPair = localPairs[index];
-
+    return activeProducts.map((product) => {
       return {
         id: product.id,
         name: product.name,
         slug: product.slug,
-        image: localPair?.foreground || getProductImage(product),
+        image: getProductImage(product),
         backgroundImage:
-          localPair?.background || product.showcaseBackgroundImage || "",
-        modelImage: localPair?.model || "",
+          product.showcaseBackgroundImage || "/images/bg.png",
+        modelImage: "",
         category: product.category,
+        description: product.description,
         price: product.price,
         demo: false,
       };
@@ -275,6 +277,16 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           <div className="pointer-events-none absolute inset-0 z-[11] bg-black/10" />
         </>
       ) : null}
+
+      {!active.modelImage ? <div key={"product-" + active.id} className="selected-product-image pointer-events-none absolute bottom-[210px] right-4 z-20 h-[30svh] w-[60%] sm:bottom-[220px] sm:right-10 sm:h-[55svh] sm:w-[44%]"><img src={active.image} alt={active.name} className="h-full w-full object-contain" /></div> : null}
+
+      <div key={"details-" + active.id} className="selected-product-details absolute left-5 right-5 top-[10%] z-30 max-w-[560px] rounded-sm bg-white/85 p-5 text-[#111] backdrop-blur-sm sm:left-10 sm:right-auto sm:top-[15%] sm:p-8 lg:left-16">
+        <p className="mb-3 text-[10px] font-semibold uppercase tracking-[.14em]">KLEID.IN / {active.category}</p>
+        <h1 className="text-[clamp(32px,5vw,68px)] font-semibold leading-[.95] tracking-[-.05em]">{active.name}</h1>
+        <p className="mt-4 max-w-[420px] text-sm leading-6">{active.description}</p>
+        <p className="mt-4 text-lg font-semibold">₹{active.price.toLocaleString("en-IN")}</p>
+        <Link href={active.demo ? "/#all-products" : `/products/${active.slug}`} onTouchStart={(event) => event.stopPropagation()} onClick={(event) => event.stopPropagation()} className="selected-product-button mt-5 inline-flex min-h-11 items-center bg-[#111] px-6 text-xs font-semibold !text-white">{active.demo ? "Explore products" : "View product"} <span className="ml-4">↗</span></Link>
+      </div>
 
       <div className="absolute inset-x-0 bottom-[76px] z-40 flex h-[112px] items-center sm:bottom-[82px] sm:h-[122px] lg:bottom-[86px] lg:h-[132px]">
         <div

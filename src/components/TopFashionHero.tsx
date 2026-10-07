@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Product } from "@/types/product";
 import type {
   HeroCtaStyle,
@@ -70,10 +70,13 @@ function isScheduledNow(slide: HeroSlideConfig, now: number) {
 export function TopFashionHero({
   products,
   heroSlides,
+  fullscreen = false,
 }: {
   products: Product[];
   heroSlides: HeroSlideConfig[];
+  fullscreen?: boolean;
 }) {
+  const touchStart = useRef<number | null>(null);
   const [index, setIndex] = useState(0);
   const [scheduleNow, setScheduleNow] = useState(0);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
@@ -206,9 +209,9 @@ export function TopFashionHero({
         : "border border-black/10 bg-white !text-[#111111] hover:bg-[#f7f7f7]");
 
   return (
-    <section data-shop-reveal aria-label="Featured collections" aria-roledescription="carousel" className="w-full overflow-hidden">
-      <div className="relative flex w-full flex-col overflow-hidden bg-[#fafafa] md:aspect-[16/9] md:min-h-[580px] text-[#111111]">
-        <div className="relative order-2 aspect-[4/5] w-full overflow-hidden md:absolute md:inset-y-0 md:right-0 md:aspect-auto md:h-full md:w-1/2">
+    <section data-shop-reveal aria-label="Featured collections" aria-roledescription="carousel" className="w-full overflow-hidden" onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const start = touchStart.current; touchStart.current = null; const end = event.changedTouches[0]?.clientX; if (start !== null && end !== undefined && Math.abs(end - start) > 60) setIndex((value) => (value + (end < start ? 1 : -1) + slideCount) % slideCount); }}>
+      <div className={fullscreen ? "relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-[#111] text-white" : "relative flex w-full flex-col overflow-hidden bg-[#fafafa] md:aspect-[16/9] md:min-h-[580px] text-[#111111]"}>
+        <div className={fullscreen ? "absolute inset-0 overflow-hidden" : "relative order-2 aspect-[4/5] w-full overflow-hidden md:absolute md:inset-y-0 md:right-0 md:aspect-auto md:h-full md:w-1/2"}>
           {slides.map((slide, slideIndex) => (
             <div
               key={slide.id}
@@ -226,8 +229,8 @@ export function TopFashionHero({
                     alt={slide.title}
                     fill
                     preload={slideIndex === 0}
-                    sizes="(max-width: 767px) 100vw, 50vw"
-                    className={`object-contain ${
+                    sizes={fullscreen ? "100vw" : "(max-width: 767px) 100vw, 50vw"}
+                    className={`${fullscreen ? "object-cover" : "object-contain"} ${
                       slide.imagePosition === "left"
                         ? "object-left"
                         : slide.imagePosition === "right"
@@ -242,17 +245,17 @@ export function TopFashionHero({
             </div>
           ))}
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-t from-[#fafafa] via-[#fafafa]/35 to-transparent md:hidden" />
-          <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[14%] bg-gradient-to-r from-[#fafafa] to-transparent md:block" />
+          <div className={`${fullscreen ? "hidden" : ""} pointer-events-none absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-t from-[#fafafa] via-[#fafafa]/35 to-transparent md:hidden`} />
+          {fullscreen ? <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-black/10" /> : <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[14%] bg-gradient-to-r from-[#fafafa] to-transparent md:block" />}
         </div>
 
-        <div className="relative z-10 order-1 flex min-w-0 flex-col px-5 pb-6 pt-8 md:h-full md:w-1/2 md:px-12 md:py-9 lg:px-16 lg:py-12">
+        <div className={fullscreen ? "relative z-10 flex min-h-[100svh] flex-col justify-center px-6 py-20 sm:px-12 lg:px-20" : "relative z-10 order-1 flex min-w-0 flex-col px-5 pb-6 pt-8 md:h-full md:w-1/2 md:px-12 md:py-9 lg:px-16 lg:py-12"}>
           <div className="flex flex-1 items-center">
-            <div className="w-full max-w-[560px] py-8 md:max-w-[560px] md:py-0">
+            <div key={current.id} className="offer-slide-copy w-full max-w-[560px] py-8 md:max-w-[560px] md:py-0">
               {current.label ? <p className="mb-5 text-xs font-semibold tracking-[.12em]">{current.label}</p> : null}
               {current.brand ? <p className="mb-4 text-lg font-bold">{current.brand}</p> : null}
               {current.discountText ? (
-                <strong className="mb-3 block text-[10px] font-bold uppercase tracking-[.12em] text-[#001cac] md:text-[11px]">
+                <strong className="mb-3 block text-[10px] font-bold uppercase tracking-[.12em] text-inherit md:text-[11px]">
                   {current.discountText}
                 </strong>
               ) : null}
@@ -268,7 +271,7 @@ export function TopFashionHero({
               </h1>
 
               {current.subtitle ? (
-                <p className="mt-5 max-w-[360px] text-sm leading-[1.65] text-black/70 md:max-w-[390px] md:text-sm md:leading-[1.7]">
+                <p className={`mt-5 max-w-[360px] text-sm leading-[1.65] ${fullscreen ? "text-white/80" : "text-black/70"} md:max-w-[390px] md:text-sm md:leading-[1.7]`}>
                   {current.subtitle}
                 </p>
               ) : null}
@@ -331,7 +334,7 @@ export function TopFashionHero({
 
           <div className="flex items-center justify-between gap-4 pt-2">
             <div className="flex min-w-0 items-center gap-2.5">
-              <span className="shrink-0 text-[8px] font-bold text-black/50">
+              <span className={`shrink-0 text-[8px] font-bold ${fullscreen ? "text-white/70" : "text-black/50"}`}>
                 {String(index + 1).padStart(2, "0")} /{" "}
                 {String(slideCount).padStart(2, "0")}
               </span>
@@ -344,22 +347,26 @@ export function TopFashionHero({
                     aria-label={`Show ${slide.title} slide`}
                     aria-pressed={slideIndex === index}
                     onClick={() => setIndex(slideIndex)}
-                    className={`min-h-6 shrink-0 border-y-[10px] border-[#fafafa] transition-all duration-300 ${
+                    className={`min-h-6 shrink-0 border-y-[10px] ${fullscreen ? "border-transparent" : "border-[#fafafa]"} transition-all duration-300 ${
                       slideIndex === index
-                        ? "w-8 bg-black md:w-10"
-                        : "w-3 bg-black/20 hover:bg-black/40"
+                        ? `w-8 ${fullscreen ? "bg-white" : "bg-black"} md:w-10`
+                        : `w-3 ${fullscreen ? "bg-white/35 hover:bg-white/60" : "bg-black/20 hover:bg-black/40"}`
                     }`}
                   />
                 ))}
               </div>
             </div>
 
-            <span className="hidden text-[8px] font-bold uppercase tracking-[.12em] text-black/30 sm:block">
+            <span className={`hidden text-[8px] font-bold uppercase tracking-[.12em] ${fullscreen ? "text-white/60" : "text-black/30"} sm:block`}>
               Daily essentials
             </span>
           </div>
         </div>
       </div>
+      <style jsx>{`
+        .offer-slide-copy { animation: offerCopyIn 700ms cubic-bezier(.22,1,.36,1) both; }
+        @keyframes offerCopyIn { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+      `}</style>
     </section>
   );
 }

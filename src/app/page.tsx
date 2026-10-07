@@ -1,3 +1,6 @@
+import { TopFashionHero } from "@/components/TopFashionHero";
+import { getActiveHeroSlides } from "@/lib/hero";
+import type { HeroSlideConfig } from "@/data/hero-slides";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { FeaturedProductMotion } from "@/components/FeaturedProductMotion";
 import { HomeAboutSection } from "@/components/HomeAboutSection";
@@ -34,9 +37,10 @@ function productSlugFromUrl(value: string) {
 }
 
 export default async function Home() {
-  const [products, settings] = await Promise.all([
+  const [products, settings, heroSlides] = await Promise.all([
     getCatalogProducts(),
     getStoreSettings(),
+    getActiveHeroSlides(),
   ]);
 
   const activeProducts = products
@@ -71,12 +75,21 @@ export default async function Home() {
     ...activeProducts.filter((product) => !linkedIds.has(product.id)),
   ].slice(0, 20);
 
+  const customOffers = heroSlides.filter((slide) => slide.kind !== "product").sort((a, b) => a.order - b.order).slice(0, 5);
+  const offerSlides: HeroSlideConfig[] = customOffers.length ? customOffers : [{
+    id: "offer-preview", kind: "offer", label: "KLEID.IN / SPECIAL OFFER", title: "EVERYDAY STYLE.\n20% OFF.",
+    subtitle: "Explore our everyday essentials.", button: "Explore products", href: "/#all-products",
+    badge: "20% OFF", discountText: "20% OFF", imageUrl: "/images/bg.png", enabled: true, order: 0,
+  }];
+
   const mostLoved = products.find(
     (product) => product.spotlight && product.status === "active",
   );
   return (
     <div className="reference-home">
       <AutoOutfitHero products={showcaseProducts} />
+
+      <TopFashionHero products={activeProducts} heroSlides={offerSlides} fullscreen />
 
       <FeaturedProductMotion />
 
