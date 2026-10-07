@@ -81,7 +81,7 @@ export default async function Home() {
 
       <HomeAboutSection />
 
-      <HomeAllProductsSection products={activeProducts} />
+      <HomeAllProductsSection />
 
       <HomeSpotlightSection
         product={mostLoved}
