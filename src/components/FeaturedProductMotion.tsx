@@ -28,23 +28,25 @@ export function FeaturedProductMotion({
 }: {
   products: Product[];
 }) {
-  const items = useMemo(
-    () =>
-      products
-        .filter(
-          (product) =>
-            product.status === "active" &&
-            product.featuredAnimationEnabled &&
-            Boolean(getMotionImage(product)),
-        )
-        .sort(
-          (a, b) =>
-            (a.animationSortOrder ?? 100) -
-            (b.animationSortOrder ?? 100),
-        )
-        .slice(0, 8),
-    [products],
-  );
+  const items = useMemo(() => {
+    const activeProducts = products
+      .filter(
+        (product) =>
+          product.status === "active" && Boolean(getMotionImage(product)),
+      )
+      .sort(
+        (a, b) =>
+          (a.animationSortOrder ?? 100) -
+          (b.animationSortOrder ?? 100),
+      );
+
+    const enabledProducts = activeProducts.filter(
+      (product) => product.featuredAnimationEnabled,
+    );
+
+    return (enabledProducts.length ? enabledProducts : activeProducts)
+      .slice(0, 8);
+  }, [products]);
 
   const [index, setIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
