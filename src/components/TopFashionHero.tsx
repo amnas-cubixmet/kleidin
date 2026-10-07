@@ -166,10 +166,6 @@ export function TopFashionHero({
   useEffect(() => {
     if (slideCount <= 1) return;
 
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduceMotion) return;
 
     let timer = 0;
     const start = () => {
@@ -216,7 +212,7 @@ export function TopFashionHero({
           {slides.map((slide, slideIndex) => (
             <div
               key={slide.id}
-              className={`absolute inset-0 transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none ${
+              className={`absolute inset-0 transition-[opacity,transform] duration-700 ease-out ${
                 slideIndex === index
                   ? "scale-100 opacity-100"
                   : "pointer-events-none scale-[1.015] opacity-0"
@@ -348,7 +344,7 @@ export function TopFashionHero({
                     aria-label={`Show ${slide.title} slide`}
                     aria-pressed={slideIndex === index}
                     onClick={() => setIndex(slideIndex)}
-                    className={`min-h-6 shrink-0 border-y-[10px] border-[#fafafa] transition-all duration-300 motion-reduce:transition-none ${
+                    className={`min-h-6 shrink-0 border-y-[10px] border-[#fafafa] transition-all duration-300 ${
                       slideIndex === index
                         ? "w-8 bg-black md:w-10"
                         : "w-3 bg-black/20 hover:bg-black/40"

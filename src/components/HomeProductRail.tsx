@@ -13,7 +13,7 @@ export function HomeProductRail({ products }: { products: Product[] }) {
     const node = rail.current;
     if (!node) return;
     const end = node.scrollWidth - node.clientWidth;
-    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" as const : "smooth" as const;
+    const behavior = "smooth" as const;
     if (direction > 0 && node.scrollLeft >= end - 2) { node.scrollTo({ left: 0, behavior }); return; }
     if (direction < 0 && node.scrollLeft <= 2) { node.scrollTo({ left: end, behavior }); return; }
     const items = Array.from(node.children) as HTMLElement[];
@@ -26,7 +26,7 @@ export function HomeProductRail({ products }: { products: Product[] }) {
   useEffect(() => {
     if (paused || !playing || products.length <= 1) return;
     const timer = window.setInterval(() => {
-      if (document.hidden || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (document.hidden) return;
       const rect = rail.current?.getBoundingClientRect();
       if (rect && rect.top < innerHeight && rect.bottom > 0) move(1);
     }, 4200);

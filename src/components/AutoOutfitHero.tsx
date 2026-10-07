@@ -108,7 +108,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const reducedMotion = false;
   const railRef = useRef<HTMLDivElement | null>(null);
   const railInteractingRef = useRef(false);
   const railFrameRef = useRef<number | null>(null);
@@ -117,19 +117,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
   const active = items[activeIndex] ?? items[0];
 
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setReducedMotion(media.matches);
-    sync();
-
-    if (media.addEventListener) {
-      media.addEventListener("change", sync);
-      return () => media.removeEventListener("change", sync);
-    }
-
-    media.addListener(sync);
-    return () => media.removeListener(sync);
-  }, []);
 
   useEffect(() => {
     if (activeIndex < items.length) return;
@@ -451,15 +438,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           }
         }
 
-        @media (prefers-reduced-motion: reduce) {
-          .selected-background,
-          .selected-product-stage,
-          .selected-product-image,
-          .selected-product-details,
-          .selected-product-button {
-            animation: none !important;
-          }
-        }
+
       `}</style>
     </section>
   );
