@@ -1,30 +1,29 @@
 import Image from "next/image";
-
-export type HomeDemoProduct = {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-};
-
-function money(value: number) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+import Link from "next/link";
+import { formatPrice, getProductWhatsappUrl } from "@/lib/format";
+import type { Product } from "@/types/product";
 
 export function HomeProductGridCard({
   product,
+  whatsappNumber,
 }: {
-  product: HomeDemoProduct;
+  product: Product;
+  whatsappNumber: string;
 }) {
+  const whatsappHref = getProductWhatsappUrl(product, whatsappNumber);
+
   return (
-    <article className="group min-w-0">
+    <article className="group relative min-w-0">
+      <Link
+        href={"/products/" + product.slug}
+        className="absolute inset-0 z-10"
+        data-product-transition
+        aria-label={"View " + product.name}
+      />
+
       <div className="relative aspect-[4/5] overflow-hidden bg-[#f1f1ef]">
         <Image
-          src={product.image}
+          src={product.image || "/images/product-1.png"}
           alt={product.name}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
@@ -37,9 +36,23 @@ export function HomeProductGridCard({
           {product.name}
         </h3>
 
-        <p className="mt-1 text-[10px] font-medium text-black/52 sm:text-[11px]">
-          {money(product.price)}
-        </p>
+        <div className="mt-1 flex items-center justify-between gap-2">
+          <p className="m-0 text-[10px] font-medium text-black/52 sm:text-[11px]">
+            {formatPrice(product.price)}
+          </p>
+
+          {whatsappHref !== "#" ? (
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noreferrer"
+              className="relative z-20 inline-flex min-h-8 items-center justify-center rounded-full bg-[#001cac] px-3 text-[8px] font-semibold uppercase tracking-[.06em] text-white transition hover:opacity-90 sm:text-[9px]"
+              aria-label={"Order " + product.name + " on WhatsApp"}
+            >
+              WhatsApp
+            </a>
+          ) : null}
+        </div>
       </div>
     </article>
   );
