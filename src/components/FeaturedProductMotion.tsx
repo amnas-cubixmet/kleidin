@@ -1,19 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import type { Product } from "@/types/product";
+import { useEffect, useState } from "react";
 
-function getMotionImage(product: Product) {
-  return (
-    product.featuredImage ||
-    product.image ||
-    product.colorVariants?.find((variant) => variant.images?.length)
-      ?.images?.[0] ||
-    product.colorVariants?.find((variant) => variant.image)?.image ||
-    ""
-  );
-}
+type DemoFeaturedProduct = {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  price: number;
+  image: string;
+  href: string;
+};
+
+const demoProducts: DemoFeaturedProduct[] = [
+  {
+    id: "demo-product-1",
+    name: "Essential White Tee",
+    category: "T-Shirts",
+    description:
+      "A clean everyday essential with a balanced weight, relaxed structure and an easy fit built for repeat wear.",
+    price: 799,
+    image: "/images/product-1.png",
+    href: "/products",
+  },
+  {
+    id: "demo-product-2",
+    name: "Daily White Tee",
+    category: "T-Shirts",
+    description:
+      "Soft, minimal and versatile. Designed with a comfortable silhouette and a clean finish for everyday styling.",
+    price: 899,
+    image: "/images/product-2.png",
+    href: "/products",
+  },
+];
 
 function money(value: number) {
   return new Intl.NumberFormat("en-IN", {
@@ -23,30 +44,8 @@ function money(value: number) {
   }).format(value);
 }
 
-export function FeaturedProductMotion({
-  products,
-}: {
-  products: Product[];
-}) {
-  const items = useMemo(() => {
-    const activeProducts = products
-      .filter(
-        (product) =>
-          product.status === "active" && Boolean(getMotionImage(product)),
-      )
-      .sort(
-        (a, b) =>
-          (a.animationSortOrder ?? 100) -
-          (b.animationSortOrder ?? 100),
-      );
-
-    const enabledProducts = activeProducts.filter(
-      (product) => product.featuredAnimationEnabled,
-    );
-
-    return (enabledProducts.length ? enabledProducts : activeProducts)
-      .slice(0, 8);
-  }, [products]);
+export function FeaturedProductMotion() {
+  const items = demoProducts;
 
   const [index, setIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -78,7 +77,6 @@ export function FeaturedProductMotion({
   const current = items[index] ?? items[0];
   if (!current) return null;
 
-  const image = getMotionImage(current);
 
   return (
     <section
@@ -118,7 +116,7 @@ export function FeaturedProductMotion({
               </strong>
 
               <Link
-                href={"/products/" + current.slug}
+                href={current.href}
                 className="inline-flex min-h-10 items-center justify-center border border-black/15 bg-white/60 px-5 text-[9px] font-semibold uppercase tracking-[.08em] text-[#111] transition hover:bg-white"
               >
                 View product
@@ -154,7 +152,7 @@ export function FeaturedProductMotion({
           >
             <div className="absolute inset-[8%] rounded-full bg-black/[.025] blur-3xl" />
             <img
-              src={image}
+              src={current.image}
               alt={current.name}
               draggable={false}
               className="relative z-10 max-h-[58svh] w-auto max-w-[92%] select-none object-contain drop-shadow-[0_28px_42px_rgba(0,0,0,.12)] lg:max-h-[68vh]"
