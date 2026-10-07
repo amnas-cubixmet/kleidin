@@ -25,6 +25,11 @@ export function SiteChrome({
   const isTryOn = pathname.startsWith("/try-on/");
   const [announcementDismissed, setAnnouncementDismissed] = useState(false);
   const [tryOnChromeHidden, setTryOnChromeHidden] = useState(isTryOn);
+  const showAnnouncement =
+    !tryOnChromeHidden &&
+    settings.announcementEnabled &&
+    !announcementDismissed;
+  const overlayHomeHeader = pathname === "/" && !showAnnouncement;
 
   useEffect(() => {
     if (isAdmin) return;
@@ -78,9 +83,7 @@ export function SiteChrome({
 
   return (
     <StoreSettingsProvider settings={settings}>
-      {!tryOnChromeHidden &&
-      settings.announcementEnabled &&
-      !announcementDismissed ? (
+      {showAnnouncement ? (
         <div className="relative flex min-h-9 w-full items-center justify-center gap-2 bg-[#111111] px-10 py-2 text-center text-[9px] font-bold uppercase tracking-[.14em] text-white">
           <span>{settings.announcementText}</span>
           {settings.announcementButtonLabel && settings.announcementButtonHref ? (
@@ -111,9 +114,19 @@ export function SiteChrome({
       <HomeShoppingMotion />
       <ProductImageTransition />
       {!tryOnChromeHidden ? (
-        <Header products={products} settings={settings} />
+        <Header
+          products={products}
+          settings={settings}
+          overlayHome={overlayHomeHeader}
+        />
       ) : null}
-      <main style={tryOnChromeHidden ? { paddingTop: 0 } : undefined}>
+      <main
+        style={
+          tryOnChromeHidden || overlayHomeHeader
+            ? { paddingTop: 0 }
+            : undefined
+        }
+      >
         {children}
       </main>
       <Footer settings={settings} />
