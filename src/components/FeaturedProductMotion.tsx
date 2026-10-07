@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type DemoFeaturedProduct = {
   id: string;
@@ -45,7 +45,9 @@ export function FeaturedProductMotion() {
   const items = demoProducts;
 
   const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const transitionTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -64,11 +66,33 @@ export function FeaturedProductMotion() {
   useEffect(() => {
     if (items.length <= 1 || reducedMotion) return;
 
-    const timer = window.setInterval(() => {
-      setIndex((current) => (current + 1) % items.length);
-    }, 4800);
+    const changeProduct = () => {
+      setVisible(false);
 
-    return () => window.clearInterval(timer);
+      if (transitionTimerRef.current !== null) {
+        window.clearTimeout(transitionTimerRef.current);
+      }
+
+      transitionTimerRef.current = window.setTimeout(() => {
+        setIndex((current) => (current + 1) % items.length);
+
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => setVisible(true));
+        });
+
+        transitionTimerRef.current = null;
+      }, 380);
+    };
+
+    const timer = window.setInterval(changeProduct, 5000);
+
+    return () => {
+      window.clearInterval(timer);
+      if (transitionTimerRef.current !== null) {
+        window.clearTimeout(transitionTimerRef.current);
+        transitionTimerRef.current = null;
+      }
+    };
   }, [items.length, reducedMotion]);
 
   const current = items[index] ?? items[0];
@@ -77,14 +101,14 @@ export function FeaturedProductMotion() {
 
   return (
     <section
-      className="relative overflow-hidden border-y border-black/10 bg-[#f7f5ef] text-[#111]"
+      className="relative overflow-hidden bg-[#f7f5ef] text-[#111]"
       aria-label="Featured products"
     >
       <div className="mx-auto grid min-h-[68svh] w-full max-w-[1440px] grid-cols-1 lg:min-h-[74dvh] lg:grid-cols-2">
         <div className="order-2 flex items-center px-5 py-12 sm:px-8 sm:py-16 lg:order-1 lg:px-14 lg:py-20 xl:px-20">
           <div
             key={"copy-" + current.id + "-" + index}
-            className="featured-motion-copy max-w-[560px]"
+            className={"featured-motion-copy max-w-[560px] " + (visible ? "is-visible" : "is-hidden")}
           >
             <h2 className="m-0 max-w-[520px] text-[clamp(38px,5.6vw,78px)] font-semibold leading-[.9] tracking-[-.06em]">
               {current.name}
@@ -113,7 +137,7 @@ export function FeaturedProductMotion() {
         <div className="order-1 flex min-h-[46svh] items-center justify-center overflow-hidden px-5 py-8 sm:min-h-[52svh] sm:px-8 lg:order-2 lg:min-h-0 lg:px-10 lg:py-12">
           <div
             key={"image-" + current.id + "-" + index}
-            className="featured-motion-image relative flex h-full min-h-[42svh] w-full items-center justify-center lg:min-h-[62vh]"
+            className={"featured-motion-image relative flex h-full min-h-[42svh] w-full items-center justify-center lg:min-h-[62vh] " + (visible ? "is-visible" : "is-hidden")}
           >
             <div className="absolute inset-[8%] rounded-full bg-black/[.025] blur-3xl" />
             <img
@@ -127,66 +151,61 @@ export function FeaturedProductMotion() {
       </div>
 
       <style jsx>{`
+        .featured-motion-copy,
+        .featured-motion-image {
+          will-change: opacity, transform, filter;
+        }
+
         .featured-motion-copy {
-          animation: featuredCopyIn 760ms cubic-bezier(.16,1,.3,1) both;
+          transition:
+            opacity 380ms ease,
+            transform 720ms cubic-bezier(.16,1,.3,1),
+            filter 420ms ease;
         }
 
         .featured-motion-image {
-          animation: featuredImageIn 900ms cubic-bezier(.16,1,.3,1) both;
+          transition:
+            opacity 420ms ease,
+            transform 900ms cubic-bezier(.16,1,.3,1),
+            filter 460ms ease;
         }
 
-        @keyframes featuredCopyIn {
-          from {
-            opacity: 0;
-            transform: translateX(-56px);
-            filter: blur(4px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-            filter: blur(0);
-          }
+        .featured-motion-copy.is-visible,
+        .featured-motion-image.is-visible {
+          opacity: 1;
+          transform: translate3d(0, 0, 0) scale(1);
+          filter: blur(0);
         }
 
-        @keyframes featuredImageIn {
-          from {
-            opacity: 0;
-            transform: translateX(72px) scale(.96);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0) scale(1);
-          }
+        .featured-motion-copy.is-hidden {
+          opacity: 0;
+          transform: translate3d(-28px, 0, 0);
+          filter: blur(2px);
+        }
+
+        .featured-motion-image.is-hidden {
+          opacity: 0;
+          transform: translate3d(42px, 0, 0) scale(.985);
+          filter: blur(1.5px);
         }
 
         @media (max-width: 1023px) {
-          @keyframes featuredCopyIn {
-            from {
-              opacity: 0;
-              transform: translateY(24px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
+          .featured-motion-copy.is-hidden {
+            transform: translate3d(-18px, 0, 0);
           }
 
-          @keyframes featuredImageIn {
-            from {
-              opacity: 0;
-              transform: translateX(38px) scale(.97);
-            }
-            to {
-              opacity: 1;
-              transform: translateX(0) scale(1);
-            }
+          .featured-motion-image.is-hidden {
+            transform: translate3d(28px, 0, 0) scale(.99);
           }
         }
 
         @media (prefers-reduced-motion: reduce) {
           .featured-motion-copy,
           .featured-motion-image {
-            animation: none !important;
+            transition: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+            filter: none !important;
           }
         }
       `}</style>
