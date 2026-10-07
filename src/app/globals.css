@@ -17027,3 +17027,18 @@ select,
     margin-bottom: 0 !important;
   }
 }
+
+
+/* FINAL mobile navigation hidden */
+@media (max-width: 640px) {
+  .site-header,
+  .mobile-compact-card,
+  .search-panel {
+    display: none !important;
+  }
+
+  main {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+}
