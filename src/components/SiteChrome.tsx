@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { ProductImageTransition } from "@/components/ProductImageTransition";
 import { StoreSettingsProvider } from "@/components/StoreSettingsContext";
 import type { Product } from "@/types/product";
 import type { StoreSettings } from "@/types/commerce";
