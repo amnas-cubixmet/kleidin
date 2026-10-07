@@ -107,25 +107,6 @@ export function FeaturedProductMotion() {
               </Link>
             </div>
 
-            {items.length > 1 ? (
-              <div className="mt-10 flex items-center gap-1.5">
-                {items.map((product, productIndex) => (
-                  <button
-                    key={product.id}
-                    type="button"
-                    aria-label={"Show " + product.name}
-                    aria-current={productIndex === index ? "true" : undefined}
-                    onClick={() => setIndex(productIndex)}
-                    className={
-                      "h-[3px] transition-all duration-300 " +
-                      (productIndex === index
-                        ? "w-9 bg-black"
-                        : "w-4 bg-black/18 hover:bg-black/35")
-                    }
-                  />
-                ))}
-              </div>
-            ) : null}
           </div>
         </div>
 
