@@ -7,7 +7,7 @@ export function HomeAboutSection() {
   ];
 
   return (
-    <section className="border-y border-black/10 bg-[#fafafa] px-5 py-20 text-[#111111] sm:px-8 sm:py-24 lg:px-12 lg:py-28">
+    <section className="bg-[#fafafa] px-5 py-20 text-[#111111] sm:px-8 sm:py-24 lg:px-12 lg:py-28">
       <div className="mx-auto grid w-full max-w-[1280px] gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">
         <div>
           <p className="m-0 text-[9px] font-semibold uppercase tracking-[.16em] text-black/45">
@@ -26,7 +26,7 @@ export function HomeAboutSection() {
             designed to be worn often and styled without effort.
           </p>
 
-          <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-black/10 pt-7 sm:grid-cols-4">
+          <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8 pt-2 sm:grid-cols-4">
             {details.map(([label, value]) => (
               <div key={label}>
                 <span className="block text-[8px] font-semibold uppercase tracking-[.12em] text-black/35">
