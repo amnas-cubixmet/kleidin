@@ -17029,16 +17029,24 @@ select,
 }
 
 
-/* FINAL mobile navigation hidden */
+/* FINAL mobile navigation visible — solid white */
 @media (max-width: 640px) {
-  .site-header,
-  .mobile-compact-card,
-  .search-panel {
-    display: none !important;
+  .site-header {
+    display: grid !important;
+    background: #ffffff !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(17, 17, 17, .08) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
-  main {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
+  .site-header .brand,
+  .site-header .icon-button {
+    color: #111111 !important;
+  }
+
+  .site-header .menu-button {
+    color: #001cac !important;
   }
 }
