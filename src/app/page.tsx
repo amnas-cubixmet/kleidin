@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
+import { FeaturedProductMotion } from "@/components/FeaturedProductMotion";
 import { ProductActions } from "@/components/ProductActions";
 import { formatPrice } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
@@ -81,6 +82,8 @@ export default async function Home() {
   return (
     <div className="reference-home">
       <AutoOutfitHero products={showcaseProducts} />
+
+      <FeaturedProductMotion products={activeProducts} />
 
       <section className="border-y border-black/10 bg-[#fafafa] px-5 py-20 text-[#111111] sm:px-8 sm:py-24 lg:px-12 lg:py-28">
         <div className="mx-auto grid w-full max-w-[1280px] gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">
