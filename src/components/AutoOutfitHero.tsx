@@ -268,7 +268,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                 src={active.modelImage}
                 alt=""
                 draggable={false}
-                className="h-full w-full select-none object-contain object-bottom sm:object-cover sm:object-top"
+                className="hero-model-image h-full w-full select-none object-contain object-bottom sm:object-cover sm:object-top"
               />
             </div>
           ) : null}
@@ -277,13 +277,13 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </>
       ) : null}
 
-      <div className="pointer-events-none absolute left-4 top-[22%] z-30 w-[44vw] max-w-[430px] text-white sm:left-8 sm:top-[20%] sm:w-auto lg:left-12 lg:top-1/2 lg:-translate-y-1/2">
+      <div className="pointer-events-none absolute left-4 top-[17%] z-30 w-[46vw] max-w-[430px] text-white sm:left-8 sm:top-[20%] sm:w-auto lg:left-12 lg:top-1/2 lg:-translate-y-1/2">
         <div className="hero-brand-copy">
           <p className="m-0 text-[8px] font-semibold uppercase tracking-[.18em] text-white/55 sm:text-[9px]">
             KLEID.IN / DAILY
           </p>
 
-          <h1 className="mt-2 max-w-[460px] text-[clamp(30px,10vw,40px)] font-semibold leading-[.88] tracking-[-.055em] sm:mt-4 sm:text-[clamp(42px,5.8vw,82px)]">
+          <h1 className="mt-2 max-w-[460px] text-[clamp(28px,9vw,36px)] font-semibold leading-[.88] tracking-[-.055em] sm:mt-4 sm:text-[clamp(42px,5.8vw,82px)]">
             ESSENTIALS
             <br />
             WITHOUT NOISE
@@ -291,16 +291,16 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </div>
       </div>
 
-      <div className="absolute right-3 top-[50%] z-30 w-[43vw] max-w-[300px] -translate-y-1/2 text-left text-white sm:right-[7vw] sm:top-1/2 sm:w-[min(52vw,340px)] sm:max-w-none lg:right-[9vw] lg:w-[360px]">
+      <div className="absolute right-3 top-[42%] z-30 w-[40vw] max-w-[300px] -translate-y-1/2 text-left text-white sm:right-[7vw] sm:top-1/2 sm:w-[min(52vw,340px)] sm:max-w-none lg:right-[9vw] lg:w-[360px]">
         <div
           key={"hero-meta-" + active.id + "-" + activeIndex}
-          className="hero-product-meta rounded-[14px] bg-black/20 px-3 py-3 backdrop-blur-[3px] sm:rounded-none sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none"
+          className="hero-product-meta sm:px-0 sm:py-0"
         >
           <p className="m-0 text-[8px] font-semibold uppercase tracking-[.18em] text-white/52 sm:text-[9px]">
             {active.category}
           </p>
 
-          <h2 className="mt-2 max-w-[320px] text-[clamp(18px,6vw,28px)] font-semibold leading-[.96] tracking-[-.04em] sm:mt-3 sm:text-[clamp(28px,3.5vw,48px)]">
+          <h2 className="mt-2 max-w-[260px] text-[clamp(17px,5.4vw,24px)] font-semibold leading-[.95] tracking-[-.04em] sm:mt-3 sm:max-w-[320px] sm:text-[clamp(28px,3.5vw,48px)]">
             {active.name}
           </h2>
 
@@ -310,14 +310,14 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
           <Link
             href={active.slug ? "/products/" + active.slug : "/#all-products"}
-            className="mt-4 inline-flex min-h-9 items-center justify-center rounded-full bg-white px-4 text-[7px] font-semibold uppercase tracking-[.09em] !text-[#111] transition duration-300 hover:scale-[1.02] hover:bg-white/92 sm:mt-7 sm:min-h-11 sm:px-6 sm:text-[9px]"
+            className="mt-4 inline-flex min-h-9 items-center justify-center rounded-full bg-white px-4 text-[7px] font-semibold uppercase tracking-[.09em] !text-[#111] shadow-[0_8px_20px_rgba(0,0,0,.10)] transition duration-300 hover:scale-[1.02] hover:bg-white/92 sm:mt-7 sm:min-h-11 sm:px-6 sm:text-[9px]"
           >
             View Product
           </Link>
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-[54px] z-40 flex h-[96px] items-center sm:bottom-[82px] sm:h-[122px] lg:bottom-[86px] lg:h-[132px]">
+      <div className="absolute inset-x-0 bottom-[14px] z-40 flex h-[84px] items-center sm:bottom-[82px] sm:h-[122px] lg:bottom-[86px] lg:h-[132px]">
         <div
           ref={railRef}
           onPointerDown={(event) => {
@@ -366,7 +366,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
                     selectProduct(product.baseIndex, true);
                   }}
                   className={
-                    "relative h-[74px] w-[23vw] shrink-0 overflow-hidden border border-white/30 bg-white/20 shadow-[0_8px_24px_rgba(0,0,0,.08)] backdrop-blur-md transition-[transform,border-color,background-color,opacity] duration-300 sm:h-[96px] sm:w-[15.25vw] lg:h-[104px] lg:w-[11.625vw] xl:h-[110px] " +
+                    "relative h-[68px] w-[22vw] shrink-0 overflow-hidden border border-white/30 bg-white/20 shadow-[0_8px_24px_rgba(0,0,0,.08)] backdrop-blur-md transition-[transform,border-color,background-color,opacity] duration-300 sm:h-[96px] sm:w-[15.25vw] lg:h-[104px] lg:w-[11.625vw] xl:h-[110px] " +
                     (selected
                       ? "scale-[1.08] border-2 border-[#b7ff35] bg-white/32 opacity-100 shadow-[0_12px_30px_rgba(0,0,0,.14)]"
                       : "opacity-88 hover:scale-[1.03] hover:bg-white/28 hover:opacity-100")
@@ -501,6 +501,16 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         }
 
         @media (max-width: 767px) {
+          .hero-model-image {
+            transform: scale(1.16);
+            transform-origin: center bottom;
+          }
+
+          .hero-product-meta {
+            text-shadow: 0 1px 16px rgba(0, 0, 0, .28);
+          }
+
+
           .hero-brand-copy {
             animation-duration: 680ms;
           }
