@@ -428,14 +428,6 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           </div>
         </aside>
 
-        <div className="absolute bottom-4 left-1/2 z-30 -translate-x-1/2 sm:bottom-5">
-          <Link
-            href={tryOnHref}
-            className="inline-flex min-h-9 items-center justify-center bg-[#b7ff35] px-5 text-[9px] font-bold text-[#111] shadow-[0_8px_22px_rgba(0,0,0,.12)] transition hover:scale-[1.02]"
-          >
-            Try with AI
-          </Link>
-        </div>
       </div>
 
       <div className="absolute inset-x-0 bottom-[76px] z-40 flex h-[112px] items-center sm:bottom-[82px] sm:h-[122px] lg:bottom-[86px] lg:h-[132px]">
