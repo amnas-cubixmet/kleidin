@@ -502,8 +502,13 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
 
         @media (max-width: 767px) {
           .hero-model-image {
-            transform: scale(.85);
-            transform-origin: center bottom;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: none !important;
+            object-fit: cover !important;
+            object-position: center 25% !important;
+            transform: none !important;
+            transform-origin: center center;
           }
 
           .hero-product-meta {
