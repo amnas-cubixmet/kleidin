@@ -199,6 +199,7 @@ export function TopFashionHero({
     current.href.startsWith("mailto:");
 
   const titleIsLong = current.title.length > 20;
+  const TitleTag = fullscreen ? "h2" : "h1";
 
   const ctaClass =
     "inline-flex min-h-[44px] items-center justify-center rounded-none px-5 text-[10px] font-bold tracking-[.08em] transition " +
@@ -225,12 +226,13 @@ export function TopFashionHero({
               {slide.image ? (
                 <div className="absolute inset-0">
                   <Image
+                    key={`${slide.id}-${slideIndex === index ? "active" : "idle"}`}
                     src={slide.image}
                     alt={slide.title}
                     fill
                     preload={slideIndex === 0}
                     sizes={fullscreen ? "100vw" : "(max-width: 767px) 100vw, 50vw"}
-                    className={`${fullscreen ? "object-cover" : "object-contain"} ${
+                    className={`${fullscreen ? "offer-background-image object-cover" : "object-contain"} ${
                       slide.imagePosition === "left"
                         ? "object-left"
                         : slide.imagePosition === "right"
@@ -260,7 +262,7 @@ export function TopFashionHero({
                 </strong>
               ) : null}
 
-              <h1
+              <TitleTag
                 className={`m-0 max-w-[560px] whitespace-pre-line break-words font-black leading-[0.88] tracking-[-0.06em] ${
                   titleIsLong
                     ? "text-[clamp(32px,8vw,48px)] md:text-[clamp(40px,4vw,64px)]"
@@ -268,7 +270,7 @@ export function TopFashionHero({
                 }`}
               >
                 {current.title}
-              </h1>
+              </TitleTag>
 
               {current.subtitle ? (
                 <p className={`mt-5 max-w-[360px] text-sm leading-[1.65] ${fullscreen ? "text-white/80" : "text-black/70"} md:max-w-[390px] md:text-sm md:leading-[1.7]`}>
@@ -365,7 +367,9 @@ export function TopFashionHero({
       </div>
       <style jsx>{`
         .offer-slide-copy { animation: offerCopyIn 700ms cubic-bezier(.22,1,.36,1) both; }
+        :global(.offer-background-image) { animation: offerBackgroundDrift 8s ease-out both; }
         @keyframes offerCopyIn { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes offerBackgroundDrift { from { transform: scale(1.06); } to { transform: scale(1); } }
       `}</style>
     </section>
   );
