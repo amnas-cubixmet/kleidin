@@ -16,16 +16,22 @@ export function Footer({ settings }: { settings: StoreSettings }) {
       <div className="footer-column">
         <span>Explore</span>
         <Link href="/">Home</Link>
-        <Link href="/products">Shop</Link>
-        <Link href="/about">About</Link>
-        <Link href="/contact">Contact</Link>
+        <Link href="/#all-products">Shop</Link>
+        <Link href="/#about">About</Link>
+        {whatsappHref ? (
+          <a href={whatsappHref} target="_blank" rel="noreferrer">Contact</a>
+        ) : null}
       </div>
 
       <div className="footer-column">
         <span>Help</span>
-        <Link href="/contact">Shipping</Link>
-        <Link href="/contact">Returns</Link>
-        <Link href="/contact">Size Guide</Link>
+        {whatsappHref ? (
+          <>
+            <a href={whatsappHref} target="_blank" rel="noreferrer">Shipping</a>
+            <a href={whatsappHref} target="_blank" rel="noreferrer">Returns</a>
+            <a href={whatsappHref} target="_blank" rel="noreferrer">Size Guide</a>
+          </>
+        ) : null}
       </div>
 
       <div className="footer-column footer-social-column">
