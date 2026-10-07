@@ -26,6 +26,7 @@ type SliderItem = {
   slug: string;
   image: string;
   backgroundImage: string;
+  modelImage: string;
   category: string;
   price: number;
   demo: boolean;
@@ -36,11 +37,13 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
     const localPairs = [
       {
         foreground: "/images/product-1.png",
-        background: "/images/bg-1.png",
+        model: "/images/man-1.png",
+        background: "/images/bg.png",
       },
       {
         foreground: "/images/product-2.png",
-        background: "/images/bg-2.png",
+        model: "/images/man-2.png",
+        background: "/images/bg.png",
       },
     ];
 
@@ -58,6 +61,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         slug: "",
         image: pair.foreground,
         backgroundImage: pair.background,
+        modelImage: pair.model,
         category: "T-Shirts",
         price: 799,
         demo: true,
@@ -74,6 +78,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         image: localPair?.foreground || getProductImage(product),
         backgroundImage:
           localPair?.background || product.showcaseBackgroundImage || "",
+        modelImage: localPair?.model || "",
         category: product.category,
         price: product.price,
         demo: false,
@@ -256,7 +261,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       {active.backgroundImage ? (
         <>
           <div
-            key={"background-" + active.id + "-" + activeIndex}
+            key={"background-" + active.backgroundImage}
             className="selected-background absolute inset-0"
           >
             <img
@@ -265,7 +270,22 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
               className="h-full w-full object-cover object-top"
             />
           </div>
-          <div className="pointer-events-none absolute inset-0 bg-black/10" />
+
+          {active.modelImage ? (
+            <div
+              key={"model-" + active.id + "-" + activeIndex}
+              className="selected-product-image pointer-events-none absolute inset-0 z-10"
+            >
+              <img
+                src={active.modelImage}
+                alt=""
+                draggable={false}
+                className="h-full w-full select-none object-cover object-top"
+              />
+            </div>
+          ) : null}
+
+          <div className="pointer-events-none absolute inset-0 z-[11] bg-black/10" />
         </>
       ) : null}
 
