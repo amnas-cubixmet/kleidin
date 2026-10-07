@@ -20,7 +20,7 @@ const demoProducts: DemoFeaturedProduct[] = [
       "A clean everyday essential with a balanced weight, relaxed structure and an easy fit built for repeat wear.",
     price: 799,
     image: "/images/product-1.png",
-    href: "/products",
+    href: "/#all-products",
   },
   {
     id: "demo-product-2",
@@ -29,7 +29,7 @@ const demoProducts: DemoFeaturedProduct[] = [
       "Soft, minimal and versatile. Designed with a comfortable silhouette and a clean finish for everyday styling.",
     price: 899,
     image: "/images/product-2.png",
-    href: "/products",
+    href: "/#all-products",
   },
 ];
 
