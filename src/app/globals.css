@@ -17131,3 +17131,26 @@ select,
     animation: none !important;
   }
 }
+
+
+/* Header transparent glass background */
+.site-header,
+.site-header.scrolled {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(16px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
+}
+
+@media (max-width: 980px) {
+  .site-header,
+  .site-header.scrolled {
+    background: rgba(255, 255, 255, 0.14) !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16) !important;
+    box-shadow: none !important;
+    backdrop-filter: blur(14px) saturate(120%) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(120%) !important;
+  }
+}
