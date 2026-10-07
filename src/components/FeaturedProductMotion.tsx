@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 type DemoFeaturedProduct = {
   id: string;
   name: string;
-  category: string;
   description: string;
   price: number;
   image: string;
@@ -17,7 +16,6 @@ const demoProducts: DemoFeaturedProduct[] = [
   {
     id: "demo-product-1",
     name: "Essential White Tee",
-    category: "T-Shirts",
     description:
       "A clean everyday essential with a balanced weight, relaxed structure and an easy fit built for repeat wear.",
     price: 799,
@@ -27,7 +25,6 @@ const demoProducts: DemoFeaturedProduct[] = [
   {
     id: "demo-product-2",
     name: "Daily White Tee",
-    category: "T-Shirts",
     description:
       "Soft, minimal and versatile. Designed with a comfortable silhouette and a clean finish for everyday styling.",
     price: 899,
@@ -89,19 +86,7 @@ export function FeaturedProductMotion() {
             key={"copy-" + current.id + "-" + index}
             className="featured-motion-copy max-w-[560px]"
           >
-            <div className="mb-5 flex items-center gap-5 text-[9px] font-semibold uppercase tracking-[.14em] text-black/42">
-              <span>Featured product</span>
-              <span className="text-black/30">
-                {String(index + 1).padStart(2, "0")} /{" "}
-                {String(items.length).padStart(2, "0")}
-              </span>
-            </div>
-
-            <p className="m-0 text-[10px] font-semibold uppercase tracking-[.14em] text-black/50">
-              {current.category}
-            </p>
-
-            <h2 className="mt-3 max-w-[520px] text-[clamp(38px,5.6vw,78px)] font-semibold leading-[.9] tracking-[-.06em]">
+            <h2 className="m-0 max-w-[520px] text-[clamp(38px,5.6vw,78px)] font-semibold leading-[.9] tracking-[-.06em]">
               {current.name}
             </h2>
 
