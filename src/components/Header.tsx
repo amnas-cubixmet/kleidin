@@ -364,24 +364,20 @@ export function Header({
             border: 0 !important;
             border-bottom: 1px solid rgba(255, 255, 255, .16) !important;
             border-radius: 0 !important;
-            background: linear-gradient(
-              180deg,
-              rgba(8, 8, 8, .42) 0%,
-              rgba(8, 8, 8, .20) 100%
-            ) !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, .08) !important;
-            backdrop-filter: blur(14px) saturate(120%) !important;
-            -webkit-backdrop-filter: blur(14px) saturate(120%) !important;
+            background: #ffffff !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
           }
 
           .site-header.site-header-home-overlay .brand {
-            color: #fff !important;
+            color: #111 !important;
             font-size: 18px !important;
             line-height: 1 !important;
           }
 
           .site-header.site-header-home-overlay .icon-button {
-            color: #fff !important;
+            color: #111 !important;
           }
 
           .site-header.site-header-home-overlay .menu-button {
