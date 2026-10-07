@@ -277,28 +277,40 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </>
       ) : null}
 
-      <div className="absolute left-5 top-[18%] z-30 max-w-[520px] text-white sm:left-8 sm:top-[20%] lg:left-12 lg:top-1/2 lg:-translate-y-1/2">
-        <div
-          key={"hero-info-" + active.id + "-" + activeIndex}
-          className="hero-product-info"
-        >
+      <div className="pointer-events-none absolute left-5 top-[17%] z-30 max-w-[430px] text-white sm:left-8 sm:top-[20%] lg:left-12 lg:top-1/2 lg:-translate-y-1/2">
+        <div className="hero-brand-copy">
           <p className="m-0 text-[8px] font-semibold uppercase tracking-[.18em] text-white/55 sm:text-[9px]">
-            KLEID.IN / {active.category}
+            KLEID.IN / DAILY
           </p>
 
-          <h1 className="mt-4 max-w-[500px] text-[clamp(42px,6.2vw,88px)] font-semibold leading-[.86] tracking-[-.065em]">
-            {active.name}
+          <h1 className="mt-4 max-w-[420px] text-[clamp(40px,5.4vw,76px)] font-semibold leading-[.86] tracking-[-.065em]">
+            ESSENTIALS
+            <br />
+            WITHOUT NOISE
           </h1>
+        </div>
+      </div>
 
-          <div className="mt-5 flex items-center gap-4 text-[10px] font-medium uppercase tracking-[.1em] text-white/68 sm:text-[11px]">
-            <span>{active.category}</span>
-            <span className="h-px w-7 bg-white/30" />
-            <span>₹{active.price.toLocaleString("en-IN")}</span>
-          </div>
+      <div className="absolute right-5 top-[44%] z-30 w-[min(78vw,360px)] -translate-y-1/2 text-right text-white sm:right-8 sm:top-1/2 lg:right-12 lg:w-[360px]">
+        <div
+          key={"hero-meta-" + active.id + "-" + activeIndex}
+          className="hero-product-meta"
+        >
+          <p className="m-0 text-[8px] font-semibold uppercase tracking-[.18em] text-white/52 sm:text-[9px]">
+            {active.category}
+          </p>
+
+          <h2 className="mt-3 text-[clamp(24px,3.4vw,46px)] font-semibold leading-[.94] tracking-[-.045em]">
+            {active.name}
+          </h2>
+
+          <p className="mt-4 text-[12px] font-semibold tracking-[-.01em] text-white/82 sm:text-[14px]">
+            ₹{active.price.toLocaleString("en-IN")}
+          </p>
 
           <Link
             href={active.slug ? "/products/" + active.slug : "/#all-products"}
-            className="mt-7 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-[9px] font-semibold uppercase tracking-[.1em] !text-[#111] transition duration-300 hover:scale-[1.02] hover:bg-white/92"
+            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-[9px] font-semibold uppercase tracking-[.1em] !text-[#111] transition duration-300 hover:scale-[1.02] hover:bg-white/92"
           >
             View Product
           </Link>
@@ -379,8 +391,13 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           will-change: transform, opacity;
         }
 
-        .hero-product-info {
-          animation: heroProductInfoIn 720ms cubic-bezier(.16,1,.3,1) both;
+        .hero-brand-copy {
+          animation: heroBrandCopyIn 820ms cubic-bezier(.16,1,.3,1) both;
+          will-change: transform, opacity, filter;
+        }
+
+        .hero-product-meta {
+          animation: heroProductMetaIn 760ms cubic-bezier(.16,1,.3,1) both;
           will-change: transform, opacity, filter;
         }
 
@@ -413,16 +430,29 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           }
         }
 
-        @keyframes heroProductInfoIn {
+        @keyframes heroBrandCopyIn {
           from {
             opacity: 0;
             filter: blur(3px);
-            transform: translateY(16px);
+            transform: translateX(-18px);
           }
           to {
             opacity: 1;
             filter: blur(0);
-            transform: translateY(0);
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes heroProductMetaIn {
+          from {
+            opacity: 0;
+            filter: blur(3px);
+            transform: translateX(18px);
+          }
+          to {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateX(0);
           }
         }
 
