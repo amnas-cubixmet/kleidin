@@ -9,10 +9,9 @@ import type { StoreSettings } from "@/types/commerce";
 
 const nav = [
   { href: "/", label: "Home" },
-  { href: "/products", label: "Shop" },
+  { href: "/#all-products", label: "Shop" },
+  { href: "/#about", label: "About" },
   { href: "/wholesale", label: "Dealers" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
 ];
 
 function SearchIcon() {
@@ -163,7 +162,7 @@ export function Header({
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
-    if (href === "/products") return pathname.startsWith("/products");
+    if (href.startsWith("/#")) return false;
     return pathname === href;
   }
 
