@@ -283,7 +283,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
             KLEID.IN / DAILY
           </p>
 
-          <h1 className="mt-3 max-w-[420px] text-[clamp(34px,5.4vw,76px)] font-semibold leading-[.88] tracking-[-.06em] sm:mt-4">
+          <h1 className="mt-3 max-w-[460px] text-[clamp(38px,5.8vw,82px)] font-semibold leading-[.86] tracking-[-.062em] sm:mt-4">
             ESSENTIALS
             <br />
             WITHOUT NOISE
@@ -291,7 +291,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </div>
       </div>
 
-      <div className="absolute right-3 top-[48%] z-30 w-[48vw] max-w-[300px] -translate-y-1/2 text-right text-white sm:right-8 sm:top-1/2 sm:w-[min(62vw,340px)] sm:max-w-none lg:right-12 lg:w-[360px]">
+      <div className="absolute right-[6vw] top-[48%] z-30 w-[46vw] max-w-[300px] -translate-y-1/2 text-left text-white sm:right-[7vw] sm:top-1/2 sm:w-[min(52vw,340px)] sm:max-w-none lg:right-[9vw] lg:w-[360px]">
         <div
           key={"hero-meta-" + active.id + "-" + activeIndex}
           className="hero-product-meta"
@@ -300,17 +300,17 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
             {active.category}
           </p>
 
-          <h2 className="mt-2 text-[clamp(20px,3.4vw,46px)] font-semibold leading-[.96] tracking-[-.04em] sm:mt-3">
+          <h2 className="mt-2 max-w-[320px] text-[clamp(22px,3.5vw,48px)] font-semibold leading-[.94] tracking-[-.045em] sm:mt-3">
             {active.name}
           </h2>
 
-          <p className="mt-3 text-[11px] font-semibold tracking-[-.01em] text-white/82 sm:mt-4 sm:text-[14px]">
+          <p className="mt-4 text-[12px] font-semibold tracking-[-.01em] text-white/86 sm:mt-5 sm:text-[14px]">
             ₹{active.price.toLocaleString("en-IN")}
           </p>
 
           <Link
             href={active.slug ? "/products/" + active.slug : "/#all-products"}
-            className="mt-4 inline-flex min-h-10 items-center justify-center rounded-full bg-white px-4 text-[8px] font-semibold uppercase tracking-[.1em] !text-[#111] transition duration-300 hover:scale-[1.02] hover:bg-white/92 sm:mt-6 sm:min-h-11 sm:px-6 sm:text-[9px]"
+            className="mt-5 inline-flex min-h-10 items-center justify-center rounded-full bg-white px-5 text-[8px] font-semibold uppercase tracking-[.1em] !text-[#111] transition duration-300 hover:scale-[1.02] hover:bg-white/92 sm:mt-7 sm:min-h-11 sm:px-6 sm:text-[9px]"
           >
             View Product
           </Link>
