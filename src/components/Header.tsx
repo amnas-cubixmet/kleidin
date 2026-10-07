@@ -50,9 +50,11 @@ function MenuIcon({ open }: { open: boolean }) {
 export function Header({
   products,
   settings,
+  overlayHome = false,
 }: {
   products: Product[];
   settings: StoreSettings;
+  overlayHome?: boolean;
 }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -168,7 +170,7 @@ export function Header({
 
   return (
     <>
-      <header className="site-header">
+      <header className={"site-header" + (overlayHome ? " site-header-home-overlay" : "")}>
         <Link
           href="/"
           className="brand"
@@ -346,6 +348,52 @@ export function Header({
           </div>
         </div>
       ) : null}
+
+      <style jsx global>{`
+        @media (max-width: 640px) {
+          .site-header.site-header-home-overlay {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 1000 !important;
+            width: 100% !important;
+            height: 56px !important;
+            margin: 0 !important;
+            padding: 0 12px 0 14px !important;
+            border: 0 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, .16) !important;
+            border-radius: 0 !important;
+            background: linear-gradient(
+              180deg,
+              rgba(255, 255, 255, .62) 0%,
+              rgba(255, 255, 255, .34) 100%
+            ) !important;
+            box-shadow: none !important;
+            backdrop-filter: blur(16px) saturate(130%) !important;
+            -webkit-backdrop-filter: blur(16px) saturate(130%) !important;
+          }
+
+          .site-header.site-header-home-overlay .brand {
+            font-size: 18px !important;
+            line-height: 1 !important;
+          }
+
+          .site-header.site-header-home-overlay .header-actions {
+            gap: 4px !important;
+          }
+
+          .site-header.site-header-home-overlay .icon-button,
+          .site-header.site-header-home-overlay .menu-button {
+            width: 34px !important;
+            height: 34px !important;
+          }
+
+          .site-header.site-header-home-overlay .header-whatsapp-button {
+            display: none !important;
+          }
+        }
+      `}</style>
     </>
   );
 }
