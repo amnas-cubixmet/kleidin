@@ -276,6 +276,25 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </>
       ) : null}
 
+      <div className="pointer-events-none absolute left-5 top-[18%] z-30 max-w-[520px] text-white sm:left-8 sm:top-[20%] lg:left-12 lg:top-1/2 lg:-translate-y-1/2">
+        <p className="m-0 text-[8px] font-semibold uppercase tracking-[.18em] text-white/55 sm:text-[9px]">
+          KLEID.IN / DAILY
+        </p>
+
+        <h1 className="mt-4 max-w-[460px] text-[clamp(42px,6.2vw,88px)] font-semibold leading-[.86] tracking-[-.065em]">
+          ESSENTIALS
+          <br />
+          WITHOUT NOISE
+        </h1>
+
+        <p
+          key={"hero-name-" + active.id + "-" + activeIndex}
+          className="hero-active-name mt-5 text-[10px] font-medium uppercase tracking-[.12em] text-white/68 sm:text-[11px]"
+        >
+          {active.name}
+        </p>
+      </div>
+
       <div className="absolute inset-x-0 bottom-[76px] z-40 flex h-[112px] items-center sm:bottom-[82px] sm:h-[122px] lg:bottom-[86px] lg:h-[132px]">
         <div
           ref={railRef}
@@ -350,6 +369,10 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           will-change: transform, opacity;
         }
 
+        .hero-active-name {
+          animation: heroActiveNameIn 620ms cubic-bezier(.16,1,.3,1) both;
+        }
+
         .selected-product-stage {
           animation: selectedStageIn 700ms cubic-bezier(.16,1,.3,1) both;
         }
@@ -376,6 +399,17 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           to {
             opacity: 1;
             transform: scale(1);
+          }
+        }
+
+        @keyframes heroActiveNameIn {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
           }
         }
 
