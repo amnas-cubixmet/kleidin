@@ -18,6 +18,8 @@ function normalize(value: unknown): StoreSettings {
     const current = localStoreSettings[settingKey];
     const next = source[settingKey];
 
+    if (settingKey === "homeDefaultHeroImagePosition") continue;
+
     if (Array.isArray(current)) {
       if (Array.isArray(next)) {
         (output as Record<string, unknown>)[settingKey] = next
@@ -71,12 +73,16 @@ export async function getStoreSettingsFromDb() {
 
 export async function saveStoreSettings(input: unknown) {
   const db = await getDb();
-  const settings = normalize(input);
+  const existing = await db.collection("siteSettings").findOne({ key });
+  const patch = input && typeof input === "object" ? input : {};
+  const settings = normalize({ ...existing, ...patch });
   await db.collection("siteSettings").updateOne(
     { key },
     {
       $set: {
-        ...settings,
+        ...Object.fromEntries(
+          Object.keys(patch).filter((field) => field in localStoreSettings).map((field) => [field, settings[field as keyof StoreSettings]]),
+        ),
         key,
         updatedAt: new Date(),
       },

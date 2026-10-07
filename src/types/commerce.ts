@@ -11,6 +11,7 @@ export type StoreSettings = {
   footerTagline: string;
   homeDefaultHeroEnabled: boolean;
   homeDefaultHeroLabel: string;
+  homeDefaultHeroBrand: string;
   homeDefaultHeroTitle: string;
   homeDefaultHeroSubtitle: string;
   homeDefaultHeroButtonLabel: string;

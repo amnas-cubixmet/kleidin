@@ -50,21 +50,20 @@ export default async function Home() {
           100),
     );
 
-  const defaultHeroImage = "/images/kleidin-white-shirt-model.png";
-
   const resolvedHeroSlides: HeroSlideConfig[] = [
     ...(settings.homeDefaultHeroEnabled
       ? [
           {
-            id: "default-home-hero",
+            id: "default-hero",
             kind: "custom" as const,
-            label: "",
-            title: "WEAR IT\nEVERY DAY.",
-            subtitle: "Premium everyday T-shirts designed for comfort, fit, and effortless style.",
-            button: "SHOP T-SHIRTS",
-            href: "/products",
+            label: settings.homeDefaultHeroLabel,
+            brand: settings.homeDefaultHeroBrand,
+            title: settings.homeDefaultHeroTitle,
+            subtitle: settings.homeDefaultHeroSubtitle,
+            button: settings.homeDefaultHeroButtonLabel,
+            href: settings.homeDefaultHeroButtonHref,
             badge: "",
-            imageUrl: defaultHeroImage,
+            imageUrl: settings.homeDefaultHeroImageUrl,
             enabled: true,
             order: -100000,
             ctaStyle: "dark" as const,
