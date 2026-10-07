@@ -101,7 +101,7 @@ export function FeaturedProductMotion() {
 
   return (
     <section
-      className="relative overflow-hidden bg-[#001cac] text-white"
+      className="relative overflow-hidden bg-[#f7f5ef] text-[#111]"
       aria-label="Featured products"
     >
       <div className="mx-auto grid min-h-[68svh] w-full max-w-[1440px] grid-cols-1 lg:min-h-[74dvh] lg:grid-cols-2">
@@ -114,7 +114,7 @@ export function FeaturedProductMotion() {
               {current.name}
             </h2>
 
-            <p className="mt-6 max-w-[460px] text-[13px] leading-6 text-white/72 sm:text-[14px] sm:leading-7">
+            <p className="mt-6 max-w-[460px] text-[13px] leading-6 text-black/55 sm:text-[14px] sm:leading-7">
               {current.description}
             </p>
 
@@ -125,7 +125,7 @@ export function FeaturedProductMotion() {
 
               <Link
                 href={current.href}
-                className="inline-flex min-h-10 items-center justify-center border border-white/30 bg-white/10 px-5 text-[9px] font-semibold uppercase tracking-[.08em] text-white backdrop-blur-sm transition hover:bg-white hover:text-[#001cac]"
+                className="inline-flex min-h-10 items-center justify-center border border-black/15 bg-white/60 px-5 text-[9px] font-semibold uppercase tracking-[.08em] text-[#111] transition hover:bg-white"
               >
                 View product
               </Link>
@@ -139,7 +139,7 @@ export function FeaturedProductMotion() {
             key={"image-" + current.id + "-" + index}
             className={"featured-motion-image relative flex h-full min-h-[42svh] w-full items-center justify-center lg:min-h-[62vh] " + (visible ? "is-visible" : "is-hidden")}
           >
-            <div className="absolute inset-[8%] rounded-full bg-white/[.06] blur-3xl" />
+            <div className="absolute inset-[8%] rounded-full bg-black/[.025] blur-3xl" />
             <img
               src={current.image}
               alt={current.name}
