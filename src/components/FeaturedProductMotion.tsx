@@ -89,16 +89,15 @@ export function FeaturedProductMotion() {
             key={"copy-" + current.id + "-" + index}
             className="featured-motion-copy max-w-[560px]"
           >
-            <div className="mb-7 flex items-center gap-3 text-[8px] font-semibold uppercase tracking-[.14em] text-black/38">
+            <div className="mb-5 flex items-center gap-5 text-[9px] font-semibold uppercase tracking-[.14em] text-black/42">
               <span>Featured product</span>
-              <span className="h-px w-8 bg-black/15" />
-              <span>
+              <span className="text-black/30">
                 {String(index + 1).padStart(2, "0")} /{" "}
                 {String(items.length).padStart(2, "0")}
               </span>
             </div>
 
-            <p className="m-0 text-[9px] font-semibold uppercase tracking-[.12em] text-black/42">
+            <p className="m-0 text-[10px] font-semibold uppercase tracking-[.14em] text-black/50">
               {current.category}
             </p>
 
