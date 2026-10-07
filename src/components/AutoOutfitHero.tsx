@@ -277,13 +277,13 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </>
       ) : null}
 
-      <div className="pointer-events-none absolute left-5 top-[17%] z-30 max-w-[430px] text-white sm:left-8 sm:top-[20%] lg:left-12 lg:top-1/2 lg:-translate-y-1/2">
+      <div className="pointer-events-none absolute left-4 top-[16%] z-30 w-[52vw] max-w-[430px] text-white sm:left-8 sm:top-[20%] sm:w-auto lg:left-12 lg:top-1/2 lg:-translate-y-1/2">
         <div className="hero-brand-copy">
           <p className="m-0 text-[8px] font-semibold uppercase tracking-[.18em] text-white/55 sm:text-[9px]">
             KLEID.IN / DAILY
           </p>
 
-          <h1 className="mt-4 max-w-[420px] text-[clamp(40px,5.4vw,76px)] font-semibold leading-[.86] tracking-[-.065em]">
+          <h1 className="mt-3 max-w-[420px] text-[clamp(34px,5.4vw,76px)] font-semibold leading-[.88] tracking-[-.06em] sm:mt-4">
             ESSENTIALS
             <br />
             WITHOUT NOISE
@@ -291,7 +291,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </div>
       </div>
 
-      <div className="absolute right-5 top-[44%] z-30 w-[min(78vw,360px)] -translate-y-1/2 text-right text-white sm:right-8 sm:top-1/2 lg:right-12 lg:w-[360px]">
+      <div className="absolute right-3 top-[48%] z-30 w-[48vw] max-w-[300px] -translate-y-1/2 text-right text-white sm:right-8 sm:top-1/2 sm:w-[min(62vw,340px)] sm:max-w-none lg:right-12 lg:w-[360px]">
         <div
           key={"hero-meta-" + active.id + "-" + activeIndex}
           className="hero-product-meta"
@@ -300,17 +300,17 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
             {active.category}
           </p>
 
-          <h2 className="mt-3 text-[clamp(24px,3.4vw,46px)] font-semibold leading-[.94] tracking-[-.045em]">
+          <h2 className="mt-2 text-[clamp(20px,3.4vw,46px)] font-semibold leading-[.96] tracking-[-.04em] sm:mt-3">
             {active.name}
           </h2>
 
-          <p className="mt-4 text-[12px] font-semibold tracking-[-.01em] text-white/82 sm:text-[14px]">
+          <p className="mt-3 text-[11px] font-semibold tracking-[-.01em] text-white/82 sm:mt-4 sm:text-[14px]">
             ₹{active.price.toLocaleString("en-IN")}
           </p>
 
           <Link
             href={active.slug ? "/products/" + active.slug : "/#all-products"}
-            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-[9px] font-semibold uppercase tracking-[.1em] !text-[#111] transition duration-300 hover:scale-[1.02] hover:bg-white/92"
+            className="mt-4 inline-flex min-h-10 items-center justify-center rounded-full bg-white px-4 text-[8px] font-semibold uppercase tracking-[.1em] !text-[#111] transition duration-300 hover:scale-[1.02] hover:bg-white/92 sm:mt-6 sm:min-h-11 sm:px-6 sm:text-[9px]"
           >
             View Product
           </Link>
@@ -497,6 +497,53 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
           to {
             opacity: 1;
             transform: translateX(0);
+          }
+        }
+
+        @media (max-width: 767px) {
+          .hero-brand-copy {
+            animation-duration: 680ms;
+          }
+
+          .hero-product-meta {
+            animation-duration: 680ms;
+          }
+
+          @keyframes heroBrandCopyIn {
+            from {
+              opacity: 0;
+              filter: blur(2px);
+              transform: translateX(-10px);
+            }
+            to {
+              opacity: 1;
+              filter: blur(0);
+              transform: translateX(0);
+            }
+          }
+
+          @keyframes heroProductMetaIn {
+            from {
+              opacity: 0;
+              filter: blur(2px);
+              transform: translateX(10px);
+            }
+            to {
+              opacity: 1;
+              filter: blur(0);
+              transform: translateX(0);
+            }
+          }
+
+          @keyframes selectedImageIn {
+            0% {
+              opacity: 0;
+              transform: translateY(12px) scale(.96);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
           }
         }
 
