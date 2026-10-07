@@ -17009,3 +17009,21 @@ select,
     -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
   }
 }
+
+
+/* FINAL mobile homepage header flush — remove white strip below header */
+@media (max-width: 640px) {
+  main.site-main-home-overlay {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  main.site-main-home-overlay > .reference-home {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  .site-header.site-header-home-overlay {
+    margin-bottom: 0 !important;
+  }
+}
