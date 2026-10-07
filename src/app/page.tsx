@@ -3,7 +3,7 @@ import { FeaturedProductMotion } from "@/components/FeaturedProductMotion";
 import { HomeAboutSection } from "@/components/HomeAboutSection";
 import { HomeAllProductsSection } from "@/components/HomeAllProductsSection";
 import { HomeDealerSection } from "@/components/HomeDealerSection";
-import { HomeSpotlightSection } from "@/components/HomeSpotlightSection";
+import { HomeSpotlightSection } from "@/components/HomeSpotlightSection";\nimport { HomeScrollMotion } from "@/components/HomeScrollMotion";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 
@@ -75,7 +75,7 @@ export default async function Home() {
     (product) => product.spotlight && product.status === "active",
   );
   return (
-    <div className="reference-home">
+    <div className="reference-home">\n      <HomeScrollMotion />
       <AutoOutfitHero products={showcaseProducts} />
 
       <FeaturedProductMotion />
