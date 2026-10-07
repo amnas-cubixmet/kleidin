@@ -1,36 +1,11 @@
-import {
-  HomeProductGridCard,
-  type HomeDemoProduct,
-} from "@/components/HomeProductGridCard";
+import { HomeProductGridCard } from "@/components/HomeProductGridCard";
+import { homeDemoProducts } from "@/lib/home-demo-products";
 
-const demoProducts: HomeDemoProduct[] = [
-  {
-    id: "demo-1",
-    name: "Essential White Tee",
-    price: 799,
-    image: "/images/product-1.png",
-  },
-  {
-    id: "demo-2",
-    name: "Daily White Tee",
-    price: 899,
-    image: "/images/product-2.png",
-  },
-  {
-    id: "demo-3",
-    name: "Relaxed Essential Tee",
-    price: 849,
-    image: "/images/product-1.png",
-  },
-  {
-    id: "demo-4",
-    name: "Everyday Tee",
-    price: 899,
-    image: "/images/product-2.png",
-  },
-];
-
-export function HomeAllProductsSection() {
+export function HomeAllProductsSection({
+  whatsappNumber,
+}: {
+  whatsappNumber: string;
+}) {
   return (
     <section
       id="all-products"
@@ -43,8 +18,12 @@ export function HomeAllProductsSection() {
         </h2>
 
         <div className="mt-8 grid grid-cols-2 gap-x-2.5 gap-y-7 sm:gap-x-3.5 sm:gap-y-9 lg:grid-cols-4 lg:gap-x-4 lg:gap-y-11">
-          {demoProducts.map((product) => (
-            <HomeProductGridCard key={product.id} product={product} />
+          {homeDemoProducts.map((product) => (
+            <HomeProductGridCard
+              key={product.id}
+              product={product}
+              whatsappNumber={whatsappNumber}
+            />
           ))}
         </div>
       </div>
