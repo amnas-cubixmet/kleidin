@@ -1,16 +1,16 @@
-import Image from "next/image";
 import Link from "next/link";
 import { HomeProductCatalog } from "@/components/HomeProductCatalog";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { TopFashionHero } from "@/components/TopFashionHero";
-import { ProductActions } from "@/components/ProductActions";
 import { HomepageAnimationBars } from "@/components/HomepageAnimationBars";
-import { formatPrice } from "@/lib/format";
+import { getWhatsappUrl } from "@/lib/format";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 import { getActiveHeroSlides } from "@/lib/hero";
-import { getProductPrimaryImage } from "@/lib/product-images";
 import { getActiveAnimationBars } from "@/lib/animation-bars";
+import { HomeProductRail } from "@/components/HomeProductRail";
+import { HomeShoppingMotion } from "@/components/HomeShoppingMotion";
+import styles from "@/components/ShoppingHome.module.css";
 import type { HeroSlideConfig } from "@/data/hero-slides";
 
 export const dynamic = "force-dynamic";
@@ -23,15 +23,7 @@ export default async function Home() {
     getActiveAnimationBars(),
   ]);
 
-  const featured = products
-    .filter(
-      (product) => product.featured && product.status === "active",
-    )
-    .sort(
-      (a, b) =>
-        (a.featuredSortOrder ?? a.sortOrder ?? 100) -
-        (b.featuredSortOrder ?? b.sortOrder ?? 100),
-    );
+  const activeProducts = products.filter((product) => product.status !== "draft");
 
   const showcaseProducts = products
     .filter(
@@ -61,7 +53,7 @@ export default async function Home() {
             title: settings.homeDefaultHeroTitle,
             subtitle: settings.homeDefaultHeroSubtitle,
             button: settings.homeDefaultHeroButtonLabel,
-            href: settings.homeDefaultHeroButtonHref,
+            href: settings.homeDefaultHeroButtonHref === "/products" ? "#shop-products" : settings.homeDefaultHeroButtonHref,
             badge: "",
             imageUrl: settings.homeDefaultHeroImageUrl,
             enabled: true,
@@ -74,142 +66,41 @@ export default async function Home() {
     ...heroSlides,
   ];
 
-  const mostLoved = products.find(
-    (product) => product.spotlight && product.status === "active",
-  );
-  const mostLovedImage = mostLoved
-    ? getProductPrimaryImage(mostLoved)
-    : "";
-  const brandTitleLines = settings.homeBrandTitle.split("\n");
-  const dealerHref = products.length ? "/wholesale" : "/contact";
+  const whatsappHref = getWhatsappUrl(undefined, settings.whatsappNumber);
 
   return (
-    <div className="reference-home">
-      {resolvedHeroSlides.length ? (
-        <TopFashionHero products={products} heroSlides={resolvedHeroSlides} />
-      ) : null}
+    <div className={styles.home}>
+      <HomeShoppingMotion />
+      {resolvedHeroSlides.length ? <TopFashionHero products={products} heroSlides={resolvedHeroSlides} /> : null}
+      <nav className={styles.quickNav} aria-label="Shop this page">
+        <a href="#shop-products">Shop all products <span aria-hidden="true">↘</span></a>
+        <a href="#how-to-order">How to order</a>
+        {whatsappHref !== "#" ? <a href={whatsappHref} target="_blank" rel="noreferrer">Chat on WhatsApp ↗</a> : null}
+      </nav>
 
-      {showcaseProducts.length ? (
-        <AutoOutfitHero products={showcaseProducts} />
-      ) : null}
-
-      <section className="ref-brand-strip" aria-label="About KLEID.IN">
-        <div className="ref-brand-strip-inner">
-          <p>{settings.homeBrandEyebrow}</p>
-          <h2>
-            {brandTitleLines.map((line, index) => (
-              <span key={line + index}>
-                {line}
-                {index < brandTitleLines.length - 1 ? <br /> : null}
-              </span>
-            ))}
-          </h2>
-          <Link href="/about" className="ref-pill ref-pill-light">
-            {settings.homeAboutButtonLabel}
-          </Link>
+      <section id="about-kleid" className={styles.about} data-shop-reveal aria-label="About KLEID.IN">
+        <div><p className={styles.kicker}>{settings.homeBrandEyebrow}</p><h2 className={styles.brandTitle}>{settings.homeBrandTitle}</h2></div>
+        <div className={styles.aboutCopy}>
+          <p>Everyday pieces. Your own way.</p>
+          <p>Explore the collection, choose your colour and size, and order directly with us on WhatsApp. Simple from the first look to the final confirmation.</p>
+          <Link href="/about" className={styles.textLink}>{settings.homeAboutButtonLabel} <span aria-hidden="true">↗</span></Link>
         </div>
       </section>
 
-      <HomepageAnimationBars
-        bars={animationBars}
-        placement="after-hero"
-      />
+      <HomepageAnimationBars bars={animationBars} placement="after-hero" />
+      <HomeProductCatalog products={activeProducts} eyebrow="THE COLLECTION" title="All products" />
+      {showcaseProducts.length ? <section className={styles.showcase} aria-label="Product showcase" data-shop-reveal><AutoOutfitHero products={showcaseProducts} /></section> : null}
+      <HomeProductRail products={activeProducts} />
 
-      {featured.length ? (
-        <HomeProductCatalog
-          products={featured}
-          eyebrow={settings.homeCatalogEyebrow}
-          title={settings.homeCatalogTitle}
-        />
-      ) : null}
-
-      <section className="home-dealers-clean">
-        <div>
-          <p>{settings.homeDealersEyebrow}</p>
-          <h2>{settings.homeDealersTitle}</h2>
-          <span>{settings.homeDealersBody}</span>
-          <Link href={dealerHref}>{settings.homeDealersButtonLabel}</Link>
-        </div>
-        <div className="home-dealers-copy">
-          {settings.homeDealerTags.map((tag) => (
-            <strong key={tag}>{tag}</strong>
-          ))}
-        </div>
+      <section id="how-to-order" className={styles.order} data-shop-reveal aria-labelledby="order-heading">
+        <div className={styles.sectionHead}><div><p className={styles.kicker}>FROM A LOOK TO YOUR DOOR</p><h2 id="order-heading">How to order.</h2></div><a href="#shop-products" className={styles.textLink}>Find your piece ↗</a></div>
+        <ol className={styles.steps}>
+          <li><span>01</span><h3>Find your favourite.</h3><p>Browse all products above. Open a product to see its images, colours, sizes and price.</p></li>
+          <li><span>02</span><h3>Send it on WhatsApp.</h3><p>Choose your colour and size, then tap Order on WhatsApp. Your product details are ready in the message.</p></li>
+          <li><span>03</span><h3>Confirm with us.</h3><p>Send the message. We will confirm availability, delivery details and payment before your order is placed.</p></li>
+        </ol>
+        <div className={styles.orderBottom}><p>Need a hand choosing? Talk to us.</p>{whatsappHref !== "#" ? <a href={whatsappHref} target="_blank" rel="noreferrer" className={styles.whatsappButton}>Chat on WhatsApp <span aria-hidden="true">↗</span></a> : <Link href="/contact" className={styles.whatsappButton}>Contact us ↗</Link>}</div>
       </section>
-
-      {mostLoved ? (
-        <section className="home-spotlight">
-          <div className="home-spotlight-grid">
-            <Link
-              href={`/products/${mostLoved.slug}`}
-              className="home-spotlight-media"
-              aria-label={`View ${mostLoved.name}`}
-            >
-              {mostLovedImage ? (
-                <Image
-                  src={mostLovedImage}
-                  alt={mostLoved.name}
-                  fill
-                  sizes="(max-width: 900px) 100vw, 58vw"
-                  className="home-spotlight-image"
-                />
-              ) : (
-                <span>No image</span>
-              )}
-
-              <div className="home-spotlight-media-badge">
-                <span>01</span>
-                <strong>{settings.homeSpotlightBadge}</strong>
-              </div>
-            </Link>
-
-            <div className="home-spotlight-info">
-              <div className="home-spotlight-info-inner">
-                <div className="home-spotlight-topline">
-                  <span>
-                    {mostLoved.stock > 0 ? "In stock" : "Sold out"}
-                  </span>
-                </div>
-
-                <div>
-                  <h2>{mostLoved.name}</h2>
-
-                  <div className="home-spotlight-price">
-                    <strong>{formatPrice(mostLoved.price)}</strong>
-                    {mostLoved.compareAtPrice ? (
-                      <del>{formatPrice(mostLoved.compareAtPrice)}</del>
-                    ) : null}
-                  </div>
-                </div>
-
-                <p className="home-spotlight-description">
-                  {mostLoved.description}
-                </p>
-
-                <div className="home-spotlight-meta">
-                  <div>
-                    <span>Colour</span>
-                    <strong>{mostLoved.colors.join(" / ")}</strong>
-                  </div>
-                  <div>
-                    <span>Sizes</span>
-                    <strong>{mostLoved.sizes.join(" · ")}</strong>
-                  </div>
-                </div>
-
-                <ProductActions product={mostLoved} compact />
-
-                <Link
-                  href={`/products/${mostLoved.slug}`}
-                  className="home-spotlight-view"
-                >
-                  View full product <span>↗</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-      ) : null}
     </div>
   );
 }

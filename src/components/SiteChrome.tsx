@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { ProductImageTransition } from "@/components/ProductImageTransition";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { StoreSettingsProvider } from "@/components/StoreSettingsContext";
@@ -56,6 +57,7 @@ export function SiteChrome({
           placement="before-hero"
         />
       ) : null}
+      <ProductImageTransition />
       <Header products={products} settings={settings} />
       <main>{children}</main>
       <Footer settings={settings} />

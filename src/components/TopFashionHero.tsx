@@ -210,8 +210,8 @@ export function TopFashionHero({
         : "border border-black/10 bg-white !text-[#111111] hover:bg-[#f7f7f7]");
 
   return (
-    <section aria-label="Featured collections" aria-roledescription="carousel" className="w-full overflow-hidden">
-      <div className="relative flex w-full flex-col overflow-hidden bg-[#efede8] md:aspect-[16/9] md:min-h-[580px] text-[#111111]">
+    <section data-shop-reveal aria-label="Featured collections" aria-roledescription="carousel" className="w-full overflow-hidden">
+      <div className="relative flex w-full flex-col overflow-hidden bg-[#fafafa] md:aspect-[16/9] md:min-h-[580px] text-[#111111]">
         <div className="relative order-2 aspect-[4/5] w-full overflow-hidden md:absolute md:inset-y-0 md:right-0 md:aspect-auto md:h-full md:w-1/2">
           {slides.map((slide, slideIndex) => (
             <div
@@ -246,8 +246,8 @@ export function TopFashionHero({
             </div>
           ))}
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-t from-[#efede8] via-[#efede8]/35 to-transparent md:hidden" />
-          <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[14%] bg-gradient-to-r from-[#efede8] to-transparent md:block" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-t from-[#fafafa] via-[#fafafa]/35 to-transparent md:hidden" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[14%] bg-gradient-to-r from-[#fafafa] to-transparent md:block" />
         </div>
 
         <div className="relative z-10 order-1 flex min-w-0 flex-col px-5 pb-6 pt-8 md:h-full md:w-1/2 md:px-12 md:py-9 lg:px-16 lg:py-12">
@@ -264,8 +264,8 @@ export function TopFashionHero({
               <h1
                 className={`m-0 max-w-[560px] whitespace-pre-line break-words font-black leading-[0.88] tracking-[-0.06em] ${
                   titleIsLong
-                    ? "text-[clamp(32px,10vw,62px)] md:text-[clamp(52px,5.1vw,82px)]"
-                    : "text-[clamp(36px,11vw,72px)] md:text-[clamp(60px,5.8vw,94px)]"
+                    ? "text-[clamp(32px,8vw,48px)] md:text-[clamp(40px,4vw,64px)]"
+                    : "text-[clamp(34px,9vw,52px)] md:text-[clamp(44px,4.5vw,72px)]"
                 }`}
               >
                 {current.title}
@@ -348,7 +348,7 @@ export function TopFashionHero({
                     aria-label={`Show ${slide.title} slide`}
                     aria-pressed={slideIndex === index}
                     onClick={() => setIndex(slideIndex)}
-                    className={`min-h-6 shrink-0 border-y-[10px] border-[#efede8] transition-all duration-300 motion-reduce:transition-none ${
+                    className={`min-h-6 shrink-0 border-y-[10px] border-[#fafafa] transition-all duration-300 motion-reduce:transition-none ${
                       slideIndex === index
                         ? "w-8 bg-black md:w-10"
                         : "w-3 bg-black/20 hover:bg-black/40"
