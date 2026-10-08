@@ -56,7 +56,7 @@ export function HomeProductGridCard({
           aria-disabled={whatsappHref === "#" ? "true" : undefined}
           onClick={(event) => { if (whatsappHref === "#") event.preventDefault(); }}
           className={
-            "relative z-20 mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-black px-3 text-[8px] font-semibold uppercase tracking-[.07em] !text-white transition sm:min-h-11 sm:text-[9px] " +
+            "home-product-whatsapp-button relative z-20 mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-black px-3 text-[8px] font-semibold uppercase tracking-[.07em] !text-white transition sm:min-h-11 sm:text-[9px] " +
             (whatsappHref === "#"
               ? "cursor-default opacity-70"
               : "hover:opacity-90")

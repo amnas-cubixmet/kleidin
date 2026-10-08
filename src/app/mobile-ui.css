@@ -26,3 +26,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid #001cac; outline-offs
   [data-product-hero] [data-hero-product-image] { position: relative; bottom: auto; right: auto; width: 80%; height: 28svh; margin: 0 auto; order: 1; }
   [data-admin-ui] main { padding-bottom: calc(104px + env(safe-area-inset-bottom)); }
 }
+
+/* Keep catalog CTA colors above global anchor rules on every viewport. */
+#all-products .home-product-whatsapp-button,
+#all-products .home-product-whatsapp-button:visited,
+#all-products .home-product-whatsapp-button:hover,
+#all-products .home-product-whatsapp-button:active {
+  background-color: #000 !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff;
+}
