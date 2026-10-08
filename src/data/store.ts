@@ -8,6 +8,7 @@ export const localStoreSettings: StoreSettings = {
   supportEmail: publicEnv.supportEmail,
   footerTagline: "Essentials without noise. Unisex clothing for everyday rotation.",
   homeProductHeroEnabled: true,
+  homeProductSelectorEnabled: false,
   demoProductsEnabled: true,
   homeCustomOffersEnabled: true,
   homeFeaturedEnabled: true,

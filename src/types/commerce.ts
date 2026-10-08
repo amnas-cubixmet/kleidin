@@ -10,6 +10,7 @@ export type StoreSettings = {
   supportEmail: string;
   footerTagline: string;
   homeProductHeroEnabled: boolean;
+  homeProductSelectorEnabled: boolean;
   demoProductsEnabled: boolean;
   homeCustomOffersEnabled: boolean;
   homeFeaturedEnabled: boolean;
