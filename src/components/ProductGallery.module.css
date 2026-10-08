@@ -12,3 +12,28 @@
 .info :global(.product-info-inner) { background: #fafafa !important; border-radius: 0 !important; }
 .info :global(.product-detail-heading h1) { font-size: clamp(26px,3vw,40px) !important; line-height: 1.1 !important; }
 @media (max-width:600px) { .gallery { aspect-ratio: 4/5; min-height: 0 !important; } }
+
+.colourSwatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.colourSwatch {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 5px;
+  border: 1px solid #d4d4d4;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.colourSwatch > span {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: 50%;
+}
+.colourSwatch[aria-pressed="true"] { border: 2px solid #111; }
+.colourSwatch:focus-visible { outline: 2px solid #001cac; outline-offset: 3px; }

@@ -173,31 +173,24 @@ export function ProductDetailClient({
           <p className="product-description">{product.description}</p>
 
           <div className="product-detail-option-block">
-            <div className="product-detail-option-head">
-              <span>Colour</span>
-              <strong>{selectedColor}</strong>
+            <div className={galleryStyles.colourSwatches} role="group" aria-label="Choose colour">
+              {(variants.length ? variants : product.colors.map((name) => ({
+                name,
+                value: ({ mint: "#a5d8bc", beige: "#d8c9b1", cream: "#fffdd0", "off white": "#f5f5f0", "navy blue": "#000080", "light blue": "#add8e6", default: "#d4d4d4" } as Record<string, string>)[name.toLowerCase()] ?? name.toLowerCase(),
+              }))).map((variant) => (
+                <button
+                  key={variant.name}
+                  type="button"
+                  className={galleryStyles.colourSwatch}
+                  aria-label={"Select " + variant.name + " colour"}
+                  aria-pressed={selectedColor === variant.name}
+                  title={variant.name}
+                  onClick={() => setSelectedColor(variant.name)}
+                >
+                  <span aria-hidden="true" style={{ backgroundColor: variant.value }} />
+                </button>
+              ))}
             </div>
-
-            {variants.length > 1 ? (
-              <div className="product-detail-colour-swatches">
-                {variants.map((variant) => (
-                  <button
-                    key={variant.name}
-                    type="button"
-                    className={
-                      "product-detail-colour-swatch " +
-                      (selectedColor === variant.name ? "active" : "")
-                    }
-                    onClick={() => setSelectedColor(variant.name)}
-                  >
-                    <span style={{ background: variant.value }} />
-                    <small>{variant.name}</small>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <strong className="product-single-colour">{selectedColor}</strong>
-            )}
           </div>
 
           <div className="product-detail-option-block">
