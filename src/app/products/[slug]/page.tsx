@@ -1,3 +1,4 @@
+import { getMongoEnvironment } from "@/lib/server-env";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -15,7 +16,7 @@ export async function generateMetadata({
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
   const product =
-    (await getCatalogProductBySlug(slug)) ?? getHomeDemoProductBySlug(slug);
+    (await getCatalogProductBySlug(slug)) ?? (!getMongoEnvironment() ? getHomeDemoProductBySlug(slug) : undefined);
 
   if (!product) return { title: "Product not found" };
 
@@ -31,7 +32,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     getCatalogProductBySlug(slug),
     getStoreSettings(),
   ]);
-  const product = catalogProduct ?? getHomeDemoProductBySlug(slug);
+  const product = catalogProduct ?? (!getMongoEnvironment() ? getHomeDemoProductBySlug(slug) : undefined);
 
   if (!product || product.status === "draft") notFound();
 

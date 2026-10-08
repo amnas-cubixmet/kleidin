@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { AdminDrawer } from "@/components/AdminDrawer";
 import type { StoreSettings } from "@/types/commerce";
 
+const sectionControls = [["homeProductHeroEnabled", "Product hero"], ["homeCustomOffersEnabled", "Custom offer slider"], ["homeFeaturedEnabled", "Featured product animation"], ["homeAboutEnabled", "About section"], ["homeCatalogEnabled", "Product catalog"], ["homeDealersEnabled", "Dealer section"], ["homeSpotlightEnabled", "Spotlight product"], ["homeAnimationBarsEnabled", "Scrolling animation bars"], ["footerEnabled", "Footer (all storefront pages)"]] as const;
+
 function label(key: string) {
   return key
     .replace(/([A-Z])/g, " $1")
@@ -119,6 +121,7 @@ export function AdminStoreSettings() {
 
   const entries = Object.entries(settings).filter(
     ([key]) =>
+      !sectionControls.some(([field]) => field === key) &&
       key !== "aboutPrinciples" &&
       key !== "homeShowcaseProductUrls" &&
       !key.startsWith("homeDefaultHero") &&
@@ -235,6 +238,22 @@ export function AdminStoreSettings() {
           </div>
         }
       >
+        <fieldset className="mb-4 rounded-2xl bg-white p-4 ring-1 ring-black/5">
+          <legend className="px-2 text-sm font-bold">Section visibility</legend>
+          <p className="mb-3 text-xs text-black/50">Turn sections on or off, then Save settings. Hidden sections keep their content.</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {sectionControls.map(([key, name]) => (
+              <label key={key} className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-black/10 px-3 py-2 text-sm">
+                {name}
+                <span className="flex items-center gap-2">
+                  <input type="checkbox" checked={settings[key]} onChange={(event) => update(key, event.target.checked)} />
+                  {settings[key] ? "On" : "Off"}
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
         <div className="mb-4 rounded-2xl bg-white p-4 ring-1 ring-black/5">
           <p className="text-[10px] font-bold uppercase tracking-[.08em] text-black/50">
             Homepage product selector

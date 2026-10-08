@@ -1,7 +1,11 @@
 "use client";
 
+import type { Product } from "@/types/product";
+import { getProductPrimaryImage } from "@/lib/product-images";
+import { getProductOfferPrice } from "@/lib/product-offers";
+import { useOfferClock } from "@/hooks/useOfferClock";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type DemoFeaturedProduct = {
   id: string;
@@ -41,8 +45,11 @@ function money(value: number) {
   }).format(value);
 }
 
-export function FeaturedProductMotion() {
-  const items = demoProducts;
+export function FeaturedProductMotion({ products = [], demo = true }: { products?: Product[]; demo?: boolean }) {
+  const items = useMemo(() => products.length ? products.map((product) => ({
+    id: product.id, name: product.name, description: product.description,
+    price: product.price, image: getProductPrimaryImage(product) || "", href: `/products/${product.slug}`,
+  })) : demo ? demoProducts : [], [products, demo]);
 
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -92,6 +99,9 @@ export function FeaturedProductMotion() {
   }, [items.length, reducedMotion]);
 
   const current = items[index] ?? items[0];
+  const selectedProduct = products.find((product) => product.id === current?.id);
+  const offerNow = useOfferClock(selectedProduct);
+  const displayPrice = selectedProduct ? getProductOfferPrice(selectedProduct, offerNow) : current?.price ?? 0;
   if (!current) return null;
 
 
@@ -117,7 +127,7 @@ export function FeaturedProductMotion() {
 
             <div className="mt-7 flex flex-wrap items-center gap-4">
               <strong className="text-[17px] font-semibold tracking-[-.02em]">
-                {money(current.price)}
+                {money(displayPrice)}
               </strong>
 
               <Link

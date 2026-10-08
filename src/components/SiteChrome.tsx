@@ -116,7 +116,7 @@ export function SiteChrome({
       <main style={tryOnChromeHidden ? { paddingTop: 0 } : undefined}>
         {children}
       </main>
-      <Footer settings={settings} />
+      {settings.footerEnabled ? <Footer settings={settings} /> : null}
     </StoreSettingsProvider>
   );
 }

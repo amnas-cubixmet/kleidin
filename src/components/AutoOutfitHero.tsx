@@ -37,7 +37,7 @@ type SliderItem = {
   source?: Product;
 };
 
-export function AutoOutfitHero({ products }: { products: Product[] }) {
+export function AutoOutfitHero({ products, demo = true }: { products: Product[]; demo?: boolean }) {
   const items = useMemo<SliderItem[]>(() => {
     const localPairs = [
       {
@@ -60,6 +60,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
       .slice(0, 20);
 
     if (!activeProducts.length) {
+      if (!demo) return [];
       return localPairs.map((pair, index) => ({
         id: "demo-selector-" + index,
         name: index === 0 ? "Essential White Tee" : "Daily White Tee",
@@ -90,7 +91,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         source: product,
       };
     });
-  }, [products]);
+  }, [products, demo]);
 
   const railProducts = useMemo(() => {
     const source = items.slice(0, 20);
