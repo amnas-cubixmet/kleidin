@@ -10,6 +10,7 @@ import { HomeAboutSection } from "@/components/HomeAboutSection";
 import { HomeAllProductsSection } from "@/components/HomeAllProductsSection";
 import { HomeDealerSection } from "@/components/HomeDealerSection";
 import { HomeSpotlightSection } from "@/components/HomeSpotlightSection";
+import { HomeScrollMotion } from "@/components/HomeScrollMotion";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 

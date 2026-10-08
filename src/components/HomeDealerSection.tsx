@@ -25,7 +25,8 @@ export function HomeDealerSection({ settings }: { settings: StoreSettings }) {
 
           <Link
             href="/wholesale"
-            className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-[9px] font-semibold uppercase tracking-[.1em] text-[#111] transition hover:opacity-90"
+            className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-[9px] font-semibold uppercase tracking-[.1em] !text-black transition hover:opacity-90"
+            style={{ color: "#000" }}
           >
             {settings.homeDealersButtonLabel}
           </Link>

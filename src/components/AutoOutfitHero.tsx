@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -279,7 +280,7 @@ export function AutoOutfitHero({ products, demo = true }: { products: Product[];
                 src={active.modelImage}
                 alt=""
                 draggable={false}
-                className="h-full w-full select-none object-cover object-top"
+                className="hero-model-image h-full w-full select-none object-contain object-bottom sm:object-cover sm:object-top"
               />
             </div>
           ) : null}
@@ -347,7 +348,7 @@ export function AutoOutfitHero({ products, demo = true }: { products: Product[];
                     selectProduct(product.baseIndex, true);
                   }}
                   className={
-                    "relative h-[86px] w-[21.5vw] shrink-0 overflow-hidden border border-white/30 bg-white/20 shadow-[0_8px_24px_rgba(0,0,0,.08)] backdrop-blur-md transition-[transform,border-color,background-color,opacity] duration-300 sm:h-[96px] sm:w-[15.25vw] lg:h-[104px] lg:w-[11.625vw] xl:h-[110px] " +
+                    "relative h-[68px] w-[22vw] shrink-0 overflow-hidden border border-white/30 bg-white/20 shadow-[0_8px_24px_rgba(0,0,0,.08)] backdrop-blur-md transition-[transform,border-color,background-color,opacity] duration-300 sm:h-[96px] sm:w-[15.25vw] lg:h-[104px] lg:w-[11.625vw] xl:h-[110px] " +
                     (selected
                       ? "scale-[1.08] border-2 border-[#b7ff35] bg-white/32 opacity-100 shadow-[0_12px_30px_rgba(0,0,0,.14)]"
                       : "opacity-88 hover:scale-[1.03] hover:bg-white/28 hover:opacity-100")
@@ -370,6 +371,16 @@ export function AutoOutfitHero({ products, demo = true }: { products: Product[];
         .selected-background {
           animation: selectedBackgroundIn 900ms cubic-bezier(.16,1,.3,1) both;
           will-change: transform, opacity;
+        }
+
+        .hero-brand-copy {
+          animation: heroBrandCopyIn 820ms cubic-bezier(.16,1,.3,1) both;
+          will-change: transform, opacity, filter;
+        }
+
+        .hero-product-meta {
+          animation: heroProductMetaIn 760ms cubic-bezier(.16,1,.3,1) both;
+          will-change: transform, opacity, filter;
         }
 
         .selected-product-stage {
@@ -423,6 +434,32 @@ export function AutoOutfitHero({ products, demo = true }: { products: Product[];
           }
         }
 
+        @keyframes heroBrandCopyIn {
+          from {
+            opacity: 0;
+            filter: blur(3px);
+            transform: translateX(-18px);
+          }
+          to {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes heroProductMetaIn {
+          from {
+            opacity: 0;
+            filter: blur(3px);
+            transform: translateX(18px);
+          }
+          to {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateX(0);
+          }
+        }
+
         @keyframes selectedStageIn {
           from { opacity: 0; }
           to { opacity: 1; }
@@ -464,6 +501,68 @@ export function AutoOutfitHero({ products, demo = true }: { products: Product[];
           to {
             opacity: 1;
             transform: translateX(0);
+          }
+        }
+
+        @media (max-width: 767px) {
+          .hero-model-image {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: none !important;
+            object-fit: cover !important;
+            object-position: center 25% !important;
+            transform: none !important;
+            transform-origin: center center;
+          }
+
+          .hero-product-meta {
+            text-shadow: 0 1px 16px rgba(0, 0, 0, .28);
+          }
+
+
+          .hero-brand-copy {
+            animation-duration: 680ms;
+          }
+
+          .hero-product-meta {
+            animation-duration: 680ms;
+          }
+
+          @keyframes heroBrandCopyIn {
+            from {
+              opacity: 0;
+              filter: blur(2px);
+              transform: translateX(-10px);
+            }
+            to {
+              opacity: 1;
+              filter: blur(0);
+              transform: translateX(0);
+            }
+          }
+
+          @keyframes heroProductMetaIn {
+            from {
+              opacity: 0;
+              filter: blur(2px);
+              transform: translateX(10px);
+            }
+            to {
+              opacity: 1;
+              filter: blur(0);
+              transform: translateX(0);
+            }
+          }
+
+          @keyframes selectedImageIn {
+            0% {
+              opacity: 0;
+              transform: translateY(12px) scale(.96);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
           }
         }
 

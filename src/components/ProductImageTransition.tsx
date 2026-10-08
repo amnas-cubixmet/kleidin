@@ -11,11 +11,37 @@ type Pending = {
   cleanup: () => void;
 };
 
-/**
- * Product-card route transition:
- * click -> image dips/shrinks -> route changes -> image rises into the
- * product-detail image position.
- */
+function getCenteredRect(sourceRect: DOMRect) {
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  const aspect = sourceRect.width / Math.max(sourceRect.height, 1);
+
+  const maxWidth = viewportWidth < 768
+    ? Math.min(viewportWidth * 0.34, 150)
+    : Math.min(viewportWidth * 0.22, 220);
+  const maxHeight = viewportWidth < 768
+    ? Math.min(viewportHeight * 0.30, 220)
+    : Math.min(viewportHeight * 0.34, 300);
+
+  let width = Math.min(sourceRect.width * 0.58, maxWidth);
+  let height = width / aspect;
+
+  if (height > maxHeight) {
+    height = maxHeight;
+    width = height * aspect;
+  }
+
+  width = Math.max(width, 72);
+  height = Math.max(height, 88);
+
+  return {
+    left: (viewportWidth - width) / 2,
+    top: (viewportHeight - height) / 2,
+    width,
+    height,
+  };
+}
+
 export function ProductImageTransition() {
   const router = useRouter();
   const pathname = usePathname();
@@ -34,7 +60,7 @@ export function ProductImageTransition() {
       }
 
       const link = (event.target as Element)?.closest<HTMLAnchorElement>(
-        "a[data-product-transition]",
+        'a[data-product-transition], a[href^="/products/"]',
       );
 
       if (!link || link.target === "_blank" || link.hasAttribute("download")) {
@@ -61,12 +87,14 @@ export function ProductImageTransition() {
         return;
       }
 
-      const rect = source.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
+      const sourceRect = source.getBoundingClientRect();
+      if (!sourceRect.width || !sourceRect.height) return;
 
       event.preventDefault();
       event.stopPropagation();
       pending.current?.cleanup();
+
+      document.documentElement.dataset.productTransitionActive = "true";
 
       const backdrop = document.createElement("div");
       backdrop.setAttribute("aria-hidden", "true");
@@ -85,22 +113,23 @@ export function ProductImageTransition() {
       image.alt = "";
       image.setAttribute("aria-hidden", "true");
 
-      const style = getComputedStyle(source);
+      const sourceStyle = getComputedStyle(source);
       Object.assign(image.style, {
         position: "fixed",
-        left: `${rect.left}px`,
-        top: `${rect.top}px`,
-        width: `${rect.width}px`,
-        height: `${rect.height}px`,
+        left: `${sourceRect.left}px`,
+        top: `${sourceRect.top}px`,
+        width: `${sourceRect.width}px`,
+        height: `${sourceRect.height}px`,
         margin: "0",
-        objectFit: style.objectFit,
-        objectPosition: style.objectPosition,
+        objectFit: sourceStyle.objectFit,
+        objectPosition: sourceStyle.objectPosition,
         background: "#f1f1ef",
         zIndex: "10000",
         pointerEvents: "none",
-        borderRadius: style.borderRadius,
+        borderRadius: sourceStyle.borderRadius,
+        transform: "translate3d(0,0,0)",
         transformOrigin: "center center",
-        willChange: "transform, opacity",
+        willChange: "left, top, width, height, opacity, filter",
         maxWidth: "none",
       });
 
@@ -109,6 +138,7 @@ export function ProductImageTransition() {
       const cleanup = () => {
         image.remove();
         backdrop.remove();
+        delete document.documentElement.dataset.productTransitionActive;
 
         if (pending.current?.image === image) {
           window.clearTimeout(pending.current.timer);
@@ -121,42 +151,59 @@ export function ProductImageTransition() {
         backdrop,
         href: url.pathname,
         cleanup,
-        timer: window.setTimeout(cleanup, 5000),
+        timer: window.setTimeout(cleanup, 5200),
       };
 
       pending.current = active;
 
-      backdrop.animate(
-        [{ opacity: 0 }, { opacity: 0.94 }],
-        {
-          duration: 220,
-          easing: "ease-out",
-          fill: "forwards",
-        },
-      );
+      const center = getCenteredRect(sourceRect);
 
-      const dip = image.animate(
+      backdrop.animate([{ opacity: 0 }, { opacity: 0.94 }], {
+        duration: 420,
+        easing: "cubic-bezier(.22,.61,.36,1)",
+        fill: "forwards",
+      });
+
+      const moveToCenter = image.animate(
         [
           {
-            transform: "translate3d(0, 0, 0) scale(1)",
+            left: `${sourceRect.left}px`,
+            top: `${sourceRect.top}px`,
+            width: `${sourceRect.width}px`,
+            height: `${sourceRect.height}px`,
             opacity: 1,
+            filter: "blur(0)",
           },
           {
-            transform: "translate3d(0, 34px, 0) scale(.9)",
-            opacity: 0.98,
+            left: `${center.left}px`,
+            top: `${center.top}px`,
+            width: `${center.width}px`,
+            height: `${center.height}px`,
+            opacity: 1,
+            filter: "blur(.4px)",
           },
         ],
         {
-          duration: 220,
-          easing: "cubic-bezier(.4,0,.2,1)",
+          duration: 560,
+          easing: "cubic-bezier(.16,1,.3,1)",
           fill: "forwards",
         },
       );
 
-      dip.finished
+      moveToCenter.finished
         .catch(() => undefined)
         .then(() => {
           if (pending.current !== active) return;
+
+          Object.assign(image.style, {
+            left: `${center.left}px`,
+            top: `${center.top}px`,
+            width: `${center.width}px`,
+            height: `${center.height}px`,
+            filter: "blur(0)",
+          });
+
+          moveToCenter.cancel();
           router.push(url.pathname + url.search, { scroll: true });
         });
     }
@@ -174,12 +221,12 @@ export function ProductImageTransition() {
       return;
     }
 
-    const active: Pending = transition;
+    const active = transition;
     let frame = 0;
     let stopped = false;
-    let riseAnimation: Animation | undefined;
+    let growAnimation: Animation | undefined;
     let target: HTMLImageElement | null = null;
-    let previousTargetOpacity = "";
+    let noTargetTimer = 0;
 
     const observer = new MutationObserver(tryAnimate);
 
@@ -189,73 +236,56 @@ export function ProductImageTransition() {
       target = document.querySelector<HTMLImageElement>(
         "[data-product-image-target] img",
       );
+
       if (!target) return;
 
-      const targetRect = target.getBoundingClientRect();
-      if (!targetRect.width || !targetRect.height) return;
+      const firstRect = target.getBoundingClientRect();
+      if (!firstRect.width || !firstRect.height) return;
 
       stopped = true;
       observer.disconnect();
-
-      previousTargetOpacity = target.style.opacity;
-      target.style.opacity = "0";
+      window.clearTimeout(noTargetTimer);
 
       frame = window.requestAnimationFrame(() => {
         frame = window.requestAnimationFrame(() => {
-          if (!target) {
+          if (!target || pending.current !== active) {
             active.cleanup();
             return;
           }
 
           const rect = target.getBoundingClientRect();
+          const targetStyle = getComputedStyle(target);
           const image = active.image;
-
-          const startWidth = Math.max(rect.width * 0.84, 1);
-          const startHeight = Math.max(rect.height * 0.84, 1);
-          const startLeft = rect.left + (rect.width - startWidth) / 2;
-          const riseDistance = Math.min(
-            Math.max(window.innerHeight * 0.16, 88),
-            150,
-          );
-          const startTop = rect.top + riseDistance;
+          const currentRect = image.getBoundingClientRect();
 
           Object.assign(image.style, {
-            left: `${startLeft}px`,
-            top: `${startTop}px`,
-            width: `${startWidth}px`,
-            height: `${startHeight}px`,
-            transform: "translate3d(0, 0, 0) scale(1)",
-            transformOrigin: "center center",
-            opacity: "0",
+            left: `${currentRect.left}px`,
+            top: `${currentRect.top}px`,
+            width: `${currentRect.width}px`,
+            height: `${currentRect.height}px`,
+            objectFit: targetStyle.objectFit,
+            objectPosition: targetStyle.objectPosition,
+            borderRadius: targetStyle.borderRadius,
+            opacity: "1",
+            transform: "none",
+            filter: "blur(0)",
           });
 
-          active.backdrop.animate(
-            [{ opacity: 0.94 }, { opacity: 0 }],
-            {
-              duration: 620,
-              easing: "cubic-bezier(.16,1,.3,1)",
-              fill: "forwards",
-            },
-          );
+          active.backdrop.animate([{ opacity: 0.94 }, { opacity: 0 }], {
+            duration: 980,
+            easing: "cubic-bezier(.16,1,.3,1)",
+            fill: "forwards",
+          });
 
-          riseAnimation = image.animate(
+          growAnimation = image.animate(
             [
               {
-                left: `${startLeft}px`,
-                top: `${startTop}px`,
-                width: `${startWidth}px`,
-                height: `${startHeight}px`,
-                opacity: 0,
-                filter: "blur(2px)",
-              },
-              {
-                left: `${rect.left}px`,
-                top: `${rect.top}px`,
-                width: `${rect.width}px`,
-                height: `${rect.height}px`,
+                left: `${currentRect.left}px`,
+                top: `${currentRect.top}px`,
+                width: `${currentRect.width}px`,
+                height: `${currentRect.height}px`,
                 opacity: 1,
                 filter: "blur(0)",
-                offset: 0.82,
               },
               {
                 left: `${rect.left}px`,
@@ -267,39 +297,36 @@ export function ProductImageTransition() {
               },
             ],
             {
-              duration: 760,
+              duration: window.innerWidth < 768 ? 920 : 1080,
               easing: "cubic-bezier(.16,1,.3,1)",
               fill: "forwards",
             },
           );
 
-          riseAnimation.finished
+          growAnimation.finished
             .then(() => {
               if (!target || pending.current !== active) return;
 
-              const revealTarget = () => {
+              const reveal = () => {
                 if (!target || pending.current !== active) return;
 
-                target.style.opacity = previousTargetOpacity || "1";
+                delete document.documentElement.dataset.productTransitionActive;
 
-                const fade = active.image.animate(
-                  [{ opacity: 1 }, { opacity: 0 }],
-                  {
-                    duration: 120,
-                    easing: "ease-out",
-                    fill: "forwards",
-                  },
-                );
+                window.requestAnimationFrame(() => {
+                  active.image.remove();
+                  active.backdrop.remove();
 
-                fade.finished
-                  .then(active.cleanup)
-                  .catch(active.cleanup);
+                  if (pending.current === active) {
+                    window.clearTimeout(active.timer);
+                    pending.current = null;
+                  }
+                });
               };
 
               if (target.complete && target.naturalWidth) {
-                revealTarget();
+                reveal();
               } else {
-                target.addEventListener("load", revealTarget, { once: true });
+                target.addEventListener("load", reveal, { once: true });
                 target.addEventListener("error", active.cleanup, { once: true });
               }
             })
@@ -311,19 +338,27 @@ export function ProductImageTransition() {
     observer.observe(document.body, { childList: true, subtree: true });
     tryAnimate();
 
-    return () => {
-      stopped = true;
-      observer.disconnect();
-      window.cancelAnimationFrame(frame);
-      riseAnimation?.cancel();
+    noTargetTimer = window.setTimeout(() => {
+      if (!stopped) active.cleanup();
+    }, 1600);
 
-      if (target) {
-        target.style.opacity = previousTargetOpacity;
-      }
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(noTargetTimer);
+      window.cancelAnimationFrame(frame);
+      growAnimation?.cancel();
     };
   }, [pathname]);
 
   useEffect(() => () => pending.current?.cleanup(), []);
 
-  return null;
+  return (
+    <style jsx global>{`
+      html[data-product-transition-active="true"]
+        [data-product-image-target]
+        img {
+        opacity: 0 !important;
+      }
+    `}</style>
+  );
 }
