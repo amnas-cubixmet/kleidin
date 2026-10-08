@@ -335,32 +335,7 @@ export function TopFashionHero({
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-4 pt-2">
-            <div className="flex min-w-0 items-center gap-2.5">
-              <span className={`shrink-0 text-[8px] font-bold ${fullscreen ? "text-white/70" : "text-black/50"}`}>
-                {String(index + 1).padStart(2, "0")} /{" "}
-                {String(slideCount).padStart(2, "0")}
-              </span>
 
-              <div className="flex max-w-[220px] flex-wrap items-center gap-1 md:max-w-none">
-                {slides.map((slide, slideIndex) => (
-                  <button
-                    key={slide.id}
-                    type="button"
-                    aria-label={`Show ${slide.title} slide`}
-                    aria-pressed={slideIndex === index}
-                    onClick={() => setIndex(slideIndex)}
-                    className={`min-h-6 shrink-0 border-y-[10px] ${fullscreen ? "border-transparent" : "border-[#fafafa]"} transition-all duration-300 ${
-                      slideIndex === index
-                        ? `w-8 ${fullscreen ? "bg-white" : "bg-black"} md:w-10`
-                        : `w-3 ${fullscreen ? "bg-white/35 hover:bg-white/60" : "bg-black/20 hover:bg-black/40"}`
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-
-          </div>
         </div>
       </div>
       <style jsx>{`
