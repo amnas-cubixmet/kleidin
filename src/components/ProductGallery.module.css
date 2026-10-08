@@ -5,7 +5,7 @@
 .controls button { pointer-events: auto; width: 44px; height: 44px; border: 1px solid #ddd; background: #fafafa; border-radius: 50%; cursor: pointer; color: #111; }
 .controls button:focus-visible { outline: 2px solid #001cac; outline-offset: 3px; }
 .controls span { background: #fafafa; color: #111; padding: 8px 12px; font-size: 12px; }
-@media (prefers-reduced-motion: reduce) { .gallery .image { object-fit: contain !important; animation: none; } }
+
 
 .gallery :global(.product-detail-floating-tag) { top: auto !important; bottom: 108px; left: 20px; }
 .info { background: #fafafa !important; border-radius: 0 !important; }

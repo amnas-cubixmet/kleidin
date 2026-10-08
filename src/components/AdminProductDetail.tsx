@@ -1,5 +1,6 @@
 "use client";
 
+import { useOfferClock } from "@/hooks/useOfferClock";
 import Link from "next/link";
 import {
   ChangeEvent,
@@ -13,7 +14,7 @@ import type {
   ProductOfferType,
   ProductStatus,
 } from "@/types/product";
-import { getProductOfferPrice, getProductOfferStatus } from "@/lib/product-offers";
+import { getProductOfferPrice, getProductOfferStatus, validateProductOffer } from "@/lib/product-offers";
 import { getProductPrimaryImage } from "@/lib/product-images";
 import { uploadAdminImage } from "@/lib/admin-image-upload";
 
@@ -144,14 +145,15 @@ export function AdminProductDetail({ productId }: { productId: string }) {
     [draft],
   );
 
+  const offerNow = useOfferClock(draft ?? undefined);
   const offerStatus = useMemo(
-    () => (draft ? getProductOfferStatus(draft) : "off"),
-    [draft],
+    () => (draft ? getProductOfferStatus(draft, offerNow) : "off"),
+    [draft, offerNow],
   );
 
   const offerPrice = useMemo(
-    () => (draft ? getProductOfferPrice(draft) : 0),
-    [draft],
+    () => (draft ? getProductOfferPrice(draft, offerNow) : 0),
+    [draft, offerNow],
   );
 
   function patch(patch: Partial<Product>) {
@@ -443,6 +445,12 @@ export function AdminProductDetail({ productId }: { productId: string }) {
 
   async function save() {
     if (!draft) return;
+    const offerError = validateProductOffer(draft);
+    if (offerError) {
+      setMessage(offerError);
+      window.requestAnimationFrame(() => document.getElementById("product-feedback")?.scrollIntoView({ behavior: "smooth", block: "center" }));
+      return;
+    }
     setSaving(true);
     setMessage("");
 
@@ -553,7 +561,7 @@ export function AdminProductDetail({ productId }: { productId: string }) {
       </div>
 
       {message ? (
-        <p className="mt-4 rounded-xl bg-white px-4 py-3 text-xs font-medium text-black/60 ring-1 ring-black/5">
+        <p id="product-feedback" role="status" aria-live="polite" className="mt-4 rounded-xl bg-white px-4 py-3 text-xs font-medium text-black/60 ring-1 ring-black/5">
           {message}
         </p>
       ) : null}
@@ -1045,7 +1053,7 @@ export function AdminProductDetail({ productId }: { productId: string }) {
                   />
                 </label>
                 <label>
-                  <span className={labelClass}>Starts at</span>
+                  <span className={labelClass}>Starts at (your local time)</span>
                   <input
                     type="datetime-local"
                     value={toLocalDateTime(draft.offerStartsAt)}
@@ -1056,7 +1064,7 @@ export function AdminProductDetail({ productId }: { productId: string }) {
                   />
                 </label>
                 <label>
-                  <span className={labelClass}>Ends at</span>
+                  <span className={labelClass}>Ends at (your local time)</span>
                   <input
                     type="datetime-local"
                     value={toLocalDateTime(draft.offerEndsAt)}

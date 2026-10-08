@@ -147,7 +147,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f6f8] text-[#111]">
+    <div data-admin-ui className="min-h-screen bg-[#f5f6f8] text-[#111]">
       <div className="mx-auto grid min-h-screen max-w-[1600px] md:grid-cols-[230px_1fr]">
         <aside className="border-b border-black/10 bg-white px-4 py-4 md:border-b-0 md:border-r md:p-5">
           <div className="flex items-center justify-between md:block">
@@ -207,7 +207,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             className="absolute inset-0 bg-black/25 backdrop-blur-[2px]"
           />
 
-          <div className="absolute bottom-[84px] left-3 right-3 overflow-hidden rounded-[22px] border border-black/10 bg-white p-2 shadow-2xl">
+          <div className="absolute bottom-[calc(84px+env(safe-area-inset-bottom))] left-3 right-3 max-h-[calc(100dvh-140px)] overflow-y-auto rounded-[22px] border border-black/10 bg-white p-2 shadow-2xl">
             <div className="px-3 pb-2 pt-2">
               <p className="text-[9px] font-bold uppercase tracking-[.14em] text-black/40">
                 More

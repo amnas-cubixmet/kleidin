@@ -1,5 +1,6 @@
 "use client";
 
+import { useOfferClock } from "@/hooks/useOfferClock";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -17,7 +18,7 @@ export function ProductDetailClient({
   whatsappNumber: string;
 }) {
   const variants = product.colorVariants ?? [];
-  const [now, setNow] = useState(() => Date.now());
+  const now = useOfferClock(product);
   const [selectedColor, setSelectedColor] = useState(
     variants[0]?.name ?? product.colors[0] ?? "Default",
   );
@@ -25,6 +26,7 @@ export function ProductDetailClient({
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [galleryPaused, setGalleryPaused] = useState(false);
   const touchStart = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   const selectedVariant =
     variants.find((variant) => variant.name === selectedColor) ?? variants[0];
@@ -35,10 +37,6 @@ export function ProductDetailClient({
   const soldOut = product.status === "sold-out" || stock <= 0;
   const offerActive = isProductOfferActive(product, now);
   const displayPrice = offerActive ? getProductOfferPrice(product, now) : product.price;
-  useEffect(() => {
-    const clock = window.setInterval(() => setNow(Date.now()), 30000);
-    return () => window.clearInterval(clock);
-  }, []);
 
   useEffect(() => {
     setActiveImageIndex(0);
@@ -72,10 +70,10 @@ export function ProductDetailClient({
         onPointerLeave={() => setGalleryPaused(false)}
         onFocusCapture={() => setGalleryPaused(true)}
         onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setGalleryPaused(false); }}
-        onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; setGalleryPaused(true); }}
+        onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; touchStartY.current = event.touches[0]?.clientY ?? null; setGalleryPaused(true); }}
         onTouchEnd={(event) => {
           const end = event.changedTouches[0]?.clientX;
-          if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 40) moveImage(end < touchStart.current ? 1 : -1);
+          if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 40 && Math.abs(end - touchStart.current) > Math.abs((event.changedTouches[0]?.clientY ?? 0) - (touchStartY.current ?? 0))) moveImage(end < touchStart.current ? 1 : -1);
           touchStart.current = null;
           setGalleryPaused(false);
         }}
@@ -162,7 +160,9 @@ export function ProductDetailClient({
               </span>
               {product.offerEndsAt ? (
                 <span className="text-[9px] font-medium text-black/50">
-                  Ends {new Date(product.offerEndsAt).toLocaleString("en-IN")}
+                  {product.offerCountdown
+                    ? `Ends in ${Math.floor(Math.max(0, Date.parse(product.offerEndsAt) - now) / 3600000)}h ${Math.floor(Math.max(0, Date.parse(product.offerEndsAt) - now) / 60000) % 60}m ${Math.floor(Math.max(0, Date.parse(product.offerEndsAt) - now) / 1000) % 60}s`
+                    : `Ends ${new Date(product.offerEndsAt).toLocaleString("en-IN")}`}
                 </span>
               ) : null}
             </div>

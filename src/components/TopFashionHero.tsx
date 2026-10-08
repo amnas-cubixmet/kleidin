@@ -77,6 +77,7 @@ export function TopFashionHero({
   fullscreen?: boolean;
 }) {
   const touchStart = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
   const [index, setIndex] = useState(0);
   const [scheduleNow, setScheduleNow] = useState(0);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
@@ -210,7 +211,7 @@ export function TopFashionHero({
         : "border border-black/10 bg-white !text-[#111111] hover:bg-[#f7f7f7]");
 
   return (
-    <section data-shop-reveal aria-label="Featured collections" aria-roledescription="carousel" className="w-full overflow-hidden" onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const start = touchStart.current; touchStart.current = null; const end = event.changedTouches[0]?.clientX; if (start !== null && end !== undefined && Math.abs(end - start) > 60) setIndex((value) => (value + (end < start ? 1 : -1) + slideCount) % slideCount); }}>
+    <section data-shop-reveal aria-label="Featured collections" aria-roledescription="carousel" className="w-full overflow-hidden" onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; touchStartY.current = event.touches[0]?.clientY ?? null; }} onTouchCancel={() => { touchStart.current = null; }} onTouchEnd={(event) => { const start = touchStart.current; touchStart.current = null; const end = event.changedTouches[0]?.clientX; if (start !== null && end !== undefined && Math.abs(end - start) > 60 && Math.abs(end - start) > Math.abs((event.changedTouches[0]?.clientY ?? 0) - (touchStartY.current ?? 0))) setIndex((value) => (value + (end < start ? 1 : -1) + slideCount) % slideCount); }}>
       <div className={fullscreen ? "relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-[#111] text-white" : "relative flex w-full flex-col overflow-hidden bg-[#fafafa] md:aspect-[16/9] md:min-h-[580px] text-[#111111]"}>
         <div className={fullscreen ? "absolute inset-0 overflow-hidden" : "relative order-2 aspect-[4/5] w-full overflow-hidden md:absolute md:inset-y-0 md:right-0 md:aspect-auto md:h-full md:w-1/2"}>
           {slides.map((slide, slideIndex) => (

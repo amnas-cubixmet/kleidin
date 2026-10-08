@@ -1,3 +1,7 @@
+"use client";
+
+import { useOfferClock } from "@/hooks/useOfferClock";
+import { getProductOfferPrice, isProductOfferActive } from "@/lib/product-offers";
 import Image from "next/image";
 import Link from "next/link";
 import { formatPrice, getProductWhatsappUrl } from "@/lib/format";
@@ -10,7 +14,11 @@ export function HomeProductGridCard({
   product: Product;
   whatsappNumber: string;
 }) {
-  const whatsappHref = getProductWhatsappUrl(product, whatsappNumber);
+  const now = useOfferClock(product);
+  const offerActive = isProductOfferActive(product, now);
+  const price = getProductOfferPrice(product, now);
+  const available = product.status === "active" && product.stock > 0;
+  const whatsappHref = available ? getProductWhatsappUrl(product, whatsappNumber) : "#";
 
   return (
     <article className="group relative min-w-0">
@@ -32,12 +40,13 @@ export function HomeProductGridCard({
       </div>
 
       <div className="pt-3">
-        <h3 className="m-0 truncate text-[11px] font-semibold tracking-[-.01em] text-[#111] sm:text-[12px]">
+        <h3 className="m-0 min-h-[2.5em] text-[11px] font-semibold tracking-[-.01em] text-[#111] sm:text-[12px]">
           {product.name}
         </h3>
 
         <p className="mt-1 text-[10px] font-medium text-black/52 sm:text-[11px]">
-          {formatPrice(product.price)}
+          {formatPrice(price)}
+          {offerActive ? <del className="ml-2 text-black/35">{formatPrice(product.price)}</del> : null}
         </p>
 
         <a
@@ -45,15 +54,16 @@ export function HomeProductGridCard({
           target={whatsappHref === "#" ? undefined : "_blank"}
           rel={whatsappHref === "#" ? undefined : "noreferrer"}
           aria-disabled={whatsappHref === "#" ? "true" : undefined}
+          onClick={(event) => { if (whatsappHref === "#") event.preventDefault(); }}
           className={
-            "relative z-20 mt-3 inline-flex min-h-9 w-full items-center justify-center rounded-full bg-[#001cac] px-3 text-[8px] font-semibold uppercase tracking-[.07em] text-white transition sm:min-h-10 sm:text-[9px] " +
+            "relative z-20 mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#001cac] px-3 text-[8px] font-semibold uppercase tracking-[.07em] text-white transition sm:min-h-11 sm:text-[9px] " +
             (whatsappHref === "#"
               ? "cursor-default opacity-70"
               : "hover:opacity-90")
           }
           aria-label={"Order " + product.name + " on WhatsApp"}
         >
-          WhatsApp
+          {available ? (whatsappHref === "#" ? "Unavailable" : "WhatsApp") : "Sold out"}
         </a>
       </div>
     </article>

@@ -56,8 +56,7 @@ export function ProductImageTransition() {
 
       if (
         !source?.complete ||
-        !source.naturalWidth ||
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        !source.naturalWidth
       ) {
         return;
       }

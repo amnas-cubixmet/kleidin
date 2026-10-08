@@ -7,6 +7,8 @@ import {
   useRef,
   useState,
 } from "react";
+import { useOfferClock } from "@/hooks/useOfferClock";
+import { getProductOfferPrice } from "@/lib/product-offers";
 import Link from "next/link";
 import type { Product } from "@/types/product";
 
@@ -32,6 +34,7 @@ type SliderItem = {
   description: string;
   price: number;
   demo: boolean;
+  source?: Product;
 };
 
 export function AutoOutfitHero({ products }: { products: Product[] }) {
@@ -84,6 +87,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         description: product.description,
         price: product.price,
         demo: false,
+        source: product,
       };
     });
   }, [products]);
@@ -116,8 +120,11 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
   const railFrameRef = useRef<number | null>(null);
   const pauseTimerRef = useRef<number | null>(null);
   const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   const active = items[activeIndex] ?? items[0];
+  const offerNow = useOfferClock(active?.source);
+  const activePrice = active?.source ? getProductOfferPrice(active.source, offerNow) : active?.price;
 
 
   useEffect(() => {
@@ -216,11 +223,13 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
   return (
     <section
       className="relative h-[100svh] min-h-[100svh] w-screen overflow-hidden md:h-[100dvh] md:min-h-[100dvh]"
+      data-product-hero
       aria-label="Product selector"
       onTouchStart={(event) => {
-        touchStartX.current = event.touches[0]?.clientX ?? null;
+        touchStartX.current = event.touches[0]?.clientX ?? null; touchStartY.current = event.touches[0]?.clientY ?? null;
         setPaused(true);
       }}
+      onTouchCancel={() => { touchStartX.current = null; setPaused(false); }}
       onTouchEnd={(event) => {
         const start = touchStartX.current;
         const end = event.changedTouches[0]?.clientX;
@@ -229,7 +238,7 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         if (start !== null && end !== undefined) {
           const delta = end - start;
 
-          if (Math.abs(delta) > 55) {
+          if (Math.abs(delta) > 55 && Math.abs(delta) > Math.abs((event.changedTouches[0]?.clientY ?? 0) - (touchStartY.current ?? 0))) {
             selectProduct(
               activeIndex + (delta < 0 ? 1 : -1),
               true,
@@ -278,13 +287,13 @@ export function AutoOutfitHero({ products }: { products: Product[] }) {
         </>
       ) : null}
 
-      {!active.modelImage ? <div key={"product-" + active.id} className="selected-product-image pointer-events-none absolute bottom-[210px] right-4 z-20 h-[30svh] w-[60%] sm:bottom-[220px] sm:right-10 sm:h-[55svh] sm:w-[44%]"><img src={active.image} alt={active.name} className="h-full w-full object-contain" /></div> : null}
+      {!active.modelImage ? <div data-hero-product-image key={"product-" + active.id} className="selected-product-image pointer-events-none absolute bottom-[210px] right-4 z-20 h-[30svh] w-[60%] sm:bottom-[220px] sm:right-10 sm:h-[55svh] sm:w-[44%]"><img src={active.image} alt={active.name} className="h-full w-full object-contain" /></div> : null}
 
       <div data-motion-owned key={"details-" + active.id} className="selected-product-details absolute left-5 right-5 top-[10%] z-30 max-w-[560px] rounded-sm bg-white/85 p-5 text-[#111] backdrop-blur-sm sm:left-10 sm:right-auto sm:top-[15%] sm:p-8 lg:left-16">
         <p className="mb-3 text-[10px] font-semibold uppercase tracking-[.14em]">KLEID.IN / {active.category}</p>
         <h1 className="selected-product-name text-[clamp(32px,5vw,68px)] font-semibold leading-[.95] tracking-[-.05em]">{active.name}</h1>
         <p className="mt-4 max-w-[420px] text-sm leading-6">{active.description}</p>
-        <p className="selected-product-price mt-4 text-lg font-semibold">₹{active.price.toLocaleString("en-IN")}</p>
+        <p className="selected-product-price mt-4 text-lg font-semibold">₹{activePrice?.toLocaleString("en-IN")}</p>
         <Link href={active.demo ? "/#all-products" : `/products/${active.slug}`} onTouchStart={(event) => event.stopPropagation()} onClick={(event) => event.stopPropagation()} className="selected-product-button mt-5 inline-flex min-h-11 items-center bg-[#111] px-6 text-xs font-semibold !text-white">{active.demo ? "Explore products" : "View product"} <span className="ml-4">↗</span></Link>
       </div>
 

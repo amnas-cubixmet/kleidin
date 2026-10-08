@@ -1,8 +1,9 @@
 "use client";
 
+import { useOfferClock } from "@/hooks/useOfferClock";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Product } from "@/types/product";
 import { formatPrice, getProductWhatsappUrl } from "@/lib/format";
 import { useStoreSettings } from "@/components/StoreSettingsContext";
@@ -32,12 +33,7 @@ function getOfferTimer(endAt: string | undefined, now: number) {
 export function ProductCard({ product }: { product: Product }) {
   const settings = useStoreSettings();
   const variants = product.colorVariants ?? [];
-  const [now, setNow] = useState(() => Date.now());
-  const needsOfferClock = Boolean(
-    (product.offerEnabled &&
-      (product.offerStartsAt || product.offerEndsAt || product.offerCountdown)) ||
-      product.saleEndsAt,
-  );
+  const now = useOfferClock(product);
   const [selectedColor, setSelectedColor] = useState(
     variants[0]?.name ?? product.colors[0] ?? "Default",
   );
@@ -65,13 +61,6 @@ export function ProductCard({ product }: { product: Product }) {
     hasOffer && originalPrice && originalPrice > displayPrice
       ? Math.round(((originalPrice - displayPrice) / originalPrice) * 100)
       : 0;
-
-  useEffect(() => {
-    if (!needsOfferClock) return;
-
-    const clock = window.setInterval(() => setNow(Date.now()), 30000);
-    return () => window.clearInterval(clock);
-  }, [needsOfferClock]);
 
   const offerEndAt =
     activeProductOffer && product.offerCountdown

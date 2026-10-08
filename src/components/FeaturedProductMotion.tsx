@@ -47,6 +47,7 @@ export function FeaturedProductMotion() {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
   const reducedMotion = false;
+  const framesRef = useRef<number[]>([]);
   const transitionTimerRef = useRef<number | null>(null);
 
 
@@ -59,6 +60,7 @@ export function FeaturedProductMotion() {
     if (items.length <= 1 || reducedMotion) return;
 
     const changeProduct = () => {
+      if (document.hidden) return;
       setVisible(false);
 
       if (transitionTimerRef.current !== null) {
@@ -68,9 +70,9 @@ export function FeaturedProductMotion() {
       transitionTimerRef.current = window.setTimeout(() => {
         setIndex((current) => (current + 1) % items.length);
 
-        window.requestAnimationFrame(() => {
-          window.requestAnimationFrame(() => setVisible(true));
-        });
+        framesRef.current = [window.requestAnimationFrame(() => {
+          framesRef.current.push(window.requestAnimationFrame(() => setVisible(true)));
+        })];
 
         transitionTimerRef.current = null;
       }, 380);
@@ -80,6 +82,8 @@ export function FeaturedProductMotion() {
 
     return () => {
       window.clearInterval(timer);
+      framesRef.current.forEach((frame) => window.cancelAnimationFrame(frame));
+      framesRef.current = [];
       if (transitionTimerRef.current !== null) {
         window.clearTimeout(transitionTimerRef.current);
         transitionTimerRef.current = null;
@@ -94,6 +98,7 @@ export function FeaturedProductMotion() {
   return (
     <section
       className="relative overflow-hidden bg-[#f7f5ef] text-[#111]"
+      data-motion-owned
       aria-label="Featured products"
     >
       <div className="mx-auto grid min-h-[68svh] w-full max-w-[1440px] grid-cols-1 lg:min-h-[74dvh] lg:grid-cols-2">
@@ -145,7 +150,7 @@ export function FeaturedProductMotion() {
       <style jsx>{`
         .featured-motion-copy,
         .featured-motion-image {
-          will-change: opacity, transform, filter;
+          will-change: opacity, transform;
         }
 
         .featured-motion-copy {
