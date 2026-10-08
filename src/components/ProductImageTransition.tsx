@@ -11,6 +11,37 @@ type Pending = {
   cleanup: () => void;
 };
 
+function getCenteredRect(sourceRect: DOMRect) {
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  const aspect = sourceRect.width / Math.max(sourceRect.height, 1);
+
+  const maxWidth = viewportWidth < 768
+    ? Math.min(viewportWidth * 0.34, 150)
+    : Math.min(viewportWidth * 0.22, 220);
+  const maxHeight = viewportWidth < 768
+    ? Math.min(viewportHeight * 0.30, 220)
+    : Math.min(viewportHeight * 0.34, 300);
+
+  let width = Math.min(sourceRect.width * 0.58, maxWidth);
+  let height = width / aspect;
+
+  if (height > maxHeight) {
+    height = maxHeight;
+    width = height * aspect;
+  }
+
+  width = Math.max(width, 72);
+  height = Math.max(height, 88);
+
+  return {
+    left: (viewportWidth - width) / 2,
+    top: (viewportHeight - height) / 2,
+    width,
+    height,
+  };
+}
+
 export function ProductImageTransition() {
   const router = useRouter();
   const pathname = usePathname();
@@ -29,7 +60,7 @@ export function ProductImageTransition() {
       }
 
       const link = (event.target as Element)?.closest<HTMLAnchorElement>(
-        "a[data-product-transition]",
+        'a[data-product-transition], a[href^="/products/"]',
       );
 
       if (!link || link.target === "_blank" || link.hasAttribute("download")) {
@@ -97,8 +128,9 @@ export function ProductImageTransition() {
         zIndex: "10000",
         pointerEvents: "none",
         borderRadius: sourceStyle.borderRadius,
+        transform: "translate3d(0,0,0)",
         transformOrigin: "center center",
-        willChange: "left, top, width, height, transform, opacity",
+        willChange: "left, top, width, height, opacity, filter",
         maxWidth: "none",
       });
 
@@ -120,50 +152,59 @@ export function ProductImageTransition() {
         backdrop,
         href: url.pathname,
         cleanup,
-        timer: window.setTimeout(cleanup, 4500),
+        timer: window.setTimeout(cleanup, 5200),
       };
 
       pending.current = active;
 
-      backdrop.animate([{ opacity: 0 }, { opacity: 0.96 }], {
-        duration: 300,
-        easing: "cubic-bezier(.4,0,.2,1)",
+      const center = getCenteredRect(sourceRect);
+
+      backdrop.animate([{ opacity: 0 }, { opacity: 0.94 }], {
+        duration: 420,
+        easing: "cubic-bezier(.22,.61,.36,1)",
         fill: "forwards",
       });
 
-      const shrink = image.animate(
+      const moveToCenter = image.animate(
         [
           {
-            transform: "translate3d(0, 0, 0) scale(1)",
+            left: `${sourceRect.left}px`,
+            top: `${sourceRect.top}px`,
+            width: `${sourceRect.width}px`,
+            height: `${sourceRect.height}px`,
             opacity: 1,
+            filter: "blur(0)",
           },
           {
-            transform: "translate3d(0, 26px, 0) scale(.78)",
+            left: `${center.left}px`,
+            top: `${center.top}px`,
+            width: `${center.width}px`,
+            height: `${center.height}px`,
             opacity: 1,
+            filter: "blur(.4px)",
           },
         ],
         {
-          duration: 320,
-          easing: "cubic-bezier(.22,.61,.36,1)",
+          duration: 560,
+          easing: "cubic-bezier(.16,1,.3,1)",
           fill: "forwards",
         },
       );
 
-      shrink.finished
+      moveToCenter.finished
         .catch(() => undefined)
         .then(() => {
           if (pending.current !== active) return;
 
-          const shrunkRect = image.getBoundingClientRect();
           Object.assign(image.style, {
-            left: `${shrunkRect.left}px`,
-            top: `${shrunkRect.top}px`,
-            width: `${shrunkRect.width}px`,
-            height: `${shrunkRect.height}px`,
-            transform: "none",
+            left: `${center.left}px`,
+            top: `${center.top}px`,
+            width: `${center.width}px`,
+            height: `${center.height}px`,
+            filter: "blur(0)",
           });
 
-          shrink.cancel();
+          moveToCenter.cancel();
           router.push(url.pathname + url.search, { scroll: true });
         });
     }
@@ -216,23 +257,13 @@ export function ProductImageTransition() {
           const rect = target.getBoundingClientRect();
           const targetStyle = getComputedStyle(target);
           const image = active.image;
-
-          const startScale = window.innerWidth < 768 ? 0.64 : 0.58;
-          const startWidth = Math.max(rect.width * startScale, 1);
-          const startHeight = Math.max(rect.height * startScale, 1);
-          const startLeft = rect.left + (rect.width - startWidth) / 2;
-          const riseDistance = Math.min(
-            Math.max(window.innerHeight * 0.12, 64),
-            112,
-          );
-          const startTop =
-            rect.top + (rect.height - startHeight) / 2 + riseDistance;
+          const currentRect = image.getBoundingClientRect();
 
           Object.assign(image.style, {
-            left: `${startLeft}px`,
-            top: `${startTop}px`,
-            width: `${startWidth}px`,
-            height: `${startHeight}px`,
+            left: `${currentRect.left}px`,
+            top: `${currentRect.top}px`,
+            width: `${currentRect.width}px`,
+            height: `${currentRect.height}px`,
             objectFit: targetStyle.objectFit,
             objectPosition: targetStyle.objectPosition,
             borderRadius: targetStyle.borderRadius,
@@ -241,8 +272,8 @@ export function ProductImageTransition() {
             filter: "blur(0)",
           });
 
-          active.backdrop.animate([{ opacity: 0.96 }, { opacity: 0 }], {
-            duration: 900,
+          active.backdrop.animate([{ opacity: 0.94 }, { opacity: 0 }], {
+            duration: 980,
             easing: "cubic-bezier(.16,1,.3,1)",
             fill: "forwards",
           });
@@ -250,21 +281,12 @@ export function ProductImageTransition() {
           growAnimation = image.animate(
             [
               {
-                left: `${startLeft}px`,
-                top: `${startTop}px`,
-                width: `${startWidth}px`,
-                height: `${startHeight}px`,
-                opacity: 0.88,
-                transform: "translate3d(0, 0, 0)",
-              },
-              {
-                left: `${rect.left}px`,
-                top: `${rect.top + 8}px`,
-                width: `${rect.width}px`,
-                height: `${rect.height}px`,
+                left: `${currentRect.left}px`,
+                top: `${currentRect.top}px`,
+                width: `${currentRect.width}px`,
+                height: `${currentRect.height}px`,
                 opacity: 1,
-                transform: "translate3d(0, 0, 0)",
-                offset: 0.88,
+                filter: "blur(0)",
               },
               {
                 left: `${rect.left}px`,
@@ -272,11 +294,11 @@ export function ProductImageTransition() {
                 width: `${rect.width}px`,
                 height: `${rect.height}px`,
                 opacity: 1,
-                transform: "translate3d(0, 0, 0)",
+                filter: "blur(0)",
               },
             ],
             {
-              duration: 1050,
+              duration: window.innerWidth < 768 ? 920 : 1080,
               easing: "cubic-bezier(.16,1,.3,1)",
               fill: "forwards",
             },
@@ -319,7 +341,7 @@ export function ProductImageTransition() {
 
     noTargetTimer = window.setTimeout(() => {
       if (!stopped) active.cleanup();
-    }, 1400);
+    }, 1600);
 
     return () => {
       observer.disconnect();
