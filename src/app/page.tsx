@@ -102,7 +102,7 @@ export default async function Home() {
       {settings.homeAboutEnabled ? <HomeAboutSection settings={settings} /> : null}
 
 
-      {settings.homeCatalogEnabled ? <HomeAllProductsSection products={activeProducts} demo={demo} title={settings.homeCatalogTitle} eyebrow={settings.homeCatalogEyebrow} whatsappNumber={settings.whatsappNumber} /> : null}
+      {settings.homeCatalogEnabled ? <HomeAllProductsSection products={activeProducts} demo={false} title={settings.homeCatalogTitle} eyebrow={settings.homeCatalogEyebrow} whatsappNumber={settings.whatsappNumber} /> : null}
 
       {settings.homeDealersEnabled ? <HomeDealerSection settings={settings} /> : null}
 

@@ -81,6 +81,7 @@ export function ProductDetailClient({
       >
         {image ? (
           <Image
+          unoptimized={product.demo}
             key={image}
             src={image}
             alt={`${product.name} — ${selectedColor}`}
@@ -120,6 +121,7 @@ export function ProductDetailClient({
                 aria-pressed={index === activeImageIndex}
               >
                 <Image
+          unoptimized={product.demo}
                   src={url}
                   alt={product.name + " image " + (index + 1)}
                   fill
@@ -220,7 +222,7 @@ export function ProductDetailClient({
           <div className="product-attribute-grid">
             <div>
               <span>Availability</span>
-              <strong>{soldOut ? "Sold out" : `${stock} in stock`}</strong>
+              <strong>{product.demo ? "Demo preview" : soldOut ? "Sold out" : `${stock} in stock`}</strong>
             </div>
             <div>
               <span>Selected</span>
@@ -244,7 +246,7 @@ export function ProductDetailClient({
                 target="_blank"
                 rel="noreferrer"
               >
-                Order on WhatsApp
+                {product.demo ? "Enquire on WhatsApp" : "Order on WhatsApp"}
               </a>
             ) : (
               <button

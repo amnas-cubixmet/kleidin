@@ -1,10 +1,8 @@
-import { getMongoEnvironment } from "@/lib/server-env";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ProductDetailClient } from "@/components/ProductDetailClient";
 import { getCatalogProductBySlug } from "@/lib/catalog";
-import { getHomeDemoProductBySlug } from "@/lib/home-demo-products";
 import { getStoreSettings } from "@/lib/site-settings";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +14,7 @@ export async function generateMetadata({
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
   const product =
-    (await getCatalogProductBySlug(slug)) ?? (!getMongoEnvironment() ? getHomeDemoProductBySlug(slug) : undefined);
+    await getCatalogProductBySlug(slug);
 
   if (!product) return { title: "Product not found" };
 
@@ -32,7 +30,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     getCatalogProductBySlug(slug),
     getStoreSettings(),
   ]);
-  const product = catalogProduct ?? (!getMongoEnvironment() ? getHomeDemoProductBySlug(slug) : undefined);
+  const product = catalogProduct;
 
   if (!product || product.status === "draft") notFound();
 
