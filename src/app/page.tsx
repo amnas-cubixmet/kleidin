@@ -10,7 +10,6 @@ import { HomeAboutSection } from "@/components/HomeAboutSection";
 import { HomeAllProductsSection } from "@/components/HomeAllProductsSection";
 import { HomeDealerSection } from "@/components/HomeDealerSection";
 import { HomeSpotlightSection } from "@/components/HomeSpotlightSection";
-import { HomeScrollMotion } from "@/components/HomeScrollMotion";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 
@@ -93,7 +92,7 @@ export default async function Home() {
     <div className="reference-home">
       {settings.homeAnimationBarsEnabled ? <HomepageAnimationBars bars={animationBars} placement="before-hero" /> : null}
       {settings.homeProductHeroEnabled ? productSlides.length ? <TopFashionHero products={activeProducts} heroSlides={productSlides} />
-        : settings.homeDefaultHeroEnabled ? <AutoOutfitHero products={showcaseProducts} demo={demo} /> : null : null}
+        : <AutoOutfitHero products={showcaseProducts} demo={demo} /> : null}
       {settings.homeAnimationBarsEnabled ? <HomepageAnimationBars bars={animationBars} placement="after-hero" /> : null}
 
       {settings.homeCustomOffersEnabled ? <TopFashionHero products={[]} heroSlides={customSlides.length ? customSlides : customOfferSlides} fullscreen /> : null}
