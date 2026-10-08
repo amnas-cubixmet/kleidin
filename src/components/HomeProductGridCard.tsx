@@ -31,11 +31,12 @@ export function HomeProductGridCard({
 
       <div className="relative aspect-[4/5] overflow-hidden bg-[#f1f1ef]">
         <Image
+          unoptimized={product.demo}
           src={product.image || "/images/product-1.png"}
           alt={product.name}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.025]"
+          className="object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-[1.025]"
         />
       </div>
 
