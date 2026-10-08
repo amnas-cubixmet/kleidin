@@ -91,8 +91,8 @@ export default async function Home() {
   return (
     <div className="reference-home">
       {settings.homeAnimationBarsEnabled ? <HomepageAnimationBars bars={animationBars} placement="before-hero" /> : null}
-      {settings.homeProductHeroEnabled ? productSlides.length ? <TopFashionHero products={activeProducts} heroSlides={productSlides} />
-        : <AutoOutfitHero products={showcaseProducts} demo={demo} /> : null}
+      {settings.homeProductHeroEnabled ? <AutoOutfitHero products={showcaseProducts} /> : null}
+      {settings.homeProductHeroEnabled && productSlides.length ? <TopFashionHero products={activeProducts} heroSlides={productSlides} /> : null}
       {settings.homeAnimationBarsEnabled ? <HomepageAnimationBars bars={animationBars} placement="after-hero" /> : null}
 
       {settings.homeCustomOffersEnabled ? <TopFashionHero products={[]} heroSlides={customSlides.length ? customSlides : customOfferSlides} fullscreen /> : null}
