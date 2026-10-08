@@ -37,7 +37,7 @@ type SliderItem = {
   source?: Product;
 };
 
-export function AutoOutfitHero({ products, demo = true }: { products: Product[]; demo?: boolean }) {
+export function AutoOutfitHero({ products }: { products: Product[] }) {
   const items = useMemo<SliderItem[]>(() => {
     const localPairs = [
       {
@@ -60,7 +60,6 @@ export function AutoOutfitHero({ products, demo = true }: { products: Product[];
       .slice(0, 20);
 
     if (!activeProducts.length) {
-      if (!demo) return [];
       return localPairs.map((pair, index) => ({
         id: "demo-selector-" + index,
         name: index === 0 ? "Essential White Tee" : "Daily White Tee",
@@ -91,7 +90,7 @@ export function AutoOutfitHero({ products, demo = true }: { products: Product[];
         source: product,
       };
     });
-  }, [products, demo]);
+  }, [products]);
 
   const railProducts = useMemo(() => {
     const source = items.slice(0, 20);
@@ -290,13 +289,24 @@ export function AutoOutfitHero({ products, demo = true }: { products: Product[];
 
       {!active.modelImage ? <div data-hero-product-image key={"product-" + active.id} className="selected-product-image pointer-events-none absolute bottom-[210px] right-4 z-20 h-[30svh] w-[60%] sm:bottom-[220px] sm:right-10 sm:h-[55svh] sm:w-[44%]"><img src={active.image} alt={active.name} className="h-full w-full object-contain" /></div> : null}
 
-      <div data-motion-owned key={"details-" + active.id} className="selected-product-details absolute left-5 right-5 top-[10%] z-30 max-w-[560px] rounded-sm bg-white/85 p-5 text-[#111] backdrop-blur-sm sm:left-10 sm:right-auto sm:top-[15%] sm:p-8 lg:left-16">
+      {active.demo ? <>
+        <div className="absolute left-5 top-[20%] z-30 text-white sm:left-10 lg:left-16">
+          <p className="mb-4 text-[10px] font-semibold uppercase tracking-[.14em]">KLEID.IN / DAILY</p>
+          <h1 className="text-[clamp(36px,6vw,86px)] font-semibold leading-[.92] tracking-[-.05em]">ESSENTIALS<br />WITHOUT<br />NOISE</h1>
+        </div>
+        <div data-motion-owned key={"details-" + active.id} className="selected-product-details absolute right-5 top-[46%] z-30 w-[48%] max-w-[320px] text-white sm:right-10 lg:right-16">
+          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[.14em]">{active.category}</p>
+          <h2 className="selected-product-name text-[clamp(24px,4vw,48px)] font-semibold leading-[.95] tracking-[-.04em]">{active.name}</h2>
+          <p className="selected-product-price mt-5 text-sm font-semibold">₹{activePrice?.toLocaleString("en-IN")}</p>
+          <Link href="/products" onTouchStart={(event) => event.stopPropagation()} onClick={(event) => event.stopPropagation()} className="selected-product-button mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-[10px] font-semibold uppercase tracking-[.08em] !text-black">Explore products</Link>
+        </div>
+      </> : <div data-motion-owned key={"details-" + active.id} className="selected-product-details absolute left-5 right-5 top-[10%] z-30 max-w-[560px] rounded-sm bg-white/85 p-5 text-[#111] backdrop-blur-sm sm:left-10 sm:right-auto sm:top-[15%] sm:p-8 lg:left-16">
         <p className="mb-3 text-[10px] font-semibold uppercase tracking-[.14em]">KLEID.IN / {active.category}</p>
         <h1 className="selected-product-name text-[clamp(32px,5vw,68px)] font-semibold leading-[.95] tracking-[-.05em]">{active.name}</h1>
         <p className="mt-4 max-w-[420px] text-sm leading-6">{active.description}</p>
         <p className="selected-product-price mt-4 text-lg font-semibold">₹{activePrice?.toLocaleString("en-IN")}</p>
         <Link href={active.demo ? "/#all-products" : `/products/${active.slug}`} onTouchStart={(event) => event.stopPropagation()} onClick={(event) => event.stopPropagation()} className="selected-product-button mt-5 inline-flex min-h-11 items-center bg-[#111] px-6 text-xs font-semibold !text-white">{active.demo ? "Explore products" : "View product"} <span className="ml-4">↗</span></Link>
-      </div>
+      </div>}
 
       <div className="absolute inset-x-0 bottom-[76px] z-40 flex h-[112px] items-center sm:bottom-[82px] sm:h-[122px] lg:bottom-[86px] lg:h-[132px]">
         <div
