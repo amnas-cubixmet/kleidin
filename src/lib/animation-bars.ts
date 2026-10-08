@@ -5,9 +5,5 @@ import { listAnimationBars } from "@/lib/mongodb-animation-bars";
 export const getActiveAnimationBars = cache(async () => {
   if (!getMongoEnvironment()) return [];
 
-  try {
-    return await listAnimationBars({ enabledOnly: true });
-  } catch {
-    return [];
-  }
+  return listAnimationBars({ enabledOnly: true });
 });

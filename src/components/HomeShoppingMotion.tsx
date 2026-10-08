@@ -39,6 +39,7 @@ export function HomeShoppingMotion() {
       context.add(() => {
         root.querySelectorAll<HTMLElement>(selector).forEach((element) => {
           if (animations.has(element)) return;
+          if (element.closest("[data-motion-owned]")) return;
           // Don't layer transforms on an explicitly animated parent.
           if (element.parentElement?.closest("[data-shop-reveal], article, .product-card")) return;
           const tween = gsap.fromTo(element,

@@ -15,18 +15,10 @@ export function TryOnCamera({ product }: { product: Product }) {
   const [scale, setScale] = useState(100);
   const [x, setX] = useState(0);
   const [y, setY] = useState(8);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const reducedMotion = false;
   const [message, setMessage] = useState(
     "Camera stays on this device. No photo upload is used.",
   );
-
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(media.matches);
-    const listener = () => setReducedMotion(media.matches);
-    media.addEventListener?.("change", listener);
-    return () => media.removeEventListener?.("change", listener);
-  }, []);
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((track) => track.stop());

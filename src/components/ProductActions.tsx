@@ -1,5 +1,6 @@
 "use client";
 
+import { useOfferClock } from "@/hooks/useOfferClock";
 import { useState } from "react";
 import type { Product } from "@/types/product";
 import { getProductWhatsappUrl } from "@/lib/format";
@@ -17,6 +18,7 @@ export function ProductActions({
   compact = false,
 }: Props) {
   const settings = useStoreSettings();
+  useOfferClock(product);
   const [size, setSize] = useState(product.sizes[0] ?? "One size");
   const selectedColor = product.colors[0] ?? "Default";
   const disabled = product.status !== "active" || product.stock <= 0;
@@ -39,6 +41,7 @@ export function ProductActions({
           <button
             type="button"
             key={option}
+            aria-pressed={size === option}
             className={size === option ? "active" : ""}
             onClick={() => setSize(option)}
           >

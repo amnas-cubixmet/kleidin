@@ -1,4 +1,5 @@
-export function HomeAboutSection() {
+import type { StoreSettings } from "@/types/commerce";
+export function HomeAboutSection({ settings }: { settings: StoreSettings }) {
   const details = [
     ["Fabric", "Selected for feel"],
     ["GSM", "Balanced weight"],
@@ -11,19 +12,17 @@ export function HomeAboutSection() {
       <div className="mx-auto grid w-full max-w-[1280px] gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">
         <div>
           <p className="m-0 text-[9px] font-semibold uppercase tracking-[.16em] text-white/55">
-            About KLEID.IN
+            {settings.homeBrandEyebrow}
           </p>
 
           <h2 className="mt-4 max-w-[430px] text-[clamp(38px,5vw,72px)] font-semibold leading-[.92] tracking-[-.055em]">
-            Everyday pieces, made with attention to the details.
+            {settings.homeBrandTitle}
           </h2>
         </div>
 
         <div className="flex flex-col justify-end">
           <p className="max-w-[620px] text-[14px] leading-7 text-white/72 sm:text-[15px]">
-            We focus on the things you actually feel when you wear a garment:
-            fabric weight, GSM, fit, structure and finish. Clean essentials,
-            designed to be worn often and styled without effort.
+            {settings.aboutHeroBody}
           </p>
 
           <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8 pt-2 sm:grid-cols-4">

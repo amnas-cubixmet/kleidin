@@ -1,3 +1,9 @@
+import { getActiveHeroSlides } from "@/lib/hero";
+import { getActiveAnimationBars } from "@/lib/animation-bars";
+import { getMongoEnvironment } from "@/lib/server-env";
+import { HomepageAnimationBars } from "@/components/HomepageAnimationBars";
+import { TopFashionHero } from "@/components/TopFashionHero";
+import { customOfferSlides } from "@/data/custom-offer-slides";
 import { AutoOutfitHero } from "@/components/AutoOutfitHero";
 import { FeaturedProductMotion } from "@/components/FeaturedProductMotion";
 import { HomeAboutSection } from "@/components/HomeAboutSection";
@@ -35,9 +41,11 @@ function productSlugFromUrl(value: string) {
 }
 
 export default async function Home() {
-  const [products, settings] = await Promise.all([
+  const [products, settings, heroSlides, animationBars] = await Promise.all([
     getCatalogProducts(),
     getStoreSettings(),
+    getActiveHeroSlides(),
+    getActiveAnimationBars(),
   ]);
 
   const activeProducts = products
@@ -72,27 +80,37 @@ export default async function Home() {
     ...activeProducts.filter((product) => !linkedIds.has(product.id)),
   ].slice(0, 20);
 
+  const demo = !getMongoEnvironment();
+  const featuredProducts = activeProducts.filter((product) => product.featuredAnimationEnabled || product.featured)
+    .sort((a, b) => (a.animationSortOrder ?? a.featuredSortOrder ?? 100) - (b.animationSortOrder ?? b.featuredSortOrder ?? 100));
+  const customSlides = heroSlides.filter((slide) => slide.kind !== "product").slice(0, 5);
+  const productSlides = heroSlides.filter((slide) => slide.kind === "product");
+
   const mostLoved = products.find(
     (product) => product.spotlight && product.status === "active",
   );
   return (
     <div className="reference-home">
-        <HomeScrollMotion />
-      <AutoOutfitHero products={showcaseProducts} />
+      {settings.homeAnimationBarsEnabled ? <HomepageAnimationBars bars={animationBars} placement="before-hero" /> : null}
+      {settings.homeProductHeroEnabled ? productSlides.length ? <TopFashionHero products={activeProducts} heroSlides={productSlides} />
+        : settings.homeDefaultHeroEnabled ? <AutoOutfitHero products={showcaseProducts} demo={demo} /> : null : null}
+      {settings.homeAnimationBarsEnabled ? <HomepageAnimationBars bars={animationBars} placement="after-hero" /> : null}
 
-      <FeaturedProductMotion />
+      {settings.homeCustomOffersEnabled ? <TopFashionHero products={[]} heroSlides={customSlides.length ? customSlides : customOfferSlides} fullscreen /> : null}
 
-      <HomeAboutSection />
+      {settings.homeFeaturedEnabled ? <FeaturedProductMotion products={featuredProducts} demo={demo} /> : null}
+
+      {settings.homeAboutEnabled ? <HomeAboutSection settings={settings} /> : null}
 
 
-      <HomeAllProductsSection whatsappNumber={settings.whatsappNumber} />
+      {settings.homeCatalogEnabled ? <HomeAllProductsSection products={activeProducts} demo={demo} title={settings.homeCatalogTitle} eyebrow={settings.homeCatalogEyebrow} whatsappNumber={settings.whatsappNumber} /> : null}
 
-      <HomeDealerSection />
+      {settings.homeDealersEnabled ? <HomeDealerSection settings={settings} /> : null}
 
-      <HomeSpotlightSection
+      {settings.homeSpotlightEnabled ? <HomeSpotlightSection
         product={mostLoved}
         badge={settings.homeSpotlightBadge}
-      />
+      /> : null}
     </div>
   );
 }

@@ -46,7 +46,8 @@ ADMIN_PASSWORD=
 ADMIN_SESSION_SECRET=
 
 CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_UPLOAD_PRESET=kleidin_unsigned
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 ```
 
 Never commit real secrets to GitHub. Configure the same private variables in Vercel Project Settings for Production.
@@ -95,3 +96,7 @@ MongoDB indexes are created automatically when the backend connects.
 ## Frontend fallback
 
 If MongoDB is not configured or temporarily unavailable, the public storefront falls back to the local data/config in `src/data` so the site can still render.
+
+Section visibility is managed in Admin → Settings → Edit settings → Section visibility. All new section switches default to On, including for existing databases. Save applies the switches to the storefront without deleting content. Footer visibility applies across public pages.
+
+Copy `.env.example` to `.env.local` for local setup, or set these variables on the hosting server. MongoDB, admin credentials and signed Cloudinary upload credentials are required for live administration. `/api/health` returns 503 until these are configured and the database responds; Admin Settings shows the connection status. Without MongoDB configuration the storefront is a demo. A configured database failure displays an error rather than sample inventory.

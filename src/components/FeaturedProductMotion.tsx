@@ -1,7 +1,11 @@
 "use client";
 
+import type { Product } from "@/types/product";
+import { getProductPrimaryImage } from "@/lib/product-images";
+import { getProductOfferPrice } from "@/lib/product-offers";
+import { useOfferClock } from "@/hooks/useOfferClock";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type DemoFeaturedProduct = {
   id: string;
@@ -41,12 +45,16 @@ function money(value: number) {
   }).format(value);
 }
 
-export function FeaturedProductMotion() {
-  const items = demoProducts;
+export function FeaturedProductMotion({ products = [], demo = true }: { products?: Product[]; demo?: boolean }) {
+  const items = useMemo(() => products.length ? products.map((product) => ({
+    id: product.id, name: product.name, description: product.description,
+    price: product.price, image: getProductPrimaryImage(product) || "", href: `/products/${product.slug}`,
+  })) : demo ? demoProducts : [], [products, demo]);
 
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
   const reducedMotion = false;
+  const framesRef = useRef<number[]>([]);
   const transitionTimerRef = useRef<number | null>(null);
 
 
@@ -59,6 +67,7 @@ export function FeaturedProductMotion() {
     if (items.length <= 1 || reducedMotion) return;
 
     const changeProduct = () => {
+      if (document.hidden) return;
       setVisible(false);
 
       if (transitionTimerRef.current !== null) {
@@ -68,9 +77,9 @@ export function FeaturedProductMotion() {
       transitionTimerRef.current = window.setTimeout(() => {
         setIndex((current) => (current + 1) % items.length);
 
-        window.requestAnimationFrame(() => {
-          window.requestAnimationFrame(() => setVisible(true));
-        });
+        framesRef.current = [window.requestAnimationFrame(() => {
+          framesRef.current.push(window.requestAnimationFrame(() => setVisible(true)));
+        })];
 
         transitionTimerRef.current = null;
       }, 380);
@@ -80,6 +89,8 @@ export function FeaturedProductMotion() {
 
     return () => {
       window.clearInterval(timer);
+      framesRef.current.forEach((frame) => window.cancelAnimationFrame(frame));
+      framesRef.current = [];
       if (transitionTimerRef.current !== null) {
         window.clearTimeout(transitionTimerRef.current);
         transitionTimerRef.current = null;
@@ -88,12 +99,16 @@ export function FeaturedProductMotion() {
   }, [items.length, reducedMotion]);
 
   const current = items[index] ?? items[0];
+  const selectedProduct = products.find((product) => product.id === current?.id);
+  const offerNow = useOfferClock(selectedProduct);
+  const displayPrice = selectedProduct ? getProductOfferPrice(selectedProduct, offerNow) : current?.price ?? 0;
   if (!current) return null;
 
 
   return (
     <section
       className="relative overflow-hidden bg-[#f7f5ef] text-[#111]"
+      data-motion-owned
       aria-label="Featured products"
     >
       <div className="mx-auto grid min-h-[68svh] w-full max-w-[1440px] grid-cols-1 lg:min-h-[74dvh] lg:grid-cols-2">
@@ -112,7 +127,7 @@ export function FeaturedProductMotion() {
 
             <div className="mt-7 flex flex-wrap items-center gap-4">
               <strong className="text-[17px] font-semibold tracking-[-.02em]">
-                {money(current.price)}
+                {money(displayPrice)}
               </strong>
 
               <Link
@@ -145,7 +160,7 @@ export function FeaturedProductMotion() {
       <style jsx>{`
         .featured-motion-copy,
         .featured-motion-image {
-          will-change: opacity, transform, filter;
+          will-change: opacity, transform;
         }
 
         .featured-motion-copy {

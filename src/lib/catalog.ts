@@ -12,11 +12,7 @@ export const getCatalogProducts = cache(async () => {
     return fallbackProducts.filter((product) => product.status !== "draft");
   }
 
-  try {
-    return await listProducts({ activeOnly: true });
-  } catch {
-    return fallbackProducts.filter((product) => product.status !== "draft");
-  }
+  return listProducts({ activeOnly: true });
 });
 
 export const getCatalogProductBySlug = cache(async (slug: string) => {
@@ -28,15 +24,7 @@ export const getCatalogProductBySlug = cache(async (slug: string) => {
     );
   }
 
-  try {
-    return await getProductBySlug(slug);
-  } catch {
-    return (
-      fallbackProducts.find(
-        (product) => product.slug === slug && product.status !== "draft",
-      ) ?? null
-    );
-  }
+  return getProductBySlug(slug);
 });
 
 export const getWholesaleProductBySlug = cache(async (slug: string) => {
@@ -51,16 +39,5 @@ export const getWholesaleProductBySlug = cache(async (slug: string) => {
     );
   }
 
-  try {
-    return await getWholesaleFromDb(slug);
-  } catch {
-    return (
-      fallbackProducts.find(
-        (product) =>
-          product.wholesaleEnabled &&
-          (product.wholesaleSlug ?? product.slug + "-dealer") === slug &&
-          product.status !== "draft",
-      ) ?? null
-    );
-  }
+  return getWholesaleFromDb(slug);
 });

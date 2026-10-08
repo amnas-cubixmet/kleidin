@@ -126,21 +126,7 @@ export function SiteChrome({
       >
         {children}
       </main>
-      <Footer settings={settings} />
-
-      <style jsx global>{`
-        @media (max-width: 640px) {
-          main.site-main-home-overlay {
-            padding-top: 0 !important;
-            margin-top: 0 !important;
-          }
-
-          main.site-main-home-overlay > .reference-home {
-            margin-top: 0 !important;
-            padding-top: 0 !important;
-          }
-        }
-      `}</style>
+      {settings.footerEnabled ? <Footer settings={settings} /> : null}
     </StoreSettingsProvider>
   );
 }

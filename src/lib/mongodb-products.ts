@@ -1,3 +1,4 @@
+import { validateProductOffer } from "@/lib/product-offers";
 import "server-only";
 
 import { randomUUID } from "node:crypto";
@@ -315,6 +316,8 @@ export async function createProduct(input: Record<string, unknown>) {
   const db = await getDb();
   const now = new Date();
   const product = productFields(input);
+  const offerError = validateProductOffer(product);
+  if (offerError) throw new Error(offerError);
   const result = await db.collection("products").insertOne({
     id: randomUUID(),
     ...product,
@@ -343,6 +346,8 @@ export async function updateProduct(
   if (!_id) return null;
   const db = await getDb();
   const product = productFields(input, current);
+  const offerError = validateProductOffer(product);
+  if (offerError) throw new Error(offerError);
 
   const now = new Date();
 

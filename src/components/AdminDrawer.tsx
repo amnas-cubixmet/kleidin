@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export function AdminDrawer({
   open,
@@ -18,6 +18,18 @@ export function AdminDrawer({
   children: ReactNode;
   footer?: ReactNode;
 }) {
+  const dialogRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const frame = window.requestAnimationFrame(() => {
+      dialogRef.current?.querySelector<HTMLElement>("button, input, select, textarea, a[href]")?.focus();
+    });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      if (previousFocus?.isConnected) previousFocus.focus();
+    };
+  }, [open]);
   useEffect(() => {
     if (!open) return;
 
@@ -26,6 +38,18 @@ export function AdminDrawer({
 
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
+      if (event.key === "Tab") {
+        const controls = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
+          'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex="0"]',
+        ) ?? []).filter((element) => element.getClientRects().length > 0);
+        const first = controls[0];
+        const last = controls.at(-1);
+        if (event.shiftKey && (document.activeElement === first || !dialogRef.current?.contains(document.activeElement))) {
+          event.preventDefault(); last?.focus();
+        } else if (!event.shiftKey && (document.activeElement === last || !dialogRef.current?.contains(document.activeElement))) {
+          event.preventDefault(); first?.focus();
+        }
+      }
     };
 
     window.addEventListener("keydown", onKey);
@@ -39,7 +63,7 @@ export function AdminDrawer({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[120]">
+    <div className="fixed inset-0 z-[200]">
       <button
         type="button"
         aria-label="Close panel"
@@ -48,9 +72,11 @@ export function AdminDrawer({
       />
 
       <section
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={title}
+        data-admin-ui
         className="absolute inset-y-0 right-0 flex w-full flex-col bg-[#f7f7f8] shadow-2xl sm:max-w-[720px]"
       >
         <header className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-black/10 bg-white px-4 py-4 sm:px-6">
@@ -76,12 +102,12 @@ export function AdminDrawer({
           </button>
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6">
+        <div className="min-h-0 flex-1 overscroll-contain overflow-y-auto px-4 py-5 sm:px-6">
           {children}
         </div>
 
         {footer ? (
-          <footer className="sticky bottom-0 z-10 border-t border-black/10 bg-white px-4 py-4 sm:px-6">
+          <footer className="sticky bottom-0 z-10 border-t border-black/10 bg-white px-4 pt-4 pb-[max(16px,env(safe-area-inset-bottom))] sm:px-6">
             {footer}
           </footer>
         ) : null}

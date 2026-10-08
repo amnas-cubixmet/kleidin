@@ -6,9 +6,5 @@ import { getStoreSettingsFromDb } from "@/lib/mongodb-settings";
 export const getStoreSettings = cache(async () => {
   if (!getMongoEnvironment()) return localStoreSettings;
 
-  try {
-    return await getStoreSettingsFromDb();
-  } catch {
-    return localStoreSettings;
-  }
+  return getStoreSettingsFromDb();
 });

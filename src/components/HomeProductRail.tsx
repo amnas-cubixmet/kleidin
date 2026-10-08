@@ -44,7 +44,7 @@ export function HomeProductRail({ products }: { products: Product[] }) {
           <button type="button" onClick={() => move(1)} aria-label="Next products">→</button>
         </div>
       </div>
-      <div ref={rail} className={styles.rail} onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)} onTouchStart={() => setPaused(true)} onTouchEnd={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setPaused(false); }}>
+      <div ref={rail} className={styles.rail} onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)} onTouchStart={() => setPaused(true)} onTouchEnd={() => setPaused(false)} onTouchCancel={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setPaused(false); }}>
         {products.map((product) => <div key={product.id} className={styles.railItem}><ProductCard product={product} /></div>)}
       </div>
     </section>

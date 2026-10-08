@@ -9,6 +9,16 @@ export type StoreSettings = {
   facebookUrl: string;
   supportEmail: string;
   footerTagline: string;
+  homeProductHeroEnabled: boolean;
+  homeCustomOffersEnabled: boolean;
+  homeFeaturedEnabled: boolean;
+  homeAboutEnabled: boolean;
+  homeCatalogEnabled: boolean;
+  homeDealersEnabled: boolean;
+  homeSpotlightEnabled: boolean;
+  homeAnimationBarsEnabled: boolean;
+  footerEnabled: boolean;
+
   announcementEnabled: boolean;
   announcementText: string;
   announcementButtonLabel: string;
