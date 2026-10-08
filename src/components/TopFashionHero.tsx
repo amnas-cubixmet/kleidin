@@ -360,9 +360,6 @@ export function TopFashionHero({
               </div>
             </div>
 
-            <span className={`hidden text-[8px] font-bold uppercase tracking-[.12em] ${fullscreen ? "text-white/60" : "text-black/30"} sm:block`}>
-              Daily essentials
-            </span>
           </div>
         </div>
       </div>
