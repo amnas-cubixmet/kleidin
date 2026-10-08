@@ -10,7 +10,6 @@ import {
 } from "react";
 import { useOfferClock } from "@/hooks/useOfferClock";
 import { getProductOfferPrice } from "@/lib/product-offers";
-import Link from "next/link";
 import type { Product } from "@/types/product";
 
 function getProductImage(product: Product) {
