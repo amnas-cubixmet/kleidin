@@ -1,9 +1,9 @@
-import { getActiveGlobalOffer, getActiveHeroSlides } from "@/lib/hero";
+import { getHomepageHeroCampaigns } from "@/lib/homepage-hero";
 import { getActiveAnimationBars } from "@/lib/animation-bars";
 import { getMongoEnvironment } from "@/lib/server-env";
 import { HomepageAnimationBars } from "@/components/HomepageAnimationBars";
-import { TopFashionHero } from "@/components/TopFashionHero";
-import type { HeroSlideConfig } from "@/data/hero-slides";
+import { HomepageHeroV2 } from "@/components/HomepageHeroV2";
+import type { HomepageHeroCampaign } from "@/types/homepage-hero";
 import { FeaturedProductMotion } from "@/components/FeaturedProductMotion";
 import { HomeAboutSection } from "@/components/HomeAboutSection";
 import { HomeAllProductsSection } from "@/components/HomeAllProductsSection";
@@ -15,10 +15,10 @@ import { getStoreSettings } from "@/lib/site-settings";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [products, settings, heroSlides, animationBars] = await Promise.all([
+  const [products, settings, heroCampaigns, animationBars] = await Promise.all([
     getCatalogProducts(),
     getStoreSettings(),
-    getActiveHeroSlides(),
+    getHomepageHeroCampaigns(),
     getActiveAnimationBars(),
   ]);
 
@@ -33,43 +33,33 @@ export default async function Home() {
   const demo = !getMongoEnvironment();
   const featuredProducts = activeProducts.filter((product) => product.featuredAnimationEnabled || product.featured)
     .sort((a, b) => (a.animationSortOrder ?? a.featuredSortOrder ?? 100) - (b.animationSortOrder ?? b.featuredSortOrder ?? 100));
-  const activeOfferHero = getActiveGlobalOffer(heroSlides);
-  const managedHeroSlides = [
-    ...heroSlides.filter((slide) => slide.kind === "custom"),
-    ...(activeOfferHero ? [activeOfferHero] : []),
-  ]
-    .sort((a, b) => a.order - b.order)
-    .slice(0, 8);
-
-  const defaultHeroSlide: HeroSlideConfig | null =
+  const fallbackHero: HomepageHeroCampaign | null =
     settings.homeDefaultHeroEnabled
       ? {
-          id: "default-hero",
-          kind: "custom",
-          productId: null,
-          label: settings.homeDefaultHeroLabel,
-          brand: settings.homeDefaultHeroBrand,
+          id: "fallback-hero",
+          mode: "image",
+          eyebrow: settings.homeDefaultHeroLabel,
           title: settings.homeDefaultHeroTitle,
           subtitle: settings.homeDefaultHeroSubtitle,
-          button: settings.homeDefaultHeroButtonLabel,
-          href: settings.homeDefaultHeroButtonHref || "/#all-products",
-          badge: "",
+          buttonLabel: settings.homeDefaultHeroButtonLabel,
+          buttonHref:
+            settings.homeDefaultHeroButtonHref || "/#all-products",
           imageUrl: settings.homeDefaultHeroImageUrl,
+          imagePosition: settings.homeDefaultHeroImagePosition,
+          enabled: true,
+          priority: -1000,
           startsAt: null,
           endsAt: null,
           showCountdown: false,
-          ctaStyle: "light",
-          imagePosition: settings.homeDefaultHeroImagePosition,
-          enabled: true,
-          order: 0,
+          offerType: "percentage",
+          offerValue: 0,
+          offerBadge: "",
         }
       : null;
 
-  const homepageHeroSlides = managedHeroSlides.length
-    ? managedHeroSlides
-    : defaultHeroSlide
-      ? [defaultHeroSlide]
-      : [];
+  const homepageHeroCampaigns = fallbackHero
+    ? [fallbackHero, ...heroCampaigns]
+    : heroCampaigns;
 
   const mostLoved = products.find(
     (product) => product.spotlight && product.status === "active",
@@ -80,12 +70,8 @@ export default async function Home() {
         <HomepageAnimationBars bars={animationBars} placement="before-hero" />
       ) : null}
 
-      {settings.homeProductHeroEnabled && homepageHeroSlides.length ? (
-        <TopFashionHero
-          products={activeProducts}
-          heroSlides={homepageHeroSlides}
-          fullscreen
-        />
+      {settings.homeProductHeroEnabled && homepageHeroCampaigns.length ? (
+        <HomepageHeroV2 campaigns={homepageHeroCampaigns} />
       ) : null}
 
       {settings.homeAnimationBarsEnabled ? (
