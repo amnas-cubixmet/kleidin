@@ -17,6 +17,7 @@ const MAX_FILE_SIZE = 15 * 1024 * 1024;
 const ALLOWED_FOLDERS = new Set([
   "kleidin/products",
   "kleidin/hero",
+  "kleidin/homepage-hero-v2",
   "kleidin/uploads",
 ]);
 
