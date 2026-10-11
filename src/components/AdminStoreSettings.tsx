@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import { AdminDrawer } from "@/components/AdminDrawer";
 import type { StoreSettings } from "@/types/commerce";
 
-const sectionControls = [["demoProductsEnabled", "Temporary demo products"], ["homeProductHeroEnabled", "Product hero"], ["homeProductSelectorEnabled", "Shirt product selector"], ["homeCustomOffersEnabled", "Custom offer slider"], ["homeFeaturedEnabled", "Featured product animation"], ["homeAboutEnabled", "About section"], ["homeCatalogEnabled", "Product catalog"], ["homeDealersEnabled", "Dealer section"], ["homeSpotlightEnabled", "Spotlight product"], ["homeAnimationBarsEnabled", "Scrolling animation bars"], ["footerEnabled", "Footer (all storefront pages)"]] as const;
+const sectionControls = [["demoProductsEnabled", "Temporary demo products"], ["homeProductHeroEnabled", "Hero section"], ["homeFeaturedEnabled", "Featured product animation"], ["homeAboutEnabled", "About section"], ["homeCatalogEnabled", "Product catalog"], ["homeDealersEnabled", "Dealer section"], ["homeSpotlightEnabled", "Spotlight product"], ["homeAnimationBarsEnabled", "Scrolling animation bars"], ["footerEnabled", "Footer (all storefront pages)"]] as const;
+
+const legacyHomepageFields = new Set([
+  "homeProductSelectorEnabled",
+  "homeCustomOffersEnabled",
+]);
 
 function label(key: string) {
   return key
@@ -124,6 +129,7 @@ export function AdminStoreSettings() {
       !sectionControls.some(([field]) => field === key) &&
       key !== "aboutPrinciples" &&
       key !== "homeShowcaseProductUrls" &&
+      !legacyHomepageFields.has(key) &&
       !key.startsWith("homeDefaultHero") &&
       !key.startsWith("announcement"),
   ) as Array<[keyof StoreSettings, StoreSettings[keyof StoreSettings]]>;
@@ -253,43 +259,6 @@ export function AdminStoreSettings() {
             ))}
           </div>
         </fieldset>
-
-        <div className="mb-4 rounded-2xl bg-white p-4 ring-1 ring-black/5">
-          <p className="text-[10px] font-bold uppercase tracking-[.08em] text-black/50">
-            Homepage product selector
-          </p>
-          <p className="mt-1 text-xs leading-5 text-black/45">
-            Paste up to four product URLs. Only these linked products will appear in the selector.
-          </p>
-
-          <div className="mt-4 grid gap-3">
-            {Array.from({ length: 4 }, (_, index) => (
-              <label key={index} className="block">
-                <span className="text-[10px] font-bold uppercase tracking-[.08em] text-black/50">
-                  Product URL {index + 1}
-                </span>
-                <input
-                  value={settings.homeShowcaseProductUrls[index] ?? ""}
-                  onChange={(event) => {
-                    const next = Array.from(
-                      { length: 4 },
-                      (_, currentIndex) =>
-                        settings.homeShowcaseProductUrls[currentIndex] ?? "",
-                    );
-                    next[index] = event.target.value;
-
-                    update(
-                      "homeShowcaseProductUrls",
-                      next.map((item) => item.trim()).filter(Boolean),
-                    );
-                  }}
-                  placeholder="/products/product-slug"
-                  className={controlClass}
-                />
-              </label>
-            ))}
-          </div>
-        </div>
 
         <div className="mb-4 rounded-2xl bg-white p-4 ring-1 ring-black/5">
           <div className="flex items-center justify-between gap-3">
