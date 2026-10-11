@@ -60,13 +60,16 @@ export function HomepageHeroV2({
     seconds: 0,
   });
 
-  const liveCampaigns = useMemo(
-    () =>
-      [...campaigns]
-        .filter((campaign) => isHomepageHeroLive(campaign, now))
-        .sort((a, b) => a.priority - b.priority),
-    [campaigns, now],
-  );
+  const liveCampaigns = useMemo(() => {
+    const live = [...campaigns]
+      .filter((campaign) => isHomepageHeroLive(campaign, now))
+      .sort((a, b) => a.priority - b.priority);
+
+    const managed = live.filter((campaign) => campaign.id !== "fallback-hero");
+    return managed.length
+      ? managed
+      : live.filter((campaign) => campaign.id === "fallback-hero");
+  }, [campaigns, now]);
 
   const current = liveCampaigns[index] ?? liveCampaigns[0];
 
