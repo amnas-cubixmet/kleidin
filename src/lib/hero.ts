@@ -40,7 +40,8 @@ export function getActiveGlobalOffer(
         isHeroSlideLive(slide, now) &&
         Number(slide.offerValue ?? 0) > 0,
     )
-    .sort((a, b) => a.order - b.order)[0] ?? null;
+    .sort((a, b) => a.order - b.order)
+    .at(-1) ?? null;
 }
 
 export function applyGlobalOffer(
@@ -49,11 +50,18 @@ export function applyGlobalOffer(
 ): Product {
   if (!offer) return product;
 
+  const type = offer.offerType ?? "percentage";
+  const requestedValue = Math.max(0, Number(offer.offerValue ?? 0));
+  const value =
+    type === "percentage"
+      ? Math.min(requestedValue, 100)
+      : Math.min(requestedValue, product.price);
+
   return {
     ...product,
     offerEnabled: true,
-    offerType: offer.offerType ?? "percentage",
-    offerValue: Number(offer.offerValue ?? 0),
+    offerType: type,
+    offerValue: value,
     offerLabel:
       offer.discountText || offer.label || offer.title || "Store offer",
     offerBadge: offer.badge || offer.discountText || "Offer",
