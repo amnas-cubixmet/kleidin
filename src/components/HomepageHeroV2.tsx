@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { HomepageHeroCampaign } from "@/types/homepage-hero";
-import { isHomepageHeroLive } from "@/lib/homepage-hero";
 
 type TimeLeft = {
   days: number;
@@ -29,6 +28,25 @@ function getTimeLeft(value?: string | null): TimeLeft {
 
 function pad(value: number) {
   return String(value).padStart(2, "0");
+}
+
+function isCampaignLive(
+  campaign: HomepageHeroCampaign,
+  now: number,
+) {
+  if (!campaign.enabled) return false;
+
+  const starts = campaign.startsAt
+    ? new Date(campaign.startsAt).getTime()
+    : null;
+  const ends = campaign.endsAt
+    ? new Date(campaign.endsAt).getTime()
+    : null;
+
+  if (starts !== null && Number.isFinite(starts) && now < starts) return false;
+  if (ends !== null && Number.isFinite(ends) && now >= ends) return false;
+
+  return true;
 }
 
 function offerText(campaign: HomepageHeroCampaign) {
@@ -62,13 +80,39 @@ export function HomepageHeroV2({
 
   const liveCampaigns = useMemo(() => {
     const live = [...campaigns]
-      .filter((campaign) => isHomepageHeroLive(campaign, now))
-      .sort((a, b) => a.priority - b.priority);
+      .filter((campaign) => isCampaignLive(campaign, now));
 
-    const managed = live.filter((campaign) => campaign.id !== "fallback-hero");
-    return managed.length
-      ? managed
-      : live.filter((campaign) => campaign.id === "fallback-hero");
+    const imageCampaigns = live.filter(
+      (campaign) =>
+        campaign.id !== "fallback-hero" &&
+        campaign.mode === "image",
+    );
+
+    const activeOffer = live
+      .filter(
+        (campaign) =>
+          campaign.id !== "fallback-hero" &&
+          campaign.mode === "offer" &&
+          campaign.offerValue > 0,
+      )
+      .sort((a, b) => {
+        if (a.priority !== b.priority) return b.priority - a.priority;
+        return (
+          new Date(b.updatedAt || 0).getTime() -
+          new Date(a.updatedAt || 0).getTime()
+        );
+      })[0];
+
+    const managed = [
+      ...imageCampaigns,
+      ...(activeOffer ? [activeOffer] : []),
+    ].sort((a, b) => a.priority - b.priority);
+
+    if (managed.length) return managed;
+
+    return live.filter(
+      (campaign) => campaign.id === "fallback-hero",
+    );
   }, [campaigns, now]);
 
   const current = liveCampaigns[index] ?? liveCampaigns[0];
