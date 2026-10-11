@@ -1,4 +1,4 @@
-import { AdminHeroManager } from "@/components/AdminHeroManager";
+import { AdminHomepageHeroManager } from "@/components/AdminHomepageHeroManager";
 import { AdminAnimationBarManager } from "@/components/AdminAnimationBarManager";
 
 export const dynamic = "force-dynamic";
@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export default function AdminHomepagePage() {
   return (
     <>
-      <AdminHeroManager />
+      <AdminHomepageHeroManager />
       <AdminAnimationBarManager />
     </>
   );
