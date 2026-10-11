@@ -1,4 +1,4 @@
-import { getActiveHeroSlides } from "@/lib/hero";
+import { getActiveGlobalOffer, getActiveHeroSlides } from "@/lib/hero";
 import { getActiveAnimationBars } from "@/lib/animation-bars";
 import { getMongoEnvironment } from "@/lib/server-env";
 import { HomepageAnimationBars } from "@/components/HomepageAnimationBars";
@@ -13,30 +13,6 @@ import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 
 export const dynamic = "force-dynamic";
-
-function productSlugFromUrl(value: string) {
-  const input = value.trim();
-  if (!input) return "";
-
-  try {
-    const url = new URL(input, "https://kleid.in");
-    const parts = url.pathname.split("/").filter(Boolean);
-    const productsIndex = parts.lastIndexOf("products");
-
-    if (productsIndex >= 0 && parts[productsIndex + 1]) {
-      return decodeURIComponent(parts[productsIndex + 1]).toLowerCase();
-    }
-
-    return decodeURIComponent(parts.at(-1) || "").toLowerCase();
-  } catch {
-    return input
-      .replace(/^\/+|\/+$/g, "")
-      .split("/")
-      .filter(Boolean)
-      .at(-1)
-      ?.toLowerCase() || "";
-  }
-}
 
 export default async function Home() {
   const [products, settings, heroSlides, animationBars] = await Promise.all([
@@ -57,8 +33,12 @@ export default async function Home() {
   const demo = !getMongoEnvironment();
   const featuredProducts = activeProducts.filter((product) => product.featuredAnimationEnabled || product.featured)
     .sort((a, b) => (a.animationSortOrder ?? a.featuredSortOrder ?? 100) - (b.animationSortOrder ?? b.featuredSortOrder ?? 100));
-  const managedHeroSlides = heroSlides
-    .filter((slide) => slide.kind === "custom" || slide.kind === "offer")
+  const activeOfferHero = getActiveGlobalOffer(heroSlides);
+  const managedHeroSlides = [
+    ...heroSlides.filter((slide) => slide.kind === "custom"),
+    ...(activeOfferHero ? [activeOfferHero] : []),
+  ]
+    .sort((a, b) => a.order - b.order)
     .slice(0, 8);
 
   const defaultHeroSlide: HeroSlideConfig | null =
