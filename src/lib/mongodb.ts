@@ -133,6 +133,7 @@ async function ensureIndexes(db: Db) {
   const inventory = db.collection("inventoryMovements");
   const settings = db.collection("siteSettings");
   const hero = db.collection("heroSlides");
+  const homepageHero = db.collection("homepageHeroCampaigns");
   const animationBars = db.collection("animationBars");
 
   await Promise.all([
@@ -193,6 +194,8 @@ async function ensureIndexes(db: Db) {
 
     ensureIndex(hero, { id: 1 }, { unique: true, name: "hero_id_unique" }),
     ensureIndex(hero, { enabled: 1, order: 1 }, { name: "hero_enabled_order" }),
+    ensureIndex(homepageHero, { id: 1 }, { unique: true, name: "homepage_hero_id_unique" }),
+    ensureIndex(homepageHero, { enabled: 1, priority: 1 }, { name: "homepage_hero_enabled_priority" }),
 
     ensureIndex(
       animationBars,
