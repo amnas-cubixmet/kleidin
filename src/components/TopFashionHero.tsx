@@ -129,7 +129,7 @@ export function TopFashionHero({
           button: slide.button || (product ? "View product" : "Explore"),
           href:
             slide.href ||
-            (product ? `/products/${product.slug}` : "/products"),
+            (product ? `/products/${product.slug}` : "/#all-products"),
           image,
           meta: product
             ? `${product.name} · ${money(product.price)}`
@@ -207,7 +207,9 @@ export function TopFashionHero({
     (current.ctaStyle === "dark"
       ? "bg-[#111111] !text-white hover:bg-black"
       : current.ctaStyle === "outline"
-        ? "border border-black/25 bg-transparent !text-[#111111] hover:bg-black/[.04]"
+        ? fullscreen
+          ? "border border-white/40 bg-transparent !text-white hover:bg-white/10"
+          : "border border-black/25 bg-transparent !text-[#111111] hover:bg-black/[.04]"
         : "border border-black/10 bg-white !text-[#111111] hover:bg-[#f7f7f7]");
 
   return (
@@ -295,12 +297,22 @@ export function TopFashionHero({
                   ].map(([label, value]) => (
                     <div
                       key={String(label)}
-                      className="min-w-[58px] border border-black/10 bg-white/65 px-3 py-2.5 backdrop-blur-sm"
+                      className={
+                        "min-w-[58px] px-3 py-2.5 backdrop-blur-sm " +
+                        (fullscreen
+                          ? "border border-white/20 bg-black/20 text-white"
+                          : "border border-black/10 bg-white/65 text-[#111]")
+                      }
                     >
                       <strong className="block text-[17px] font-bold md:text-[20px]">
                         {pad(Number(value))}
                       </strong>
-                      <span className="text-[6px] uppercase tracking-[0.1em] text-black/35">
+                      <span
+                        className={
+                          "text-[6px] uppercase tracking-[0.1em] " +
+                          (fullscreen ? "text-white/60" : "text-black/35")
+                        }
+                      >
                         {label}
                       </span>
                     </div>
