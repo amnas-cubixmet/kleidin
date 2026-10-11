@@ -3,6 +3,7 @@
 type UploadFolder =
   | "kleidin/products"
   | "kleidin/hero"
+  | "kleidin/homepage-hero-v2"
   | "kleidin/uploads";
 
 type UploadResponse = {
