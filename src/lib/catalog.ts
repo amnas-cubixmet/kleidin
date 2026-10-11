@@ -2,10 +2,10 @@ import { cache } from "react";
 import { homeDemoProducts } from "@/lib/home-demo-products";
 import { getStoreSettings } from "@/lib/site-settings";
 import {
-  applyGlobalOffer,
-  getActiveGlobalOffer,
-  getActiveHeroSlides,
-} from "@/lib/hero";
+  applyHomepageOffer,
+  getActiveHomepageOffer,
+  getHomepageHeroCampaigns,
+} from "@/lib/homepage-hero";
 import { products as fallbackProducts } from "@/data/products";
 import { getMongoEnvironment } from "@/lib/server-env";
 import {
@@ -15,17 +15,17 @@ import {
 } from "@/lib/mongodb-products";
 
 export const getCatalogProducts = cache(async () => {
-  const [products, settings, heroSlides] = await Promise.all([
+  const [products, settings, heroCampaigns] = await Promise.all([
     getMongoEnvironment()
       ? listProducts({ activeOnly: true })
       : Promise.resolve(
           fallbackProducts.filter((product) => product.status !== "draft"),
         ),
     getStoreSettings(),
-    getActiveHeroSlides(),
+    getHomepageHeroCampaigns(),
   ]);
 
-  const offer = getActiveGlobalOffer(heroSlides);
+  const offer = getActiveHomepageOffer(heroCampaigns);
   const merged = settings.demoProductsEnabled
     ? [
         ...products,
@@ -35,13 +35,13 @@ export const getCatalogProducts = cache(async () => {
       ]
     : products;
 
-  return merged.map((product) => applyGlobalOffer(product, offer));
+  return merged.map((product) => applyHomepageOffer(product, offer));
 });
 
 export const getCatalogProductBySlug = cache(async (slug: string) => {
-  const [settings, heroSlides] = await Promise.all([
+  const [settings, heroCampaigns] = await Promise.all([
     getStoreSettings(),
-    getActiveHeroSlides(),
+    getHomepageHeroCampaigns(),
   ]);
 
   const realProduct = getMongoEnvironment()
@@ -56,7 +56,10 @@ export const getCatalogProductBySlug = cache(async (slug: string) => {
 
   if (!product) return null;
 
-  return applyGlobalOffer(product, getActiveGlobalOffer(heroSlides));
+  return applyHomepageOffer(
+    product,
+    getActiveHomepageOffer(heroCampaigns),
+  );
 });
 
 export const getWholesaleProductBySlug = cache(async (slug: string) => {
