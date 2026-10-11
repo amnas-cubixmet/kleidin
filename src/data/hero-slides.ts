@@ -1,6 +1,7 @@
 export type HeroSlideKind = "product" | "offer" | "collection" | "custom";
 export type HeroCtaStyle = "light" | "dark" | "outline";
 export type HeroImagePosition = "left" | "center" | "right";
+export type HeroOfferType = "percentage" | "fixed" | "sale-price";
 
 export type HeroSlideConfig = {
   id: string;
@@ -14,6 +15,8 @@ export type HeroSlideConfig = {
   href: string;
   badge: string;
   discountText?: string;
+  offerType?: HeroOfferType;
+  offerValue?: number;
   imageUrl: string;
   imagePublicId?: string | null;
   startsAt?: string | null;
