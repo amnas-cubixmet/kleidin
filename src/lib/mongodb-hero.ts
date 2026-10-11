@@ -6,6 +6,7 @@ import { getDb } from "@/lib/mongodb";
 import type {
   HeroCtaStyle,
   HeroImagePosition,
+  HeroOfferType,
   HeroSlideConfig,
   HeroSlideKind,
 } from "@/data/hero-slides";
@@ -39,6 +40,12 @@ function imagePosition(value: unknown): HeroImagePosition {
   return value === "left" || value === "right" ? value : "center";
 }
 
+function offerType(value: unknown): HeroOfferType {
+  return value === "fixed" || value === "sale-price"
+    ? value
+    : "percentage";
+}
+
 function toSlide(doc: Document): HeroSlideConfig {
   return {
     id: String(doc._id),
@@ -51,6 +58,8 @@ function toSlide(doc: Document): HeroSlideConfig {
     href: text(doc.href),
     badge: text(doc.badge),
     discountText: text(doc.discountText) || undefined,
+    offerType: offerType(doc.offerType),
+    offerValue: number(doc.offerValue),
     imageUrl: text(doc.imageUrl),
     startsAt: text(doc.startsAt) || null,
     endsAt: text(doc.endsAt) || null,
@@ -74,6 +83,14 @@ function fields(input: Record<string, unknown>, current?: HeroSlideConfig) {
     badge: text(input.badge, current?.badge),
     discountText:
       text(input.discountText, current?.discountText) || undefined,
+    offerType:
+      input.offerType !== undefined
+        ? offerType(input.offerType)
+        : current?.offerType ?? "percentage",
+    offerValue:
+      input.offerValue !== undefined
+        ? number(input.offerValue)
+        : current?.offerValue ?? 0,
     imageUrl: text(input.imageUrl, current?.imageUrl),
     startsAt: text(input.startsAt, current?.startsAt ?? "") || null,
     endsAt: text(input.endsAt, current?.endsAt ?? "") || null,
