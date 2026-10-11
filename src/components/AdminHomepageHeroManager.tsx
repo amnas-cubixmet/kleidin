@@ -297,7 +297,9 @@ export function AdminHomepageHeroManager() {
         throw new Error(data.error || "Could not save homepage hero.");
       }
 
-      closeDrawer();
+      setDrawerOpen(false);
+      setEditingId(null);
+      setDraft(makeDraft());
       setMessage(
         draft.mode === "offer"
           ? "Offer hero saved. Live offer will apply to all products."
