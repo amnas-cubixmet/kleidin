@@ -3,8 +3,7 @@ import { getActiveAnimationBars } from "@/lib/animation-bars";
 import { getMongoEnvironment } from "@/lib/server-env";
 import { HomepageAnimationBars } from "@/components/HomepageAnimationBars";
 import { TopFashionHero } from "@/components/TopFashionHero";
-import { customOfferSlides } from "@/data/custom-offer-slides";
-import { AutoOutfitHero } from "@/components/AutoOutfitHero";
+import type { HeroSlideConfig } from "@/data/hero-slides";
 import { FeaturedProductMotion } from "@/components/FeaturedProductMotion";
 import { HomeAboutSection } from "@/components/HomeAboutSection";
 import { HomeAllProductsSection } from "@/components/HomeAllProductsSection";
@@ -55,47 +54,63 @@ export default async function Home() {
         (b.sortOrder ?? b.featuredSortOrder ?? 100),
     );
 
-  const requestedShowcaseSlugs = settings.homeShowcaseProductUrls
-    .map(productSlugFromUrl)
-    .filter(Boolean)
-    .slice(0, 8);
-
-  const activeBySlug = new Map(
-    activeProducts.map((product) => [product.slug.toLowerCase(), product]),
-  );
-
-  const linkedShowcaseProducts = requestedShowcaseSlugs
-    .map((slug) => activeBySlug.get(slug))
-    .filter((product): product is (typeof activeProducts)[number] =>
-      Boolean(product),
-    );
-
-  const linkedIds = new Set(
-    linkedShowcaseProducts.map((product) => product.id),
-  );
-
-  const showcaseProducts = [
-    ...linkedShowcaseProducts,
-    ...activeProducts.filter((product) => !linkedIds.has(product.id)),
-  ].slice(0, 20);
-
   const demo = !getMongoEnvironment();
   const featuredProducts = activeProducts.filter((product) => product.featuredAnimationEnabled || product.featured)
     .sort((a, b) => (a.animationSortOrder ?? a.featuredSortOrder ?? 100) - (b.animationSortOrder ?? b.featuredSortOrder ?? 100));
-  const customSlides = heroSlides.filter((slide) => slide.kind !== "product").slice(0, 5);
-  const productSlides = heroSlides.filter((slide) => slide.kind === "product");
+  const managedHeroSlides = heroSlides
+    .filter((slide) => slide.kind === "custom" || slide.kind === "offer")
+    .slice(0, 8);
+
+  const defaultHeroSlide: HeroSlideConfig | null =
+    settings.homeDefaultHeroEnabled
+      ? {
+          id: "default-hero",
+          kind: "custom",
+          productId: null,
+          label: settings.homeDefaultHeroLabel,
+          brand: settings.homeDefaultHeroBrand,
+          title: settings.homeDefaultHeroTitle,
+          subtitle: settings.homeDefaultHeroSubtitle,
+          button: settings.homeDefaultHeroButtonLabel,
+          href: settings.homeDefaultHeroButtonHref || "/#all-products",
+          badge: "",
+          imageUrl: settings.homeDefaultHeroImageUrl,
+          startsAt: null,
+          endsAt: null,
+          showCountdown: false,
+          ctaStyle: "light",
+          imagePosition: settings.homeDefaultHeroImagePosition,
+          enabled: true,
+          order: 0,
+        }
+      : null;
+
+  const homepageHeroSlides = managedHeroSlides.length
+    ? managedHeroSlides
+    : defaultHeroSlide
+      ? [defaultHeroSlide]
+      : [];
 
   const mostLoved = products.find(
     (product) => product.spotlight && product.status === "active",
   );
   return (
     <div className="reference-home">
-      {settings.homeAnimationBarsEnabled ? <HomepageAnimationBars bars={animationBars} placement="before-hero" /> : null}
-      {settings.homeProductHeroEnabled && settings.homeProductSelectorEnabled ? <AutoOutfitHero products={showcaseProducts} /> : null}
-      {settings.homeProductHeroEnabled && productSlides.length ? <TopFashionHero products={activeProducts} heroSlides={productSlides} /> : null}
-      {settings.homeAnimationBarsEnabled ? <HomepageAnimationBars bars={animationBars} placement="after-hero" /> : null}
+      {settings.homeAnimationBarsEnabled ? (
+        <HomepageAnimationBars bars={animationBars} placement="before-hero" />
+      ) : null}
 
-      {settings.homeCustomOffersEnabled ? <TopFashionHero products={[]} heroSlides={customSlides.length ? customSlides : customOfferSlides} fullscreen /> : null}
+      {settings.homeProductHeroEnabled && homepageHeroSlides.length ? (
+        <TopFashionHero
+          products={activeProducts}
+          heroSlides={homepageHeroSlides}
+          fullscreen
+        />
+      ) : null}
+
+      {settings.homeAnimationBarsEnabled ? (
+        <HomepageAnimationBars bars={animationBars} placement="after-hero" />
+      ) : null}
 
       {settings.homeFeaturedEnabled ? <FeaturedProductMotion products={featuredProducts} demo={demo} /> : null}
 
