@@ -23,7 +23,7 @@ function number(value: unknown, fallback = 0) {
 }
 
 function mode(value: unknown): HomepageHeroMode {
-  return value === "offer" ? "offer" : "image";
+  return value === "offer" || value === "static" ? value : "image";
 }
 
 function offerType(value: unknown): HomepageHeroOfferType {
@@ -51,6 +51,9 @@ function toCampaign(doc: Record<string, unknown>): HomepageHeroCampaign {
     buttonLabel: text(doc.buttonLabel),
     buttonHref: text(doc.buttonHref),
     imageUrl: text(doc.imageUrl),
+    cardImages: Array.isArray(doc.cardImages)
+      ? doc.cardImages.filter((item): item is string => typeof item === "string").map((item) => item.trim()).filter(Boolean).slice(0, 4)
+      : [],
     imagePosition: imagePosition(doc.imagePosition),
     enabled: bool(doc.enabled, true),
     priority: number(doc.priority),
@@ -77,6 +80,9 @@ function fields(
     buttonLabel: text(input.buttonLabel, current?.buttonLabel),
     buttonHref: text(input.buttonHref, current?.buttonHref),
     imageUrl: text(input.imageUrl, current?.imageUrl),
+    cardImages: Array.isArray(input.cardImages)
+      ? input.cardImages.filter((item): item is string => typeof item === "string").map((item) => item.trim()).filter(Boolean).slice(0, 4)
+      : current?.cardImages ?? [],
     imagePosition:
       input.imagePosition !== undefined
         ? imagePosition(input.imagePosition)

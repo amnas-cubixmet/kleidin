@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { HomepageHeroCampaign } from "@/types/homepage-hero";
+import { StaticEditorialHero } from "@/components/StaticEditorialHero";
 
 type TimeLeft = {
   days: number;
@@ -85,7 +86,7 @@ export function HomepageHeroV2({
     const imageCampaigns = live.filter(
       (campaign) =>
         campaign.id !== "fallback-hero" &&
-        campaign.mode === "image",
+        (campaign.mode === "image" || campaign.mode === "static"),
     );
 
     const activeOffer = live
@@ -151,6 +152,19 @@ export function HomepageHeroV2({
   }, [current?.endsAt, current?.showCountdown]);
 
   if (!current) return null;
+
+  if (current.mode === "static") {
+    return (
+      <StaticEditorialHero
+        key={current.id}
+        campaign={current}
+        campaignIndex={index}
+        campaignCount={liveCampaigns.length}
+        onSelectCampaign={setIndex}
+        onSwipeCampaign={(step) => setIndex((value) => (value + step + liveCampaigns.length) % liveCampaigns.length)}
+      />
+    );
+  }
 
   const external =
     current.buttonHref.startsWith("http://") ||

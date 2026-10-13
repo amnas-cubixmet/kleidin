@@ -25,6 +25,7 @@ type Draft = {
   buttonLabel: string;
   buttonHref: string;
   imageUrl: string;
+  cardImages: string[];
   imagePosition: HomepageHeroImagePosition;
   enabled: boolean;
   priority: string;
@@ -45,11 +46,12 @@ function makeDraft(mode: HomepageHeroMode = "image"): Draft {
   return {
     mode,
     eyebrow: mode === "offer" ? "LIMITED OFFER" : "KLEID.IN",
-    title: "",
-    subtitle: "",
+    title: mode === "static" ? "KLEID.IN" : "",
+    subtitle: mode === "static" ? "Modern everyday clothing built around clean silhouettes, useful colours and repeat wear." : "",
     buttonLabel: mode === "offer" ? "Shop offer" : "Shop now",
     buttonHref: "/#all-products",
     imageUrl: "",
+    cardImages: ["", "", "", ""],
     imagePosition: "center",
     enabled: true,
     priority: "0",
@@ -99,6 +101,7 @@ function stateLabel(campaign: HomepageHeroCampaign) {
 }
 
 function offerSummary(campaign: HomepageHeroCampaign) {
+  if (campaign.mode === "static") return "Static editorial hero · " + (campaign.cardImages?.length ?? 0) + " images";
   if (campaign.mode !== "offer") return "Image hero";
 
   if (campaign.offerType === "percentage") {
@@ -173,6 +176,7 @@ export function AdminHomepageHeroManager() {
       buttonLabel: campaign.buttonLabel,
       buttonHref: campaign.buttonHref,
       imageUrl: campaign.imageUrl,
+      cardImages: [...(campaign.cardImages ?? []), "", "", "", ""].slice(0, 4),
       imagePosition: campaign.imagePosition,
       enabled: campaign.enabled,
       priority: String(campaign.priority),
@@ -197,23 +201,27 @@ export function AdminHomepageHeroManager() {
     setDraft(makeDraft());
   }
 
-  async function upload(file: File) {
+  async function upload(file: File, cardIndex?: number) {
     setUploading(true);
     setMessage("");
-
-    const previous = draft.imageUrl;
+    const previous = cardIndex === undefined ? draft.imageUrl : (draft.cardImages[cardIndex] ?? "");
+    const setImage = (value: string) => {
+      setDraft((current) => {
+        if (cardIndex === undefined) return { ...current, imageUrl: value };
+        const cardImages = [...current.cardImages];
+        cardImages[cardIndex] = value;
+        return { ...current, cardImages };
+      });
+    };
     const previewUrl = URL.createObjectURL(file);
-    setDraft((current) => ({ ...current, imageUrl: previewUrl }));
+    setImage(previewUrl);
 
     try {
       const uploaded = await uploadAdminImage(file, "kleidin/homepage-hero-v2");
-      setDraft((current) => ({
-        ...current,
-        imageUrl: uploaded.url,
-      }));
+      setImage(uploaded.url);
       setMessage("Hero image uploaded. Save to publish.");
     } catch (error) {
-      setDraft((current) => ({ ...current, imageUrl: previous }));
+      setImage(previous);
       setMessage(error instanceof Error ? error.message : "Upload failed.");
     } finally {
       URL.revokeObjectURL(previewUrl);
@@ -235,6 +243,11 @@ export function AdminHomepageHeroManager() {
 
       if (draft.mode === "image" && !draft.imageUrl.trim()) {
         throw new Error("Upload a hero image.");
+      }
+
+      const selectedCards = draft.cardImages.map((url) => url.trim()).filter(Boolean);
+      if (draft.mode === "static" && (selectedCards.length < 3 || selectedCards.length > 4)) {
+        throw new Error("Upload 3 or 4 editorial images.");
       }
 
       const offerValue = Number(draft.offerValue || 0);
@@ -265,7 +278,8 @@ export function AdminHomepageHeroManager() {
         subtitle: draft.subtitle.trim(),
         buttonLabel: draft.buttonLabel.trim(),
         buttonHref: draft.buttonHref.trim() || "/#all-products",
-        imageUrl: draft.imageUrl.trim(),
+        imageUrl: draft.mode === "static" ? "" : draft.imageUrl.trim(),
+        cardImages: draft.mode === "static" ? selectedCards : [],
         imagePosition: draft.imagePosition,
         enabled: draft.enabled,
         priority: Number(draft.priority || 0),
@@ -303,7 +317,9 @@ export function AdminHomepageHeroManager() {
       setMessage(
         draft.mode === "offer"
           ? "Offer hero saved. Live offer will apply to all products."
-          : "Image hero saved.",
+          : draft.mode === "static"
+            ? "Static editorial hero saved."
+            : "Image hero saved.",
       );
       await load();
     } catch (error) {
@@ -370,18 +386,25 @@ export function AdminHomepageHeroManager() {
             Hero campaigns
           </h1>
           <p className="mt-2 max-w-2xl text-xs leading-5 text-black/45">
-            Fresh hero system. Image heroes and store-wide offer heroes only.
+            Image, Static Editorial and store-wide Offer heroes.
             Old hero records are not used here.
           </p>
         </div>
 
-        <div className="grid w-full grid-cols-2 gap-2 sm:w-auto">
+        <div className="grid w-full grid-cols-3 gap-2 sm:w-auto">
           <button
             type="button"
             onClick={() => openCreate("image")}
             className="min-h-11 rounded-xl border border-black/10 bg-white px-4 text-[10px] font-bold"
           >
             + Image Hero
+          </button>
+          <button
+            type="button"
+            onClick={() => openCreate("static")}
+            className="min-h-11 rounded-xl border border-black/10 bg-white px-4 text-[10px] font-bold"
+          >
+            + Static Hero
           </button>
           <button
             type="button"
@@ -413,6 +436,7 @@ export function AdminHomepageHeroManager() {
         {sorted.length ? (
           sorted.map((campaign) => {
             const state = stateLabel(campaign);
+            const previewImage = campaign.mode === "static" ? campaign.cardImages?.[0] : campaign.imageUrl;
 
             return (
               <article

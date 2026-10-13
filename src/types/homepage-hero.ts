@@ -1,4 +1,4 @@
-export type HomepageHeroMode = "image" | "offer";
+export type HomepageHeroMode = "image" | "offer" | "static";
 export type HomepageHeroOfferType = "percentage" | "fixed" | "sale-price";
 export type HomepageHeroImagePosition = "left" | "center" | "right";
 
@@ -11,6 +11,7 @@ export type HomepageHeroCampaign = {
   buttonLabel: string;
   buttonHref: string;
   imageUrl: string;
+  cardImages?: string[];
   imagePosition: HomepageHeroImagePosition;
   enabled: boolean;
   priority: number;
