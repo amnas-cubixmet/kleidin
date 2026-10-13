@@ -444,9 +444,9 @@ export function AdminHomepageHeroManager() {
                 className="overflow-hidden rounded-[22px] bg-white ring-1 ring-black/[.06]"
               >
                 <div className="relative aspect-[16/8] overflow-hidden bg-[#111]">
-                  {campaign.imageUrl ? (
+                  {previewImage ? (
                     <Image
-                      src={campaign.imageUrl}
+                      src={previewImage}
                       alt=""
                       fill
                       sizes="(max-width: 1024px) 100vw, 50vw"
@@ -482,7 +482,9 @@ export function AdminHomepageHeroManager() {
                     <span className="rounded-full bg-white/90 px-2.5 py-1 text-[8px] font-bold uppercase text-black/60 backdrop-blur">
                       {campaign.mode === "offer"
                         ? "Offer Hero"
-                        : "Image Hero"}
+                        : campaign.mode === "static"
+                          ? "Static Hero"
+                          : "Image Hero"}
                     </span>
                     <span
                       className={
@@ -543,7 +545,7 @@ export function AdminHomepageHeroManager() {
           })
         ) : (
           <div className="rounded-2xl bg-white p-6 text-sm text-black/45 ring-1 ring-black/5 lg:col-span-2">
-            No V2 hero campaigns yet. Add a new Image Hero or Offer Hero.
+            No V2 hero campaigns yet. Add an Image, Static Editorial or Offer Hero.
           </div>
         )}
       </div>
@@ -552,12 +554,14 @@ export function AdminHomepageHeroManager() {
         open={drawerOpen}
         title={
           (editingId ? "Edit " : "Add ") +
-          (draft.mode === "offer" ? "Offer Hero" : "Image Hero")
+          (draft.mode === "offer" ? "Offer Hero" : draft.mode === "static" ? "Static Editorial Hero" : "Image Hero")
         }
         description={
           draft.mode === "offer"
             ? "Create a timed hero and apply its discount to every storefront product."
-            : "Create a hero from one image, title and CTA."
+            : draft.mode === "static"
+              ? "Brand typography with 3–4 stacked images that rotate automatically."
+              : "Create a hero from one image, title and CTA."
         }
         onClose={closeDrawer}
         footer={
