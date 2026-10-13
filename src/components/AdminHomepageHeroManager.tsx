@@ -840,6 +840,63 @@ export function AdminHomepageHeroManager() {
             </div>
           </section>
 
+          {draft.mode === "static" ? (
+            <section className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
+              <p className={labelClass}>Editorial image stack</p>
+              <p className="mt-2 text-xs leading-5 text-black/50">
+                Add three or four portrait photos. Images rotate automatically within the hero.
+              </p>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                {Array.from({ length: 4 }, (_, index) => {
+                  const url = draft.cardImages[index] || "";
+                  return (
+                    <div key={index} className="min-w-0 rounded-xl border border-black/10 p-2">
+                      <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-[#eeeae1]">
+                        {url ? (
+                          url.startsWith("blob:") ? (
+                            <img src={url} alt="" className="h-full w-full object-cover" />
+                          ) : (
+                            <Image src={url} alt="" fill sizes="260px" className="object-cover" />
+                          )
+                        ) : (
+                          <div className="grid h-full place-items-center text-[10px] font-semibold text-black/40">
+                            CARD {index + 1}
+                          </div>
+                        )}
+                      </div>
+                      <label className="mt-2 block">
+                        <span className={labelClass}>Image {index + 1}{index < 3 ? " · Required" : " · Optional"}</span>
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/avif"
+                          disabled={uploading}
+                          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                            const file = event.target.files?.[0];
+                            if (file) void upload(file, index);
+                            event.currentTarget.value = "";
+                          }}
+                          className="mt-1 block w-full text-[10px] file:mr-2 file:rounded file:border-0 file:bg-black/5 file:px-2 file:py-2"
+                        />
+                      </label>
+                      {url ? (
+                        <button
+                          type="button"
+                          onClick={() => setDraft((current) => ({
+                            ...current,
+                            cardImages: current.cardImages.map((image, i) => i === index ? "" : image),
+                          }))}
+                          disabled={uploading}
+                          className="mt-2 min-h-8 text-[10px] font-bold text-red-600"
+                        >
+                          Remove image
+                        </button>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          ) : (
           <section className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
             <p className={labelClass}>Hero image</p>
 
@@ -911,6 +968,7 @@ export function AdminHomepageHeroManager() {
               </label>
             </div>
           </section>
+          )}
         </form>
       </AdminDrawer>
     </div>
