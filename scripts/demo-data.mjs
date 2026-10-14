@@ -94,7 +94,6 @@ export function normalizeDemoProducts(rawProducts) {
     if (new Set(colorVariants.map((v) => v.name)).size !== colors.length) throw new Error(name + ": duplicate colors.");
 
     return {
-      id: undefined,
       demo: true,
       seedSource: SEED_SOURCE,
       sku, slug, name,
