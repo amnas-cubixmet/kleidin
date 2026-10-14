@@ -2,7 +2,7 @@
   {
     "sku": "DEMO-KL-TEE-001",
     "name": "Everyday White Tee",
-    "slug": "everyday-white-tee",
+    "slug": "essential-white-tee",
     "category": "T-Shirts",
     "description": "Relaxed everyday crew neck with a clean finish. Styled as a light wardrobe staple for repeat wear.",
     "price": 799,
@@ -36,7 +36,7 @@
   {
     "sku": "DEMO-KL-TEE-002",
     "name": "Core Black Tee",
-    "slug": "core-black-tee",
+    "slug": "classic-black-tee",
     "category": "T-Shirts",
     "description": "Understated black tee with an easy fit and versatile silhouette. A classic base for weekday and weekend outfits.",
     "price": 849,
@@ -70,7 +70,7 @@
   {
     "sku": "DEMO-KL-TEE-003",
     "name": "Coastal Cyan Tee",
-    "slug": "coastal-cyan-tee",
+    "slug": "cyan-everyday-tee",
     "category": "T-Shirts",
     "description": "Fresh cyan everyday tee with a laid-back shape. Designed as a brighter accent for a minimal rotation.",
     "price": 899,
@@ -103,7 +103,7 @@
   {
     "sku": "DEMO-KL-TEE-004",
     "name": "Soft Mint Tee",
-    "slug": "soft-mint-tee",
+    "slug": "mint-relaxed-tee",
     "category": "T-Shirts",
     "description": "Soft-toned mint tee that pairs easily with neutrals. Comfortable casual proportions for daily styling.",
     "price": 899,
