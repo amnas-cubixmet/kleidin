@@ -1,0 +1,270 @@
+[
+  {
+    "sku": "DEMO-KL-TEE-001",
+    "name": "Everyday White Tee",
+    "slug": "essential-white-tee",
+    "category": "T-Shirts",
+    "description": "Relaxed everyday crew neck with a clean finish. Styled as a light wardrobe staple for repeat wear.",
+    "price": 799,
+    "costPrice": 340,
+    "compareAtPrice": 999,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "White"
+    ],
+    "image": "https://purepng.com/public/uploads/large/purepng.com-white-t-shirtt-shirtfabrict-shapegramnetsmenswhite-1421526429123xb6qt.png",
+    "featured": true,
+    "colorVariants": [
+      {
+        "name": "White",
+        "value": "#f6f5f0",
+        "image": "https://purepng.com/public/uploads/large/purepng.com-white-t-shirtt-shirtfabrict-shapegramnetsmenswhite-1421526429123xb6qt.png",
+        "sizeStocks": {
+          "S": 7,
+          "M": 10,
+          "L": 9,
+          "XL": 5
+        }
+      }
+    ]
+  },
+  {
+    "sku": "DEMO-KL-TEE-002",
+    "name": "Core Black Tee",
+    "slug": "classic-black-tee",
+    "category": "T-Shirts",
+    "description": "Understated black tee with an easy fit and versatile silhouette. A classic base for weekday and weekend outfits.",
+    "price": 849,
+    "costPrice": 370,
+    "compareAtPrice": 1099,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "Black"
+    ],
+    "image": "https://purepng.com/public/uploads/large/purepng.com-black-t-shirtt-shirtfabrict-shapegramnetsmensblack-1421526429071zidaz.png",
+    "featured": true,
+    "colorVariants": [
+      {
+        "name": "Black",
+        "value": "#141414",
+        "image": "https://purepng.com/public/uploads/large/purepng.com-black-t-shirtt-shirtfabrict-shapegramnetsmensblack-1421526429071zidaz.png",
+        "sizeStocks": {
+          "S": 5,
+          "M": 12,
+          "L": 8,
+          "XL": 6
+        }
+      }
+    ]
+  },
+  {
+    "sku": "DEMO-KL-TEE-003",
+    "name": "Coastal Cyan Tee",
+    "slug": "cyan-everyday-tee",
+    "category": "T-Shirts",
+    "description": "Fresh cyan everyday tee with a laid-back shape. Designed as a brighter accent for a minimal rotation.",
+    "price": 899,
+    "costPrice": 410,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "Cyan"
+    ],
+    "image": "https://purepng.com/public/uploads/large/purepng.com-cyan-t-shirtt-shirtfabrict-shapegramnetscyan-1421526429408e5mcr.png",
+    "featured": false,
+    "colorVariants": [
+      {
+        "name": "Cyan",
+        "value": "#16afc7",
+        "image": "https://purepng.com/public/uploads/large/purepng.com-cyan-t-shirtt-shirtfabrict-shapegramnetscyan-1421526429408e5mcr.png",
+        "sizeStocks": {
+          "S": 4,
+          "M": 6,
+          "L": 9,
+          "XL": 3
+        }
+      }
+    ]
+  },
+  {
+    "sku": "DEMO-KL-TEE-004",
+    "name": "Soft Mint Tee",
+    "slug": "mint-relaxed-tee",
+    "category": "T-Shirts",
+    "description": "Soft-toned mint tee that pairs easily with neutrals. Comfortable casual proportions for daily styling.",
+    "price": 899,
+    "costPrice": 400,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "Mint"
+    ],
+    "image": "https://purepng.com/public/uploads/large/purepng.com-mint-green-t-shirtt-shirtfabrict-shapegramnetsmint-green-1421526429357cthld.png",
+    "featured": false,
+    "colorVariants": [
+      {
+        "name": "Mint",
+        "value": "#a0d8bd",
+        "image": "https://purepng.com/public/uploads/large/purepng.com-mint-green-t-shirtt-shirtfabrict-shapegramnetsmint-green-1421526429357cthld.png",
+        "sizeStocks": {
+          "S": 8,
+          "M": 7,
+          "L": 6,
+          "XL": 4
+        }
+      }
+    ]
+  },
+  {
+    "sku": "DEMO-KL-TEE-005",
+    "name": "Essential Off-White Tee",
+    "slug": "essential-off-white-tee",
+    "category": "T-Shirts",
+    "description": "An uncomplicated off-white tee with a relaxed look. A useful light layer for every season.",
+    "price": 749,
+    "costPrice": 320,
+    "compareAtPrice": 999,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "Off White"
+    ],
+    "image": "https://purepng.com/public/uploads/large/purepng.com-white-t-shirtt-shirtfabrict-shapegramnetsmenswhite-1421526429123xb6qt.png",
+    "featured": false,
+    "colorVariants": [
+      {
+        "name": "Off White",
+        "value": "#f5f2e8",
+        "image": "https://purepng.com/public/uploads/large/purepng.com-white-t-shirtt-shirtfabrict-shapegramnetsmenswhite-1421526429123xb6qt.png",
+        "sizeStocks": {
+          "S": 6,
+          "M": 9,
+          "L": 8,
+          "XL": 5
+        }
+      }
+    ]
+  },
+  {
+    "sku": "DEMO-KL-TEE-006",
+    "name": "Minimal Black Tee",
+    "slug": "minimal-black-tee",
+    "category": "T-Shirts",
+    "description": "A clean black tee with simplified styling and a balanced drape. Designed for effortless everyday looks.",
+    "price": 999,
+    "costPrice": 440,
+    "compareAtPrice": 1199,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "Black"
+    ],
+    "image": "https://purepng.com/public/uploads/large/purepng.com-black-t-shirtt-shirtfabrict-shapegramnetsmensblack-1421526429071zidaz.png",
+    "featured": false,
+    "colorVariants": [
+      {
+        "name": "Black",
+        "value": "#161616",
+        "image": "https://purepng.com/public/uploads/large/purepng.com-black-t-shirtt-shirtfabrict-shapegramnetsmensblack-1421526429071zidaz.png",
+        "sizeStocks": {
+          "S": 3,
+          "M": 8,
+          "L": 7,
+          "XL": 3
+        }
+      }
+    ]
+  },
+  {
+    "sku": "DEMO-KL-STUDIO-007",
+    "name": "Studio Essential Look 01",
+    "slug": "studio-essential-look-01",
+    "category": "Studio Collection",
+    "description": "A sample KLEID.IN studio catalogue piece to test layout, stock display and product enquiries.",
+    "price": 1199,
+    "costPrice": 540,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "Neutral"
+    ],
+    "image": "/images/product-1.png",
+    "featured": false,
+    "colorVariants": [
+      {
+        "name": "Neutral",
+        "value": "#d9d5cf",
+        "image": "/images/product-1.png",
+        "sizeStocks": {
+          "S": 4,
+          "M": 5,
+          "L": 6,
+          "XL": 2
+        }
+      }
+    ]
+  },
+  {
+    "sku": "DEMO-KL-STUDIO-008",
+    "name": "Studio Essential Look 02",
+    "slug": "studio-essential-look-02",
+    "category": "Studio Collection",
+    "description": "A sample studio collection item with placeholder imagery for catalogue and product-detail testing.",
+    "price": 1299,
+    "costPrice": 580,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "colors": [
+      "Neutral"
+    ],
+    "image": "/images/product-2.png",
+    "featured": false,
+    "colorVariants": [
+      {
+        "name": "Neutral",
+        "value": "#bdbcb7",
+        "image": "/images/product-2.png",
+        "sizeStocks": {
+          "S": 3,
+          "M": 6,
+          "L": 5,
+          "XL": 2
+        }
+      }
+    ]
+  }
+]

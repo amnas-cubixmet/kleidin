@@ -247,7 +247,7 @@ export function ProductDetailClient({
                 className="button button-primary product-detail-whatsapp-primary"
                 disabled
               >
-                {soldOut ? "Sold out" : "WhatsApp unavailable"}
+                {product.demo ? "Demo preview — not for sale" : soldOut ? "Sold out" : "WhatsApp unavailable"}
               </button>
             )}
           </div>
@@ -256,8 +256,14 @@ export function ProductDetailClient({
             {product.featuredImage ? (
               <span>Live camera try-on available</span>
             ) : null}
-            <span>Your colour and size are included in your WhatsApp message.</span>
-            <span>Send the message to confirm availability and delivery with us.</span>
+            {product.demo ? (
+              <span>Fictional sample listing for testing. Prices and availability are illustrative; purchasing is disabled.</span>
+            ) : (
+              <>
+                <span>Your colour and size are included in your WhatsApp message.</span>
+                <span>Send the message to confirm availability and delivery with us.</span>
+              </>
+            )}
           </div>
         </div>
       </div>

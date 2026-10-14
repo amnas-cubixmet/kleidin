@@ -21,7 +21,7 @@ export function ProductActions({
   useOfferClock(product);
   const [size, setSize] = useState(product.sizes[0] ?? "One size");
   const selectedColor = product.colors[0] ?? "Default";
-  const disabled = product.status !== "active" || product.stock <= 0;
+  const disabled = product.demo || product.status !== "active" || product.stock <= 0;
 
   const orderUrl =
     whatsappUrl ??
@@ -66,7 +66,7 @@ export function ProductActions({
             className="button button-primary whatsapp-order-button"
             disabled
           >
-            {disabled ? "Sold out" : "WhatsApp unavailable"}
+            {product.demo ? "Demo preview — not for sale" : disabled ? "Sold out" : "WhatsApp unavailable"}
           </button>
         )}
       </div>
