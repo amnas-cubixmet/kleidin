@@ -9,6 +9,7 @@ import { HomeAboutSection } from "@/components/HomeAboutSection";
 import { HomeAllProductsSection } from "@/components/HomeAllProductsSection";
 import { HomeDealerSection } from "@/components/HomeDealerSection";
 import { HomeSpotlightSection } from "@/components/HomeSpotlightSection";
+import { HomeCollectionGuide } from "@/components/HomeCollectionGuide";
 import { getCatalogProducts } from "@/lib/catalog";
 import { getStoreSettings } from "@/lib/site-settings";
 
@@ -77,6 +78,8 @@ export default async function Home() {
       {settings.homeAnimationBarsEnabled ? (
         <HomepageAnimationBars bars={animationBars} placement="after-hero" />
       ) : null}
+
+      <HomeCollectionGuide />
 
       {settings.homeFeaturedEnabled ? <FeaturedProductMotion products={featuredProducts} demo={demo} /> : null}
 
