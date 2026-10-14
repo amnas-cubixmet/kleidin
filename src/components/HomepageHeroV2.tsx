@@ -129,6 +129,7 @@ export function HomepageHeroV2({
 
   useEffect(() => {
     if (liveCampaigns.length <= 1) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const timer = window.setInterval(() => {
       if (document.hidden) return;
@@ -329,6 +330,7 @@ export function HomepageHeroV2({
               key={campaign.id}
               type="button"
               aria-label={"Show hero " + (campaignIndex + 1)}
+              aria-pressed={campaignIndex === index}
               onClick={() => setIndex(campaignIndex)}
               className={
                 "h-1.5 rounded-full transition-all " +

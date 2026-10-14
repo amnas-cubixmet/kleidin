@@ -82,7 +82,9 @@ export function SiteChrome({
   if (isAdmin) return <>{children}</>;
 
   return (
+    <div className="kleid-storefront">
     <StoreSettingsProvider settings={settings}>
+      <a className="kleid-skip" href="#main-content">Skip to content</a>
       {showAnnouncement ? (
         <div className="relative flex min-h-9 w-full items-center justify-center gap-2 bg-[#111111] px-10 py-2 text-center text-[9px] font-bold uppercase tracking-[.14em] text-white">
           <span>{settings.announcementText}</span>
@@ -121,6 +123,7 @@ export function SiteChrome({
         />
       ) : null}
       <main
+        id="main-content"
         className={overlayHomeHeader ? "site-main-home-overlay" : undefined}
         style={tryOnChromeHidden ? { paddingTop: 0 } : undefined}
       >
@@ -128,5 +131,6 @@ export function SiteChrome({
       </main>
       {settings.footerEnabled ? <Footer settings={settings} /> : null}
     </StoreSettingsProvider>
+    </div>
   );
 }

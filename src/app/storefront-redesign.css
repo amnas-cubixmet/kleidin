@@ -1,0 +1,364 @@
+/* KLEID.IN storefront refresh (October 2026)
+   Public-only design tokens. Admin styling and CMS content are not changed. */
+.kleid-storefront {
+  --kl-paper: #f6f4ef;
+  --kl-cream: #ece8df;
+  --kl-ink: #191a18;
+  --kl-muted: #6d6f69;
+  --kl-blue: #1739c7;
+  --kl-line: rgba(25, 26, 24, .14);
+  color: var(--kl-ink);
+  background: var(--kl-paper);
+}
+.kleid-storefront * { box-sizing: border-box; }
+.kleid-storefront :where(a,button,input):focus-visible {
+  outline: 3px solid var(--kl-blue);
+  outline-offset: 3px;
+}
+.kleid-skip {
+  position: absolute;
+  z-index: 5000;
+  top: -100px;
+  left: 18px;
+  padding: 12px 18px;
+  color: #fff !important;
+  background: var(--kl-ink);
+  border-radius: 4px;
+}
+.kleid-skip:focus { top: 10px; }
+.kleid-storefront .site-header,
+.kleid-storefront .site-header.scrolled {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 110 !important;
+  display: grid !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: 82px !important;
+  min-height: 82px !important;
+  margin: 0 !important;
+  padding: 0 clamp(20px, 4.5vw, 84px) !important;
+  background: rgba(250, 249, 246, .97) !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--kl-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  backdrop-filter: blur(18px);
+}
+.kleid-storefront .site-header .brand {
+  display: inline-flex;
+  width: max-content;
+  align-items: center;
+  font-size: clamp(21px, 2.1vw, 28px) !important;
+  font-weight: 850;
+  color: var(--kl-ink) !important;
+  line-height: 1;
+  letter-spacing: -.08em;
+}
+.kleid-storefront .site-header .desktop-nav {
+  gap: clamp(14px, 2.2vw, 36px);
+  align-items: center;
+}
+.kleid-storefront .site-header .desktop-nav a {
+  padding: 14px 2px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .10em;
+  color: var(--kl-ink);
+  transition: color .2s ease;
+}
+.kleid-storefront .site-header .desktop-nav a:hover,
+.kleid-storefront .site-header .desktop-nav a.active {
+  color: var(--kl-blue) !important;
+  opacity: 1;
+}
+.kleid-storefront .site-header .header-actions { gap: 8px; }
+.kleid-storefront .site-header .icon-button,
+.kleid-storefront .site-header .menu-button {
+  width: 44px !important;
+  min-width: 44px !important;
+  height: 44px !important;
+  border-radius: 50%;
+  color: var(--kl-ink) !important;
+}
+.kleid-storefront .site-header .icon-button:hover,
+.kleid-storefront .site-header .menu-button:hover { background: #eae7e0; }
+.kleid-storefront .site-header .header-whatsapp-button {
+  min-height: 42px !important;
+  height: 42px !important;
+  padding: 0 21px !important;
+  border-radius: 2px !important;
+  background: var(--kl-ink) !important;
+  color: #fff !important;
+  font-size: 10px !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.kleid-storefront .search-panel {
+  position: fixed !important;
+  top: 82px !important;
+  z-index: 105 !important;
+  max-height: calc(100dvh - 82px);
+  overflow-y: auto;
+  background: var(--kl-paper);
+  border-color: var(--kl-line);
+}
+.kleid-storefront .search-panel-inner { max-width: 1120px; }
+.kleid-storefront .search-input-row input { font-size: clamp(15px, 2vw, 22px); }
+.kleid-storefront .mobile-compact-card { z-index: 125 !important; }
+.kleid-storefront .reference-home { background: var(--kl-paper) !important; }
+.kleid-storefront .reference-home > section[aria-label="Homepage hero"] {
+  min-height: min(800px, calc(100svh - 82px));
+}
+.kleid-storefront .reference-home > section[aria-label="Homepage hero"] h1 {
+  font-weight: 750;
+  letter-spacing: -.075em;
+  line-height: .93;
+  text-wrap: balance;
+}
+.kleid-storefront .reference-home > section[aria-label="Homepage hero"] a {
+  border-radius: 2px !important;
+  min-height: 52px;
+  gap: 24px;
+}
+.kleid-storefront .reference-home > section[aria-label="KLEID.IN editorial hero"] {
+  background: #f0ede5;
+}
+/* Editorial cross-links directly below the campaign hero */
+.kleid-edit-band {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  align-items: end;
+  gap: clamp(24px, 5vw, 76px);
+  width: 100%;
+  padding: clamp(54px, 7vw, 104px) clamp(20px, 6vw, 100px);
+  border-bottom: 1px solid var(--kl-line);
+  background: var(--kl-paper);
+}
+.kleid-edit-kicker,
+.kleid-edit-index {
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .19em;
+  text-transform: uppercase;
+  color: var(--kl-blue);
+}
+.kleid-edit-title {
+  max-width: 760px;
+  margin: 18px 0 0;
+  color: var(--kl-ink);
+  font-size: clamp(40px, 5.7vw, 86px);
+  font-weight: 650;
+  line-height: .99;
+  letter-spacing: -.075em;
+  text-wrap: balance;
+}
+.kleid-edit-title em {
+  font-weight: 400;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.kleid-edit-links { display: grid; border-top: 1px solid var(--kl-line); }
+.kleid-edit-link {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 14px;
+  min-height: 75px;
+  border-bottom: 1px solid var(--kl-line);
+  color: var(--kl-ink) !important;
+  text-decoration: none !important;
+  transition: padding .25s ease, color .2s ease;
+}
+.kleid-edit-link:hover { padding-inline: 10px; color: var(--kl-blue) !important; }
+.kleid-edit-link strong { font-size: clamp(17px, 1.7vw, 23px); font-weight: 550; letter-spacing: -.045em; }
+.kleid-edit-link .kleid-edit-index { color: var(--kl-muted); }
+.kleid-edit-arrow { justify-self: end; font-size: 24px; line-height: 1; }
+.kleid-storefront #all-products {
+  padding: clamp(60px, 7vw, 112px) clamp(16px, 5.3vw, 88px) !important;
+  background: #fcfbf8 !important;
+  color: var(--kl-ink);
+}
+.kleid-storefront #all-products > .mx-auto { max-width: 1600px; }
+.kleid-catalog-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--kl-line);
+}
+.kleid-storefront #all-products .kleid-catalog-heading h2 {
+  max-width: 760px;
+  margin: 8px 0 0;
+  font-size: clamp(43px, 5.6vw, 88px) !important;
+  font-weight: 620;
+  letter-spacing: -.075em;
+  line-height: .98 !important;
+  text-wrap: balance;
+}
+.kleid-catalog-note { max-width: 350px; margin: 0; font-size: 12px; color: var(--kl-muted); line-height: 1.65; }
+.kleid-catalog-heading-right { display: flex; align-items: end; flex-direction: column; gap: 16px; }
+.kleid-catalog-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 44px;
+  padding: 0 0 0 2px;
+  color: var(--kl-ink) !important;
+  border-bottom: 1px solid var(--kl-ink);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+.kleid-catalog-all:hover { color: var(--kl-blue) !important; border-color: var(--kl-blue); }
+.kleid-storefront #all-products .kleid-catalog-grid {
+  margin-top: 28px !important;
+  gap: clamp(24px, 3vw, 50px) clamp(12px, 1.6vw, 24px) !important;
+}
+.kleid-storefront #all-products article { display: flex; flex-direction: column; }
+.kleid-storefront #all-products .kleid-product-image {
+  background: #efede7 !important;
+  border-radius: 4px !important;
+  overflow: hidden;
+}
+.kleid-storefront #all-products .kleid-product-image img {
+  transition: transform .6s cubic-bezier(.2,.7,.2,1);
+}
+@media (hover: hover) {
+  .kleid-storefront #all-products article:hover .kleid-product-image img { transform: scale(1.045); }
+}
+.kleid-storefront #all-products .kleid-product-info { flex: 1; display: flex; flex-direction: column; padding-top: 16px; }
+.kleid-storefront #all-products .kleid-product-name {
+  min-height: unset !important;
+  font-size: clamp(13px, 1.1vw, 17px) !important;
+  font-weight: 650;
+  letter-spacing: -.03em;
+  line-height: 1.35 !important;
+}
+.kleid-storefront #all-products .kleid-product-price { margin: 8px 0 0 !important; color: var(--kl-ink); font-size: 13px !important; }
+.kleid-storefront #all-products .kleid-product-meta { margin: 7px 0 0; color: var(--kl-muted); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+.kleid-storefront #all-products .home-product-whatsapp-button {
+  border-radius: 3px !important;
+  min-height: 46px !important;
+  margin-top: auto !important;
+  padding: 12px 14px !important;
+  background: var(--kl-ink) !important;
+  color: #fff !important;
+  font-size: 10px !important;
+  letter-spacing: .11em !important;
+  transition: background-color .2s ease;
+}
+.kleid-storefront #all-products .home-product-whatsapp-button:hover { background: var(--kl-blue) !important; opacity: 1; }
+.kleid-storefront #all-products .home-product-whatsapp-button[aria-disabled="true"] { opacity: .55; }
+.kleid-storefront .reference-home > section[aria-label="Featured products"] { background: #eae7df; }
+.kleid-storefront .reference-home > section[aria-label="Featured products"] h2 { font-weight: 630; }
+.kleid-storefront #about { background: var(--kl-blue) !important; }
+.kleid-storefront #about h2 { font-weight: 630; }
+.kleid-storefront .reference-home > section[aria-label="Dealership"] { background: #171a17; }
+.kleid-storefront .reference-home > section[aria-label="Dealership"] h2 { font-weight: 620; }
+.kleid-storefront #shop-products.ref-arrivals {
+  max-width: 1600px;
+  padding: clamp(60px, 6vw, 94px) clamp(20px, 5vw, 80px) !important;
+  margin-inline: auto !important;
+  background: var(--kl-paper) !important;
+}
+.kleid-storefront #shop-products .ref-arrivals-head h2 {
+  font-size: clamp(44px, 5.4vw, 78px) !important;
+  font-weight: 630;
+  letter-spacing: -.07em;
+}
+.kleid-storefront #shop-products .shop-category-filters button {
+  border-radius: 2px;
+  padding-inline: 18px;
+  font-weight: 650;
+  background: transparent;
+  transition: color .2s ease, background .2s ease;
+}
+.kleid-storefront #shop-products .shop-category-filters button[aria-pressed="true"] {
+  color: white !important;
+  background: var(--kl-ink) !important;
+  border-color: var(--kl-ink) !important;
+}
+.kleid-storefront #shop-products .product-card-visual-refined { border-radius: 4px !important; }
+.kleid-storefront #shop-products .product-whatsapp-cta { border-radius: 3px !important; }
+.kleid-storefront .site-footer {
+  display: grid !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 76px clamp(20px, 5.4vw, 96px) 27px !important;
+  gap: 46px 38px;
+  background: #191a18;
+  border-top: 0;
+  color: #f6f4ef;
+  grid-template-columns: minmax(0, 2fr) repeat(3,minmax(0,1fr));
+}
+.kleid-storefront .site-footer .footer-logo { color: #f6f4ef !important; font-size: clamp(32px, 4vw, 56px); letter-spacing: -.09em; }
+.kleid-storefront .site-footer .footer-intro p { color: #b1b3ac; font-size: 14px; line-height: 1.65; max-width: 320px; }
+.kleid-storefront .site-footer .footer-column { gap: 16px; font-size: 13px; }
+.kleid-storefront .site-footer .footer-column > span { color: #8e918a; font-size: 10px; }
+.kleid-storefront .site-footer .footer-column a { color: #f0f0e9 !important; }
+.kleid-storefront .site-footer .footer-column a:hover { color: #a6b6ff !important; }
+.kleid-storefront .site-footer .footer-bottom { margin-top: 18px; border-color: #ffffff30; color: #999d96; }
+/* Narrow screen: retain the intentionally two-column shopping grid. */
+@media (max-width: 980px) {
+  .kleid-edit-band { grid-template-columns: 1fr; }
+  .kleid-storefront .site-footer { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .kleid-storefront .site-footer .footer-intro { grid-column: 1 / -1; }
+}
+@media (max-width: 767px) {
+  .kleid-storefront .site-header,
+  .kleid-storefront .site-header.scrolled {
+    height: 64px !important;
+    min-height: 64px !important;
+    padding: 0 16px !important;
+    grid-template-columns: 1fr auto !important;
+  }
+  .kleid-storefront .site-header .brand { font-size: 22px !important; }
+  .kleid-storefront .site-header .icon-button,
+  .kleid-storefront .site-header .menu-button { width: 40px !important; min-width: 40px !important; height: 40px !important; }
+  .kleid-storefront .search-panel { top: 64px !important; max-height: calc(100dvh - 64px); }
+  .kleid-storefront .mobile-compact-card { top: 70px !important; }
+  .kleid-edit-band { padding: 56px 20px; gap: 32px; }
+  .kleid-edit-title { font-size: clamp(43px, 10vw, 64px); }
+  .kleid-edit-link { min-height: 65px; grid-template-columns: 32px minmax(0,1fr) 28px; }
+  .kleid-storefront #all-products { padding: 54px 14px 66px !important; }
+  .kleid-storefront #all-products .kleid-catalog-heading h2 { font-size: clamp(37px, 9vw, 56px) !important; }
+  .kleid-storefront #all-products .kleid-catalog-heading-right { align-items: flex-start; }
+  .kleid-storefront #all-products .kleid-catalog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 26px 12px !important;
+    margin-top: 23px !important;
+  }
+  .kleid-storefront #all-products .kleid-product-image { border-radius: 3px !important; }
+  .kleid-storefront #all-products .kleid-product-name { font-size: 12px !important; line-height: 1.4 !important; }
+  .kleid-storefront #all-products .kleid-product-price { font-size: 12px !important; }
+  .kleid-storefront #all-products .kleid-product-meta { font-size: 9px; }
+  .kleid-storefront #all-products .home-product-whatsapp-button { min-height: 44px !important; border-radius: 3px !important; margin-top: auto !important; font-size: 9px !important; }
+  .kleid-storefront #shop-products.ref-arrivals { padding: 54px 14px 66px !important; }
+  .kleid-storefront .site-footer {
+    grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+    gap: 35px 18px;
+    padding: 55px 20px max(28px,env(safe-area-inset-bottom)) !important;
+  }
+  .kleid-storefront .site-footer .footer-intro,
+  .kleid-storefront .site-footer .footer-bottom { grid-column: 1 / -1; }
+  .kleid-storefront .site-footer .footer-bottom { flex-wrap: wrap; gap: 10px; }
+}
+@media (max-width: 370px) {
+  .kleid-storefront #all-products { padding-inline: 12px !important; }
+  .kleid-storefront #all-products .kleid-catalog-grid { column-gap: 10px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kleid-storefront *, .kleid-storefront *::before, .kleid-storefront *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
