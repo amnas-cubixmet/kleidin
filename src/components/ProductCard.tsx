@@ -199,7 +199,9 @@ export function ProductCard({ product }: { product: Product }) {
             aria-hidden="true"
           />
           <span>
-            {soldOut
+            {product.demo
+              ? "Sample inventory"
+              : soldOut
               ? "Sold out"
               : limitedStock
                 ? `Low stock · ${currentStock}`
@@ -213,7 +215,7 @@ export function ProductCard({ product }: { product: Product }) {
             className="product-whatsapp-cta is-disabled"
             disabled
           >
-            {soldOut ? "Sold out" : "WhatsApp unavailable"}
+            {product.demo ? "Demo preview — not for sale" : soldOut ? "Sold out" : "WhatsApp unavailable"}
           </button>
         ) : (
           <a
