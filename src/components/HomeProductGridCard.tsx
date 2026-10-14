@@ -19,7 +19,7 @@ export function HomeProductGridCard({
   const price = getProductOfferPrice(product, now);
   const available = product.status === "active" && product.stock > 0;
   const whatsappHref = available ? getProductWhatsappUrl(product, whatsappNumber) : "#";
-  const canOrder = available && whatsappHref !== "#";
+  const canOrder = available && !product.demo && whatsappHref !== "#";
 
   return (
     <article className="group relative min-w-0">
@@ -31,6 +31,7 @@ export function HomeProductGridCard({
       />
 
       <div className="kleid-product-image relative aspect-[4/5] overflow-hidden bg-[#f1f1ef]">
+        {product.demo ? <span className="absolute left-2 top-2 z-20 rounded-sm bg-white px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-[#111]">Demo preview</span> : null}
         <Image
           unoptimized={product.demo}
           src={product.image || "/images/product-1.png"}
@@ -67,7 +68,7 @@ export function HomeProductGridCard({
           }
           aria-label={canOrder ? "Order " + product.name + " on WhatsApp" : "Ordering unavailable for " + product.name}
         >
-          {canOrder ? "Order on WhatsApp ↗" : available ? "Contact unavailable" : "Sold out"}
+          {product.demo ? "Demo preview — not for sale" : canOrder ? "Order on WhatsApp ↗" : available ? "Contact unavailable" : "Sold out"}
         </a>
       </div>
     </article>
