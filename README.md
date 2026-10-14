@@ -52,6 +52,48 @@ CLOUDINARY_API_SECRET=
 
 Never commit real secrets to GitHub. Configure the same private variables in Vercel Project Settings for Production.
 
+
+## Load realistic sample products directly into MongoDB
+
+The \`scripts/seed-demo.mjs\` command seeds **fictional** KLEID.IN catalogue products into MongoDB, without using the Admin UI or exposing any new web API. The supplied JSON includes eight realistic items with names, SKUs, Indian-rupee prices, stock by size, colours, descriptions and approved sample images.
+
+**Important:** This is for demo/staging and design previews, not real inventory. Inserted products have \`demo: true\` and \`seedSource: "kleidin-demo-products-v1"\`. The storefront labels them **Demo preview** and disables checkout/WhatsApp orders. Real products, customers and orders are never replaced or generated.
+
+1. Configure a separate Atlas database in \`.env.local\` (do **not** commit secrets):
+
+   \`\`\`env
+   MONGODB_URI=mongodb+srv://<your-user>:<your-password>@<your-cluster-host>/
+   MONGODB_DB=kleidin_demo
+   \`\`\`
+
+2. Install dependencies and inspect the sample data **without writing to MongoDB**:
+
+   \`\`\`bash
+   npm install
+   npm run db:seed:demo
+   \`\`\`
+
+3. Apply the verified sample data to the explicitly selected database:
+
+   \`\`\`bash
+   npm run db:seed:demo -- --apply --confirm-db=kleidin_demo
+   \`\`\`
+
+4. Optional: import your own similarly structured product JSON file, or insert sample data as hidden drafts:
+
+   \`\`\`bash
+   npm run db:seed:demo -- --file=scripts/fixtures/demo-products.json
+   npm run db:seed:demo -- --apply --confirm-db=kleidin_demo --draft
+   \`\`\`
+
+The importer validates image hostnames, types, SKUs, duplicate slugs and stock counts before writing. Rerunning skips existing records from this exact seed batch. If a SKU/slug collides with a real record, the import aborts. Existing records are never overwritten. MongoDB's unique indexes protect the product identifiers.
+
+The command **refuses** database writes without \`--apply\` and an exact \`--confirm-db\`. A database name without \`demo\`, \`dev\`, \`test\`, \`staging\` or \`sandbox\` additionally requires \`--allow-live-db\`, which should be avoided for real stores. It also refuses \`NODE_ENV=production\`. Never run against the production store merely to fill a demo.
+
+To view the inserted data at \`/products\`, the running Next.js app must point to the **same** \`MONGODB_URI\` and \`MONGODB_DB\`; changes to local \`.env.local\` do not automatically change Vercel configuration. You can disable the separate frontend-only \`demoProductsEnabled\` fallback under site settings if you wish to show only MongoDB records. No database write is executed during deployment, \`npm install\` or \`npm run build\`.
+
+Run validation tests with \`npm test\`. The GitHub pull-request workflow also runs these tests.
+
 ## Admin control
 
 The admin panel includes:
