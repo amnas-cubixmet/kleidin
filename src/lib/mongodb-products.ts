@@ -88,6 +88,7 @@ function variants(value: unknown): ProductColorVariant[] {
 function toProduct(doc: Document): Product {
   return {
     id: String(doc._id),
+    demo: bool(doc.demo),
     sku: text(doc.sku),
     name: text(doc.name),
     slug: text(doc.slug),
