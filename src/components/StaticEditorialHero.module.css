@@ -107,6 +107,8 @@
   position: relative;
   width: 100%;
   height: 590px;
+  /* Keep the fan inside the stage; the section can still clip its texture. */
+  overflow: visible;
   animation: artIn 1.2s .15s both;
 }
 .circle {
@@ -126,20 +128,27 @@
   border-radius: 50%;
 }
 .deck { position: absolute; inset: 0; }
+/*
+ * All cards stay inside the artwork stage, even at 320px viewport widths.
+ * The former 69%-wide cards with large rightward translations overflowed the
+ * section and were visibly clipped along the outer and bottom edges.
+ */
 .deckCard {
   position: absolute;
-  top: 10%;
-  left: 16%;
-  width: 69%;
-  height: 78%;
+  top: 13%;
+  left: 26%;
+  width: 48%;
+  height: 74%;
   transform-origin: center center;
   will-change: transform, opacity;
   transition: transform 1.05s cubic-bezier(.2,.8,.2,1), opacity .85s ease, filter .85s ease;
 }
-.deckCard[data-depth="0"] { transform: translate3d(-9%, 7%, 0) rotate(-7deg) scale(1); opacity: 1; filter: brightness(1); }
-.deckCard[data-depth="1"] { transform: translate3d(24%, -10%, 0) rotate(8deg) scale(.88); opacity: 1; filter: brightness(.96); }
-.deckCard[data-depth="2"] { transform: translate3d(36%, 16%, 0) rotate(15deg) scale(.77); opacity: .83; filter: brightness(.87); }
-.deckCard[data-depth="3"] { transform: translate3d(-12%, -18%, 0) rotate(-15deg) scale(.72); opacity: .65; filter: brightness(.85); }
+/* One image should still fill the stage rather than looking undersized. */
+.deckCard:only-child { top: 10%; left: 16%; width: 68%; height: 80%; }
+.deckCard[data-depth="0"] { transform: translate3d(0, 0, 0) rotate(-3deg) scale(1); opacity: 1; filter: brightness(1); }
+.deckCard[data-depth="1"] { transform: translate3d(44%, -8%, 0) rotate(9deg) scale(.87); opacity: 1; filter: brightness(.96); }
+.deckCard[data-depth="2"] { transform: translate3d(-44%, 8%, 0) rotate(-9deg) scale(.87); opacity: 1; filter: brightness(.96); }
+.deckCard[data-depth="3"] { transform: translate3d(0, -11%, 0) rotate(3deg) scale(.74); opacity: .85; filter: brightness(.92); }
 .cardFrame {
   position: relative;
   width: 100%;
@@ -149,7 +158,7 @@
   background: #dedbd3;
   box-shadow: 0 32px 55px rgba(37, 34, 24, .19), 0 4px 12px rgba(37, 34, 24, .1);
 }
-.cardImage { object-fit: cover; }
+.cardImage { object-fit: contain; object-position: center; }
 .cardCount {
   position: absolute;
   bottom: 2%;
