@@ -19,6 +19,7 @@ export function HomeProductGridCard({
   const price = getProductOfferPrice(product, now);
   const available = product.status === "active" && product.stock > 0;
   const whatsappHref = available ? getProductWhatsappUrl(product, whatsappNumber) : "#";
+  const canOrder = available && whatsappHref !== "#";
 
   return (
     <article className="group relative min-w-0">
@@ -29,7 +30,7 @@ export function HomeProductGridCard({
         aria-label={"View " + product.name}
       />
 
-      <div className="relative aspect-[4/5] overflow-hidden bg-[#f1f1ef]">
+      <div className="kleid-product-image relative aspect-[4/5] overflow-hidden bg-[#f1f1ef]">
         <Image
           unoptimized={product.demo}
           src={product.image || "/images/product-1.png"}
@@ -40,15 +41,17 @@ export function HomeProductGridCard({
         />
       </div>
 
-      <div className="pt-3">
-        <h3 className="m-0 min-h-[2.5em] text-[11px] font-semibold tracking-[-.01em] text-[#111] sm:text-[12px]">
+      <div className="kleid-product-info pt-3">
+        <h3 className="kleid-product-name m-0 min-h-[2.5em] text-[11px] font-semibold tracking-[-.01em] text-[#111] sm:text-[12px]">
           {product.name}
         </h3>
 
-        <p className="mt-1 text-[10px] font-medium text-black/52 sm:text-[11px]">
+        <p className="kleid-product-price mt-1 text-[10px] font-medium text-black/52 sm:text-[11px]">
           {formatPrice(price)}
           {offerActive ? <del className="ml-2 text-black/35">{formatPrice(product.price)}</del> : null}
         </p>
+
+        <p className="kleid-product-meta">{product.category}</p>
 
         <a
           href={whatsappHref}
@@ -62,9 +65,9 @@ export function HomeProductGridCard({
               ? "cursor-default opacity-70"
               : "hover:opacity-90")
           }
-          aria-label={"Order " + product.name + " on WhatsApp"}
+          aria-label={canOrder ? "Order " + product.name + " on WhatsApp" : "Ordering unavailable for " + product.name}
         >
-          {available ? (whatsappHref === "#" ? "Unavailable" : "WhatsApp") : "Sold out"}
+          {canOrder ? "Order on WhatsApp ↗" : available ? "Contact unavailable" : "Sold out"}
         </a>
       </div>
     </article>
