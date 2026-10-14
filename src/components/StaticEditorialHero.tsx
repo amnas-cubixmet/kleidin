@@ -36,6 +36,7 @@ export function StaticEditorialHero({
 
   useEffect(() => {
     if (cards.length < 2 || paused) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const interval = window.setInterval(() => {
       if (!document.hidden) {
         setFront((previous) => (previous + 1) % cards.length);
